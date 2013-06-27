@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.knime.workbench.repository.nodes">
+      <node
+            category-path="/community/vernalis/rcsb"
+            factory-class="com.vernalis.pdbconnector.PdbConnectorNodeFactory"
+            id="PdbConnectorNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/local.pdb"
+            expert-flag="false"
+            factory-class="com.vernalis.nodes.io.pdb.loadlocal.LocalPDBLoadNodeFactory2"
+            id="LocalPDBLoadNodeFactory2">
+      </node>
+      <node
+            after="LocalPDBLoadNodeFactory2"
+            category-path="/community/vernalis/local.pdb"
+            expert-flag="false"
+            factory-class="com.vernalis.nodes.io.pdb.savelocal.SavePDBLocalNodeFactory"
+            id="SavePDBLocalNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/rcsb"
+            expert-flag="false"
+            factory-class="com.vernalis.nodes.io.rcsb.source.RCSBsDownloadNodeFactory"
+            id="RCSBsDownloadNodeFactory">
+      </node>
+      <node
+            after="RCSBsDownloadNodeFactory"
+            category-path="/community/vernalis/rcsb"
+            expert-flag="false"
+            factory-class="com.vernalis.nodes.io.rcsb.manip.RCSBmultiDownloadNodeFactory"
+            id="RCSBmultiDownloadNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/sequence"
+            expert-flag="false"
+            factory-class="com.vernalis.nodes.fasta.FASTASequenceNodeFactory_2"
+            id="FASTASequenceNodeFactory_2">
+      </node>
+      <node
+            after="SavePDBLocalNodeFactory"
+            category-path="/community/vernalis/local.pdb"
+            expert-flag="false"
+            factory-class="com.vernalis.nodes.pdb.props.PdbPropertiesNodeFactory"
+            id="PdbPropertiesNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/misc"
+            expert-flag="false"
+            factory-class="com.vernalis.nodes.smartsviewer.SmartsViewerNodeFactory"
+            id="SmartsViewerNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/misc"
+            expert-flag="false"
+            factory-class="com.vernalis.nodes.misc.randomnos.RandomNumbersNodeFactory"
+            id="RandomNumbersNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/misc"
+            expert-flag="false"
+            factory-class="com.vernalis.nodes.io.listdirs2.ListDirs2NodeFactory"
+            id="ListDirs2NodeFactory">
+      </node>
+   </extension>
+   <extension
+         point="org.knime.workbench.repository.categories">
+      <category
+            description="Custom nodes developed by Vernalis (R&amp;D)"
+            icon="icons/Vernalis.ico"
+            level-id="vernalis"
+            name="Vernalis"
+            path="/community/">
+      </category>
+      <category
+            description="Vernalis Nodes for RCSB query and reporting"
+            icon="icons/RCSB_PDB.png"
+            level-id="rcsb"
+            name="RCSB PDB Tools"
+            path="/community/vernalis/">
+      </category>
+      <category
+            after="local.pdb"
+            description="Vernalis nodes for Sequence manipulation tools"
+            icon="icons/SeqTools.png"
+            level-id="sequence"
+            name="Sequence Tools"
+            path="/community/vernalis/">
+      </category>
+      <category
+            after="rcsb"
+            description="Vernalis file reader nodes"
+            icon="icons/IO_icon.png"
+            level-id="local.pdb"
+            name="Local PDB Tools"
+            path="/community/vernalis/">
+      </category>
+      <category
+            after="sequence"
+            description="Miscellaneous Vernalis nodes"
+            icon="icons/missing.gif"
+            level-id="misc"
+            name="Miscellaneous"
+            path="/community/vernalis/">
+      </category>
+   </extension>
+   <extension
+         point="org.knime.product.splashExtension">
+      <splashExtension
+            icon="icons/Vernalis_splash.png"
+            id="Vernalis_splashExtension"
+            tooltip="Vernalis nodes">
+      </splashExtension>
+   </extension>
+</plugin>
