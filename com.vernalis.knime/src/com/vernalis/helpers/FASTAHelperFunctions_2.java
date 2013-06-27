@@ -302,59 +302,59 @@ public class FASTAHelperFunctions_2 {
 		return ColCells;
 	}
 
-	public static boolean isCorrectType (String FASTAHeader,
-			String FASTA_Type){
-		/*
-		 * This checks against the NCBI list of FASTA header patterns
-		 * Feature is disabled as even NCBI appears not to follow the convention strictly!
-		 */
-		
-		String matchPattern="";
-		switch (FASTA_Type.toLowerCase()){
-		case "genbank":
-			matchPattern="gi\\|.*?\\|gb\\|.*?\\|.*?";
-		break; 
-		case "embl":
-			matchPattern="gi\\|.*?\\|emb\\|.*?\\|.*?";
-		break; 
-		case "ddbj (dna database of japan)":
-			matchPattern="gi\\|.*?\\|dbj\\|.*?\\|.*?";
-		break; 
-		case "swiss-prot":
-			matchPattern="sp\\|.*?\\|.*?";
-		break; 
-		case "patents":
-			matchPattern="pat\\|.*?\\|.*?";
-		break; 
-		case "general database identifier":
-			matchPattern="gnl\\|.*?\\|.*?";
-		break; 
-		case "ncbi reference sequence":
-			matchPattern="ref\\|.*?\\|.*?";
-		break; 
-		case "pdb":
-			matchPattern="(pdb\\|.*?\\|.*?|[A-Za-z0-9]{4}:[A-Za-z0-9]{1}\\|PDBID\\|CHAIN\\|SEQUENCE)";
-		break; 
-		case "nbrf":
-			matchPattern="pir\\|\\|.*?";
-		break; 
-		case "protein research foundation":
-			matchPattern="prf\\|\\|.*?";
-		break; 
-		case "geninfo backbone id":
-			matchPattern="bbs\\|.*?\\";
-		break; 
-		case "local sequence identifier":
-			matchPattern="lcl\\|.*?\\";
-		case "other (no fields extracted from header)":
-			return true;
-		}
-		
-		//Prefix an optional start-of-line character
-		matchPattern="(>|)" + matchPattern;
-		return FASTAHeader.toLowerCase().matches(matchPattern);
-		
-	}
+//	public static boolean isCorrectType (String FASTAHeader,
+//			String FASTA_Type){
+//		/*
+//		 * This checks against the NCBI list of FASTA header patterns
+//		 * Feature is disabled as even NCBI appears not to follow the convention strictly!
+//		 */
+//		
+//		String matchPattern="";
+//		switch (FASTA_Type.toLowerCase()){
+//		case "genbank":
+//			matchPattern="gi\\|.*?\\|gb\\|.*?\\|.*?";
+//		break; 
+//		case "embl":
+//			matchPattern="gi\\|.*?\\|emb\\|.*?\\|.*?";
+//		break; 
+//		case "ddbj (dna database of japan)":
+//			matchPattern="gi\\|.*?\\|dbj\\|.*?\\|.*?";
+//		break; 
+//		case "swiss-prot":
+//			matchPattern="sp\\|.*?\\|.*?";
+//		break; 
+//		case "patents":
+//			matchPattern="pat\\|.*?\\|.*?";
+//		break; 
+//		case "general database identifier":
+//			matchPattern="gnl\\|.*?\\|.*?";
+//		break; 
+//		case "ncbi reference sequence":
+//			matchPattern="ref\\|.*?\\|.*?";
+//		break; 
+//		case "pdb":
+//			matchPattern="(pdb\\|.*?\\|.*?|[A-Za-z0-9]{4}:[A-Za-z0-9]{1}\\|PDBID\\|CHAIN\\|SEQUENCE)";
+//		break; 
+//		case "nbrf":
+//			matchPattern="pir\\|\\|.*?";
+//		break; 
+//		case "protein research foundation":
+//			matchPattern="prf\\|\\|.*?";
+//		break; 
+//		case "geninfo backbone id":
+//			matchPattern="bbs\\|.*?\\";
+//		break; 
+//		case "local sequence identifier":
+//			matchPattern="lcl\\|.*?\\";
+//		case "other (no fields extracted from header)":
+//			return true;
+//		}
+//		
+//		//Prefix an optional start-of-line character
+//		matchPattern="(>|)" + matchPattern;
+//		return FASTAHeader.toLowerCase().matches(matchPattern);
+//		
+//	}
 	
 	public static String getHeader (String FASTA){
 		/*

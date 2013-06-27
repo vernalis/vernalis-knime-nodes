@@ -197,22 +197,22 @@ public class PDBHelperFunctions {
 
 		//Now deal with the others
 		URL += pdbid;
-		switch (filetype.toLowerCase()){
-		case "pdb":
+		String temp = filetype.toLowerCase();
+		
+		if ("pdb".equals(temp)){
 			URL += ".pdb";
-			break;
-		case "mmcif": case "cif":
+		} else if ("mmcif".equals(temp) ||
+				"cif".equals(temp)){
 			URL += ".cif";
-			break;
-		case "structurefactor": case "sf":
+		} else if ("structurefactor".equals(temp) ||
+				"sf".equals(temp)){
 			URL += "-sf.cif";
-			break;
-		case "pdbml": case "pdbml/xml": case "xml":
+		} else if ("pdbml".equals(temp) || 
+				"pdbml/xml".equals(temp) ||
+				"xml".equals(temp)){
 			URL += ".xml";
-			break;
 		}
 		return (gz) ? URL+".gz":URL;
-
 	}
 
 	public static String createRCSBUrl(String pdbid, String filetype){
