@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.knime.core.node.NodeLogger;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -44,11 +45,9 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.vernalis.pdbconnector.PdbConnectorNodePlugin;
-
 /**
  * Manages the dialog options for PDB Connector KNIME Node.
- * 
+ *
  * <P>Singleton class to define the query and report options presented in
  * {@link com.vernalis.pdbconnector.PdbConnectorNodeDialog} and used by {@link com.vernalis.pdbconnector.PdbConnectorNodeModel}.
  * The configuration is loaded dynamically from an external <code>xml/PdbConnectorConfig.xml/dtd</code>
@@ -108,18 +107,18 @@ public class PdbConnectorConfig {
 			theInstance = new PdbConnectorConfig();
 		}
 		return theInstance;
-	};
+	}
 
 	/**
 	 * Default constructor, initialising configuration from XML file.
-	 * 
-	 * <P>Configuration is loaded by {@link initFromXML()}. In the event the XML or DTD files are not
+	 *
+	 * <P>Configuration is loaded by {@link #initFromXML()}. In the event the XML or DTD files are not
 	 * found (or are invalid), all configuration attributes are cleared and the last {@link ConfigException}
-	 * error is stored. The error condition can be detected by {@link isOK()} and the last error retrieved by
-	 * {@link getLastErrorMessage()}.
-	 * 
-	 * @see isOK()
-	 * @see getLastErrorMessage()
+	 * error is stored. The error condition can be detected by {@link #isOK()} and the last error retrieved by
+	 * {@link #getLastErrorMessage()}.
+	 *
+	 * @see #isOK()
+	 * @see #getLastErrorMessage()
 	 * @see ConfigException
 	 */
 	private PdbConnectorConfig() {
@@ -144,7 +143,7 @@ public class PdbConnectorConfig {
 	 *
 	 * Each QueryCategory contains a collection of related QueryOption objects,
 	 * and is displayed on a single named tab of the node dialog.
-	 * 
+	 *
 	 * @return the query categories
 	 * @see QueryOption
 	 */
@@ -157,10 +156,10 @@ public class PdbConnectorConfig {
 	 *
 	 * Each ReportCategory contains a collection of related ReportField objects
 	 * and is displayed on a single named subpanel of the node Report Options dialog tab.
-	 * 
+	 *
 	 * Report categories are useful in the Customizable Table report dialog to facilitate
 	 * selection (or deselection) of all report fields in that category.
-	 * 
+	 *
 	 * @return the report categories
 	 * @see ReportField
 	 * @see StandardReport
@@ -172,13 +171,13 @@ public class PdbConnectorConfig {
 
 	/**
 	 * Gets the standard categories.
-	 * 
+	 *
 	 * Each StandardCategory contains a collection of related StandardReport objects
 	 * and represents a heading in the Select Report dropdown of the Report Options dialog tab.
-	 * 
+	 *
 	 * Note that a StandardReport (for example Ligand) may not select all of the report fields
 	 * in the ReportCategory of the same name, and may include fields from other report categories.
-	 * 
+	 *
 	 * @return the standard categories
 	 */
 	public final List<StandardCategory> getStandardCategories() {
@@ -196,7 +195,7 @@ public class PdbConnectorConfig {
 
 	/**
 	 * Gets the custom standard report.
-	 * 
+	 *
 	 * @return the custom standard report
 	 */
 	public final StandardReport getCustomStandardReport() {
@@ -207,7 +206,7 @@ public class PdbConnectorConfig {
 	 * Gets the similarity filter query option.
 	 *
 	 * The similarity filter query option is displayed on the main Query Options tab.
-	 * 
+	 *
 	 * @return the similarity filter query option.
 	 */
 	public final QueryOption getSimilarity() {
@@ -229,7 +228,7 @@ public class PdbConnectorConfig {
 	 * @param key the key
 	 * @return true, if named property exists
 	 */
-	public final boolean isPropertyExists(String key) {
+	public final boolean isPropertyExists(final String key) {
 		return (key != null) && (m_properties.containsKey(key));
 	}
 
@@ -237,12 +236,12 @@ public class PdbConnectorConfig {
 	 * Gets a named property value as a string.
 	 *
 	 * Returns the specified default value if the property key does not exist.
-	 * 
+	 *
 	 * @param key the key
 	 * @param defaultVal the default value
 	 * @return the property value
 	 */
-	public final String getProperty(String key, String defaultVal) {
+	public final String getProperty(final String key, final String defaultVal) {
 		String retVal = defaultVal;
 		if (!isPropertyExists(key)) {
 			logger.warn("Property " + key + " not found - initializing from internal default");
@@ -259,12 +258,12 @@ public class PdbConnectorConfig {
 	 *
 	 * Returns the specified default value if the property key does not exist, or if the value
 	 * is not a valid integer.
-	 * 
+	 *
 	 * @param key the key
 	 * @param defaultVal the default value
 	 * @return the property value as an integer
 	 */
-	public final int getPropertyAsInt(String key, int defaultVal) {
+	public final int getPropertyAsInt(final String key, final int defaultVal) {
 		int retVal = defaultVal;
 		if (!isPropertyExists(key)) {
 			logger.warn("Property " + key + " not found - initializing from internal default");
@@ -358,13 +357,13 @@ public class PdbConnectorConfig {
 	 * <LI>XML root element contains one and only one child element called elementName</LI>
 	 * <LI>XML elementName element contains one and only one child element, which is a valid QueryOption</LI>
 	 * </OL>
-	 * 
+	 *
 	 * @param root the root XML element
 	 * @param elementName the child element name
 	 * @return the singleton QueryOption
 	 * @throws ConfigException if singleton expectations are violated.
 	 */
-	private QueryOption createSingletonQuery(Element root, String elementName) throws ConfigException {
+	private QueryOption createSingletonQuery(final Element root, final String elementName) throws ConfigException {
 		QueryOption retVal = null;
 		NodeList elements = root.getElementsByTagName(elementName);
 		switch (elements.getLength()) {
@@ -379,7 +378,7 @@ public class PdbConnectorConfig {
 				retVal = new QueryOption(children.item(0));
 				break;
 			default:
-				throw new ConfigException("Multiple " + QueryOption.XML_ELEMENT + " children of " + elementName + " element");			
+				throw new ConfigException("Multiple " + QueryOption.XML_ELEMENT + " children of " + elementName + " element");
 			}
 			break;
 		default:
@@ -394,7 +393,7 @@ public class PdbConnectorConfig {
 	 * @param root the root XML element
 	 * @throws ConfigException if ligand image size XML element is missing or invalid.
 	 */
-	private void loadLigandImageOptions(Element root) throws ConfigException {
+	private void loadLigandImageOptions(final Element root) throws ConfigException {
 		m_ligandImgOptions = null;
 		NodeList elements = root.getElementsByTagName(XML_LIGAND_IMG_ELEMENT);
 		switch (elements.getLength()) {
@@ -404,7 +403,7 @@ public class PdbConnectorConfig {
 			Node node = elements.item(0);
 			m_ligandImgOptions = new Values(node.getChildNodes());
 			if (m_ligandImgOptions.getLabels().isEmpty()) {
-				throw new ConfigException("Missing " + Values.XML_ELEMENT + " elements in " + XML_LIGAND_IMG_ELEMENT);						
+				throw new ConfigException("Missing " + Values.XML_ELEMENT + " elements in " + XML_LIGAND_IMG_ELEMENT);
 			}
 			break;
 		default:
@@ -418,7 +417,7 @@ public class PdbConnectorConfig {
 	 * @param root the root XML element
 	 * @throws ConfigException if properties XML element is missing or invalid.
 	 */
-	private void loadProperties(Element root) throws ConfigException {
+	private void loadProperties(final Element root) throws ConfigException {
 		m_properties.clear();
 		NodeList elements = root.getElementsByTagName(XML_PROPERTIES_ELEMENT);
 		switch (elements.getLength()) {
@@ -429,7 +428,7 @@ public class PdbConnectorConfig {
 			NodeList children = element.getChildNodes();
 			for (int i = 0, length = children.getLength(); i < length; ++i) {
 				Node child = children.item(i);
-				if (XML_PROPERTY_ELEMENT == child.getNodeName()) {				
+				if (XML_PROPERTY_ELEMENT == child.getNodeName()) {
 					NamedNodeMap childAttr = child.getAttributes();
 					Node keyAttr = childAttr.getNamedItem(XML_PROPERTY_KEY_ATTR);
 					if (keyAttr == null) {
@@ -445,7 +444,7 @@ public class PdbConnectorConfig {
 			break;
 		default:
 			throw new ConfigException("Multiple " + XML_PROPERTIES_ELEMENT + " elements");
-		}		
+		}
 	}
 
 	/**
@@ -456,10 +455,10 @@ public class PdbConnectorConfig {
 	 * @return the XML document
 	 * @throws ConfigException if any load or parse errors.
 	 */
-	private Document loadDocument(String xml, String dtd) throws ConfigException {
+	private Document loadDocument(final String xml, final String dtd) throws ConfigException {
 		Document retVal = null;
 		try {
-			Bundle bundle = PdbConnectorNodePlugin.getDefault().getBundle();
+			Bundle bundle = FrameworkUtil.getBundle(getClass());
 			IPath xmlPath = new Path(xml);
 			IPath dtdPath = new Path(dtd);
 			final URL XML = FileLocator.find(bundle,xmlPath,null);
@@ -483,12 +482,13 @@ public class PdbConnectorConfig {
 
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			db.setEntityResolver(new EntityResolver() {
-				public InputSource resolveEntity(
+				@Override
+                public InputSource resolveEntity(
 						final String publicId, final String systemId)
 				throws SAXException, IOException {
 					InputStream is = DTD.openStream();
 					return new InputSource(is);
-				}          
+				}
 			});
 
 			final InputSource source = new InputSource(XML.openStream());

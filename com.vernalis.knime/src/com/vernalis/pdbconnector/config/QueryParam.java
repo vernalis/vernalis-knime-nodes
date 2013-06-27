@@ -28,13 +28,13 @@ import com.vernalis.pdbconnector.ComponentFactory;
 
 /**
  * QueryParam class.
- * 
+ *
  * A QueryParam represents a user input parameter (or set of related parameters) of a specified type.
  * Valid parameter types are defined by the <code>eType</code> enum.
- * 
+ *
  * QueryParam definitions are used by ComponentFactory to construct KNIME dialog components and
  * settings models dynamically.
- * 
+ *
  * @see QueryOption
  * @see ComponentFactory
  */
@@ -53,9 +53,9 @@ public class QueryParam {
 	static final String XML_ATTR_LABEL = "label";
 
 	/** XML attribute name for QueryParam preferred dialog width.
-	 * 
+	 *
 	 * UI hint. If non-zero, overrides global property for dialog width.
-	 * 
+	 *
 	 */
 	static final String XML_ATTR_WIDTH = "width";
 
@@ -101,50 +101,50 @@ public class QueryParam {
 		BIG_STRING,
 
 		/** Conditional STRING parameter.
-		 * 
+		 *
 		 * Requires one XML subquery string.
-		 * 
+		 *
 		 * The XML subquery string is included in the overall query string
 		 * if and only if the user inputs a non-empty value for this parameter.
 		 */
 		STRING_COND,
 		/** Conditional INTEGER_RANGE parameter.
-		 * 
+		 *
 		 * Purpose: to replicate RCSB usage as far as possible, there are some query options where it
 		 * is required to include only those subquery strings where the user has actively entered a
 		 * non-default value for a query parameter.
 
 		 * Requires two XML subquery strings (for min and max respectively).
-		 * 
+		 *
 		 * The first XML subquery string is included in the overall query string
 		 * if and only if the user inputs a value for the min parameter that is greater than the
 		 * overall minimum value allowed.
-		 * 
+		 *
 		 * The second XML subquery string is included in the overall query string
 		 * if and only if the user inputs a value for the max parameter that is less than the
 		 * overall maximum value allowed.
 		 */
 		INTEGER_RANGE_COND,
 		/** Conditional DOUBLE_RANGE parameter.
-		 * 
+		 *
 		 * Purpose: to replicate RCSB usage as far as possible, there are some query options where it
 		 * is required to include only those subquery strings where the user has actively entered a
 		 * non-default value for a query parameter.
-		 * 
+		 *
 		 * Example: see the "Secondary Structure Content" query definition.
 		 *
 		 * Requires two XML subquery strings (for min and max respectively).
-		 * 
+		 *
 		 * The first XML subquery string is included in the overall query string
 		 * if and only if the user inputs a value for the min parameter that is greater than the
 		 * overall minimum value allowed.
-		 * 
+		 *
 		 * The second XML subquery string is included in the overall query string
 		 * if and only if the user inputs a value for the max parameter that is less than the
 		 * overall maximum value allowed.
 		 */
 		DOUBLE_RANGE_COND
-	};
+	}
 
 	private String m_id;
 	private eType m_type;
@@ -165,19 +165,32 @@ public class QueryParam {
 	 * @return the eType value.
 	 * @throws ConfigException if strType is invalid.
 	 */
-	public static eType string2Type(String strType) throws ConfigException {
-		if (strType.equalsIgnoreCase("string")) return eType.STRING;
-		else if (strType.equalsIgnoreCase("integer")) return eType.INTEGER;
-		else if (strType.equalsIgnoreCase("double")) return eType.DOUBLE;
-		else if (strType.equalsIgnoreCase("integer_range")) return eType.INTEGER_RANGE;
-		else if (strType.equalsIgnoreCase("double_range")) return eType.DOUBLE_RANGE;
-		else if (strType.equalsIgnoreCase("string_list")) return eType.STRING_LIST;
-		else if (strType.equalsIgnoreCase("date")) return eType.DATE;
-		else if (strType.equalsIgnoreCase("big_string")) return eType.BIG_STRING;
-		else if (strType.equalsIgnoreCase("string_cond")) return eType.STRING_COND;
-		else if (strType.equalsIgnoreCase("integer_range_cond")) return eType.INTEGER_RANGE_COND;
-		else if (strType.equalsIgnoreCase("double_range_cond")) return eType.DOUBLE_RANGE_COND;
-		else throw new ConfigException("Invalid " + XML_ATTR_TYPE + " attribute (" + strType + ")");
+	public static eType string2Type(final String strType) throws ConfigException {
+		if (strType.equalsIgnoreCase("string")) {
+            return eType.STRING;
+        } else if (strType.equalsIgnoreCase("integer")) {
+            return eType.INTEGER;
+        } else if (strType.equalsIgnoreCase("double")) {
+            return eType.DOUBLE;
+        } else if (strType.equalsIgnoreCase("integer_range")) {
+            return eType.INTEGER_RANGE;
+        } else if (strType.equalsIgnoreCase("double_range")) {
+            return eType.DOUBLE_RANGE;
+        } else if (strType.equalsIgnoreCase("string_list")) {
+            return eType.STRING_LIST;
+        } else if (strType.equalsIgnoreCase("date")) {
+            return eType.DATE;
+        } else if (strType.equalsIgnoreCase("big_string")) {
+            return eType.BIG_STRING;
+        } else if (strType.equalsIgnoreCase("string_cond")) {
+            return eType.STRING_COND;
+        } else if (strType.equalsIgnoreCase("integer_range_cond")) {
+            return eType.INTEGER_RANGE_COND;
+        } else if (strType.equalsIgnoreCase("double_range_cond")) {
+            return eType.DOUBLE_RANGE_COND;
+        } else {
+            throw new ConfigException("Invalid " + XML_ATTR_TYPE + " attribute (" + strType + ")");
+        }
 	}
 
 	/**
@@ -186,7 +199,7 @@ public class QueryParam {
 	 * @param type the eType enum to convert.
 	 * @return the string value.
 	 */
-	public static String type2String(eType type) {
+	public static String type2String(final eType type) {
 		switch (type) {
 		case STRING:
 			return "String";
@@ -221,7 +234,7 @@ public class QueryParam {
 	 * @param node the XML node.
 	 * @throws ConfigException if any parse errors.
 	 */
-	public QueryParam(Node node) throws ConfigException {
+	public QueryParam(final Node node) throws ConfigException {
 		initFromXML(node);
 	}
 
@@ -266,10 +279,10 @@ public class QueryParam {
 	 *
 	 * If XML width attribute is greater than zero, then
 	 * returns the custom width for this parameter.
-	 * 
+	 *
 	 * Else returns the appropriate global width for this
 	 * parameter type.
-	 * 
+	 *
 	 * @return the UI width in characters.
 	 */
 	public int getWidth() {
@@ -352,7 +365,7 @@ public class QueryParam {
 	 * @param node the XML node.
 	 * @throws ConfigException if any parse errors.
 	 */
-	private void initFromXML(Node node) throws ConfigException {
+	private void initFromXML(final Node node) throws ConfigException {
 		if (node == null) {
 			throw new ConfigException("Null " + XML_ELEMENT + " node");
 		}
@@ -436,7 +449,7 @@ public class QueryParam {
 				case STRING_LIST:
 					m_values = new Values(node.getChildNodes());
 					if (m_values.getLabels().isEmpty()) {
-						throw new ConfigException("Missing " + Values.XML_ELEMENT + " elements in " + XML_ELEMENT);						
+						throw new ConfigException("Missing " + Values.XML_ELEMENT + " elements in " + XML_ELEMENT);
 					}
 					break;
 				case STRING_COND://load conditional subquery strings (should be one or two, depending on type)
@@ -452,7 +465,7 @@ public class QueryParam {
 					}
 					if (m_queryStrings.size() != numExpected) {
 						throw new ConfigException("Incorrect number of " + XML_ELEMENT_QUERY_STRING + " child elements in " + XML_ELEMENT
-								+ " (expected=" + numExpected + ", actual=" + m_queryStrings.size() + ")");						
+								+ " (expected=" + numExpected + ", actual=" + m_queryStrings.size() + ")");
 					}
 					break;
 				default:

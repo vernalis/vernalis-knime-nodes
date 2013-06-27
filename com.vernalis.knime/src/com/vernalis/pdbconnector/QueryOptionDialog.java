@@ -51,7 +51,7 @@ import com.vernalis.pdbconnector.config.QueryParam;
 
 /**
  * QueryOptionDialog class.
- * 
+ *
  * A QueryOptionDialog defines the user interface dialog components for a single query option.
  * It contains:
  * <UL>
@@ -60,7 +60,7 @@ import com.vernalis.pdbconnector.config.QueryParam;
  * <LI>A checkbox to act as the dialog component for the selection settings model</LI>
  * <LI>A collection of dialog components to represent the query parameters</LI>
  * </UL>
- * 
+ *
  * @see QueryOption
  * @see QueryParam
  * @see QueryOptionModel
@@ -72,7 +72,7 @@ public class QueryOptionDialog extends JPanel {
 	private JCheckBox m_checkBox = null;
 	private final List<QueryParam> m_params;
 	/** The dialog components.
-	 * 
+	 *
 	 * Inner list contains the dialog components for a single query param.
 	 * Outer list is for each query param in m_params.
 	 */
@@ -94,12 +94,14 @@ public class QueryOptionDialog extends JPanel {
 		m_checkBox = new JCheckBox("Selected");
 		m_checkBox.setSelected(isSelected);
 		m_checkBox.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent e) {
+			@Override
+            public void itemStateChanged(final ItemEvent e) {
 				m_selected.setBooleanValue(m_checkBox.isSelected());
 			}
 		});
 		m_selected.addChangeListener(new ChangeListener() {
-			public void stateChanged(final ChangeEvent e) {
+			@Override
+            public void stateChanged(final ChangeEvent e) {
 				final boolean isSelected = m_selected.getBooleanValue();
 				if (isSelected != m_checkBox.isSelected()) {
 					m_checkBox.setSelected(isSelected);
@@ -110,7 +112,7 @@ public class QueryOptionDialog extends JPanel {
 						final JPanel dlgPanel = dlg.getComponentPanel();
 						dlgPanel.setEnabled(isSelected);
 						//Make sure all child components of the dialog are also enabled/disabled...
-						for (final Component com : ComponentFactory.getAllSubComponents(dlgPanel,null)) {  
+						for (final Component com : ComponentFactory.getAllSubComponents(dlgPanel,null)) {
 							com.setEnabled(isSelected);
 						}
 					}
@@ -146,7 +148,7 @@ public class QueryOptionDialog extends JPanel {
 				dlgPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 				subPanel.add(dlgPanel);
 				//Make sure all child components of the dialog are also enabled/disabled...
-				for (final Component com : ComponentFactory.getAllSubComponents(dlgPanel,null)) {  
+				for (final Component com : ComponentFactory.getAllSubComponents(dlgPanel,null)) {
 					com.setEnabled(isSelected);
 					//add mouse click listener unless this is a label
 					if (!(com instanceof JLabel)) {
@@ -169,7 +171,7 @@ public class QueryOptionDialog extends JPanel {
 							}
 							@Override
 							public void mouseReleased(final MouseEvent arg0) {
-							}			
+							}
 						});
 					}
 				}
@@ -181,7 +183,7 @@ public class QueryOptionDialog extends JPanel {
 			//Start new line if we are going to exceed maximum number of columns
 			if ((iCol + gridWidth - 1) > Properties.QUERY_LAYOUT_COLUMNS) {
 				iRow++;
-				iCol = 1;				
+				iCol = 1;
 			}
 			//Check if this panel alone exceeds max number of columns
 			boolean isTooWide = (gridWidth > Properties.QUERY_LAYOUT_COLUMNS);
@@ -219,10 +221,10 @@ public class QueryOptionDialog extends JPanel {
 	 *
 	 * @param isSelected the new selection status
 	 */
-	public void setSelected(boolean isSelected) {
+	public void setSelected(final boolean isSelected) {
 		m_selected.setBooleanValue(isSelected);
 	}
-	
+
 	/**
 	 * Reset reset all dialog parameters to default values.
 	 */
@@ -242,7 +244,7 @@ public class QueryOptionDialog extends JPanel {
 	 * Calls {@link DialogComponent#loadSettingsFrom(NodeSettingsRO, PortObjectSpec[])}
 	 * on each dialog component, and {@link SettingsModel#loadSettingsFrom(NodeSettingsRO)}
 	 * on the selection settings model.
-	 * 
+	 *
 	 * @param settings the settings
 	 * @param specs the specs
 	 * @throws NotConfigurableException
@@ -265,7 +267,7 @@ public class QueryOptionDialog extends JPanel {
 
 	/**
 	 * Saves dialog settings.
-	 * 
+	 *
 	 * Calls {@link DialogComponent#saveSettingsTo(NodeSettingsWO)} on each dialog component,
 	 * and {@link SettingsModel#saveSettingsTo(NodeSettingsWO)} on the selection
 	 * settings model.
@@ -274,7 +276,7 @@ public class QueryOptionDialog extends JPanel {
 	 * @throws InvalidSettingsException
 	 */
 	public final void saveSettingsTo(final NodeSettingsWO settings)
-	throws InvalidSettingsException {    	
+	throws InvalidSettingsException {
 		m_selected.saveSettingsTo(settings);
 		for (List<DialogComponent> dlgs : m_dlgs) {
 			for (DialogComponent dlg : dlgs) {

@@ -25,7 +25,7 @@ import org.w3c.dom.Node;
 
 /**
  * ReportField class.
- * 
+ *
  * A ReportField represents a single report column, and defines:
  * <UL>
  * <LI>UI label</LI>
@@ -35,57 +35,57 @@ import org.w3c.dom.Node;
  * <LI>Default status (selected or unselected)</LI>
  * <LI>Triggers (other report fields, report categories, or standard reports that will trigger the selection of this field)</LI>
  * </UL>
- * 
+ *
  * @see ReportCategory
  * @see StandardReport
  */
 public class ReportField {
-	
+
 	/** XML element name for ReportField definition. */
 	static final String XML_ELEMENT="reportField";
-	
+
 	/** XML attribute name for ReportField ID. */
 	static final String XML_ATTR_ID = "id";
-	
+
 	/** XML attribute name for ReportField column type. */
 	static final String XML_ATTR_TYPE = "type";
-	
+
 	/** XML attribute name for ReportField UI label. */
 	static final String XML_ATTR_LABEL = "label";
-	
+
 	/** XML attribute name for ReportField column name. */
 	static final String XML_ATTR_COLNAME = "colName";
-	
+
 	/** XML attribute name for ReportField default status. */
 	static final String XML_ATTR_DEFAULT = "default";
-	
+
 	/** XML attribute name for ReportField triggers. */
 	static final String XML_ATTR_TRIGGER = "trigger";
-	
+
 	/**
 	 * Enumerated ReportField column types.
 	 */
 	public enum eType {
-		
+
 		/** STRING values. */
 		STRING,
-		
+
 		/** INTEGER values. */
 		INTEGER,
-		
+
 		/** DOUBLE values. */
 		DOUBLE,
-		
+
 		/** DATE values. */
 		DATE,
-		
+
 		/** SMILES values. */
 		SMILES,
-		
+
 		/** Ligand image PNG URL. */
 		PNG_URL
-	};
-	
+	}
+
 	private ReportCategory m_parent;
 	private String m_id;
 	private eType m_type;
@@ -102,14 +102,22 @@ public class ReportField {
 	 * @return the eType value.
 	 * @throws ConfigException if strType is invalid.
 	 */
-	public static eType string2Type(String strType) throws ConfigException {
-		if (strType.equalsIgnoreCase("string")) return eType.STRING;
-		else if (strType.equalsIgnoreCase("integer")) return eType.INTEGER;
-		else if (strType.equalsIgnoreCase("double")) return eType.DOUBLE;
-		else if (strType.equalsIgnoreCase("date")) return eType.DATE;
-		else if (strType.equalsIgnoreCase("smiles")) return eType.SMILES;
-		else if (strType.equalsIgnoreCase("png_url")) return eType.PNG_URL;
-		else throw new ConfigException("Invalid " + XML_ATTR_TYPE + " attribute (" + strType + ")");
+	public static eType string2Type(final String strType) throws ConfigException {
+		if (strType.equalsIgnoreCase("string")) {
+            return eType.STRING;
+        } else if (strType.equalsIgnoreCase("integer")) {
+            return eType.INTEGER;
+        } else if (strType.equalsIgnoreCase("double")) {
+            return eType.DOUBLE;
+        } else if (strType.equalsIgnoreCase("date")) {
+            return eType.DATE;
+        } else if (strType.equalsIgnoreCase("smiles")) {
+            return eType.SMILES;
+        } else if (strType.equalsIgnoreCase("png_url")) {
+            return eType.PNG_URL;
+        } else {
+            throw new ConfigException("Invalid " + XML_ATTR_TYPE + " attribute (" + strType + ")");
+        }
 	}
 
 	/**
@@ -118,7 +126,7 @@ public class ReportField {
 	 * @param type the eType enum to convert.
 	 * @return the string value.
 	 */
-	public static String type2String(eType type) {
+	public static String type2String(final eType type) {
 		switch (type) {
 		case STRING:
 			return "String";
@@ -144,11 +152,11 @@ public class ReportField {
 	 * @param node the XML node
 	 * @throws ConfigException if any parse errors.
 	 */
-	public ReportField(ReportCategory parent, Node node) throws ConfigException {
+	public ReportField(final ReportCategory parent, final Node node) throws ConfigException {
 		m_parent = parent;
 		initFromXML(node);
 	}
-	
+
 	/**
 	 * Gets the parent ReportCategory.
 	 *
@@ -169,22 +177,22 @@ public class ReportField {
 
 	/**
 	 * Checks if this is the hidden report field controlling the primary citation suffix.
-	 * 
+	 *
 	 * The primary citation suffix field is defined by the special name "PRIMARY_CITATION_SUFFIX".
 	 * This hidden pseudo field is triggered automatically by selection of any field in the
 	 * primary citation category, and should not be user-selectable in the UI.
-	 * 
+	 *
 	 * Unlike all other report fields, the primary citation suffix does not represent a column in
 	 * the KNIME output table. Rather, it is a modifier of the behaviour of the citation report fields.
 	 * Hence, the string value represented by this field should be appended to the custom report URL,
 	 * and should not be concatenated with the regular report fields.
-	 * 
+	 *
 	 * @return true, if is primary citation suffix.
 	 */
 	public final boolean isPrimaryCitationSuffix() {
 		return m_id.equals("PRIMARY_CITATION_SUFFIX");
 	}
-	
+
 	/**
 	 * Gets the report table column type.
 	 *
@@ -211,7 +219,7 @@ public class ReportField {
 	public final String getLabel() {
 		return m_label;
 	}
-	
+
 	/**
 	 * Gets the report table column name.
 	 *
@@ -220,7 +228,7 @@ public class ReportField {
 	public final String getColName() {
 		return m_colName;
 	}
-	
+
 	/**
 	 * Gets the value to use in report request string.
 	 *
@@ -229,7 +237,7 @@ public class ReportField {
 	public final String getValue() {
 		return m_value;
 	}
-	
+
 	/**
 	 * Gets the default status.
 	 *
@@ -238,39 +246,39 @@ public class ReportField {
 	public final boolean getDefault() {
 		return m_default;
 	}
-	
+
 	/**
 	 * Checks if is triggered by another ReportField.
-	 * 
+	 *
 	 * Returns true if the other ReportField (or the parent category of the other ReportField)
 	 * is in the trigger list for this field.
 	 *
 	 * @param field the field
 	 * @return true, if is triggered
 	 */
-	public boolean isTriggered(ReportField field) {
+	public boolean isTriggered(final ReportField field) {
 		return m_trigger.contains(field.getParent().getId()) || m_trigger.contains(field.getId());
 	}
-	
+
 	/**
 	 * Checks if is triggered by a StandardReport.
-	 * 
+	 *
 	 * Returns true if this field should be selected as part of a StandardReport.
 	 *
 	 * @param report the report
 	 * @return true, if is triggered
 	 */
-	public boolean isTriggered(StandardReport report) {
+	public boolean isTriggered(final StandardReport report) {
 		return m_trigger.contains(report.getId());
 	}
-	
+
 	/**
 	 * Initializes from XML node.
 	 *
 	 * @param node the XML node.
 	 * @throws ConfigException if any parse errors.
 	 */
-	private void initFromXML(Node node) throws ConfigException {
+	private void initFromXML(final Node node) throws ConfigException {
 		m_trigger.clear();
 		if (node == null) {
 			throw new ConfigException("Null " + XML_ELEMENT + " node");

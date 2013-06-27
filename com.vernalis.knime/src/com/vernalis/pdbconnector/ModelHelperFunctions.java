@@ -55,19 +55,19 @@ import com.vernalis.pdbconnector.config.ReportField;
 
 /**
  * Static helper functions for PdbConnectorNodeModel.
- * 
+ *
  * @see PdbConnectorNodeModel
  */
 public class ModelHelperFunctions {
 	/** DateFormat for yyyy-MM-dd. */
 	private static final DateFormat ymdFormat = new SimpleDateFormat(Properties.YMD_FORMAT);
-	
+
 	/** DateFormat for yyyy-MM. */
 	private static final DateFormat ymFormat = new SimpleDateFormat(Properties.YM_FORMAT);
-	
+
 	/** DateFormat for yyyy. */
 	private static final DateFormat yearFormat = new SimpleDateFormat(Properties.YEAR_FORMAT);
-	
+
 	/** UTC Calendar. */
 	private static final Calendar cal = DateAndTimeCell.getUTCCalendar();
 
@@ -76,13 +76,13 @@ public class ModelHelperFunctions {
 	 *
 	 * The query models are first combined with the specified conjunction (AND or OR)
 	 * The composite query from the first step is then combined with the similarity query (always using an AND conjunction).
-	 * 
+	 *
 	 * @param queryModels the query models
 	 * @param simModel the similarity query model
 	 * @param conjunction the conjunction type
 	 * @return the xml query string
 	 */
-	public static String getXmlQuery(List<QueryOptionModel> queryModels, QueryOptionModel simModel, String conjunction) {
+	public static String getXmlQuery(final List<QueryOptionModel> queryModels, final QueryOptionModel simModel, final String conjunction) {
 		List<QueryOptionModel> simModels = new ArrayList<QueryOptionModel>();
 		simModels.add(simModel);
 		//inner query string is for the selected queries themselves.
@@ -92,7 +92,7 @@ public class ModelHelperFunctions {
 
 	/**
 	 * Constructs a partial xml query string from a list of query models and a conjunction operator.
-	 * 
+	 *
 	 * The return string is preseeded with an optional initial query string.
 	 *
 	 * @param initialQuery the initial query
@@ -100,7 +100,7 @@ public class ModelHelperFunctions {
 	 * @param conjunction the conjunction (used only if there is more than one query model)
 	 * @return the xml query string
 	 */
-	public static String getXmlQuery(String initialQuery, List<QueryOptionModel> queryModels, String conjunction) {
+	public static String getXmlQuery(final String initialQuery, final List<QueryOptionModel> queryModels, final String conjunction) {
 		StringBuffer retVal = new StringBuffer();
 		List<String> queries = new ArrayList<String>();
 		//Pre-seed with initial query string (if defined)
@@ -137,7 +137,7 @@ public class ModelHelperFunctions {
 				retVal.append(Properties.REFINEMENT_END);
 			}
 			retVal.append(Properties.COMPOSITE_END);
-			break;				
+			break;
 		}
 		return retVal.toString();
 	}
@@ -148,11 +148,11 @@ public class ModelHelperFunctions {
 	 * Performs dynamic check that Smiles support is available in KNIME.
 	 * If so, SMILES report fields are returned as Smiles DataType,
 	 * else returned as StringCell DataType.
-	 * 
+	 *
 	 * @param field the report field
 	 * @return the KNIME data type
 	 */
-	public static DataType getDataType(ReportField field) {
+	public static DataType getDataType(final ReportField field) {
 		switch (field.getType()) {
 		case STRING:
 			return StringCell.TYPE;
@@ -178,14 +178,14 @@ public class ModelHelperFunctions {
 	 *
 	 * If field or field value is null or empty, returns MissingCell.
 	 * Else attempts to convert the field value string to the appropriately typed data cell value.
-	 * 
+	 *
 	 * @param field the report field
 	 * @param fieldValue the field value (as a string)
 	 * @param urlSuffix the url suffix (for PNG_URL fields only)
 	 * @return the KNIME data cell
 	 * @throws Exception if field value is invalid
 	 */
-	public static DataCell getDataCell(ReportField field, String fieldValue, String urlSuffix) throws Exception {
+	public static DataCell getDataCell(final ReportField field, final String fieldValue, final String urlSuffix) throws Exception {
 		if ( (field == null) || (fieldValue == null) || fieldValue.isEmpty() || fieldValue.equalsIgnoreCase("null")) {//check for missing data
 			return DataType.getMissingCell();
 		}
@@ -251,7 +251,7 @@ public class ModelHelperFunctions {
 	 * @return the result as a list of strings, one per line of output
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static List<String> postQuery(String xml) throws IOException {
+	public static List<String> postQuery(final String xml) throws IOException {
 		List<String> retVal = new ArrayList<String>();
 		URL url = new URL(Properties.SEARCH_LOCATION);
 		String encodedXML = URLEncoder.encode(xml,"UTF-8");
@@ -262,28 +262,29 @@ public class ModelHelperFunctions {
 			if (line.length() <= 4) { //skip the query id string
 				retVal.add(line);
 			}
-		}      
+		}
 		rd.close();
 		return retVal;
 	}
 
 	/**
 	 * Gets the custom report in CSV format from the PDB Custom Report RESTful web service.
-	 * 
+	 *
 	 * The custom report is returned as a list of list of field values, where the inner list represents a single
 	 * report row (one PDB ID), and the outer list represents all PDB IDs.
-	 * 
+	 *
 	 * <P>WARNING: This method is unsafe as it does not deal correctly with field values containing quote characters.
 	 * Use getCustomReportXml2 instead.
-	 * 
+	 *
 	 * @param pdbIds the list of PDB IDs to generate report for
 	 * @param selected the selected report fields to include in the report
-	 * @return the custom report 
+	 * @return the custom report
 	 * @throws Exception the exception
 	 * @deprecated
 	 * @see ModelHelperFunctions#getCustomReportXml2(List, List)
 	 */
-	public static List<List<String>> getCustomReportCsv(List<String> pdbIds, List<ReportField> selected) throws Exception {
+	@Deprecated
+    public static List<List<String>> getCustomReportCsv(final List<String> pdbIds, final List<ReportField> selected) throws Exception {
 		List<List<String>> retVal = new ArrayList<List<String>>();
 		StringBuffer buf = new StringBuffer(Properties.REPORT_LOCATION);
 		buf.append(ModelHelperFunctions.getPdbIdUrl(pdbIds));
@@ -322,7 +323,7 @@ public class ModelHelperFunctions {
 				}
 				retVal.add(recordVals);
 			}
-			isFirst = false;			
+			isFirst = false;
 		}
 		return retVal;
 	}
@@ -332,18 +333,19 @@ public class ModelHelperFunctions {
 	 *
 	 * The custom report is returned as a list of list of field values, where the inner list represents a single
 	 * report row (one PDB ID), and the outer list represents all PDB IDs.
-	 * 
+	 *
 	 * <P>WARNING: This method, although robust, can be memory intensive as it uses the heavy-duty JDOM DocumentBuilder to
 	 * parse the XML output. Use getCustomReportXml2 instead.
-	 * 
+	 *
 	 * @param pdbIds the list of PDB IDs to generate report for
 	 * @param selected the selected report fields to include in the report
-	 * @return the custom report 
+	 * @return the custom report
 	 * @throws Exception the exception
 	 * @deprecated
 	 * @see ModelHelperFunctions#getCustomReportXml2(List, List)
 	 */
-	public static List<List<String>> getCustomReportXml(List<String> pdbIds, List<ReportField> selected) throws Exception {
+	@Deprecated
+    public static List<List<String>> getCustomReportXml(final List<String> pdbIds, final List<ReportField> selected) throws Exception {
 		List<List<String>> retVal = new ArrayList<List<String>>();
 		StringBuffer buf = new StringBuffer(Properties.REPORT_LOCATION);
 		buf.append(ModelHelperFunctions.getPdbIdUrl(pdbIds));
@@ -393,23 +395,23 @@ public class ModelHelperFunctions {
 	 *
 	 * The custom report is returned as a list of list of field values, where the inner list represents a single
 	 * report row (one PDB ID), and the outer list represents all PDB IDs.
-	 * 
+	 *
 	 * <P>Note: this is the preferred PDB custom report parser at present. It uses a crude, bespoke parser that assumes:
 	 * <OL>
 	 * <LI>there is one XML element per line</LI>
 	 * <LI>fixed XML element names for root, dataset and record elements (as defined in PdbConnectorConfig)</LI>
 	 * <LI>all other XML elements are field values</LI>
 	 * </OL>
-	 * 
+	 *
 	 * <P>WARNING: This code is vulnerable to any change in the PDB Custom Report output format.
-	 * 
+	 *
 	 * @param pdbIds the list of PDB IDs to generate report for
 	 * @param selected the selected report fields to include in the report
 	 * @param primaryOnly pseudo report field to control &primaryOnly=1 suffix for primary citations
-	 * @return the custom report 
+	 * @return the custom report
 	 * @throws Exception the exception
 	 */
-	public static List<List<String>> getCustomReportXml2(List<String> pdbIds, List<ReportField> selected, ReportField primaryOnly) throws Exception {
+	public static List<List<String>> getCustomReportXml2(final List<String> pdbIds, final List<ReportField> selected, final ReportField primaryOnly) throws Exception {
 		List<List<String>> retVal = new ArrayList<List<String>>();
 		StringBuffer buf = new StringBuffer(Properties.REPORT_LOCATION);
 		buf.append(ModelHelperFunctions.getPdbIdUrl(pdbIds));
@@ -482,12 +484,13 @@ public class ModelHelperFunctions {
 	 * @param pdbIds the list of PDB IDs
 	 * @return the URL string (comma-separated values)
 	 */
-	public static String getPdbIdUrl(List<String> pdbIds) {
+	public static String getPdbIdUrl(final List<String> pdbIds) {
 		StringBuffer buf = new StringBuffer(Properties.REPORT_PDBIDS_URL);
 		boolean isFirst=true;
 		for (String pdbId : pdbIds) {
-			if (!isFirst)
-				buf.append(",");
+			if (!isFirst) {
+                buf.append(",");
+            }
 			buf.append(pdbId);
 			isFirst=false;
 		}
@@ -500,12 +503,13 @@ public class ModelHelperFunctions {
 	 * @param fields the list of fields
 	 * @return the URL string (comma-separated values)
 	 */
-	public static String getReportColumnsUrl(List<ReportField> fields) {
+	public static String getReportColumnsUrl(final List<ReportField> fields) {
 		StringBuffer buf = new StringBuffer(Properties.REPORT_COLUMNS_URL);
 		boolean isFirst=true;
 		for (ReportField field : fields) {
-			if (!isFirst)
-				buf.append(",");
+			if (!isFirst) {
+                buf.append(",");
+            }
 			buf.append(field.getValue());
 			isFirst=false;
 		}

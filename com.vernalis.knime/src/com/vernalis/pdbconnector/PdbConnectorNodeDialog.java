@@ -36,6 +36,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -70,13 +71,13 @@ public class PdbConnectorNodeDialog extends NodeDialogPane {
 	private ReportOptionsDialog m_reportDlg = null;
 	private DialogComponent m_ligandImgSizeDlg = null;
 	private DialogComponent m_conjunctionDlg = null;
-	
+
 	/**
 	 * Instantiates a new pdb connector node dialog.
 	 *
 	 * @param config the configuration
 	 */
-	public PdbConnectorNodeDialog(PdbConnectorConfig config) {
+	public PdbConnectorNodeDialog(final PdbConnectorConfig config) {
 		super();
 		if (!config.isOK()) {
 			m_lastError = config.getLastErrorMessage();
@@ -104,7 +105,7 @@ public class PdbConnectorNodeDialog extends NodeDialogPane {
 		}
 		for (QueryOptionDialog queryDialog : m_queryDlgs) {
 			queryDialog.loadSettingsFrom(settings, specs);
-		}      
+		}
 		if (m_simDlg != null) {
 			m_simDlg.loadSettingsFrom(settings, specs);
 		}
@@ -152,7 +153,7 @@ public class PdbConnectorNodeDialog extends NodeDialogPane {
 	 *
 	 * @param config the configuration
 	 */
-	private void createMasterQueryPanel(PdbConnectorConfig config) {
+	private void createMasterQueryPanel(final PdbConnectorConfig config) {
 		JPanel tab = new JPanel(new GridBagLayout());
 		super.addTab("Query Options", tab);
 		GridBagConstraints cons = new GridBagConstraints();
@@ -193,7 +194,7 @@ public class PdbConnectorNodeDialog extends NodeDialogPane {
 		m_clearButton = new JButton("Clear All Queries");
 		m_clearButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(final ActionEvent arg0) {
 				doClearQueries();
 			}
 		});
@@ -203,7 +204,7 @@ public class PdbConnectorNodeDialog extends NodeDialogPane {
 		m_testButton = new JButton("Test Query");
 		m_testButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(final ActionEvent arg0) {
 				doTestQuery();
 			}
 		});
@@ -219,11 +220,11 @@ public class PdbConnectorNodeDialog extends NodeDialogPane {
 		m_resultCount = new JTextField();
 		m_resultCount.setColumns(12);
 		m_resultCount.setEditable(false);
-		m_resultCount.setHorizontalAlignment(JTextField.RIGHT);
+		m_resultCount.setHorizontalAlignment(SwingConstants.RIGHT);
 		tab.add(m_resultCount,cons);
 
 		cons.gridx = 0;
-		++(cons.gridy);	
+		++(cons.gridy);
 		cons.fill = GridBagConstraints.BOTH;
 		cons.gridwidth = GridBagConstraints.REMAINDER;
 		cons.weightx = 1.0;
@@ -243,7 +244,7 @@ public class PdbConnectorNodeDialog extends NodeDialogPane {
 	 *
 	 * @param config the configuration
 	 */
-	private void createQueryPanels(PdbConnectorConfig config) {
+	private void createQueryPanels(final PdbConnectorConfig config) {
 		m_queryDlgs.clear();
 		List<QueryCategory> categories = config.getQueryCategories();
 		for (QueryCategory category : categories) {
@@ -266,14 +267,14 @@ public class PdbConnectorNodeDialog extends NodeDialogPane {
 	 *
 	 * @param config the configuration
 	 */
-	private void createReportPanels(PdbConnectorConfig config) {
+	private void createReportPanels(final PdbConnectorConfig config) {
 		m_reportDlg = new ReportOptionsDialog(config);
-		super.addTab("Report Options", new JScrollPane(m_reportDlg));		
+		super.addTab("Report Options", new JScrollPane(m_reportDlg));
 	}
-	
+
 	/**
 	 * Tests the current query.
-	 * 
+	 *
 	 * Query is executed on a separate daemon worker thread.
 	 * On completion, the result count is displayed.
 	 */
@@ -291,7 +292,7 @@ public class PdbConnectorNodeDialog extends NodeDialogPane {
 
 	/**
 	 * Clears all queries.
-	 * 
+	 *
 	 * All query options are unselected, and query parameters are reset to default values.
 	 */
 	private void doClearQueries() {
@@ -313,11 +314,12 @@ public class PdbConnectorNodeDialog extends NodeDialogPane {
 	 * Worker class to execute the "Test Query" function on a separate thread.
 	 */
 	private final class TestQuery implements Runnable {
-		
+
 		/* (non-Javadoc)
 		 * @see java.lang.Runnable#run()
 		 */
-		public void run(){
+		@Override
+        public void run(){
 			try {
 				//Disable button to prevent further tests being launched.
 				EventQueue.invokeLater(new EnableComponent(m_testButton,false));
@@ -359,7 +361,7 @@ public class PdbConnectorNodeDialog extends NodeDialogPane {
 				EventQueue.invokeLater(new UpdateTextField(m_queryString,e.getLocalizedMessage()));
 			}
 			finally {
-				EventQueue.invokeLater(new EnableComponent(m_testButton,true));				
+				EventQueue.invokeLater(new EnableComponent(m_testButton,true));
 			}
 		}
 	}
@@ -368,19 +370,20 @@ public class PdbConnectorNodeDialog extends NodeDialogPane {
 	 * Worker class to update the text value of a Swing text component.
 	 */
 	private final class UpdateTextField implements Runnable {
-		
+
 		private final JTextComponent m_comp;
 		private final String m_val;
 
-		public UpdateTextField(JTextComponent comp, String val) {
+		public UpdateTextField(final JTextComponent comp, final String val) {
 			m_comp = comp;
 			m_val = val;
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see java.lang.Runnable#run()
 		 */
-		public void run(){
+		@Override
+        public void run(){
 			if (m_comp != null) {
 				m_comp.setText(m_val);
 			}
@@ -394,15 +397,16 @@ public class PdbConnectorNodeDialog extends NodeDialogPane {
 		private final JComponent m_comp;
 		private final boolean m_isEnabled;
 
-		public EnableComponent(JComponent comp, boolean isEnabled) {
+		public EnableComponent(final JComponent comp, final boolean isEnabled) {
 			m_comp = comp;
 			m_isEnabled = isEnabled;
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see java.lang.Runnable#run()
 		 */
-		public void run(){
+		@Override
+        public void run(){
 			if (m_comp != null) {
 				m_comp.setEnabled(m_isEnabled);
 			}

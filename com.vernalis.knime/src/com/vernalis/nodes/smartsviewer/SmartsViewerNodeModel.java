@@ -46,13 +46,13 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
  * Retrieves a SMARTSViewer visualisation of a columns of SMARTS strings using the service at www.smartsviewer.de
  */
 public class SmartsViewerNodeModel extends NodeModel {
-	
+
 	// the logger instance
     private static final NodeLogger logger = NodeLogger
             .getLogger(SmartsViewerNodeModel.class);
-        
-    /** the settings key which is used to retrieve and 
-        store the settings (from the dialog or from a settings file)    
+
+    /** the settings key which is used to retrieve and
+        store the settings (from the dialog or from a settings file)
        (package visibility to be usable from the dialog). */
 
 	static final String CFG_SMARTS = "SMARTS_Column";
@@ -60,22 +60,22 @@ public class SmartsViewerNodeModel extends NodeModel {
 	static final String CFG_LEGEND = "Legend_Option";
 	//static final String CFG_IMG_FORMAT = "Image_Format";
 
-    
-    private final SettingsModelString m_SmartsCol = 
+
+    private final SettingsModelString m_SmartsCol =
     		new SettingsModelString(CFG_SMARTS, null);
-    
-    private final SettingsModelString m_VisModus = 
+
+    private final SettingsModelString m_VisModus =
     		new SettingsModelString(CFG_VIS_MODUS, "1");
-    
-    private final SettingsModelString m_Legend = 
+
+    private final SettingsModelString m_Legend =
     		new SettingsModelString(CFG_LEGEND,"both");
-    
-    //private final SettingsModelString m_ImgFmt = 
+
+    //private final SettingsModelString m_ImgFmt =
     //		new SettingsModelString (CFG_IMG_FORMAT,"png");
     //For now, we will always use png
     private String m_ImgFmt = "png";
     /**
-     * 
+     *
      * Constructor for the node model.
      */
     protected SmartsViewerNodeModel() {
@@ -89,7 +89,7 @@ public class SmartsViewerNodeModel extends NodeModel {
     @Override
     protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
             final ExecutionContext exec) throws Exception {
-    	
+
         ColumnRearranger c = createColumnRearranger(inData[0].getDataTableSpec());
         BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c, exec);
         return new BufferedDataTable[]{out};
@@ -109,7 +109,7 @@ public class SmartsViewerNodeModel extends NodeModel {
     @Override
     protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
             throws InvalidSettingsException {
-    	
+
     	//Check that a column is selected
        	int colIndex = -1;
         if (m_SmartsCol.getStringValue() == null) {
@@ -157,30 +157,31 @@ public class SmartsViewerNodeModel extends NodeModel {
 
     }
 
-    
-    private ColumnRearranger createColumnRearranger(DataTableSpec in) {
+
+    private ColumnRearranger createColumnRearranger(final DataTableSpec in) {
         ColumnRearranger c = new ColumnRearranger(in);
         //The column index of the selected column
         final int colIndex = in.findColumnIndex(m_SmartsCol.getStringValue());
         // column spec of the appended column
-        DataColumnSpec newColSpec = new DataColumnSpecCreator(DataTableSpec.getUniqueColumnName(in, 
+        DataColumnSpec newColSpec = new DataColumnSpecCreator(DataTableSpec.getUniqueColumnName(in,
         "SMARTS Viewer Representation"), PNGImageContent.TYPE).createSpec();
-                
+
         // utility object that performs the calculation
         SingleCellFactory factory = new SingleCellFactory(newColSpec) {
-            public DataCell getCell(DataRow row) {
+            @Override
+            public DataCell getCell(final DataRow row) {
                 DataCell smartscell = row.getCell(colIndex);
-                
+
                 if (smartscell.isMissing() || !(smartscell instanceof StringValue)) {
                     return DataType.getMissingCell();
                 }
-                
+
                 //Here we actually do the meat of the work and fetch file
 
             	String url = SmartsviewerHelper.getSMARTSViewerURL(m_ImgFmt, m_VisModus.getStringValue(),
-            			m_Legend.getStringValue(), 
+            			m_Legend.getStringValue(),
             			((StringValue)smartscell).getStringValue());
-            	
+
             	try {
             		return SmartsviewerHelper.toPNGCell(url);
             	} catch (Exception e){
@@ -228,7 +229,7 @@ public class SmartsViewerNodeModel extends NodeModel {
     	m_Legend.validateSettings(settings);
     	m_SmartsCol.validateSettings(settings);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -238,7 +239,7 @@ public class SmartsViewerNodeModel extends NodeModel {
             CanceledExecutionException {
         // TODO: generated method stub
     }
-    
+
     /**
      * {@inheritDoc}
      */

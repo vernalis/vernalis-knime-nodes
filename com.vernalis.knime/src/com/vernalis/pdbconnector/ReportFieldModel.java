@@ -30,7 +30,7 @@ import com.vernalis.pdbconnector.config.StandardReport;
 
 /**
  * ReportFieldModel class.
- * 
+ *
  * A ReportFieldModel defines the Boolean settings model for a single report field.
  */
 public class ReportFieldModel {
@@ -42,7 +42,7 @@ public class ReportFieldModel {
 	 *
 	 * @param field the field
 	 */
-	public ReportFieldModel(ReportField field) {
+	public ReportFieldModel(final ReportField field) {
 		m_field = field;
 		m_selected = ComponentFactory.createSelectionSettingsModel(m_field);
 	}
@@ -63,18 +63,18 @@ public class ReportFieldModel {
 	 */
 	public final ReportField getField() {
 		return m_field;
-	};
+	}
 
 	/**
 	 * Applies selection trigger.
 	 *
 	 * The selection state of this model is set to true if any of the report field models passed in is a
 	 * trigger for this field AND is selected.
-	 * 
+	 *
 	 * @param models the report field models
 	 * @return new selection state
 	 */
-	public boolean applyTrigger(List<ReportFieldModel> models) {
+	public boolean applyTrigger(final List<ReportFieldModel> models) {
 		m_selected.setBooleanValue(m_field.getDefault());//reset to initial state (mandatory or optional)
 		Iterator<ReportFieldModel> iter = models.iterator();
 		while (iter.hasNext() && !m_selected.getBooleanValue()) {
@@ -90,11 +90,11 @@ public class ReportFieldModel {
 	 * Applies standard report.
 	 *
 	 * Overrides the selection state of this model, if a non-customizable standard report is applied.
-	 * 
+	 *
 	 * @param stdReport the standard report to apply
 	 * @return new selection state
 	 */
-	public boolean applyStandardReport(StandardReport stdReport) {
+	public boolean applyStandardReport(final StandardReport stdReport) {
 		if ( (stdReport != null) && !stdReport.isCustom()) {
 			m_selected.setBooleanValue(m_field.isTriggered(stdReport));
 		}

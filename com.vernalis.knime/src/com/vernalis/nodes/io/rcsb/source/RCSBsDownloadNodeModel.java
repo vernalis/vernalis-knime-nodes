@@ -25,18 +25,12 @@ import org.knime.bio.types.PdbCell;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
-import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
-import org.knime.core.data.StringValue;
-import org.knime.core.data.container.AbstractCellFactory;
-import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.xml.XMLCell;
 import org.knime.core.data.xml.XMLCellFactory;
-
-
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
@@ -71,22 +65,22 @@ public class RCSBsDownloadNodeModel extends NodeModel {
 	static final String CFG_PDBML = "PDBML";
 	static final String CFG_FASTA = "FASTA";
 
-	private final SettingsModelString m_PDBID = 
+	private final SettingsModelString m_PDBID =
 			new SettingsModelString(CFG_PDB_ID, null);
 
-	private final static SettingsModelBoolean m_PDB = 
+	private final static SettingsModelBoolean m_PDB =
 			new SettingsModelBoolean(CFG_PDB, true);
 
-	private final static SettingsModelBoolean m_CIF = 
+	private final static SettingsModelBoolean m_CIF =
 			new SettingsModelBoolean(CFG_CIF, false);
 
-	private final static SettingsModelBoolean m_SF = 
+	private final static SettingsModelBoolean m_SF =
 			new SettingsModelBoolean(CFG_SF, false);
 
-	private final static SettingsModelBoolean m_PDBML = 
+	private final static SettingsModelBoolean m_PDBML =
 			new SettingsModelBoolean(CFG_PDBML, false);
 
-	private final static SettingsModelBoolean m_FASTA = 
+	private final static SettingsModelBoolean m_FASTA =
 			new SettingsModelBoolean(CFG_FASTA, false);
 
 	private BufferedDataContainer m_dc;
@@ -96,7 +90,7 @@ public class RCSBsDownloadNodeModel extends NodeModel {
 
 	//DataTableSpec for the output table.  This will be created during the configure
 	//method, once the column options have been specified
-	private static DataTableSpec spec;	
+	private static DataTableSpec spec;
 
 	/**
 	 * Constructor for the node model.

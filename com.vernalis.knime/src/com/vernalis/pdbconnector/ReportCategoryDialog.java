@@ -49,7 +49,7 @@ import com.vernalis.pdbconnector.config.StandardReport;
 
 /**
  * ReportCategoryDialog class.
- * 
+ *
  * A ReportCategoryDialog defines the user interface dialog components for a single report category.
  * It contains:
  * <UL>
@@ -80,7 +80,8 @@ public class ReportCategoryDialog extends JPanel {
 		//create category selection checkbox
 		m_checkBox = new JCheckBox(m_reportCategory.getLabel());
 		m_checkBox.addItemListener(new ItemListener() {
-			public void itemStateChanged(final ItemEvent e) {
+			@Override
+            public void itemStateChanged(final ItemEvent e) {
 				selectFields(m_checkBox.isSelected());
 			}
 		});
@@ -104,7 +105,8 @@ public class ReportCategoryDialog extends JPanel {
 			DialogComponentBoolean dlg = ComponentFactory.createSelectionDialogComponent(field);
 			m_dlgs.add(dlg);
 			((SettingsModelBoolean)dlg.getModel()).addChangeListener(new ChangeListener() {
-				public void stateChanged(final ChangeEvent e) {
+				@Override
+                public void stateChanged(final ChangeEvent e) {
 					updateCheckBox();
 				}
 			});
@@ -122,7 +124,7 @@ public class ReportCategoryDialog extends JPanel {
 			cDlg.gridy = iRow;
 			cDlg.gridwidth = 1;
 			cDlg.gridheight = 1;
-			cDlg.anchor = GridBagConstraints.WEST;;
+			cDlg.anchor = GridBagConstraints.WEST;
 			//Horizontal padding to fill preferred column width if necessary
 			cDlg.ipadx = Math.max(0,Properties.REPORT_LAYOUT_COL_WIDTH - (int)comp.getPreferredSize().getWidth());
 			super.add(comp,cDlg);
@@ -135,7 +137,7 @@ public class ReportCategoryDialog extends JPanel {
 	 *
 	 * Calls {@link DialogComponent#loadSettingsFrom(NodeSettingsRO, PortObjectSpec[])}
 	 * on each dialog component.
-	 * 
+	 *
 	 * @param settings the settings
 	 * @param specs the specs
 	 * @throws NotConfigurableException the not configurable exception
@@ -152,14 +154,14 @@ public class ReportCategoryDialog extends JPanel {
 
 	/**
 	 * Saves dialog settings.
-	 * 
+	 *
 	 * Calls {@link DialogComponent#saveSettingsTo(NodeSettingsWO)} on each dialog component.
 	 *
 	 * @param settings the settings
 	 * @throws InvalidSettingsException the invalid settings exception
 	 */
 	public final void saveSettingsTo(final NodeSettingsWO settings)
-	throws InvalidSettingsException {    	
+	throws InvalidSettingsException {
 		for (DialogComponent comp : m_dlgs) {
 			comp.saveSettingsTo(settings);
 		}
@@ -167,13 +169,13 @@ public class ReportCategoryDialog extends JPanel {
 
 	/**
 	 * Applies a standard report to the report field selection.
-	 * 
+	 *
 	 * The selection state of each report field is updated to reflect
 	 * the standard report that is applied.
 	 *
 	 * @param stdReport the standard report to apply
 	 */
-	public void applyStandardReport(StandardReport stdReport) {
+	public void applyStandardReport(final StandardReport stdReport) {
 		if (!m_lock && (stdReport != null)) {
 			boolean isCustomTable = stdReport.isCustom();
 			m_lock = true;
@@ -206,7 +208,7 @@ public class ReportCategoryDialog extends JPanel {
 	 * Updates state of report category check box.
 	 *
 	 * Checkbox is selected if all child fields are selected, else is not selected.
-	 * 
+	 *
 	 */
 	public void updateCheckBox() {
 		if (!m_lock) {
@@ -228,7 +230,7 @@ public class ReportCategoryDialog extends JPanel {
 	 *
 	 * @param isSelected the selection state to set
 	 */
-	public void selectFields(boolean isSelected) {
+	public void selectFields(final boolean isSelected) {
 		if (!m_lock) {
 			m_lock = true;
 			for (DialogComponentBoolean dlg : m_dlgs) {

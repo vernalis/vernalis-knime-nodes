@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 
-import org.eclipse.core.runtime.URIUtil;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -46,35 +45,35 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
  * This is the model implementation of ListDirs.
  */
 public class ListDirs2NodeModel extends NodeModel {
-	
+
 	// the logger instance
     private static final NodeLogger logger = NodeLogger
             .getLogger(ListDirs2NodeModel.class);
-        
-    /** the settings key which is used to retrieve and 
-        store the settings (from the dialog or from a settings file)    
+
+    /** the settings key which is used to retrieve and
+        store the settings (from the dialog or from a settings file)
        (package visibility to be usable from the dialog). */
 
 	static final String CFG_PATH = "Path_name";
 	static final String CFG_SUB_DIRS = "Include_Subfolders";
 
-    
-    private final SettingsModelString m_Path = 
+
+    private final SettingsModelString m_Path =
     		new SettingsModelString(CFG_PATH, null);
-    
-    private final SettingsModelBoolean m_subDirs = 
+
+    private final SettingsModelBoolean m_subDirs =
     		new SettingsModelBoolean(CFG_SUB_DIRS, false);
-    
+
     private BufferedDataContainer m_dc;
-    
+
     private static final DataTableSpec spec = new DataTableSpec(createDataColumnSpec());
-    
+
     private int m_analysed_files;
-    
-    
+
+
     private int m_currentRowID;
-    
-    
+
+
     /**
      * Constructor for the node model.
      */
@@ -94,12 +93,12 @@ public class ListDirs2NodeModel extends NodeModel {
     	String[] folders = m_Path.getStringValue().split(";");
 
     	//Now create a data container for the new output table
-    	
+
     	m_dc = exec.createDataContainer(spec);
-    	
+
     	m_currentRowID = 0;
     	m_analysed_files = 0;
-    	
+
     	for (String folder : folders){
     		folder = folder.trim();
     		File location = new File(folder);
@@ -123,20 +122,20 @@ public class ListDirs2NodeModel extends NodeModel {
 
     	}
     	m_dc.close();
-    	
-    	
+
+
         return new BufferedDataTable[] {m_dc.getTable()};
 
     }
-    
+
     private void addLocation (final File location, final ExecutionContext exec)
     throws CanceledExecutionException{
-    	
+
     	//List the folders - recursively if we are doing subfolders too
     	m_analysed_files++;
     	exec.setProgress(m_analysed_files + " file(s) and folder(s) analysed..." + m_currentRowID +" added to output");
     	exec.checkCanceled();
-    	
+
     	if (location.isDirectory()){
     		File[] listFiles = location.listFiles();
     		if (listFiles != null){
@@ -149,16 +148,16 @@ public class ListDirs2NodeModel extends NodeModel {
     						row[1] = new StringCell(loc.getAbsoluteFile().toURI().toURL().toString());
     						m_dc.addRowToTable(new DefaultRow("Row " + m_currentRowID, row));
     						m_currentRowID++;
-    						
+
     					} catch (MalformedURLException e){
     						logger.error("Unable to create URL to folder", e);
     					}
-    				
+
     					//Now deal with subfolders
     					if (m_subDirs.getBooleanValue()){
     						//Recursively call to add them
     						addLocation(loc,exec);
-    						
+
     					}
     				}
     			}
@@ -205,7 +204,7 @@ public class ListDirs2NodeModel extends NodeModel {
 
     	m_Path.saveSettingsTo(settings);
     	m_subDirs.saveSettingsTo(settings);
-    	
+
     }
 
     /**
@@ -229,7 +228,7 @@ public class ListDirs2NodeModel extends NodeModel {
     	m_Path.validateSettings(settings);
     	m_subDirs.validateSettings(settings);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -239,7 +238,7 @@ public class ListDirs2NodeModel extends NodeModel {
             CanceledExecutionException {
         // TODO: generated method stub
     }
-    
+
     /**
      * {@inheritDoc}
      */

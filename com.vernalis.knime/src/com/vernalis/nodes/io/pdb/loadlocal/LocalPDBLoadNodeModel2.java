@@ -53,26 +53,26 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
 	// the logger instance
     private static final NodeLogger logger = NodeLogger
             .getLogger(LocalPDBLoadNodeModel2.class);
-        
-    /** the settings key which is used to retrieve and 
-        store the settings (from the dialog or from a settings file)    
+
+    /** the settings key which is used to retrieve and
+        store the settings (from the dialog or from a settings file)
        (package visibility to be usable from the dialog). */
 
 	static final String CFG_PATH_COLUMN_NAME = "Path_column_name";
 	static final String CFG_FILE_COLUMN_NAME = "File_column_name";
-    
-    private final SettingsModelString m_PathColumnName = 
+
+    private final SettingsModelString m_PathColumnName =
     		new SettingsModelString(CFG_PATH_COLUMN_NAME, null);
-	
-    private final SettingsModelString m_FilecolumnName = 
+
+    private final SettingsModelString m_FilecolumnName =
     		new SettingsModelString(CFG_FILE_COLUMN_NAME, "PDB File");
 
-   
+
     /**
      * Constructor for the node model.
      */
     protected LocalPDBLoadNodeModel2() {
-    
+
         super(1, 1);
     }
 
@@ -84,29 +84,30 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
             final ExecutionContext exec) throws Exception {
 
         logger.debug("LocalPBDLoad executing");
-        
-        // the data table spec of the single output table, 
+
+        // the data table spec of the single output table,
         ColumnRearranger c = createColumnRearranger(inData[0].getDataTableSpec());
         BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c, exec);
         return new BufferedDataTable[]{out};
     }
-    
-    private ColumnRearranger createColumnRearranger(DataTableSpec in) {
+
+    private ColumnRearranger createColumnRearranger(final DataTableSpec in) {
         ColumnRearranger c = new ColumnRearranger(in);
-        
+
         //The column index of the selected column
         final int colIndex = in.findColumnIndex(m_PathColumnName.getStringValue());
-        
+
         // column spec of the appended column
         DataColumnSpec newColSpec = new DataColumnSpecCreator(
-        		DataTableSpec.getUniqueColumnName(in, 
+        		DataTableSpec.getUniqueColumnName(in,
         		m_FilecolumnName.getStringValue()), PdbCell.TYPE).createSpec();
-                
+
         // utility object that performs the calculation
         SingleCellFactory factory = new SingleCellFactory(newColSpec) {
-            public DataCell getCell(DataRow row) {
+            @Override
+            public DataCell getCell(final DataRow row) {
                 DataCell pathcell = row.getCell(colIndex);
-                
+
                 if (pathcell.isMissing() || !(pathcell instanceof StringValue)) {
                     return DataType.getMissingCell();
                 }
@@ -115,9 +116,9 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
             	String urlToRetrieve =((StringValue)pathcell).getStringValue();
             	//Now, if it is a Location, convert to a URL
             	urlToRetrieve = FileHelpers.forceURL(urlToRetrieve);
-            	
+
             	//Only load up pdb files, but allow them to be g-zipped
-            	if (urlToRetrieve.toLowerCase().endsWith(".pdb") || 
+            	if (urlToRetrieve.toLowerCase().endsWith(".pdb") ||
             			urlToRetrieve.toLowerCase().endsWith(".pdb.gz")){
             		String r = FileHelpers.readURLToString(urlToRetrieve);
             		if (!(r==null || "".equals(r))){
@@ -198,7 +199,7 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
 
-        
+
         m_FilecolumnName.saveSettingsTo(settings);
         m_PathColumnName.saveSettingsTo(settings);
 
@@ -210,10 +211,10 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-            
-        // It can be safely assumed that the settings are valided by the 
+
+        // It can be safely assumed that the settings are valided by the
         // method below.
-        
+
         m_FilecolumnName.loadSettingsFrom(settings);
         m_PathColumnName.loadSettingsFrom(settings);
 
@@ -225,7 +226,7 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
     @Override
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-            
+
         // e.g. if the count is in a certain range (which is ensured by the
         // SettingsModel).
         // Do not actually set any values of any member variables.
@@ -243,7 +244,7 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
             CanceledExecutionException {
         // TODO: generated method stub
     }
-    
+
     /**
      * {@inheritDoc}
      */

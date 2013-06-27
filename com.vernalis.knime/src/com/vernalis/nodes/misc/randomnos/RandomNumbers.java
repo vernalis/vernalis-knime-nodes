@@ -51,14 +51,14 @@ public class RandomNumbers {
 		Random rand = new Random();
 		Integer RandomNum;
 		while (Numbers.size()<n){
-			RandomNum=(Integer)(rand.nextInt(max - min + 1) + min);
+			RandomNum=(rand.nextInt(max - min + 1) + min);
 			Numbers.add(RandomNum);
 		}
 		return Numbers;
 	}
 
 
-	public static Collection<Integer> getInts (int min, int max, int n){
+	public static Collection<Integer> getInts (int min, int max, final int n){
 
 
 		//Check the range is sensible
@@ -75,13 +75,13 @@ public class RandomNumbers {
 		Random rand = new Random();
 		Integer RandomNum;
 		while (Numbers.size()<n){
-			RandomNum=(Integer)(rand.nextInt(max - min + 1) + min);
+			RandomNum=(rand.nextInt(max - min + 1) + min);
 			Numbers.add(RandomNum);
 		}
 		return Numbers;
 	}
-	
-	public static Collection<Double> getUniqueDoubles (Double min, Double max, int n){
+
+	public static Collection<Double> getUniqueDoubles (Double min, Double max, final int n){
 
 
 		//Check the range is sensible
@@ -103,7 +103,7 @@ public class RandomNumbers {
 	}
 
 
-	public static Collection<Double> getDoubles (Double min, Double max, int n){
+	public static Collection<Double> getDoubles (Double min, Double max, final int n){
 
 
 		//Check the range is sensible
@@ -123,7 +123,7 @@ public class RandomNumbers {
 		}
 		return Numbers;
 	}
-	
-	
-	
+
+
+
 }

@@ -35,8 +35,6 @@ import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -44,6 +42,8 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
+import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 import com.vernalis.helpers.PDBHelperFunctions;
 
@@ -53,13 +53,13 @@ import com.vernalis.helpers.PDBHelperFunctions;
  * Node to extract properties from a PDB cell
  */
 public class PdbPropertiesNodeModel extends NodeModel {
-    
+
 	// the logger instance
 	private static final NodeLogger logger = NodeLogger
 			.getLogger(PdbPropertiesNodeModel.class);
 
-	/** the settings key which is used to retrieve and 
-        store the settings (from the dialog or from a settings file)    
+	/** the settings key which is used to retrieve and
+        store the settings (from the dialog or from a settings file)
        (package visibility to be usable from the dialog). */
 
 	static final String CFG_PDB_COLUMN_NAME = "PDB_column_name";
@@ -75,40 +75,40 @@ public class PdbPropertiesNodeModel extends NodeModel {
 	static final String CFG_REMARK_2 = "Remark_2";
 	static final String CFG_REMARK_3 = "Remark_3";
 
-	private final SettingsModelString m_PDBcolumnName = 
+	private final SettingsModelString m_PDBcolumnName =
 			new SettingsModelString(CFG_PDB_COLUMN_NAME, null);
 
-	private final SettingsModelBoolean m_PDBID = 
+	private final SettingsModelBoolean m_PDBID =
 			new SettingsModelBoolean(CFG_PDB_ID, true);
-	
+
 	private final SettingsModelBoolean m_ExpMet =
 			new SettingsModelBoolean(CFG_EXP_METHOD, true);
 
-	private final SettingsModelBoolean m_Title = 
+	private final SettingsModelBoolean m_Title =
 			new SettingsModelBoolean(CFG_TITLE, true);
-	
-	private final SettingsModelBoolean m_ModelCount = 
+
+	private final SettingsModelBoolean m_ModelCount =
 			new SettingsModelBoolean (CFG_MDLCNT,true);
-	
-	private final SettingsModelBoolean m_Resolution = 
+
+	private final SettingsModelBoolean m_Resolution =
 			new SettingsModelBoolean(CFG_RESOLUTION, true);
-	
-	private final SettingsModelBoolean m_R = 
+
+	private final SettingsModelBoolean m_R =
 			new SettingsModelBoolean(CFG_R, true);
-	
-	private final SettingsModelBoolean m_RFree = 
+
+	private final SettingsModelBoolean m_RFree =
 			new SettingsModelBoolean(CFG_R_FREE, true);
-	
-	private final SettingsModelBoolean m_SpaceGroup = 
+
+	private final SettingsModelBoolean m_SpaceGroup =
 			new SettingsModelBoolean(CFG_SPACE_GROUP, true);
-	
-	private final SettingsModelBoolean m_Remark1 = 
+
+	private final SettingsModelBoolean m_Remark1 =
 			new SettingsModelBoolean(CFG_REMARK_1, true);
-	
-	private final SettingsModelBoolean m_Remark2 = 
+
+	private final SettingsModelBoolean m_Remark2 =
 			new SettingsModelBoolean(CFG_REMARK_2, true);
-	
-	private final SettingsModelBoolean m_Remark3 = 
+
+	private final SettingsModelBoolean m_Remark3 =
 			new SettingsModelBoolean(CFG_REMARK_3, true);
 
 	/**
@@ -122,18 +122,18 @@ public class PdbPropertiesNodeModel extends NodeModel {
     @Override
     protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
             final ExecutionContext exec) throws Exception {
-        
-        // the data table spec of the single output table, 
+
+        // the data table spec of the single output table,
         ColumnRearranger c = createRearranger(inData[0].getDataTableSpec());
         BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c, exec);
         return new BufferedDataTable[]{out};
     }
 
-    private ColumnRearranger createRearranger(DataTableSpec in) {
-        
+    private ColumnRearranger createRearranger(final DataTableSpec in) {
+
     	//The column index of the selected column
         final int colIndexPDB = in.findColumnIndex(m_PDBcolumnName.getStringValue());
-        
+
         //Count the new columns to add
         int j=0;
         j += (m_PDBID.getBooleanValue()) ? 1 : 0;
@@ -147,9 +147,9 @@ public class PdbPropertiesNodeModel extends NodeModel {
         j += (m_Title.getBooleanValue()) ? 1 : 0;
         j += (m_ExpMet.getBooleanValue()) ? 1 : 0;
         j+= (m_ModelCount.getBooleanValue()) ? 1:0;
-        
+
         final int NewCols = j;
-        
+
         // column spec of the appended columns
         DataColumnSpec[] newColSpec = new DataColumnSpec[NewCols];
         int i = 0;
@@ -197,10 +197,11 @@ public class PdbPropertiesNodeModel extends NodeModel {
         if (m_Remark3.getBooleanValue()){
         	newColSpec[i] = new DataColumnSpecCreator(DataTableSpec.getUniqueColumnName(in,"Remark 3"),StringCell.TYPE).createSpec();
         }
-        
+
         ColumnRearranger rearranger = new ColumnRearranger (in);
         rearranger.append(new AbstractCellFactory(newColSpec){
-        	public DataCell[] getCells(final DataRow row) {
+        	@Override
+            public DataCell[] getCells(final DataRow row) {
         		DataCell[] result = new DataCell[NewCols];
         		Arrays.fill(result, DataType.getMissingCell());
         		DataCell c = row.getCell(colIndexPDB);
@@ -270,19 +271,19 @@ public class PdbPropertiesNodeModel extends NodeModel {
                 }
                 return result;
         	}
-        
+
         });
         return rearranger;
     }
 
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
             throws InvalidSettingsException {
-        
+
         // check if user settings are available, fit to the incoming
         // table structure, and the incoming types are feasible for the node
         // to execute. If the node can execute in its current state return
@@ -345,16 +346,16 @@ public class PdbPropertiesNodeModel extends NodeModel {
         ColumnRearranger c = createRearranger(inSpecs[0]);
         return new DataTableSpec[]{c.createSpec()};
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * {@inheritDoc}
      */
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings) {
-        
+
         m_PDBcolumnName.saveSettingsTo(settings);
         m_PDBID.saveSettingsTo(settings);
         m_R.saveSettingsTo(settings);
@@ -376,7 +377,7 @@ public class PdbPropertiesNodeModel extends NodeModel {
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-                    
+
         m_PDBcolumnName.loadSettingsFrom(settings);
         m_PDBID.loadSettingsFrom(settings);
         m_R.loadSettingsFrom(settings);
@@ -413,7 +414,7 @@ public class PdbPropertiesNodeModel extends NodeModel {
         m_ModelCount.validateSettings(settings);
 
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -421,16 +422,16 @@ public class PdbPropertiesNodeModel extends NodeModel {
     protected void loadInternals(final File internDir,
             final ExecutionMonitor exec) throws IOException,
             CanceledExecutionException {
-        
-        // TODO load internal data. 
+
+        // TODO load internal data.
         // Everything handed to output ports is loaded automatically (data
         // returned by the execute method, models loaded in loadModelContent,
-        // and user settings set through loadSettingsFrom - is all taken care 
+        // and user settings set through loadSettingsFrom - is all taken care
         // of). Load here only the other internals that need to be restored
         // (e.g. data used by the views).
 
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -438,16 +439,16 @@ public class PdbPropertiesNodeModel extends NodeModel {
     protected void saveInternals(final File internDir,
             final ExecutionMonitor exec) throws IOException,
             CanceledExecutionException {
-       
-        // TODO save internal models. 
+
+        // TODO save internal models.
         // Everything written to output ports is saved automatically (data
         // returned by the execute method, models saved in the saveModelContent,
-        // and user settings saved through saveSettingsTo - is all taken care 
+        // and user settings saved through saveSettingsTo - is all taken care
         // of). Save here only the other internals that need to be preserved
         // (e.g. data used by the views).
 
     }
-    
+
 	/**
      * {@inheritDoc}
      */

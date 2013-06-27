@@ -2,7 +2,7 @@
 <feature
       id="com.vernalis.knime.feature"
       label="Vernalis Knime Nodes"
-      version="1.0.0.qualifier"
+      version="1.0.1.qualifier"
       provider-name="Vernalis">
 
    <description>
@@ -702,11 +702,6 @@ the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 &lt;http://www.gnu.org/philosophy/why-not-lgpl.html&gt;.
    </license>
-
-   <requires>
-      <import plugin="org.knime.workbench.core"/>
-      <import plugin="org.knime.base"/>
-   </requires>
 
    <plugin
          id="com.vernalis.knime"

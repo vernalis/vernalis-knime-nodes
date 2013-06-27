@@ -26,7 +26,7 @@ import com.vernalis.pdbconnector.config.PdbConnectorConfig;
 /**
  * PdbConnectorNode factory class.
  */
-public class PdbConnectorNodeFactory 
+public class PdbConnectorNodeFactory
         extends NodeFactory<PdbConnectorNodeModel> {
 
     /* (non-Javadoc)
@@ -51,7 +51,7 @@ public class PdbConnectorNodeFactory
     @Override
     public NodeView<PdbConnectorNodeModel> createNodeView(final int viewIndex,
             final PdbConnectorNodeModel nodeModel) {
-        return new PdbConnectorNodeView(nodeModel);
+        return null;
     }
 
     /* (non-Javadoc)

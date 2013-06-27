@@ -160,7 +160,8 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 
 		ColumnRearranger rearranger = new ColumnRearranger (in);
 		rearranger.append(new AbstractCellFactory(newColSpec){
-			public DataCell[] getCells(final DataRow row) {
+			@Override
+            public DataCell[] getCells(final DataRow row) {
 				DataCell[] result = new DataCell[NewCols];
 				Arrays.fill(result, DataType.getMissingCell());
 				DataCell c = row.getCell(colIndexPDBID);

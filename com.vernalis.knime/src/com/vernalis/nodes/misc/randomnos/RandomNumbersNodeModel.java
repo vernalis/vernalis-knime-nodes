@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -53,8 +54,8 @@ public class RandomNumbersNodeModel extends NodeModel {
 	private static final NodeLogger logger = NodeLogger
 			.getLogger(RandomNumbersNodeModel.class);
 
-	/** the settings key which is used to retrieve and 
-        store the settings (from the dialog or from a settings file)    
+	/** the settings key which is used to retrieve and
+        store the settings (from the dialog or from a settings file)
        (package visibility to be usable from the dialog). */
 
 
@@ -65,24 +66,24 @@ public class RandomNumbersNodeModel extends NodeModel {
 	static final String CFG_N = "Number_of_values";
 	static final String CFG_UNIQUE = "Unique_set";
 
-	private final SettingsModelString m_ColumnName = 
+	private final SettingsModelString m_ColumnName =
 			new SettingsModelString(CFG_COLUMN_NAME, "Random Values");
 
-	private final SettingsModelString m_Type = 
+	private final SettingsModelString m_Type =
 			new SettingsModelString(CFG_TYPE, "Double");
 
-	private final SettingsModelDoubleRange m_Range = 
+	private final SettingsModelDoubleRange m_Range =
 			new SettingsModelDoubleRange (CFG_MIN_MAX,0.0,100000.0);
 
 	private final SettingsModelIntegerBounded m_n =
 			new SettingsModelIntegerBounded(CFG_N, 100, 1, 1000000);
 
-	private final SettingsModelBoolean m_isUnique = 
+	private final SettingsModelBoolean m_isUnique =
 			new SettingsModelBoolean (CFG_UNIQUE, true);
 
 	private BufferedDataContainer m_dc;
 
-	private static DataTableSpec spec;    
+	private static DataTableSpec spec;
 
 	private int m_currentRowID;
 	/**
@@ -121,7 +122,7 @@ public class RandomNumbersNodeModel extends NodeModel {
 				exec.setProgress(m_currentRowID +" added to output table");
 				exec.checkCanceled();
 				DataCell[] row = new DataCell[1];
-				row[0] = new IntCell((int)it.next());
+				row[0] = new IntCell(it.next());
 				m_dc.addRowToTable(new DefaultRow("Row " + m_currentRowID, row));
 				m_currentRowID++;
 			}
@@ -142,7 +143,7 @@ public class RandomNumbersNodeModel extends NodeModel {
 				exec.setProgress(m_currentRowID +" added to output table");
 				exec.checkCanceled();
 				DataCell[] row = new DataCell[1];
-				row[0] = new DoubleCell((Double)it.next());
+				row[0] = new DoubleCell(it.next());
 				m_dc.addRowToTable(new DefaultRow("Row " + m_currentRowID, row));
 				m_currentRowID++;
 			}
@@ -181,7 +182,7 @@ public class RandomNumbersNodeModel extends NodeModel {
 		if (m_Range==null){
 			throw new InvalidSettingsException("Enter a valid range");
 		}
-		
+
 		//Create an output table spec
 		spec = new DataTableSpec(createDataColumnSpec(
 				m_ColumnName.getStringValue(), m_Type.getStringValue()));
@@ -249,7 +250,7 @@ public class RandomNumbersNodeModel extends NodeModel {
 		// TODO: generated method stub
 	}
 
-	private static DataColumnSpec[] createDataColumnSpec(String colName, String colType) {
+	private static DataColumnSpec[] createDataColumnSpec(final String colName, final String colType) {
 		DataColumnSpec[] dcs = new DataColumnSpec[1];
 		if ("Double".equals(colType)){
 			dcs[0] =

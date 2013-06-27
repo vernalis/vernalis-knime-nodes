@@ -112,6 +112,7 @@ public class SavePDBLocalNodeModel extends NodeModel {
                 
         // utility object that performs the calculation
         SingleCellFactory factory = new SingleCellFactory(newColSpec) {
+            @Override
             public DataCell getCell(DataRow row) {
                 DataCell pdbcell = row.getCell(colIndexPDB);
                 DataCell pathcell = row.getCell(colIndexPath);
