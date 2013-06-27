@@ -5,22 +5,28 @@
       version="1.0.0.qualifier"
       provider-name="Vernalis">
 
-   <description url="http://www.example.com/description">
-      This feature contains Vernalis KNIME nodes for interfacing withthe RCSB PDB, handling PDB files and various other tasks within knime.
+   <description>
+      This feature contains Vernalis KNIME nodes for interfacing withthe
+RCSB PDB, handling PDB files and various other tasks within knime.
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      The PDB Connector KNIME Node is Copyright (C) 2012, Vernalis (R&amp;amp;D) Ltd and Enspiral Discovery Limited
+   <copyright>
+      The PDB Connector KNIME Node is Copyright (C) 2012, Vernalis
+(R&amp;amp;D) Ltd and Enspiral Discovery Limited
 All other nodes are Copyright (C) 2013, Vernalis (R&amp;amp;D) Ltd
-
-The KNIME Nodes are free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-
-The KNIME Nodes are distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along with the KNIME Nodes.  If not, see &amp;lt;http://www.gnu.org/licenses/&amp;gt;.
+The KNIME Nodes are free software: you can redistribute it and/or
+modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
+The KNIME Nodes are distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with the KNIME Nodes.  If not, see &amp;lt;http://www.gnu.org/licenses/&amp;gt;.
    </copyright>
 
-   <license url="http://www.example.com/license">
+   <license url="http://www.gnu.org/license/gpl.txt">
       GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
