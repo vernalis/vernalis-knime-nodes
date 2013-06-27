@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./Smartsviewer_icon.png" type="Manipulator">
+    <name>SMARTSViewer</name>
+    
+    <shortDescription>
+        Retrieves a SMARTSViewer visualisation of a columns of SMARTS strings using the service at www.smartsviewer.de
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>Provides a <a href="http://www.smartsview.de/">SMARTSviewer</a> visualisation
+        of a column of SMARTs strings (SMARTS, Smiles or String cell types accepted as inputs)
+        using the service provided by the University of Hamburg.  The node performs no validation
+        of the SMARTs strings prior to sending to the webservice. For more detailed information 
+        about the implementation see either the Help file at <a href="http://smartsview.zbh.uni-hamburg.de/smartsview/view">http://smartsview.zbh.uni-hamburg.de/smartsview/view</a>
+        or the following reference: <br />
+        K. Schomburg, H.-C. Ehrlich, K. Stierand, M.Rarey; 
+        <a href="http://dx.doi.org/10.1021/ci100209a">From Structure Diagrams to Visual Chemical Patterns</a>, <i>J. Chem. Inf. Model.</i>, 2010, <b>50</b>, pp 1529-1535
+		
+		<p><i>
+		Note that SMARTs strings are transferred to the remote server unencrypted, and the the server
+        maintains an anonymous record of query SMARTs strings to aid future development.</i></p>
+		<p>This node was developed by <a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>.
+		For feedback and more information, please contact <a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+		</p>
+        </intro>
+        
+        
+        <option name="Select a column contaning the SMARTs Strings">Select a column containing SMARTs strings for visualsation.  Accepted column
+        types are SMARTS, Smiles and String.  No SMARTS validation is carried out prior to sending to the remote server, which will
+        return a blank image for invalid SMARTS strings</option>
+        <option name="Select legend type">Choose the desired legend type: Dynamic - detailed text description of each atom and bond;
+         Static - short description of how each symbol is depicted in the visualisation</option>
+        <option name="Select Visualisation modus">Element symbols uses text representation of the element symbols in the depiction</option>
+        
+        <!-- possibly more options that can also be grouped by tabs -->
+        <!--
+        <tab name="Standard Options">
+            <option name="short name of first option (like in the dialog)">description of first option</option>
+            <option name="short name of second option (like in the dialog)">description of second option</option>
+        </tab>
+        <tab name="Advanced Options">
+            <option name="short name of first advanced option (like in the dialog)">description of first advanced option</option>
+        </tab>
+        -->
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="In port 0">Input port containing a column of SMARTS strings, either as String, SMARTS or Smiles format</inPort>
+        <!-- possibly more input ports here-->
+        <outPort index="0" name="Appended SMARTSViewer Renderings">The input table with the SMARTSViewer representations appended as a PNG column</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+    <!--<views>
+        <view index="0" name="name of first view">Description of first view...</view>
+    </views>-->
+</knimeNode>
