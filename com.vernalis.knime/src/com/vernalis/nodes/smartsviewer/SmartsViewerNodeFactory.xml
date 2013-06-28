@@ -17,6 +17,12 @@
         K. Schomburg, H.-C. Ehrlich, K. Stierand, M.Rarey; 
         <a href="http://dx.doi.org/10.1021/ci100209a">From Structure Diagrams to Visual Chemical Patterns</a>, <i>J. Chem. Inf. Model.</i>, 2010, <b>50</b>, pp 1529-1535
 		
+		<p>
+		The <i>Communication Error Settings</i> tab allows setting of behaviour relating to server communication problem handling. 
+		The values set are applied to each row in turn.  The server will only be contacted until a successful result is returned. 
+		The settings allow the user to control the behaviour of the node should the SMARTSviewer server be functioning incorrectly. 
+		<i>Note</i> that it is not currently possible to cancel execution during a row, so use long delay settings with care!
+		</p>
 		<p><i>
 		Note that SMARTs strings are transferred to the remote server unencrypted, and the the server
         maintains an anonymous record of query SMARTs strings to aid future development.</i></p>
@@ -25,24 +31,25 @@
 		</p>
         </intro>
         
-        
+        <tab name="Options">
         <option name="Select a column contaning the SMARTs Strings">Select a column containing SMARTs strings for visualsation.  Accepted column
         types are SMARTS, Smiles and String.  No SMARTS validation is carried out prior to sending to the remote server, which will
         return a blank image for invalid SMARTS strings</option>
         <option name="Select legend type">Choose the desired legend type: Dynamic - detailed text description of each atom and bond;
          Static - short description of how each symbol is depicted in the visualisation</option>
         <option name="Select Visualisation modus">Element symbols uses text representation of the element symbols in the depiction</option>
+        </tab>
         
-        <!-- possibly more options that can also be grouped by tabs -->
-        <!--
-        <tab name="Standard Options">
-            <option name="short name of first option (like in the dialog)">description of first option</option>
-            <option name="short name of second option (like in the dialog)">description of second option</option>
+        <tab name="Communication Error Settings">
+            <option name="Number of retries to contact server">Set the number of times the server will be re-contacted following a failure.</option>
+            <option name="Delay between attempts (secs)">The delay period between each re-try</option>
+            <option name="Ignore server errors">If set, the node will return a 'missing value' cell for each row which failed to contact the server after the
+            defined number of attempts - allowing workflow execution to continue, otherwise node execution will fail.  
+            Setting a long delay interval (max 10 minutes) and large number of attempts
+            (max 20) allows the workflow a chance to restore functionality (it will take over 3 hours between the first and last attempt for each row in these circumstances)</option>
+            <option name="Restore Defaults">Restore the default server settings.</option>
         </tab>
-        <tab name="Advanced Options">
-            <option name="short name of first advanced option (like in the dialog)">description of first advanced option</option>
-        </tab>
-        -->
+
     </fullDescription>
     
     <ports>

@@ -19,6 +19,7 @@ package com.vernalis.nodes.smartsviewer;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -39,6 +40,8 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
+import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 /**
@@ -59,6 +62,9 @@ public class SmartsViewerNodeModel extends NodeModel {
 	static final String CFG_VIS_MODUS = "Visualisation_Modus";
 	static final String CFG_LEGEND = "Legend_Option";
 	//static final String CFG_IMG_FORMAT = "Image_Format";
+	static final String CFG_NUM_RETRIES = "No_of_retries";
+	static final String CFG_DELAY = "Retry_Delay";
+	static final String CFG_IGNORE_ERR = "Ignore_Errors";
 
 
     private final SettingsModelString m_SmartsCol =
@@ -70,10 +76,28 @@ public class SmartsViewerNodeModel extends NodeModel {
     private final SettingsModelString m_Legend =
     		new SettingsModelString(CFG_LEGEND,"both");
 
+    private final SettingsModelIntegerBounded m_maxRetries = 
+    		new SettingsModelIntegerBounded(CFG_NUM_RETRIES, 10,0,20);
+    
+    private final SettingsModelIntegerBounded m_retryDelay = 
+    		new SettingsModelIntegerBounded(CFG_DELAY, 1,1,600);
+    
+    private final SettingsModelBoolean m_ignoreErrors = 
+    		new SettingsModelBoolean(CFG_IGNORE_ERR, true);
+    
     //private final SettingsModelString m_ImgFmt =
     //		new SettingsModelString (CFG_IMG_FORMAT,"png");
     //For now, we will always use png
     private String m_ImgFmt = "png";
+    
+    //And some settings relating to failure to connect to the smartsviewer website
+    //Max no of times to try again following initial failure
+    //private final int m_maxRetries = 10;
+    //Delay in seconds between attempts
+    //private final int m_retryDelay = 1;
+    //Response to server failuree
+    //private final Boolean m_ignoreErrors = true;
+    
     /**
      *
      * Constructor for the node model.
@@ -158,10 +182,13 @@ public class SmartsViewerNodeModel extends NodeModel {
     }
 
 
-    private ColumnRearranger createColumnRearranger(final DataTableSpec in) {
+    private ColumnRearranger createColumnRearranger(final DataTableSpec in){
+    	
         ColumnRearranger c = new ColumnRearranger(in);
+        
         //The column index of the selected column
         final int colIndex = in.findColumnIndex(m_SmartsCol.getStringValue());
+        
         // column spec of the appended column
         DataColumnSpec newColSpec = new DataColumnSpecCreator(DataTableSpec.getUniqueColumnName(in,
         "SMARTS Viewer Representation"), PNGImageContent.TYPE).createSpec();
@@ -171,27 +198,57 @@ public class SmartsViewerNodeModel extends NodeModel {
             @Override
             public DataCell getCell(final DataRow row) {
                 DataCell smartscell = row.getCell(colIndex);
-
+                
+                //Deal with an empty input or missing cell
                 if (smartscell.isMissing() || !(smartscell instanceof StringValue)) {
                     return DataType.getMissingCell();
                 }
 
                 //Here we actually do the meat of the work and fetch file
-
+                //Generate the url
             	String url = SmartsviewerHelper.getSMARTSViewerURL(m_ImgFmt, m_VisModus.getStringValue(),
             			m_Legend.getStringValue(),
             			((StringValue)smartscell).getStringValue());
-
-            	try {
-            		return SmartsviewerHelper.toPNGCell(url);
-            	} catch (Exception e){
+            	
+            	int triesLeft = m_maxRetries.getIntValue();
+ 
+            	while (triesLeft >=0){
+            		try {
+            			return SmartsviewerHelper.toPNGCell(url);
+            		} catch (Exception e){
+            			logger.warn("Unable to connect to SMARTSviewer server - " +
+            			triesLeft + " of " + m_maxRetries.getIntValue() + " remaining...");
+            			triesLeft --;
+            			pause (m_retryDelay.getIntValue());
+            			
+            			//TODO: Figure how to implement checkCanceled
+            			//exec.checkCanceled();
+            		}
+            	}
+            	//We only get here if we haven't managed to connect to the server
+            	if (m_ignoreErrors.getBooleanValue()){
+            		logger.warn("Connection to SMARTSviewer server failed - Row ignored");
             		return DataType.getMissingCell();
+            	}else {
+            		logger.error("Connection to SMARTSviewer server failed - Execution aborted");
+            		return null;
             	}
             }
         };
+        
         c.append(factory);
         return c;
     }
+    
+    private static void pause(int seconds){
+    	//simple delay function without using threads
+        Date start = new Date();
+        Date end = new Date();
+        while(end.getTime() - start.getTime() < seconds * 1000){
+            end = new Date();
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -202,6 +259,9 @@ public class SmartsViewerNodeModel extends NodeModel {
     	m_VisModus.saveSettingsTo(settings);
     	m_Legend.saveSettingsTo(settings);
     	m_SmartsCol.saveSettingsTo(settings);
+    	m_ignoreErrors.saveSettingsTo(settings);
+    	m_maxRetries.saveSettingsTo(settings);
+    	m_retryDelay.saveSettingsTo(settings);
     }
 
     /**
@@ -215,6 +275,9 @@ public class SmartsViewerNodeModel extends NodeModel {
     	m_VisModus.loadSettingsFrom(settings);
     	m_Legend.loadSettingsFrom(settings);
     	m_SmartsCol.loadSettingsFrom(settings);
+    	m_ignoreErrors.loadSettingsFrom(settings);
+    	m_maxRetries.loadSettingsFrom(settings);
+    	m_retryDelay.loadSettingsFrom(settings);
     }
 
     /**
@@ -228,6 +291,9 @@ public class SmartsViewerNodeModel extends NodeModel {
     	m_VisModus.validateSettings(settings);
     	m_Legend.validateSettings(settings);
     	m_SmartsCol.validateSettings(settings);
+    	m_ignoreErrors.validateSettings(settings);
+    	m_maxRetries.validateSettings(settings);
+    	m_retryDelay.validateSettings(settings);
     }
 
     /**

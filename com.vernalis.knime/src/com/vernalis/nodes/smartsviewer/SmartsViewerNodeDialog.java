@@ -17,12 +17,20 @@
  */
 package com.vernalis.nodes.smartsviewer;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import org.knime.chem.types.SmartsValue;
 import org.knime.chem.types.SmilesValue;
 import org.knime.core.data.StringValue;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
+import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
+import org.knime.core.node.defaultnodesettings.DialogComponentButton;
 import org.knime.core.node.defaultnodesettings.DialogComponentButtonGroup;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
+import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
+import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 
@@ -31,7 +39,11 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
  * Retrieves a SMARTSViewer visualisation of a columns of SMARTS strings using the service at www.smartsviewer.de
  */
 public class SmartsViewerNodeDialog extends DefaultNodeSettingsPane {
-
+	//Objects for the resetable fields
+	final DialogComponentNumber n1, n2;
+	final DialogComponentBoolean bool;
+	final SettingsModelIntegerBounded m1, m2;
+	final SettingsModelBoolean m_bool;
     /**
      * New pane for configuring the SmartsViewer node.
      */
@@ -58,7 +70,38 @@ public class SmartsViewerNodeDialog extends DefaultNodeSettingsPane {
         
         closeCurrentGroup();
         
+        createNewTab("Communication Error Settings");
+        //Create some advanced settings dialog components
+        m1 = new SettingsModelIntegerBounded(SmartsViewerNodeModel.CFG_NUM_RETRIES, 10,0,20);
+        n1 = new DialogComponentNumber(m1, "Number of retries to contact server:", 1);
         
+        m2 = new SettingsModelIntegerBounded(SmartsViewerNodeModel.CFG_DELAY, 1,1,600);
+        n2 = new DialogComponentNumber(m2, "Delay between attempts (secs):", 5);
+        
+        m_bool = new SettingsModelBoolean(SmartsViewerNodeModel.CFG_IGNORE_ERR, true);
+        bool = new DialogComponentBoolean(m_bool, "Ignore server errors?");
+        
+        //Add them...
+        addDialogComponent(n1);
+        addDialogComponent(n2);
+        addDialogComponent(bool);
+        
+	   	//Now we add a restore settings button, which runs the 'doTestQuery' on clicking
+	   	setHorizontalPlacement(true);
+	   	DialogComponentButton restoreButton = new DialogComponentButton("Restore Defaults");
+	   	restoreButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				doRestore();
+			}
+		});
+	   	addDialogComponent (restoreButton);
+    }
+    
+    protected void doRestore(){
+    	m1.setIntValue(10);
+    	m2.setIntValue(1);
+    	m_bool.setBooleanValue(true);
     }
 }
 
