@@ -25,7 +25,7 @@ import org.knime.core.node.NodeView;
  * <code>NodeFactory</code> for the "PdbProperties" Node.
  * Node to extract properties from a PDB cell
  */
-public class PdbPropertiesNodeFactory 
+public class PdbPropertiesNodeFactory
         extends NodeFactory<PdbPropertiesNodeModel> {
     /**
      * {@inheritDoc}
@@ -49,7 +49,7 @@ public class PdbPropertiesNodeFactory
     @Override
     public NodeView<PdbPropertiesNodeModel> createNodeView(final int viewIndex,
             final PdbPropertiesNodeModel nodeModel) {
-        return new PdbPropertiesNodeView(nodeModel);
+        return null;
     }
 
     /**
