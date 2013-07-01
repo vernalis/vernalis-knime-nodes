@@ -130,10 +130,12 @@ public class SavePDBLocalNodeModel extends NodeModel {
             	//1. Check if the directory exist and create it if not
                 
                 String pathToFile = ((StringValue)pathcell).getStringValue();
-                if (!(PDBHelperFunctions.isPath(pathToFile))){
-                	//It doesnt look like a path so return fail!
-                	return BooleanCell.FALSE;
-                }
+                //This is unneccesary, as is implicit in following methods
+                //It just introduces platform specificity
+//                if (!(PDBHelperFunctions.isPath(pathToFile))){
+//                	//It doesnt look like a path so return fail!
+//                	return BooleanCell.FALSE;
+//                }
                 if (!(PDBHelperFunctions.checkContainerFolderExists(pathToFile))){
                 	//If the folder doesnt exist we need to make it exist
                 	if (!(PDBHelperFunctions.createContainerFolder(pathToFile))){
