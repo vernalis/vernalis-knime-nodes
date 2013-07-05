@@ -211,15 +211,21 @@ public class PdbPropertiesNodeModel extends NodeModel {
         		String pdbtext = ((StringValue)c).getStringValue();
         		int i=0;
                 if (m_PDBID.getBooleanValue()){
-                	result[i] = new StringCell(PDBHelperFunctions.getPDBID(pdbtext));
+                	if (!(PDBHelperFunctions.getPDBID(pdbtext)==null)){
+                		result[i] = new StringCell(PDBHelperFunctions.getPDBID(pdbtext));
+                	}
                 	i ++;
                 }
                 if (m_Title.getBooleanValue()){
-                	result[i] = new StringCell(PDBHelperFunctions.getMultiLineText(pdbtext, "TITLE ", false));
+                	if (!(PDBHelperFunctions.getMultiLineText(pdbtext, "TITLE ", false)==null)){
+                		result[i] = new StringCell(PDBHelperFunctions.getMultiLineText(pdbtext, "TITLE ", false));
+                	}
                 	i ++;
                 }
                 if(m_ExpMet.getBooleanValue()){
-                	result[i] = new StringCell(PDBHelperFunctions.getExpMethod(pdbtext));
+                	if(!(PDBHelperFunctions.getExpMethod(pdbtext)==null)){
+                		result[i] = new StringCell(PDBHelperFunctions.getExpMethod(pdbtext));
+                	}
                 	i ++;
                 }
                 if (m_Resolution.getBooleanValue()){
