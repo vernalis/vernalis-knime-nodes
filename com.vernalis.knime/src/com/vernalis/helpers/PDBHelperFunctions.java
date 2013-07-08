@@ -139,22 +139,34 @@ public class PDBHelperFunctions {
 		/*
 		 * Helper function to retrieve space group from CRYST1
 		 */
-		String r = pdbtext.split("CRYST1")[1].substring(49, 61).trim();
-		return ("".equals(r))? null:r;
+		try{
+			String r = pdbtext.split("CRYST1")[1].substring(49, 61).trim();
+			return ("".equals(r))? null:r;
+		}catch (Exception e){
+			return null;
+		}
 	}
 
 	public static String getPDBID (String pdbtext){
 		/*
 		 * Helper function to retrieve space group from HEADER
 		 */
-		return pdbtext.split("HEADER ")[1].substring(55, 59).trim();
+		try{
+			return pdbtext.split("HEADER ")[1].substring(55, 59).trim();
+		}catch (Exception e){
+			return null;
+		}
 	}
 
 	public static String getExpMethod (String pdbtext){
 		/*
 		 * Helper function to return an array of the Experimental methods
 		 */
-		return getMultiLineText(pdbtext, "EXPDTA", false);
+		try{
+			return getMultiLineText(pdbtext, "EXPDTA", false);
+		}catch (Exception e){
+			return null;
+		}
 	}
 
 
