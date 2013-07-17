@@ -11,7 +11,7 @@
 
    <requires>
       <import feature="org.knime.features.testingapplication" version="2.7.0" match="greaterOrEqual"/>
-      <import feature="org.knime.features.chem.types" version="2.7.2.0036602"/>
+      <import feature="org.knime.features.chem.types" version="2.7.0" match="greaterOrEqual"/>
    </requires>
 
 </feature>
