@@ -65,6 +65,18 @@
             factory-class="com.vernalis.nodes.io.listdirs2.ListDirs2NodeFactory"
             id="ListDirs2NodeFactory">
       </node>
+      <node
+            category-path="/community/vernalis/misc/txt.IO"
+            expert-flag="false"
+            factory-class="com.vernalis.nodes.io.txt.LoadTxtNodeFactory"
+            id="LoadTxtNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/misc/txt.IO"
+            expert-flag="false"
+            factory-class="com.vernalis.nodes.io.txt.SaveTxtLocalNodeFactory"
+            id="SaveTxtLocalNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -105,6 +117,14 @@
             level-id="misc"
             name="Miscellaneous"
             path="/community/vernalis/">
+      </category>
+      <category
+            description="Text-based file IO Nodes"
+            icon="icons/IO_icon.png"
+            level-id="txt.IO"
+            locked="true"
+            name="Text-based IO"
+            path="/community/vernalis/misc/">
       </category>
    </extension>
    <extension
