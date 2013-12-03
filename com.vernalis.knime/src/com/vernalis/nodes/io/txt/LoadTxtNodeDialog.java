@@ -24,35 +24,36 @@ import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 /**
- * <code>NodeDialog</code> for the "LoadAEVs" Node.
- * Node to Load text files to a column in the table
- *
+ * <code>NodeDialog</code> for the "LoadAEVs" Node. Node to Load text files to a
+ * column in the table
+ * 
  * This node dialog derives from {@link DefaultNodeSettingsPane} which allows
- * creation of a simple dialog with standard components. If you need a more 
- * complex dialog please derive directly from 
+ * creation of a simple dialog with standard components. If you need a more
+ * complex dialog please derive directly from
  * {@link org.knime.core.node.NodeDialogPane}.
  * 
  * @author SDR
  */
 public class LoadTxtNodeDialog extends DefaultNodeSettingsPane {
 
-    /**
-     * New pane for configuring the LoadAEVs node.
-     */
-    protected LoadTxtNodeDialog() {
-    	super();
-    	createNewGroup("File Paths");
-        addDialogComponent (new DialogComponentColumnNameSelection(
-        		new SettingsModelString(LoadTxtNodeModel.CFG_PATH_COLUMN_NAME,null),
-        		"Select a column containing the file paths:", 0, true, StringValue.class));
-        
-        closeCurrentGroup();
-        
-        createNewGroup("Destination Column:");
-        addDialogComponent (new DialogComponentString(new SettingsModelString(
-        		LoadTxtNodeModel.CFG_FILE_COLUMN_NAME, "Text File"), "Enter name of column for loaded files:"));
-        
-        closeCurrentGroup();
-    }
-}
+	/**
+	 * New pane for configuring the LoadAEVs node.
+	 */
+	protected LoadTxtNodeDialog() {
+		super();
+		createNewGroup("File Paths");
+		addDialogComponent(new DialogComponentColumnNameSelection(
+				new SettingsModelString(LoadTxtNodeModel.CFG_PATH_COLUMN_NAME,
+						null), "Select a column containing the file paths:", 0,
+				true, StringValue.class));
 
+		closeCurrentGroup();
+
+		createNewGroup("Destination Column:");
+		addDialogComponent(new DialogComponentString(new SettingsModelString(
+				LoadTxtNodeModel.CFG_FILE_COLUMN_NAME, "Text File"),
+				"Enter name of column for loaded files:"));
+
+		closeCurrentGroup();
+	}
+}

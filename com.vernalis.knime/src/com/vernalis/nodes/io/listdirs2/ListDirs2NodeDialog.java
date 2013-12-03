@@ -30,7 +30,7 @@ import org.knime.core.node.util.FilesHistoryPanel;
  * <code>NodeDialog</code> for the "ListDirs" Node.
  */
 public class ListDirs2NodeDialog extends DefaultNodeSettingsPane {
-    private final FilesHistoryPanel m_history =
+	private final FilesHistoryPanel m_history =
     		new FilesHistoryPanel ("list_dir");
     /**
      * New pane for configuring the ListDirs node.
