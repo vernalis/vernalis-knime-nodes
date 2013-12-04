@@ -24,10 +24,9 @@ import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelectio
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
-
 /**
- * <code>NodeDialog</code> for the "RCSBmultiDownload" Node.
- * Node to allow download of multiple RCSB PDB filetypes from a column of RCSB Structure IDs
+ * <code>NodeDialog</code> for the "RCSBmultiDownload" Node. Node to allow
+ * download of multiple RCSB PDB filetypes from a column of RCSB Structure IDs
  */
 public class RCSBmultiDownloadNodeDialog extends DefaultNodeSettingsPane {
 
@@ -37,30 +36,34 @@ public class RCSBmultiDownloadNodeDialog extends DefaultNodeSettingsPane {
 	protected RCSBmultiDownloadNodeDialog() {
 		super();
 		createNewGroup("PDB ID Column");
-		addDialogComponent (new DialogComponentColumnNameSelection(
-				new SettingsModelString(RCSBmultiDownloadNodeModel.CFG_PDB_COLUMN_NAME,null),
-				"Select a column containing the PDB IDs:", 0, true, StringValue.class));
+		addDialogComponent(new DialogComponentColumnNameSelection(
+				new SettingsModelString(
+						RCSBmultiDownloadNodeModel.CFG_PDB_COLUMN_NAME, null),
+				"Select a column containing the PDB IDs:", 0, true,
+				StringValue.class));
 
 		closeCurrentGroup();
 
 		createNewGroup("Download formats:");
-		//Note that we are not going to give the user the option of naming all these columns!
-		addDialogComponent (new DialogComponentBoolean(new SettingsModelBoolean(
+		// Note that we are not going to give the user the option of naming all
+		// these columns!
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
 				RCSBmultiDownloadNodeModel.CFG_PDB, true), "PDB File"));
 
-		addDialogComponent (new DialogComponentBoolean(new SettingsModelBoolean(
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
 				RCSBmultiDownloadNodeModel.CFG_CIF, true), "mmCIF File"));
 
-		addDialogComponent (new DialogComponentBoolean(new SettingsModelBoolean(
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
 				RCSBmultiDownloadNodeModel.CFG_SF, true), "Structure Factors"));
 
-		addDialogComponent (new DialogComponentBoolean(new SettingsModelBoolean(
-				RCSBmultiDownloadNodeModel.CFG_PDBML, true), "PDBML/XML (PDBx) File"));
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				RCSBmultiDownloadNodeModel.CFG_PDBML, true),
+				"PDBML/XML (PDBx) File"));
 
-		addDialogComponent (new DialogComponentBoolean(new SettingsModelBoolean(
-				RCSBmultiDownloadNodeModel.CFG_FASTA, true), "FASTA Sequence File"));
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				RCSBmultiDownloadNodeModel.CFG_FASTA, true),
+				"FASTA Sequence File"));
 
 		closeCurrentGroup();
 	}
 }
-
