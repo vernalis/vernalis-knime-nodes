@@ -26,38 +26,40 @@ import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
-
-
 /**
- * <code>NodeDialog</code> for the "SavePDBLocal" Node.
- * Node to save a PDB cell column (as string) to a local file with path specified in a second column
+ * <code>NodeDialog</code> for the "SavePDBLocal" Node. Node to save a PDB cell
+ * column (as string) to a local file with path specified in a second column
  */
 public class SavePDBLocalNodeDialog extends DefaultNodeSettingsPane {
 
-    /**
-     * New pane for configuring the SavePDBLocal node.
-     */
-    protected SavePDBLocalNodeDialog() {
-    	super();
-    	createNewGroup("PDB Column");
-    	addDialogComponent (new DialogComponentColumnNameSelection(
-    			new SettingsModelString(SavePDBLocalNodeModel.CFG_PDB_COLUMN_NAME,null),
-    			"Select a column containing the PDB Cells:", 0, true, PdbValue.class));
+	/**
+	 * New pane for configuring the SavePDBLocal node.
+	 */
+	protected SavePDBLocalNodeDialog() {
+		super();
+		createNewGroup("PDB Column");
+		addDialogComponent(new DialogComponentColumnNameSelection(
+				new SettingsModelString(
+						SavePDBLocalNodeModel.CFG_PDB_COLUMN_NAME, null),
+				"Select a column containing the PDB Cells:", 0, true,
+				PdbValue.class));
 
-    	closeCurrentGroup();
+		closeCurrentGroup();
 
-    	createNewGroup("File path Column:");
-    	addDialogComponent (new DialogComponentColumnNameSelection(
-    			new SettingsModelString(SavePDBLocalNodeModel.CFG_PATH_COLUMN_NAME, null),
-    			"Enter name of column for file paths:", 0, true, StringValue.class));
-    	
-    	addDialogComponent (new DialogComponentBoolean(new SettingsModelBoolean(
-    			SavePDBLocalNodeModel.CFG_OVERWRITE, true), "Overwrite files?"));
-    	
-        addDialogComponent (new DialogComponentString(new SettingsModelString(
-        		SavePDBLocalNodeModel.CFG_SUCCESS_COLUMN_NAME, null), "Enter name of column for save successful flag:"));
-        
-    	closeCurrentGroup();
-    }
+		createNewGroup("File path Column:");
+		addDialogComponent(new DialogComponentColumnNameSelection(
+				new SettingsModelString(
+						SavePDBLocalNodeModel.CFG_PATH_COLUMN_NAME, null),
+				"Enter name of column for file paths:", 0, true,
+				StringValue.class));
+
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				SavePDBLocalNodeModel.CFG_OVERWRITE, true), "Overwrite files?"));
+
+		addDialogComponent(new DialogComponentString(new SettingsModelString(
+				SavePDBLocalNodeModel.CFG_SUCCESS_COLUMN_NAME, null),
+				"Enter name of column for save successful flag:"));
+
+		closeCurrentGroup();
+	}
 }
-

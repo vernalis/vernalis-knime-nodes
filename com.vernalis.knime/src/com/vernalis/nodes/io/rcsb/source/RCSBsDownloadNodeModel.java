@@ -47,17 +47,16 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import com.vernalis.helpers.PDBHelperFunctions;
 
 /**
- * This is the model implementation of RCSBmultiDownload.
- * Node to allow download of multiple RCSB PDB filetypes from a column of RCSB Structure IDs
+ * This is the model implementation of RCSBmultiDownload. Node to allow download
+ * of multiple RCSB PDB filetypes from a column of RCSB Structure IDs
  */
 public class RCSBsDownloadNodeModel extends NodeModel {
-
 
 	// the logger instance
 	private static final NodeLogger logger = NodeLogger
 			.getLogger(RCSBsDownloadNodeModel.class);
 
-	//Settings Keys
+	// Settings Keys
 	static final String CFG_PDB_ID = "PDB_ID";
 	static final String CFG_PDB = "PDB";
 	static final String CFG_CIF = "mmCIF";
@@ -65,31 +64,32 @@ public class RCSBsDownloadNodeModel extends NodeModel {
 	static final String CFG_PDBML = "PDBML";
 	static final String CFG_FASTA = "FASTA";
 
-	private final SettingsModelString m_PDBID =
-			new SettingsModelString(CFG_PDB_ID, null);
+	private final SettingsModelString m_PDBID = new SettingsModelString(
+			CFG_PDB_ID, null);
 
-	private final static SettingsModelBoolean m_PDB =
-			new SettingsModelBoolean(CFG_PDB, true);
+	private final static SettingsModelBoolean m_PDB = new SettingsModelBoolean(
+			CFG_PDB, true);
 
-	private final static SettingsModelBoolean m_CIF =
-			new SettingsModelBoolean(CFG_CIF, false);
+	private final static SettingsModelBoolean m_CIF = new SettingsModelBoolean(
+			CFG_CIF, false);
 
-	private final static SettingsModelBoolean m_SF =
-			new SettingsModelBoolean(CFG_SF, false);
+	private final static SettingsModelBoolean m_SF = new SettingsModelBoolean(
+			CFG_SF, false);
 
-	private final static SettingsModelBoolean m_PDBML =
-			new SettingsModelBoolean(CFG_PDBML, false);
+	private final static SettingsModelBoolean m_PDBML = new SettingsModelBoolean(
+			CFG_PDBML, false);
 
-	private final static SettingsModelBoolean m_FASTA =
-			new SettingsModelBoolean(CFG_FASTA, false);
+	private final static SettingsModelBoolean m_FASTA = new SettingsModelBoolean(
+			CFG_FASTA, false);
 
 	private BufferedDataContainer m_dc;
 	private int m_retrieved_ids;
 	private int m_currentRowID;
 	private static int m_colCnt;
 
-	//DataTableSpec for the output table.  This will be created during the configure
-	//method, once the column options have been specified
+	// DataTableSpec for the output table. This will be created during the
+	// configure
+	// method, once the column options have been specified
 	private static DataTableSpec spec;
 
 	/**
@@ -109,21 +109,21 @@ public class RCSBsDownloadNodeModel extends NodeModel {
 
 		String[] pdb_ids = m_PDBID.getStringValue().toUpperCase().split(";");
 
-		//Create a datacontainer with the required columns
+		// Create a datacontainer with the required columns
 		m_dc = exec.createDataContainer(spec);
 		m_currentRowID = 0;
 		m_retrieved_ids = 0;
 
-		for (String pdbid : pdb_ids){
+		for (String pdbid : pdb_ids) {
 			pdbid = pdbid.trim();
-			addRow(pdbid,exec);
+			addRow(pdbid, exec);
 		}
 		m_dc.close();
-		return new BufferedDataTable[] {m_dc.getTable()};
+		return new BufferedDataTable[] { m_dc.getTable() };
 	}
 
-	private void addRow (final String pdbid, final ExecutionContext exec)
-			throws CanceledExecutionException{
+	private void addRow(final String pdbid, final ExecutionContext exec)
+			throws CanceledExecutionException {
 		/*
 		 * Utility function to add a row to the output table
 		 */
@@ -134,59 +134,56 @@ public class RCSBsDownloadNodeModel extends NodeModel {
 		DataCell[] row = new DataCell[m_colCnt];
 		Arrays.fill(row, DataType.getMissingCell());
 		row[0] = new StringCell(pdbid);
-		int i=1;
+		int i = 1;
 		String r;
-		if (m_PDB.getBooleanValue()){
-			r = PDBHelperFunctions.readUrltoString(
-					PDBHelperFunctions.createRCSBUrl(pdbid, "PDB", true));
-			if (r!=null){
+		if (m_PDB.getBooleanValue()) {
+			r = PDBHelperFunctions.readUrltoString(PDBHelperFunctions
+					.createRCSBUrl(pdbid, "PDB", true));
+			if (r != null) {
 				row[i] = new PdbCell(r);
 			}
-			i ++;
+			i++;
 		}
-		if (m_CIF.getBooleanValue()){
-			r = PDBHelperFunctions.readUrltoString(
-					PDBHelperFunctions.createRCSBUrl(pdbid, "cif", true));
-			if (r!=null){
+		if (m_CIF.getBooleanValue()) {
+			r = PDBHelperFunctions.readUrltoString(PDBHelperFunctions
+					.createRCSBUrl(pdbid, "cif", true));
+			if (r != null) {
 				row[i] = new StringCell(r);
 			}
-			i ++;
+			i++;
 		}
-		if (m_SF.getBooleanValue()){
-			r = PDBHelperFunctions.readUrltoString(
-					PDBHelperFunctions.createRCSBUrl(pdbid, "sf", true));
-			if (r!=null){
+		if (m_SF.getBooleanValue()) {
+			r = PDBHelperFunctions.readUrltoString(PDBHelperFunctions
+					.createRCSBUrl(pdbid, "sf", true));
+			if (r != null) {
 				row[i] = new StringCell(r);
 			}
-			i ++;
+			i++;
 		}
-		if (m_PDBML.getBooleanValue()){
-			r = PDBHelperFunctions.readUrltoString(
-					PDBHelperFunctions.createRCSBUrl(pdbid, "PDBML", true));
-			if (r != null){
+		if (m_PDBML.getBooleanValue()) {
+			r = PDBHelperFunctions.readUrltoString(PDBHelperFunctions
+					.createRCSBUrl(pdbid, "PDBML", true));
+			if (r != null) {
 				try {
 					row[i] = XMLCellFactory.create(r);
-				} catch (Exception e){
+				} catch (Exception e) {
 					row[i] = new StringCell(r);
 				}
 			}
-			i ++;
+			i++;
 		}
-		if (m_FASTA.getBooleanValue()){
-			r = PDBHelperFunctions.readUrltoString(
-					PDBHelperFunctions.createRCSBUrl(pdbid, "FASTA"));
-			if (r != null){
+		if (m_FASTA.getBooleanValue()) {
+			r = PDBHelperFunctions.readUrltoString(PDBHelperFunctions
+					.createRCSBUrl(pdbid, "FASTA"));
+			if (r != null) {
 				row[i] = new StringCell(r);
 			}
 
 		}
-		m_dc.addRowToTable(new DefaultRow("Row "+m_currentRowID, row));
+		m_dc.addRowToTable(new DefaultRow("Row " + m_currentRowID, row));
 		m_currentRowID++;
 
 	}
-
-
-
 
 	/**
 	 * {@inheritDoc}
@@ -203,75 +200,77 @@ public class RCSBsDownloadNodeModel extends NodeModel {
 	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
 			throws InvalidSettingsException {
 
-		//Start by checking the user has enters something in the PDB ID box
-		//NB - No check is made that it looks like a PDB ID - a url will be built round
-		//it on execute and it will succeed or fail gracefully
+		// Start by checking the user has enters something in the PDB ID box
+		// NB - No check is made that it looks like a PDB ID - a url will be
+		// built round
+		// it on execute and it will succeed or fail gracefully
 		if (m_PDBID.getStringValue() == null) {
 			setWarningMessage("No valid PDB ID(s) entered");
-			throw new InvalidSettingsException(
-					"No valid PDB ID entered.");
+			throw new InvalidSettingsException("No valid PDB ID entered.");
 		}
-		for (String pdbid:m_PDBID.getStringValue().split(";")){
-			if (pdbid.length() != 4){
+		for (String pdbid : m_PDBID.getStringValue().split(";")) {
+			if (pdbid.length() != 4) {
 				setWarningMessage("Invalid PDB ID(s) entered");
-				throw new InvalidSettingsException(
-						"Invalid PDB ID(s) entered");
+				throw new InvalidSettingsException("Invalid PDB ID(s) entered");
 			}
 		}
 
-		//Finally we need to find at least one property otherwise we are wasting a node!
-		if(!(m_PDB.getBooleanValue() || m_CIF.getBooleanValue() || m_FASTA.getBooleanValue() ||
-				m_PDBML.getBooleanValue() || m_SF.getBooleanValue())) {
+		// Finally we need to find at least one property otherwise we are
+		// wasting a node!
+		if (!(m_PDB.getBooleanValue() || m_CIF.getBooleanValue()
+				|| m_FASTA.getBooleanValue() || m_PDBML.getBooleanValue() || m_SF
+					.getBooleanValue())) {
 			setWarningMessage("At least one format must be selected");
 			throw new InvalidSettingsException("No format selected");
 		}
 
 		// everything seems to fine - create the datatable spec
 		spec = new DataTableSpec(createDataColumnSpec());
-		return new DataTableSpec[]{spec};
+		return new DataTableSpec[] { spec };
 	}
-
 
 	private static DataColumnSpec[] createDataColumnSpec() {
 		/*
-		 * Create the column specs for the output table based
-		 * on the specified column selections
+		 * Create the column specs for the output table based on the specified
+		 * column selections
 		 */
 		m_colCnt = countCols();
 		DataColumnSpec[] dcs = new DataColumnSpec[m_colCnt];
-		dcs[0]=new DataColumnSpecCreator("PDB ID", StringCell.TYPE).createSpec();
+		dcs[0] = new DataColumnSpecCreator("PDB ID", StringCell.TYPE)
+				.createSpec();
 		int i = 1;
-		if (m_PDB.getBooleanValue()){
-			dcs[i] = new DataColumnSpecCreator("PDB",
-					PdbCell.TYPE).createSpec();
-			i ++;
+		if (m_PDB.getBooleanValue()) {
+			dcs[i] = new DataColumnSpecCreator("PDB", PdbCell.TYPE)
+					.createSpec();
+			i++;
 		}
-		if (m_CIF.getBooleanValue()){
-			dcs[i] = new DataColumnSpecCreator("CIF",
-					StringCell.TYPE).createSpec();
-			i ++;
+		if (m_CIF.getBooleanValue()) {
+			dcs[i] = new DataColumnSpecCreator("CIF", StringCell.TYPE)
+					.createSpec();
+			i++;
 		}
-		if (m_SF.getBooleanValue()){
+		if (m_SF.getBooleanValue()) {
 			dcs[i] = new DataColumnSpecCreator("Structure Factor",
 					StringCell.TYPE).createSpec();
-			i ++;
+			i++;
 		}
-		if (m_PDBML.getBooleanValue()){
-			dcs[i] = new DataColumnSpecCreator("PDBML",
-					XMLCell.TYPE).createSpec();
-			i ++;
+		if (m_PDBML.getBooleanValue()) {
+			dcs[i] = new DataColumnSpecCreator("PDBML", XMLCell.TYPE)
+					.createSpec();
+			i++;
 		}
-		if (m_FASTA.getBooleanValue()){
-			dcs[i] = new DataColumnSpecCreator("FASTA",
-					StringCell.TYPE).createSpec();
-			i ++;
+		if (m_FASTA.getBooleanValue()) {
+			dcs[i] = new DataColumnSpecCreator("FASTA", StringCell.TYPE)
+					.createSpec();
+			i++;
 		}
 		return dcs;
 	}
 
-	private static int countCols(){
-		//Count the new columns to add NB - We start at 1 because we always add the PDB ID as a column
-		int i=1;
+	private static int countCols() {
+		// Count the new columns to add NB - We start at 1 because we always add
+		// the PDB ID as a column
+		int i = 1;
 		i += (m_PDB.getBooleanValue()) ? 1 : 0;
 		i += (m_CIF.getBooleanValue()) ? 1 : 0;
 		i += (m_SF.getBooleanValue()) ? 1 : 0;
@@ -345,4 +344,3 @@ public class RCSBsDownloadNodeModel extends NodeModel {
 	}
 
 }
-

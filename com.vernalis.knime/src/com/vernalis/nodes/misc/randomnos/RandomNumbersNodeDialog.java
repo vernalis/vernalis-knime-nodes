@@ -29,31 +29,36 @@ import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 /**
- * <code>NodeDialog</code> for the "RandomNumbers" Node.
- * A node to generate a table with a single column of random numbers
+ * <code>NodeDialog</code> for the "RandomNumbers" Node. A node to generate a
+ * table with a single column of random numbers
  */
 public class RandomNumbersNodeDialog extends DefaultNodeSettingsPane {
 
-    /**
-     * New pane for configuring the RandomNumbers node.
-     */
-    protected RandomNumbersNodeDialog() {
-    	super();
-    	addDialogComponent(new DialogComponentString(new 
-    			SettingsModelString(RandomNumbersNodeModel.CFG_COLUMN_NAME, "Random Values"), "Output Column Name"));
-    	
-    	addDialogComponent(new DialogComponentButtonGroup(new 
-    			SettingsModelString(RandomNumbersNodeModel.CFG_TYPE, "Double"), false, "Output Type", new String[]{"Double","Integer"}));
-    	
-    	addDialogComponent(new DialogComponentDoubleRange(new
-    			SettingsModelDoubleRange(RandomNumbersNodeModel.CFG_MIN_MAX,0.0,100000.0), -1000000000.0, 1000000000.0, 1, "Enter value range"));
-    	
-    	addDialogComponent(new DialogComponentNumberEdit(new
-    			SettingsModelIntegerBounded(RandomNumbersNodeModel.CFG_N, 100, 1, 1000000), "Number of values"));
-    	
-    	addDialogComponent(new DialogComponentBoolean(new 
-    			SettingsModelBoolean(RandomNumbersNodeModel.CFG_UNIQUE, true),"Unique values?"));
-    	
-    }
-}
+	/**
+	 * New pane for configuring the RandomNumbers node.
+	 */
+	protected RandomNumbersNodeDialog() {
+		super();
+		addDialogComponent(new DialogComponentString(new SettingsModelString(
+				RandomNumbersNodeModel.CFG_COLUMN_NAME, "Random Values"),
+				"Output Column Name"));
 
+		addDialogComponent(new DialogComponentButtonGroup(
+				new SettingsModelString(RandomNumbersNodeModel.CFG_TYPE,
+						"Double"), false, "Output Type", new String[] {
+						"Double", "Integer" }));
+
+		addDialogComponent(new DialogComponentDoubleRange(
+				new SettingsModelDoubleRange(
+						RandomNumbersNodeModel.CFG_MIN_MAX, 0.0, 100000.0),
+				-1000000000.0, 1000000000.0, 1, "Enter value range"));
+
+		addDialogComponent(new DialogComponentNumberEdit(
+				new SettingsModelIntegerBounded(RandomNumbersNodeModel.CFG_N,
+						100, 1, 1000000), "Number of values"));
+
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				RandomNumbersNodeModel.CFG_UNIQUE, true), "Unique values?"));
+
+	}
+}

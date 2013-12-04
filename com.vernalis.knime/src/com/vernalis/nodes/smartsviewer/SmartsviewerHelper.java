@@ -25,33 +25,66 @@ import org.knime.core.data.DataCell;
 import org.knime.core.data.image.png.PNGImageContent;
 import org.knime.core.util.FileUtil;
 
+/**
+ * Utility Class to assist with retrieving SMARTSViewer renderings from a SMARTS
+ * String
+ * 
+ * @author Stephen Roughley
+ * 
+ */
 public class SmartsviewerHelper {
-	public static String getSMARTSViewerURL (String imageType, String visModus, String Legend, String SMARTS){
+
+	/**
+	 * Function to generate a URL for the SMARTSViewer query based on the
+	 * defined options
+	 * 
+	 * @param imageType
+	 *            The image type (png, pdf or svg)
+	 * @param visModus
+	 *            The visulaisation mode - see {@link www.smartsview.de} for
+	 *            details
+	 * @param Legend
+	 *            The legend option - see {@link www.smartsview.de} for details
+	 * @param SMARTS
+	 *            The SMARTS query string
+	 * @return A String containing the query url
+	 */
+	public static String getSMARTSViewerURL(String imageType, String visModus,
+			String Legend, String SMARTS) {
 		/*
-		 * Function to build correct SMARTSviewer url from specified user options
-		 * For details see smartsview.zbh.uni-hamburg.de/home/auto_retrieving
+		 * Function to build correct SMARTSviewer url from specified user
+		 * options For details see
+		 * smartsview.zbh.uni-hamburg.de/home/auto_retrieving
 		 */
 		String url = "http://www.smartsview.de/smartsview/auto/";
-		url += imageType +"/";
+		url += imageType + "/";
 		url += visModus + "/";
-		url += Legend +"/";
+		url += Legend + "/";
 		url += SMARTS;
-		url = url.replace("#","%23");
+		url = url.replace("#", "%23");
 		return url;
 	}
-	
-    public static DataCell toPNGCell(final String urlValue) throws IOException {
-        URL url = new URL(urlValue);
-        InputStream in = FileUtil.openStreamWithTimeout(url);
-        try {
-            PNGImageContent pngImageContent = new PNGImageContent(in);
-            return pngImageContent.toImageCell();
-        } finally {
-            try {
-                in.close();
-            } catch (IOException ioe) {
-                // ignore
-            }
-        }
-    }
+
+	/**
+	 * Function to obtain a ImageCell from a SMARTSViewer query url
+	 * 
+	 * @param urlValue
+	 *            The query URL string
+	 * @return The DataCell containing the rendered image
+	 * @throws IOException
+	 */
+	public static DataCell toPNGCell(final String urlValue) throws IOException {
+		URL url = new URL(urlValue);
+		InputStream in = FileUtil.openStreamWithTimeout(url);
+		try {
+			PNGImageContent pngImageContent = new PNGImageContent(in);
+			return pngImageContent.toImageCell();
+		} finally {
+			try {
+				in.close();
+			} catch (IOException ioe) {
+				// ignore
+			}
+		}
+	}
 }
