@@ -264,11 +264,12 @@ public class PdbPropertiesNodeModel extends NodeModel {
                 	}
                 	i ++;
                 }
-                if (m_Remark3.getBooleanValue()){
-                	if (!(PDBHelperFunctions.getMultiLineText(pdbtext, "REMARK   3", false)==null)){
-                		result[i] = new StringCell(PDBHelperFunctions.getMultiLineText(pdbtext, "REMARK   3", false));
-                	}
-                }
+				if (m_Remark3.getBooleanValue()
+						&& !(PDBHelperFunctions.getMultiLineText(pdbtext,
+								"REMARK   3", false) == null)) {
+					result[i] = new StringCell(PDBHelperFunctions
+							.getMultiLineText(pdbtext, "REMARK   3", false));
+				}
                 return result;
         	}
 

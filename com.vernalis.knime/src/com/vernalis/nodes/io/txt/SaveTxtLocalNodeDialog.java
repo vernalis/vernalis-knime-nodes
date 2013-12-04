@@ -25,46 +25,48 @@ import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
-
 /**
- * <code>NodeDialog</code> for the "SaveTxtLocal" Node.
- * Node to save a PDB cell column (as string) to a local file with path specified in a second column
- *
+ * <code>NodeDialog</code> for the "SaveTxtLocal" Node. Node to save a PDB cell
+ * column (as string) to a local file with path specified in a second column
+ * 
  * This node dialog derives from {@link DefaultNodeSettingsPane} which allows
- * creation of a simple dialog with standard components. If you need a more 
- * complex dialog please derive directly from 
+ * creation of a simple dialog with standard components. If you need a more
+ * complex dialog please derive directly from
  * {@link org.knime.core.node.NodeDialogPane}.
  * 
  * @author SDR
  */
 public class SaveTxtLocalNodeDialog extends DefaultNodeSettingsPane {
 
-    /**
-     * New pane for configuring the SavePDBLocal node.
-     * TODO:
-     * Ideally we would deal with the possibility that the input column is a PDB Celltype
-     */
-    protected SaveTxtLocalNodeDialog() {
-    	super();
-    	createNewGroup("File Column");
-    	addDialogComponent (new DialogComponentColumnNameSelection(
-    			new SettingsModelString(SaveTxtLocalNodeModel.CFG_FILE_COLUMN_NAME,null),
-    			"Select a column containing the String Cells:", 0, true, StringValue.class));
+	/**
+	 * New pane for configuring the SavePDBLocal node. TODO: Ideally we would
+	 * deal with the possibility that the input column is a PDB Celltype
+	 */
+	protected SaveTxtLocalNodeDialog() {
+		super();
+		createNewGroup("File Column");
+		addDialogComponent(new DialogComponentColumnNameSelection(
+				new SettingsModelString(
+						SaveTxtLocalNodeModel.CFG_FILE_COLUMN_NAME, null),
+				"Select a column containing the String Cells:", 0, true,
+				StringValue.class));
 
-    	closeCurrentGroup();
+		closeCurrentGroup();
 
-    	createNewGroup("File path Column:");
-    	addDialogComponent (new DialogComponentColumnNameSelection(
-    			new SettingsModelString(SaveTxtLocalNodeModel.CFG_PATH_COLUMN_NAME, null),
-    			"Enter name of column for file paths:", 0, true, StringValue.class));
-    	
-    	addDialogComponent (new DialogComponentBoolean(new SettingsModelBoolean(
-    			SaveTxtLocalNodeModel.CFG_OVERWRITE, true), "Overwrite files?"));
-    	
-        addDialogComponent (new DialogComponentString(new SettingsModelString(
-        		SaveTxtLocalNodeModel.CFG_SUCCESS_COLUMN_NAME, null), "Enter name of column for save successful flag:"));
-        
-    	closeCurrentGroup();
-    }
+		createNewGroup("File path Column:");
+		addDialogComponent(new DialogComponentColumnNameSelection(
+				new SettingsModelString(
+						SaveTxtLocalNodeModel.CFG_PATH_COLUMN_NAME, null),
+				"Enter name of column for file paths:", 0, true,
+				StringValue.class));
+
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				SaveTxtLocalNodeModel.CFG_OVERWRITE, true), "Overwrite files?"));
+
+		addDialogComponent(new DialogComponentString(new SettingsModelString(
+				SaveTxtLocalNodeModel.CFG_SUCCESS_COLUMN_NAME, null),
+				"Enter name of column for save successful flag:"));
+
+		closeCurrentGroup();
+	}
 }
-

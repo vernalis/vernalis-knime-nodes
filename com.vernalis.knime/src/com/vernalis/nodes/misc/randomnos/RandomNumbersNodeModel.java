@@ -43,10 +43,11 @@ import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelDoubleRange;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+
 /**
- * This is the model implementation of RandomNumbers.
- * A node to generate a table with a single column of random numbers
- *
+ * This is the model implementation of RandomNumbers. A node to generate a table
+ * with a single column of random numbers
+ * 
  * @author SDR
  */
 public class RandomNumbersNodeModel extends NodeModel {
@@ -54,38 +55,40 @@ public class RandomNumbersNodeModel extends NodeModel {
 	private static final NodeLogger logger = NodeLogger
 			.getLogger(RandomNumbersNodeModel.class);
 
-	/** the settings key which is used to retrieve and
-        store the settings (from the dialog or from a settings file)
-       (package visibility to be usable from the dialog). */
-
+	/**
+	 * the settings key which is used to retrieve and store the settings (from
+	 * the dialog or from a settings file) (package visibility to be usable from
+	 * the dialog).
+	 */
 
 	static final String CFG_COLUMN_NAME = "Column_name";
 	static final String CFG_TYPE = "Double_or_int";
 	static final String CFG_MIN_MAX = "Range";
-	//static final String CFG_MAX = "Maximum";
+
 	static final String CFG_N = "Number_of_values";
 	static final String CFG_UNIQUE = "Unique_set";
 
-	private final SettingsModelString m_ColumnName =
-			new SettingsModelString(CFG_COLUMN_NAME, "Random Values");
+	private final SettingsModelString m_ColumnName = new SettingsModelString(
+			CFG_COLUMN_NAME, "Random Values");
 
-	private final SettingsModelString m_Type =
-			new SettingsModelString(CFG_TYPE, "Double");
+	private final SettingsModelString m_Type = new SettingsModelString(
+			CFG_TYPE, "Double");
 
-	private final SettingsModelDoubleRange m_Range =
-			new SettingsModelDoubleRange (CFG_MIN_MAX,0.0,100000.0);
+	private final SettingsModelDoubleRange m_Range = new SettingsModelDoubleRange(
+			CFG_MIN_MAX, 0.0, 100000.0);
 
-	private final SettingsModelIntegerBounded m_n =
-			new SettingsModelIntegerBounded(CFG_N, 100, 1, 1000000);
+	private final SettingsModelIntegerBounded m_n = new SettingsModelIntegerBounded(
+			CFG_N, 100, 1, 1000000);
 
-	private final SettingsModelBoolean m_isUnique =
-			new SettingsModelBoolean (CFG_UNIQUE, true);
+	private final SettingsModelBoolean m_isUnique = new SettingsModelBoolean(
+			CFG_UNIQUE, true);
 
 	private BufferedDataContainer m_dc;
 
 	private static DataTableSpec spec;
 
 	private int m_currentRowID;
+
 	/**
 	 * Constructor for the node model.
 	 */
@@ -101,46 +104,50 @@ public class RandomNumbersNodeModel extends NodeModel {
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
 			final ExecutionContext exec) throws Exception {
 
-		//Now create a data container for the new output table
+		// Now create a data container for the new output table
 
 		m_dc = exec.createDataContainer(spec);
 		m_currentRowID = 0;
-		if (m_Type.getStringValue().equals("Integer")){
-			//Actually get the values
+		if (m_Type.getStringValue().equals("Integer")) {
+			// Actually get the values
 			Collection<Integer> values;
-			if (m_isUnique.getBooleanValue()){
-				values=RandomNumbers.getUniqueInts((int)Math.floor(m_Range.getMinRange()),
-						(int)Math.floor(m_Range.getMaxRange()), m_n.getIntValue());
+			if (m_isUnique.getBooleanValue()) {
+				values = RandomNumbers.getUniqueInts(
+						(int) Math.floor(m_Range.getMinRange()),
+						(int) Math.floor(m_Range.getMaxRange()),
+						m_n.getIntValue());
 			} else {
-				values=RandomNumbers.getInts((int)Math.floor(m_Range.getMinRange()),
-						(int)Math.floor(m_Range.getMaxRange()), m_n.getIntValue());
+				values = RandomNumbers.getInts(
+						(int) Math.floor(m_Range.getMinRange()),
+						(int) Math.floor(m_Range.getMaxRange()),
+						m_n.getIntValue());
 			}
 
-			//and now add them too the table
+			// and now add them too the table
 			Iterator<Integer> it = values.iterator();
-			while (it.hasNext()){
-				exec.setProgress(m_currentRowID +" added to output table");
+			while (it.hasNext()) {
+				exec.setProgress(m_currentRowID + " added to output table");
 				exec.checkCanceled();
 				DataCell[] row = new DataCell[1];
 				row[0] = new IntCell(it.next());
 				m_dc.addRowToTable(new DefaultRow("Row " + m_currentRowID, row));
 				m_currentRowID++;
 			}
-		} else{
-			//Actually get the values
+		} else {
+			// Actually get the values
 			Collection<Double> values;
-			if (m_isUnique.getBooleanValue()){
-				values=RandomNumbers.getUniqueDoubles(m_Range.getMinRange(),
+			if (m_isUnique.getBooleanValue()) {
+				values = RandomNumbers.getUniqueDoubles(m_Range.getMinRange(),
 						m_Range.getMaxRange(), m_n.getIntValue());
 			} else {
-				values=RandomNumbers.getDoubles(m_Range.getMinRange(),
+				values = RandomNumbers.getDoubles(m_Range.getMinRange(),
 						m_Range.getMaxRange(), m_n.getIntValue());
 			}
 
-			//and now add them too the table
+			// and now add them too the table
 			Iterator<Double> it = values.iterator();
-			while (it.hasNext()){
-				exec.setProgress(m_currentRowID +" added to output table");
+			while (it.hasNext()) {
+				exec.setProgress(m_currentRowID + " added to output table");
 				exec.checkCanceled();
 				DataCell[] row = new DataCell[1];
 				row[0] = new DoubleCell(it.next());
@@ -150,7 +157,7 @@ public class RandomNumbersNodeModel extends NodeModel {
 		}
 
 		m_dc.close();
-		return new BufferedDataTable[] {m_dc.getTable()};
+		return new BufferedDataTable[] { m_dc.getTable() };
 
 	}
 
@@ -170,23 +177,24 @@ public class RandomNumbersNodeModel extends NodeModel {
 			throws InvalidSettingsException {
 
 		// Check the settings
-		if (m_ColumnName==null){
+		if (m_ColumnName == null) {
 			throw new InvalidSettingsException("No column name enteres");
 		}
-		if (m_n.getIntValue()<=0 || m_n==null){
-			throw new InvalidSettingsException ("Need to enter a valid number of values");
+		if (m_n.getIntValue() <= 0 || m_n == null) {
+			throw new InvalidSettingsException(
+					"Need to enter a valid number of values");
 		}
-		if (m_n.getIntValue()>1000000){
+		if (m_n.getIntValue() > 1000000) {
 			throw new InvalidSettingsException("Too many values required");
 		}
-		if (m_Range==null){
+		if (m_Range == null) {
 			throw new InvalidSettingsException("Enter a valid range");
 		}
 
-		//Create an output table spec
+		// Create an output table spec
 		spec = new DataTableSpec(createDataColumnSpec(
 				m_ColumnName.getStringValue(), m_Type.getStringValue()));
-		return new DataTableSpec[]{spec};
+		return new DataTableSpec[] { spec };
 	}
 
 	/**
@@ -250,16 +258,16 @@ public class RandomNumbersNodeModel extends NodeModel {
 		// TODO: generated method stub
 	}
 
-	private static DataColumnSpec[] createDataColumnSpec(final String colName, final String colType) {
+	private static DataColumnSpec[] createDataColumnSpec(final String colName,
+			final String colType) {
 		DataColumnSpec[] dcs = new DataColumnSpec[1];
-		if ("Double".equals(colType)){
-			dcs[0] =
-					new DataColumnSpecCreator(colName, DoubleCell.TYPE).createSpec();
+		if ("Double".equals(colType)) {
+			dcs[0] = new DataColumnSpecCreator(colName, DoubleCell.TYPE)
+					.createSpec();
 		} else {
-			dcs[0] =
-					new DataColumnSpecCreator(colName, IntCell.TYPE).createSpec();
+			dcs[0] = new DataColumnSpecCreator(colName, IntCell.TYPE)
+					.createSpec();
 		}
 		return dcs;
 	}
 }
-

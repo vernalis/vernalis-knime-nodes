@@ -23,29 +23,30 @@ import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelectio
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
-
 /**
  * LocalPDBLoadNode dialog class
  */
 public class LocalPDBLoadNodeDialog2 extends DefaultNodeSettingsPane {
 
-    /**
-     * New pane for configuring the LocalPDBLoad node.
-     */
-    protected LocalPDBLoadNodeDialog2() {
-      	super();
-    	createNewGroup("PDB Paths");
-        addDialogComponent (new DialogComponentColumnNameSelection(
-        		new SettingsModelString(LocalPDBLoadNodeModel2.CFG_PATH_COLUMN_NAME,null),
-        		"Select a column containing the PDB paths:", 0, true, StringValue.class));
-        
-        closeCurrentGroup();
-        
-        createNewGroup("Destination Column:");
-        addDialogComponent (new DialogComponentString(new SettingsModelString(
-        		LocalPDBLoadNodeModel2.CFG_FILE_COLUMN_NAME, null), "Enter name of column for PDB cells:"));
-        
-        closeCurrentGroup();
-    }
-}
+	/**
+	 * New pane for configuring the LocalPDBLoad node.
+	 */
+	protected LocalPDBLoadNodeDialog2() {
+		super();
+		createNewGroup("PDB Paths");
+		addDialogComponent(new DialogComponentColumnNameSelection(
+				new SettingsModelString(
+						LocalPDBLoadNodeModel2.CFG_PATH_COLUMN_NAME, null),
+				"Select a column containing the PDB paths:", 0, true,
+				StringValue.class));
 
+		closeCurrentGroup();
+
+		createNewGroup("Destination Column:");
+		addDialogComponent(new DialogComponentString(new SettingsModelString(
+				LocalPDBLoadNodeModel2.CFG_FILE_COLUMN_NAME, null),
+				"Enter name of column for PDB cells:"));
+
+		closeCurrentGroup();
+	}
+}

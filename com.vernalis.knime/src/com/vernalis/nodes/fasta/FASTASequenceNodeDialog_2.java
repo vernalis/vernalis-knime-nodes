@@ -27,41 +27,49 @@ import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
-
 /**
- * <code>NodeDialog</code> for the "FASTASequence" Node.
- * Extract the chains and sequences from a PDB FASTA sequence file column
+ * <code>NodeDialog</code> for the "FASTASequence" Node. Extract the chains and
+ * sequences from a PDB FASTA sequence file column
  */
 public class FASTASequenceNodeDialog_2 extends DefaultNodeSettingsPane {
 
-    /**
-     * New pane for configuring the FASTASequence node.
-     */
-    protected FASTASequenceNodeDialog_2() {
-    	createNewGroup("FASTA Sequence Column");
-    	// Group to deal with the column
-      	addDialogComponent (new DialogComponentColumnNameSelection(
-    			new SettingsModelString(FASTASequenceNodeModel_2.CFG_FASTA_COL_NAME,null),
-    			"Select a column containing the FASTA Sequence Cells:", 0, true, StringValue.class));
-    	
-    	addDialogComponent (new DialogComponentBoolean(new SettingsModelBoolean(
-    			FASTASequenceNodeModel_2.CFG_OVERWRITE, false), "Delete FASTA Sequence column"));
-    	
-    	createNewGroup("Extracted Properties");
-    	// Group to deal with what is extracted
-    	
-    	addDialogComponent (new DialogComponentStringSelection(new SettingsModelString(
-    			FASTASequenceNodeModel_2.CFG_FASTA_TYPE, null), "Select the FASTA Sequence source or type:", 
-    			Arrays.asList("GenBank","EMBL","DDBJ (DNA Database of Japan)","NBRF","Protein Research Foundation",
-    				"SWISS-PROT","PDB","Patents","GenInfo Backbone Id","General Database Identifier",
-    				"NCBI Reference Sequence","Local Sequence Identifier", "Other (No fields extracted from header)")));
-    	
-    	addDialogComponent (new DialogComponentBoolean(new SettingsModelBoolean(
-    			FASTASequenceNodeModel_2.CFG_HEADER, false), "Extract full Header Row(s) from FASTA"));
-    	
-    	addDialogComponent (new DialogComponentBoolean(new SettingsModelBoolean(
-    			FASTASequenceNodeModel_2.CFG_SEQUENCE,true), "Extract the Sequence?"));
-    	
-    }
-}
+	/**
+	 * New pane for configuring the FASTASequence node.
+	 */
+	protected FASTASequenceNodeDialog_2() {
+		createNewGroup("FASTA Sequence Column");
+		// Group to deal with the column
+		addDialogComponent(new DialogComponentColumnNameSelection(
+				new SettingsModelString(
+						FASTASequenceNodeModel_2.CFG_FASTA_COL_NAME, null),
+				"Select a column containing the FASTA Sequence Cells:", 0,
+				true, StringValue.class));
 
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				FASTASequenceNodeModel_2.CFG_OVERWRITE, false),
+				"Delete FASTA Sequence column"));
+
+		createNewGroup("Extracted Properties");
+		// Group to deal with what is extracted
+
+		addDialogComponent(new DialogComponentStringSelection(
+				new SettingsModelString(
+						FASTASequenceNodeModel_2.CFG_FASTA_TYPE, null),
+				"Select the FASTA Sequence source or type:", Arrays.asList(
+						"GenBank", "EMBL", "DDBJ (DNA Database of Japan)",
+						"NBRF", "Protein Research Foundation", "SWISS-PROT",
+						"PDB", "Patents", "GenInfo Backbone Id",
+						"General Database Identifier",
+						"NCBI Reference Sequence", "Local Sequence Identifier",
+						"Other (No fields extracted from header)")));
+
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				FASTASequenceNodeModel_2.CFG_HEADER, false),
+				"Extract full Header Row(s) from FASTA"));
+
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				FASTASequenceNodeModel_2.CFG_SEQUENCE, true),
+				"Extract the Sequence?"));
+
+	}
+}

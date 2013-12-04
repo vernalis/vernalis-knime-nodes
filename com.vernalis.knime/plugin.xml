@@ -50,8 +50,8 @@
       <node
             category-path="/community/vernalis/misc"
             expert-flag="false"
-            factory-class="com.vernalis.nodes.smartsviewer.SmartsViewerNodeFactory"
-            id="SmartsViewerNodeFactory">
+            factory-class="com.vernalis.nodes.smartsviewer.SmartsViewer2NodeFactory"
+            id="SmartsViewer2NodeFactory">
       </node>
       <node
             category-path="/community/vernalis/misc"
@@ -130,7 +130,9 @@
    <extension
          point="org.knime.product.splashExtension">
       <splashExtension
-            icon="icons/Vernalis_splash.png"
+            icon="icons/Vernalis_splash_48.png"
+            icon24="icons/Vernalis_splash_24.png"
+            icon32="icons/Vernalis_splash_32.png"
             id="Vernalis_splashExtension"
             tooltip="Vernalis nodes">
       </splashExtension>

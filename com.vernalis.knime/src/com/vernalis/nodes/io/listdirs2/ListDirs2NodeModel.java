@@ -106,7 +106,7 @@ public class ListDirs2NodeModel extends NodeModel {
     			//Handle URLs instead of paths
                 try {
                     if (folder.startsWith("file:")) {
-                        folder = folder.substring(5);
+						folder = folder.substring(5);
                     }
                     location = new File((new URI(folder)).getPath());
                 } catch (Exception e) {
