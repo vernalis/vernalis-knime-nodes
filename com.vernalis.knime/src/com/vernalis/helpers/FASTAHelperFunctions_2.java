@@ -27,17 +27,33 @@ import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
 import org.knime.core.data.def.StringCell;
 
+/**
+ * Some helper functions to deal with FASTA sequences
+ * 
+ * @author Stephen Roughley <knime@vernalis.com>
+ * 
+ */
 public class FASTAHelperFunctions_2 {
-	/*
-	 * Some helper functions to deal with FASTA sequences
-	 */
 
+	/**
+	 * Helper function to return a list of the column names based on the
+	 * FASTA_Type setting
+	 * 
+	 * @param FASTA_Type
+	 *            Case-insensitive FASTA Type string - currently, accepted
+	 *            values are genbank, embl, ddbj (dna database of japan), nbrf,
+	 *            protein research foundation, swiss-prot, pdb, patents, geninfo
+	 *            backbone id, general database identifier, ncbi reference
+	 *            sequence, local sequence identifier, other (no fields added
+	 *            from header)
+	 * @param IncludeHeader
+	 *            If true then the whole header is included as a new column
+	 * @param extractSequence
+	 *            If true, then the sequence is included as a new column
+	 * @return A LinkedHashSet of the column names to be added
+	 */
 	public static Set<String> ColumnNames(String FASTA_Type,
 			boolean IncludeHeader, boolean extractSequence) {
-		/*
-		 * Helper function to return a list of the column names based on the
-		 * FASTA_Type setting
-		 */
 
 		// Use a set to simplify the default case in the switch of adding the
 		// header row if nothing else specified
@@ -95,14 +111,30 @@ public class FASTAHelperFunctions_2 {
 	 * header based on the type
 	 */
 
+	/**
+	 * This function returns a List (ArrayList) containing the values to go into
+	 * the columns NB this is not a SET, as there is no requirement for
+	 * uniqueness!
+	 * 
+	 * @param FASTA
+	 *            The FASTA file as a string
+	 * @param FASTA_Type
+	 *            The case-insensitive FASTA type code - currently, accepted
+	 *            values are genbank, embl, ddbj (dna database of japan), nbrf,
+	 *            protein research foundation, swiss-prot, pdb, patents, geninfo
+	 *            backbone id, general database identifier, ncbi reference
+	 *            sequence, local sequence identifier, other (no fields added
+	 *            from header)
+	 * @param IncludeHeader
+	 *            If true, the entire header row is included
+	 * @param extractSequence
+	 *            If true, then sequence is extracted
+	 * @return An ArrayList containing the DataCells according to the specified
+	 *         options
+	 */
 	public static DataCell[] ColumnValues(String FASTA, String FASTA_Type,
 			boolean IncludeHeader, boolean extractSequence) {
 
-		/*
-		 * This function returns a LIST containing the values to go into the
-		 * columns NB this is not a SET, as there is no requirement for
-		 * uniqueness!
-		 */
 		String FASTAHeader = getHeader(FASTA);
 		List<String> ColumnValues = new ArrayList<String>();
 		String temp = FASTA_Type.toLowerCase();
@@ -110,6 +142,7 @@ public class FASTAHelperFunctions_2 {
 			if (IncludeHeader) {
 				ColumnValues.add(null);
 			}
+
 			if ("genbank".equals(temp) || "embl".equals(temp)
 					|| "ddbj (dna database of japan)".equals(temp)) {
 				// These have 3 columns
@@ -129,15 +162,14 @@ public class FASTAHelperFunctions_2 {
 					|| "local sequence identifier".equals(temp)) {
 				// And these only have 1
 				ColumnValues.add(null);
-			} else if (!"other (no fields extracted from header)".equals(temp)) {
+			} else if (!"other (no fields extracted from header)".equals(temp)
+					&& !IncludeHeader) {
 				// If somehow we dont have one of the presets, then we just add
-				// the header
-				if (!IncludeHeader) {
-					// But only once - so only if we've not added it at the
-					// beginning!
-					ColumnValues.add(null);
-				}
+				// the header - but only once - so only if we've not added it at
+				// the beginning!
+				ColumnValues.add(null);
 			}
+
 			if (extractSequence) {
 				ColumnValues.add(null);
 			}
@@ -215,19 +247,15 @@ public class FASTAHelperFunctions_2 {
 						ColumnValues.add(null);
 					}
 				}
-			} else if ("other (no fields extracted from header)".equals(temp)) {
-				// And this one has none
-			} else {
+			} else if (!"other (no fields extracted from header)".equals(temp)
+					&& !IncludeHeader) {
 				// If somehow we dont have one of the presets, then we just add
-				// the header
-				if (!IncludeHeader) {
-					// But only once - so only if we've not added it at the
-					// beginning!
-					try {
-						ColumnValues.add(FASTAHeader.split(">")[1]);
-					} catch (Exception e) {
-						ColumnValues.add(null);
-					}
+				// the header but only once - so only if we've not added it at
+				// the beginning!
+				try {
+					ColumnValues.add(FASTAHeader.split(">")[1]);
+				} catch (Exception e) {
+					ColumnValues.add(null);
 				}
 			}
 			if (extractSequence) {
@@ -248,10 +276,15 @@ public class FASTAHelperFunctions_2 {
 		return ColCells;
 	}
 
+	/**
+	 * Utility function to return the whole header line, including the leading
+	 * '>' from a single-entry FASTA file
+	 * 
+	 * @param FASTA
+	 *            Single entry FASTA file string
+	 * @return The header line, including the leading '>'
+	 */
 	public static String getHeader(String FASTA) {
-		/*
-		 * Return the whole header line, including the '>'
-		 */
 		try {
 			return ">" + FASTA.split(">")[1].split("\\n")[0];
 		} catch (Exception e) {
@@ -259,10 +292,15 @@ public class FASTAHelperFunctions_2 {
 		}
 	}
 
+	/**
+	 * Utility function to return the PDB ID from a single-entry FASTA file in
+	 * the PDB format
+	 * 
+	 * @param FASTA
+	 *            Single entry FASTA file string
+	 * @return The PDB ID
+	 */
 	public static String getPDBID(String FASTA) {
-		/*
-		 * Return the PDB ID from a single-entry FASTA file in the PDB format
-		 */
 		try {
 			return FASTA.split(">")[1].split(":")[0];
 		} catch (Exception e) {
@@ -270,11 +308,15 @@ public class FASTAHelperFunctions_2 {
 		}
 	}
 
+	/**
+	 * Utility function to return the Chain ID from a single-entry FASTA file in
+	 * the PDB format
+	 * 
+	 * @param FASTA
+	 *            Single entry FASTA file string
+	 * @return The Chain ID
+	 */
 	public static String getChain(String FASTA) {
-		/*
-		 * Return the Chain letter from a single-entry FASTA file in the PDB
-		 * format
-		 */
 		try {
 			return FASTA.split(":")[1].split("\\|")[0];
 		} catch (Exception e) {
@@ -282,10 +324,14 @@ public class FASTAHelperFunctions_2 {
 		}
 	}
 
+	/**
+	 * Utility function to return the Sequence from a single-entry FASTA file
+	 * 
+	 * @param FASTA
+	 *            Single entry FASTA file string
+	 * @return The sequence
+	 */
 	public static String getSequence(String FASTA) {
-		/*
-		 * Return a sequence from a FASTA string
-		 */
 		try {
 			String seq = "";
 			for (String line : FASTA.split("\\n")) {
@@ -299,10 +345,15 @@ public class FASTAHelperFunctions_2 {
 		}
 	}
 
+	/**
+	 * Utility function to split a multi-entry FASTA file String into an array
+	 * of single entry FASTA file strings
+	 * 
+	 * @param FASTA
+	 *            Multi-entry FASTA file String
+	 * @return String[] array of single entry FASTA file strings
+	 */
 	public static String[] getFASTAs(String FASTA) {
-		/*
-		 * Split a multi-entry FASTA file into an array of single entries
-		 */
 		// Firstly deal with possibility of an empty FASTA Cell
 		if (FASTA == null || "".equals(FASTA)) {
 			FASTA = ">"; // This ensures the row is propagated in the output
