@@ -192,6 +192,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 		final String urlSuffix = m_ligandImgOptions.isExists(imgSize) ? m_ligandImgOptions
 				.getValue(imgSize) : imgSize;
 		row = 0;
+		int block = 0;
 		while (!toProcess.isEmpty() && (CHUNK_SIZE > 0)) {
 			double progress = 1.0 - (double) toProcess.size()
 					/ (double) pdbIds.size();
@@ -207,7 +208,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 			// Increasing delays in seconds - we start with 0 in case the url
 			// timeout is a sufficient delay
 			int[] retryDelays = { 0, 1, 5, 10, 30, 60, 300, 600 };
-			
+			block++;
 			List<List<String>> report = null;
 			for (int delay : retryDelays) {
 				try {
@@ -217,14 +218,15 @@ public class PdbConnectorNodeModel extends NodeModel {
 					break;
 				} catch (IOException e) {
 					// Wait for an increasing period before retrying
-					logger.warn("GET request failed - Waiting " + delay
-							+ " seconds before re-trying");
+					logger.warn("GET request failed for data block " + block
+							+ " - Waiting " + delay
+							+ " seconds before re-trying...");
 					exec1.checkCanceled();
 					pause(delay, exec1);
 				}
 			}
 			if (report == null) {
-				//In this case, we never managed to contact the server...
+				// In this case, we never managed to contact the server...
 				String errMsg = "Unable to contact the remote server - please try again later!";
 				logger.error(errMsg);
 				throw new IOException(errMsg);
