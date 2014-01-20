@@ -17,6 +17,9 @@
             <p>The user interface dialog options are designed to be a close mimic of the interactive web-based search and reporting options provided at
                 <a href="http://www.pdb.org/pdb/search/advSearch.do">http://www.pdb.org/pdb/search/advSearch.do</a> and the user
                 is encouraged to explore this resource for a full explanation of each search option.</p>
+            <p>The node will make a number of retries at increasing delay intervals (0, 1, 5, 10, 30, 60, 300, 600 seconds) to download each block of report 
+            	data during the second part of the execution (There is an additional delay, defaulting to 1 second, on each attempt, which can be adjusted by 
+            	adding the line -Dknime.url.timeout= followed by a value in milliseconds - e.g. 5000 for 5 seconds to the knime.ini file).</p>
             <p>The <i>PDB Connector</i> node was developed by <a href="http://www.enspiral-discovery.com/">Enspiral Discovery</a> in collaboration with
                 <a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>.
                 For feedback and more information, please contact <a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
