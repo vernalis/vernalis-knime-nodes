@@ -63,7 +63,7 @@ import com.vernalis.pdbconnector.config.Values;
 public class PdbConnectorNodeModel extends NodeModel {
 	/**
 	 * Maximum URL length supported by PDB custom report web service.
-	 * 
+	 *
 	 * True limit is 8192, but allow some headroom for integer division rounding
 	 * errors.
 	 */
@@ -91,11 +91,11 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 	/**
 	 * Instantiates a new pdb connector node model.
-	 * 
+	 *
 	 * @param config
 	 *            the configuration
 	 */
-	protected PdbConnectorNodeModel(PdbConnectorConfig config) {
+	protected PdbConnectorNodeModel(final PdbConnectorConfig config) {
 		super(0, 2);
 		if (!config.isOK()) {
 			m_lastError = config.getLastErrorMessage();
@@ -117,7 +117,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.knime.core.node.NodeModel#execute(org.knime.core.node.BufferedDataTable
 	 * [], org.knime.core.node.ExecutionContext)
@@ -220,7 +220,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 					// Wait for an increasing period before retrying
 					logger.warn("GET request failed for data block " + block
 							+ " - Waiting " + delay
-							+ " seconds before re-trying...");
+							+ " seconds before re-trying...", e);
 					exec1.checkCanceled();
 					pause(delay, exec1);
 				}
@@ -268,7 +268,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 		return new BufferedDataTable[] { out0, out1 };
 	}
 
-	private static void pause(int seconds, ExecutionMonitor exec1)
+	private static void pause(final int seconds, final ExecutionMonitor exec1)
 			throws Exception {
 		// simple delay function without using threads
 		Date start = new Date();
@@ -281,7 +281,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.knime.core.node.NodeModel#reset()
 	 */
 	@Override
@@ -293,7 +293,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.knime.core.node.NodeModel#configure(org.knime.core.data.DataTableSpec
 	 * [])
@@ -328,7 +328,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.knime.core.node.NodeModel#saveSettingsTo(org.knime.core.node.
 	 * NodeSettingsWO)
 	 */
@@ -356,7 +356,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.knime.core.node.NodeModel#loadValidatedSettingsFrom(org.knime.core
 	 * .node.NodeSettingsRO)
@@ -395,7 +395,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.knime.core.node.NodeModel#validateSettings(org.knime.core.node.
 	 * NodeSettingsRO)
 	 */
@@ -432,7 +432,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.knime.core.node.NodeModel#loadInternals(java.io.File,
 	 * org.knime.core.node.ExecutionMonitor)
 	 */
@@ -452,7 +452,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.knime.core.node.NodeModel#saveInternals(java.io.File,
 	 * org.knime.core.node.ExecutionMonitor)
 	 */
@@ -472,7 +472,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 	/**
 	 * Creates the output table spec0.
-	 * 
+	 *
 	 * @return the data table spec
 	 */
 	private DataTableSpec createOutputTableSpec0() {
@@ -488,7 +488,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 	/**
 	 * Creates the output table spec1.
-	 * 
+	 *
 	 * @return the data table spec
 	 */
 	private DataTableSpec createOutputTableSpec1() {
@@ -546,11 +546,11 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 	/**
 	 * Creates the query models.
-	 * 
+	 *
 	 * @param config
 	 *            the configuration
 	 */
-	private void createQueryModels(PdbConnectorConfig config) {
+	private void createQueryModels(final PdbConnectorConfig config) {
 		m_queryModels.clear();
 		List<QueryCategory> categories = config.getQueryCategories();
 		for (QueryCategory category : categories) {
@@ -563,11 +563,11 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 	/**
 	 * Creates the report models.
-	 * 
+	 *
 	 * @param config
 	 *            the configuration
 	 */
-	private void createReportModels(PdbConnectorConfig config) {
+	private void createReportModels(final PdbConnectorConfig config) {
 		m_reportModels.clear();
 		m_hiddenReportModels.clear();
 		List<ReportCategory> categories = config.getReportCategories();
@@ -585,12 +585,12 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 	/**
 	 * Gets the StandardReport for a given report id.
-	 * 
+	 *
 	 * @param reportId
 	 *            the report id
 	 * @return the standard report
 	 */
-	private StandardReport getStandardReport(String reportId) {
+	private StandardReport getStandardReport(final String reportId) {
 		StandardReport retVal = null;
 		if (reportId != null) {
 			Iterator<StandardCategory> iter = m_stdCategories.iterator();
