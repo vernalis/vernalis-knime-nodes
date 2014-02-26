@@ -300,7 +300,8 @@ public class Pdb2SeqHelpers {
 						String ResName = line.substring(17, 20);
 						if (!"HOH".equals(ResName)) {
 							Seqs.put(ChainIDKey, Seqs.get(ChainIDKey)
-									+ resDelim + ((deltaResID > 1) ? "?" : "")
+									+ resDelim
+									+ ((deltaResID > 1) ? "?" + resDelim : "")
 									+ ResName);
 							// Update the pointer to the current residue ID
 							lastIDs.put(ChainIDKey, curResID);
