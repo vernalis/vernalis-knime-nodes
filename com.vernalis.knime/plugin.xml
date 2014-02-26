@@ -77,6 +77,52 @@
             factory-class="com.vernalis.nodes.io.txt.SaveTxtLocalNodeFactory"
             id="SaveTxtLocalNodeFactory">
       </node>
+      <node
+            category-path="/community/vernalis/ePMC"
+            expert-flag="false"
+            factory-class="com.vernalis.nodes.epmc.EuroPmcAdvancedSearchNodeFactory"
+            id="EuroPmcAdvancedSearchNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/flowcontrol/fv"
+            expert-flag="false"
+            factory-class="com.vernalis.flowcontrol.nodes.fv.ifswitch.FVarIfSwitchNodeFactory"
+            id="FVarIfSwitchNodeFactory">
+      </node>
+      <node
+            after="FVarIfSwitchNodeFactory"
+            category-path="/community/vernalis/flowcontrol/fv"
+            expert-flag="false"
+            factory-class="com.vernalis.flowcontrol.nodes.fv.varvalifswitch.FlowVarFvvalIfSwitchNodeFactory"
+            id="FlowVarFvvalIfSwitchNodeFactory">
+      </node>
+      <node
+            after="FlowVarFvvalIfSwitchNodeFactory"
+            category-path="/community/vernalis/flowcontrol/fv"
+            expert-flag="false"
+            factory-class="com.vernalis.flowcontrol.nodes.fv.endif.FlowVarEndIfNodeFactory"
+            id="FlowVarEndIfNodeFactory">
+      </node>
+      <node
+            after="FlowVarEndIfNodeFactory"
+            category-path="/community/vernalis/flowcontrol/fv"
+            expert-flag="false"
+            factory-class="com.vernalis.flowcontrol.nodes.fv.caseselect.FVarFVCaseSelectNodeFactory"
+            id="FVarFVCaseSelectNodeFactory">
+      </node>
+      <node
+            after="FVarFVCaseSelectNodeFactory"
+            category-path="/community/vernalis/flowcontrol/fv"
+            expert-flag="false"
+            factory-class="com.vernalis.flowcontrol.nodes.fv.endcase.FlowVarEndCaseNodeFactory"
+            id="FlowVarEndCaseNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/sequence"
+            expert-flag="false"
+            factory-class="com.vernalis.nodes.pdb.getsequence.Pdb2SequenceNodeFactory"
+            id="Pdb2SequenceNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -125,6 +171,28 @@
             locked="true"
             name="Text-based IO"
             path="/community/vernalis/misc/">
+      </category>
+      <category
+            icon="icons/ePMCv1.png"
+            level-id="ePMC"
+            locked="true"
+            name="European PubMed Central"
+            path="/community/vernalis/">
+      </category>
+      <category
+            description="Flow control nodes"
+            icon="icons/FlowControlGroup_16x16.png"
+            level-id="flowcontrol"
+            locked="true"
+            name="Flow Control"
+            path="/community/vernalis/">
+      </category>
+      <category
+            icon="icons/FlowControlGroupFlowVars_16x16.png"
+            level-id="fv"
+            locked="true"
+            name="Flow Variable Flow Control"
+            path="/community/vernalis/flowcontrol/">
       </category>
    </extension>
    <extension
