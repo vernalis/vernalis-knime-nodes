@@ -105,6 +105,9 @@ public class Pdb2SeqHelpers {
 		result.put("DU", "U");
 		result.put("DI", "I");
 		result.put("DT", "T");
+
+		// Finally make sure gaps are retained:
+		result.put("?", "?");
 		return Collections.unmodifiableMap(result);
 	}
 
@@ -178,6 +181,8 @@ public class Pdb2SeqHelpers {
 		result.put("OCS", "CYS");
 		result.put("00C", "CYS");
 
+		// Finally make sure gaps are retained:
+		result.put("?", "?");
 		return Collections.unmodifiableMap(result);
 	}
 
