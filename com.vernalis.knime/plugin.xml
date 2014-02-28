@@ -123,6 +123,12 @@
             factory-class="com.vernalis.nodes.pdb.getsequence.Pdb2SequenceNodeFactory"
             id="Pdb2SequenceNodeFactory">
       </node>
+      <node
+            category-path="/community/vernalis/fps"
+            expert-flag="false"
+            factory-class="com.vernalis.nodes.fingerprint.properties.FpPropsNodeFactory"
+            id="FpPropsNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -157,7 +163,7 @@
             path="/community/vernalis/">
       </category>
       <category
-            after="sequence"
+            after="fps"
             description="Miscellaneous Vernalis nodes"
             icon="icons/missing.gif"
             level-id="misc"
@@ -193,6 +199,14 @@
             locked="true"
             name="Flow Variable Flow Control"
             path="/community/vernalis/flowcontrol/">
+      </category>
+      <category
+            after="sequence"
+            icon="icons/fingerprint_category.png"
+            level-id="fps"
+            locked="true"
+            name="Fingerprints"
+            path="/community/vernalis/">
       </category>
    </extension>
    <extension
