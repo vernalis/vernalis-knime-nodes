@@ -17,8 +17,6 @@ package com.vernalis.flowcontrol.nodes.fv.ifswitch;
 import java.io.File;
 import java.io.IOException;
 
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;

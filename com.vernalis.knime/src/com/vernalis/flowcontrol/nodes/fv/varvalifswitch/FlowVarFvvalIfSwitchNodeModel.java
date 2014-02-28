@@ -17,31 +17,15 @@ package com.vernalis.flowcontrol.nodes.fv.varvalifswitch;
 import java.io.File;
 import java.io.IOException;
 
-import org.knime.core.data.DataCell;
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DataColumnSpecCreator;
-import org.knime.core.data.DataRow;
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.RowKey;
-import org.knime.core.data.def.DefaultRow;
-import org.knime.core.data.def.DoubleCell;
-import org.knime.core.data.def.IntCell;
-import org.knime.core.data.def.StringCell;
-import org.knime.core.node.BufferedDataContainer;
-import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelDouble;
-import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.port.inactive.InactiveBranchPortObject;
-import org.knime.core.node.util.FlowVariableTableCellRenderer;
 import org.knime.core.node.workflow.FlowVariable;
-import org.knime.core.node.workflow.FlowVariable.Type;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -51,7 +35,6 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 
 import com.vernalis.flowcontrol.FlowControlHelpers;
-import com.vernalis.flowcontrol.nodes.fv.caseselect.FVarFVCaseSelectNodeModel;
 
 /**
  * This is the model implementation of FlowVarIfSwitch.

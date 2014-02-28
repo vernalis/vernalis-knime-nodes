@@ -16,7 +16,6 @@ package com.vernalis.flowcontrol.nodes.fv.ifswitch;
 
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentButtonGroup;
-import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 /**

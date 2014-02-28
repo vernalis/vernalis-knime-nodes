@@ -30,9 +30,6 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
-import org.knime.core.node.port.inactive.InactiveBranchPortObject;
-import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
-
 import com.vernalis.flowcontrol.FlowControlHelpers;
 
 /**

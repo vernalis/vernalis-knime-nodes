@@ -17,8 +17,6 @@ package com.vernalis.flowcontrol.nodes.fv.endif;
 import java.io.File;
 import java.io.IOException;
 
-import org.knime.core.data.DataTableSpec;
-import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
@@ -32,9 +30,6 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.inactive.InactiveBranchConsumer;
-import org.knime.core.node.port.inactive.InactiveBranchPortObject;
-import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
-
 import com.vernalis.flowcontrol.FlowControlHelpers;
 
 /**
