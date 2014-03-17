@@ -1,5 +1,7 @@
 /*
  * ------------------------------------------------------------------------
+ *  Copyright (C) 2014 Vernalis (R&D) Ltd, based on earlier PDB Connector work.
+ *  
  *  Copyright (C) 2012, 2014 Vernalis (R&D) Ltd and Enspiral Discovery Limited
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -49,11 +51,13 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.port.PortObject;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 
 import com.vernalis.pdbconnector.config.PdbConnectorConfig;
 import com.vernalis.pdbconnector.config.Properties;
-import com.vernalis.pdbconnector.config.QueryCategory;
-import com.vernalis.pdbconnector.config.QueryOption;
 import com.vernalis.pdbconnector.config.ReportCategory;
 import com.vernalis.pdbconnector.config.ReportField;
 import com.vernalis.pdbconnector.config.StandardCategory;
@@ -61,29 +65,27 @@ import com.vernalis.pdbconnector.config.StandardReport;
 import com.vernalis.pdbconnector.config.Values;
 
 /**
- * PdbConnectorNode model class.
+ * PdbConnectorXMLQueryNode model class.
  */
-public class PdbConnectorNodeModel extends NodeModel {
-
+public class PdbConnectorXmlQueryNodeModel extends NodeModel {
+	/** The node logger instance */
 	static final NodeLogger logger = NodeLogger
-			.getLogger(PdbConnectorNodeModel.class);
+			.getLogger(PdbConnectorXmlQueryNodeModel.class);
 
 	// Settings model keys
 	static final String[] PDB_COLUMNS = { Properties.PDB_COLUMN_NAME };
 	static final String STD_REPORT_KEY = "STANDARD_REPORT";
 	static final String LIGAND_IMG_SIZE_KEY = "LIGAND_IMAGE_SIZE";
-	static final String CONJUNCTION_KEY = "CONJUNCTION";
+	static final String XML_QUERY_KEY = "XML_QUERY";
 	static final String USE_POST_KEY = "USE_POST";
 	static final String MAX_URL_LENGTH_KEY = "MAX_URL_LENGTH";
 
-	private final List<QueryOptionModel> m_queryModels = new ArrayList<QueryOptionModel>();
 	private final List<ReportFieldModel> m_reportModels = new ArrayList<ReportFieldModel>();
 	private final List<ReportFieldModel> m_hiddenReportModels = new ArrayList<ReportFieldModel>();
 	private final List<ReportField> m_selectedFields = new ArrayList<ReportField>();
 	private ReportField m_primaryCitationSuffix = null;
-	private QueryOptionModel m_simModel = null;
 	private SettingsModelString m_ligandImgSize = null;
-	private SettingsModelString m_conjunction = null;
+	private SettingsModelString m_xmlQuery = null;
 	private SettingsModelBoolean m_usePOST = null;
 	private SettingsModelIntegerBounded m_maxUrlLength = null;
 	private String m_lastError = "";
@@ -93,28 +95,28 @@ public class PdbConnectorNodeModel extends NodeModel {
 	private Values m_ligandImgOptions = null;// ligand image size options
 
 	/**
-	 * Instantiates a new pdb connector node model.
+	 * Instantiates a new pdb connector xml query node model.
 	 * 
 	 * @param config
 	 *            the configuration
 	 */
-	protected PdbConnectorNodeModel(PdbConnectorConfig config) {
-		super(0, 2);
+	protected PdbConnectorXmlQueryNodeModel(PdbConnectorConfig config) {
+		super(
+				new PortType[] { FlowVariablePortObject.TYPE_OPTIONAL },
+				new PortType[] { BufferedDataTable.TYPE, BufferedDataTable.TYPE });
 		if (!config.isOK()) {
 			m_lastError = config.getLastErrorMessage();
 			logger.fatal("Error loading query and report definitions from PdbConnectorConfig.xml/.dtd");
 			logger.fatal("Last Error: " + m_lastError);
 		} else {
-			m_simModel = new QueryOptionModel(config.getSimilarity());
-			createQueryModels(config);
+			// Initialise the various settings
 			createReportModels(config);
 			m_ligandImgOptions = config.getLigandImgOptions();
 			m_ligandImgSize = new SettingsModelString(LIGAND_IMG_SIZE_KEY,
 					m_ligandImgOptions.getDefaultLabel());
-			m_conjunction = new SettingsModelString(CONJUNCTION_KEY,
-					Properties.CONJUNCTION_AND_LABEL);
 			m_stdCategories = config.getStandardCategories();
 			m_stdReport = config.getDefaultStandardReport();
+			m_xmlQuery = new SettingsModelString(XML_QUERY_KEY, "");
 			m_usePOST = new SettingsModelBoolean(USE_POST_KEY, true);
 			m_maxUrlLength = new SettingsModelIntegerBounded(
 					MAX_URL_LENGTH_KEY, 2000, 1000, 8000);
@@ -129,7 +131,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 	 * [], org.knime.core.node.ExecutionContext)
 	 */
 	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
+	protected PortObject[] execute(final PortObject[] inData,
 			final ExecutionContext exec) throws Exception {
 		logger.debug("PdbConnectorNode executing...");
 
@@ -146,15 +148,13 @@ public class PdbConnectorNodeModel extends NodeModel {
 		BufferedDataContainer container0 = exec
 				.createDataContainer(outputSpec0);
 
-		// select the appropriate conjunction string (either AND or OR)
-		String conjunction = m_conjunction.getStringValue().equals(
-				Properties.CONJUNCTION_AND_LABEL) ? Properties.CONJUNCTION_AND
-				: Properties.CONJUNCTION_OR;
 		// run the query
-		String xmlQuery = ModelHelperFunctions.getXmlQuery(m_queryModels,
-				m_simModel, conjunction);
-		pushFlowVariableString("xmlQuery", xmlQuery);
+		String xmlQuery = m_xmlQuery.getStringValue();
 		logger.info("getXmlQuery=" + xmlQuery);
+		if (xmlQuery.equals("")) {
+			logger.error("No query supplied.  Halting execution!");
+			throw new Exception("No query supplied.  Halting execution!");
+		}
 		exec0.setProgress(0.0, "Posting xmlQuery to "
 				+ Properties.SEARCH_LOCATION);
 		List<String> pdbIds = ModelHelperFunctions.postQuery(xmlQuery);
@@ -200,8 +200,14 @@ public class PdbConnectorNodeModel extends NodeModel {
 		BufferedDataTable out1 = container1.getTable();
 		exec1.setProgress(1.0, "OUTPORT1 complete");
 		exec.setProgress(1.0, "Done");
+		// Tidy up the query xml and send it to the flow variable
+		xmlQuery = xmlQuery.replace("\n", "").replace("\r", "")
+				.replace("\t", "");
+		while (xmlQuery.indexOf("  ") >= 0) {
+			xmlQuery = xmlQuery.replace("  ", " ");
+		}
 		pushFlowVariableString("xmlQuery", xmlQuery);
-		return new BufferedDataTable[] { out0, out1 };
+		return new PortObject[] { out0, out1 };
 	}
 
 	/**
@@ -420,13 +426,20 @@ public class PdbConnectorNodeModel extends NodeModel {
 	 * [])
 	 */
 	@Override
-	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
+	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
 		if (!m_lastError.isEmpty()) {
 			throw new InvalidSettingsException(
 					"Error loading query and report definitions from PdbConnectorConfig.xml/.dtd"
 							+ " (" + m_lastError + ")");
 		}
+
+		if (m_xmlQuery.getStringValue() == null) {
+			// NB only check for "" during execute as otherwise makes life more
+			// difficult for user passing flowvariable query in
+			throw new InvalidSettingsException("No query entered");
+		}
+
 		DataTableSpec outputSpec0 = createOutputTableSpec0();
 		DataTableSpec outputSpec1 = createOutputTableSpec1();
 		// Check at least one (non-hidden) field is selected
@@ -437,7 +450,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 		// MAX_URL_LENGTH
 		// Each PDB ID requires 5 characters, but have to allow for length of
 		// selected column field strings.
-		// Only relevant if using GET query
+		// Only relevant if not using the POST service
 		final int CHUNK_SIZE = (m_maxUrlLength.getIntValue()
 				- Properties.REPORT_LOCATION.length() - ModelHelperFunctions
 				.getReportColumnsUrl(m_selectedFields).length()) / 5;
@@ -445,8 +458,12 @@ public class PdbConnectorNodeModel extends NodeModel {
 			throw new InvalidSettingsException(
 					"Too many report fields selected: MAX_URL_LENGTH exceeded");
 		}
+		// Finally make a placeholder for the xmlQuery flow variable - NB an
+		// existing value will be overwritten, but I think this makes sense as
+		// there is no guarantee that the output value will be the same as the
+		// input value after execution.
 		pushFlowVariableString("xmlQuery", "");
-		return new DataTableSpec[] { outputSpec0, outputSpec1 };
+		return new PortObjectSpec[] { outputSpec0, outputSpec1 };
 	}
 
 	/*
@@ -457,24 +474,25 @@ public class PdbConnectorNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		for (QueryOptionModel queryModel : m_queryModels) {
-			queryModel.saveSettingsTo(settings);
+		if (m_xmlQuery != null) {
+			m_xmlQuery.saveSettingsTo(settings);
+		}
+		if (m_usePOST != null) {
+			m_usePOST.saveSettingsTo(settings);
+		}
+		if (m_maxUrlLength != null) {
+			m_maxUrlLength.saveSettingsTo(settings);
 		}
 		for (ReportFieldModel reportModel : m_reportModels) {
 			reportModel.saveSettingsTo(settings);
 		}
-		if (m_simModel != null) {
-			m_simModel.saveSettingsTo(settings);
-		}
 		if (m_ligandImgSize != null) {
 			m_ligandImgSize.saveSettingsTo(settings);
-		}
-		if (m_conjunction != null) {
-			m_conjunction.saveSettingsTo(settings);
 		}
 		if (m_stdReport != null) {
 			settings.addString(STD_REPORT_KEY, m_stdReport.getId());
 		}
+
 	}
 
 	/*
@@ -492,44 +510,28 @@ public class PdbConnectorNodeModel extends NodeModel {
 					"Error loading query and report definitions from PdbConnectorConfig.xml/.dtd"
 							+ " (" + m_lastError + ")");
 		}
-		for (QueryOptionModel queryModel : m_queryModels) {
-			queryModel.loadValidatedSettingsFrom(settings);
+		if (m_xmlQuery != null) {
+			m_xmlQuery.loadSettingsFrom(settings);
+		}
+		if (m_usePOST != null) {
+			m_usePOST.loadSettingsFrom(settings);
+		}
+		if (m_maxUrlLength != null) {
+			m_maxUrlLength.loadSettingsFrom(settings);
 		}
 		for (ReportFieldModel reportModel : m_reportModels) {
 			reportModel.loadValidatedSettingsFrom(settings);
 		}
-		if (m_simModel != null) {
-			m_simModel.loadValidatedSettingsFrom(settings);
-		}
 		if (m_ligandImgSize != null) {
 			m_ligandImgSize.loadSettingsFrom(settings);
 		}
-		if (m_conjunction != null) {
-			m_conjunction.loadSettingsFrom(settings);
-		}
+
 		// Retrieve the current standard report object by ID
 		String stdReportId = settings.getString(STD_REPORT_KEY);
 		m_stdReport = getStandardReport(stdReportId);
 		if (m_stdReport == null) {
 			throw new InvalidSettingsException("Invalid string \""
 					+ stdReportId + "\" for " + STD_REPORT_KEY + " setting");
-		}
-
-		// New settings models in this version, with backwards compatability
-		// settings
-		if (m_usePOST != null) {
-			try {
-				m_usePOST.loadSettingsFrom(settings);
-			} catch (Exception e) {
-				m_usePOST.setBooleanValue(true);
-			}
-		}
-		if (m_maxUrlLength != null) {
-			try {
-				m_maxUrlLength.loadSettingsFrom(settings);
-			} catch (Exception e) {
-				m_maxUrlLength.setIntValue(2000);
-			}
 		}
 	}
 
@@ -547,30 +549,28 @@ public class PdbConnectorNodeModel extends NodeModel {
 					"Error loading query and report definitions from PdbConnectorConfig.xml/.dtd"
 							+ " (" + m_lastError + ")");
 		}
-		for (QueryOptionModel queryModel : m_queryModels) {
-			queryModel.validateSettings(settings);
+		if (m_xmlQuery != null) {
+			m_xmlQuery.validateSettings(settings);
+		}
+		if (m_usePOST != null) {
+			m_usePOST.validateSettings(settings);
+		}
+		if (m_maxUrlLength != null) {
+			m_maxUrlLength.validateSettings(settings);
 		}
 		for (ReportFieldModel reportModel : m_reportModels) {
 			reportModel.validateSettings(settings);
 		}
-		if (m_simModel != null) {
-			m_simModel.validateSettings(settings);
-		}
 		if (m_ligandImgSize != null) {
 			m_ligandImgSize.validateSettings(settings);
 		}
-		if (m_conjunction != null) {
-			m_conjunction.validateSettings(settings);
-		}
+
 		// Check if standard report id is valid
 		String stdReportId = settings.getString(STD_REPORT_KEY);
 		if (getStandardReport(stdReportId) == null) {
 			throw new InvalidSettingsException("Invalid string \""
 					+ stdReportId + "\" for " + STD_REPORT_KEY + " setting");
 		}
-
-		// NB Dont validate the new settings - their possible absence is handled
-		// in the #loadSettings method
 	}
 
 	/*
@@ -685,23 +685,6 @@ public class PdbConnectorNodeModel extends NodeModel {
 		}
 		DataTableSpec retVal = new DataTableSpec(allColSpecs);
 		return retVal;
-	}
-
-	/**
-	 * Creates the query models.
-	 * 
-	 * @param config
-	 *            the configuration
-	 */
-	private void createQueryModels(PdbConnectorConfig config) {
-		m_queryModels.clear();
-		List<QueryCategory> categories = config.getQueryCategories();
-		for (QueryCategory category : categories) {
-			List<QueryOption> queryOptions = category.getQueryOptions();
-			for (QueryOption queryOption : queryOptions) {
-				m_queryModels.add(new QueryOptionModel(queryOption));
-			}
-		}
 	}
 
 	/**

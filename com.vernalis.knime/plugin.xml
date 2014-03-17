@@ -129,6 +129,12 @@
             factory-class="com.vernalis.nodes.fingerprint.properties.FpPropsNodeFactory"
             id="FpPropsNodeFactory">
       </node>
+      <node
+            after="PdbConnectorNodeFactory"
+            category-path="/community/vernalis/rcsb"
+            factory-class="com.vernalis.pdbconnector.PdbConnectorXmlQueryNodeFactory"
+            id="PdbConnectorXmlQueryNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
