@@ -2,18 +2,17 @@
 <feature
       id="com.vernalis.knime.feature"
       label="Vernalis Knime Nodes"
-      version="1.1.1.qualifier"
+      version="1.1.2.qualifier"
       provider-name="Vernalis">
 
    <description>
-      This feature contains Vernalis KNIME nodes for interfacing withthe
-RCSB PDB, handling PDB files and various other tasks within knime.
+      This feature contains Vernalis KNIME nodes for interfacing with the RCSB PDB, handling PDB files and various other tasks within knime.
    </description>
 
    <copyright>
       The PDB Connector KNIME Node is Copyright (C) 2012, Vernalis
 (R&amp;amp;D) Ltd and Enspiral Discovery Limited
-All other nodes are Copyright (C) 2013, Vernalis (R&amp;amp;D) Ltd
+All other nodes are Copyright (C) 2013, 2014 Vernalis (R&amp;amp;D) Ltd
 The KNIME Nodes are free software: you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation, either version 3 of
