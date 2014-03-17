@@ -43,7 +43,7 @@
                 <li>Select the ligand image size to use in the generation of ligand image URLs (applies to Ligand Image field only).</li>
                 <li>Clear all query options.</li>
                 <li>Test the current query, with display of xml query string and result count.  If a flow variable has been specified for the xml query, it's 
-                	value will be used in the test. (NB This behaviour is different from that in the <i>PDB Connector</i> node, where the 'Test' button uses 
+                	value will be used in the test. (NB This behaviour is different from that in the PDB Connector node, where the 'Test' button uses 
                 	the query configured in the dialog, without reference to flow variable settings.)</li>
                 <li>Select the POST or GET service.  GET is older, but may limit number of report fields which can be returned, and is slower.  If using the GET
                 option, the maximum URL length can be set between 2000 and 8000.  Higher values allow more fields to be returned, and result in fewer calls to 
