@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./pdb.ico" type="Source">
+    <name>PDB Connector</name>
+    
+    <shortDescription>
+        Source node to connect to RCSB PDB RESTful Web Services for advanced search and custom reporting.
+    </shortDescription>
+    
+    <fullDescription>
+        <intro><p>The <i>PDB Connector</i> source node provides connections to two RESTful Web Services for search and retrieval of information from the Protein Data Bank:
+            <ul>
+                <li>Advanced Search (http://www.rcsb.org/pdb/rest/search)</li>
+                <li>Custom Report (http://www.rcsb.org/pdb/rest/customReport)</li>
+            </ul>
+        </p>
+            <p>The user interface dialog options are designed to be a close mimic of the interactive web-based search and reporting options provided at
+                <a href="http://www.pdb.org/pdb/search/advSearch.do">http://www.pdb.org/pdb/search/advSearch.do</a> and the user
+                is encouraged to explore this resource for a full explanation of each search option.</p>
+            <p>The node will make a number of retries at increasing delay intervals (0, 1, 5, 10, 30, 60, 300, 600 seconds) to download each block of report 
+            	data during the second part of the execution (There is an additional delay, defaulting to 1 second, on each attempt, which can be adjusted by 
+            	adding the line -Dknime.url.timeout= followed by a value in milliseconds - e.g. 5000 for 5 seconds to the knime.ini file).</p>
+            <p>The <i>PDB Connector</i> node was developed by <a href="http://www.enspiral-discovery.com/">Enspiral Discovery</a> in collaboration with
+                <a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>.
+                For feedback and more information, please contact <a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+                </p>
+        </intro>
+        <option name="Query Options">Master query tab. Use this tab to:
+            <ul>
+                <li>Control the (optional) sequence similarity filter, used to remove similar sequences from the search hits.</li>
+                <li>Control the composite query logic (individual query options can be either ANDed or ORed together).</li>
+                <li>Select the ligand image size to use in the generation of ligand image URLs (applies to Ligand Image field only).</li>
+                <li>Clear all query options.</li>
+                <li>Test the current query, with display of xml query string and result count.</li>
+            </ul>
+        </option>
+        <option name="Report Options">Master reporting tab, to control the selection of custom report fields in OutPort1.
+            <ul>
+                <li>Use the dropdown menu to select from a number of predefined standard reports</li>
+                <li>Or select Customizable Table to allow fine-grained selection of all custom report fields.</li>
+                <li>Use Select All to initialise a Customizable Table with all report fields.</li>
+                <li>Use Clear All to initialise a Customizable Table with no report fields.</li>
+            </ul>
+        </option>
+        <option name="All other tabs">The remaining tabs display the individual query options within each search category.
+            <ul>
+                <li>To select a query option, either check the "Selected" checkbox or click anywhere on one of the individual query parameters.</li>
+                <li>Enter the desired query parameters using the controls provided.</li>
+                <li>To unselect a query option, uncheck the "Selected" checkbox.</li>
+            </ul>
+        </option>
+        
+    </fullDescription>
+    
+    <ports>
+        <outPort index="0" name="PDB IDs">One-column table of PDB IDs that match query</outPort>
+        <outPort index="1" name="Custom report table">Custom report fields.</outPort>
+    </ports>    
+</knimeNode>
