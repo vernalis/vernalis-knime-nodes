@@ -39,7 +39,6 @@
         </intro>
         
         <tab name="Query Options">
-        	<p>The master query tab, used to control options sent to the remote webservice, and enter and test the query.</p>
         	<option name="Ligand Image Size">Select the ligand image size to use in the generation of ligand image URLs 
         		(applies to Ligand Image field only).</option>
         	<option name="Use POST Query method (Faster)">Select the POST or GET service.  GET is older, but may limit number of report fields which can 
@@ -55,14 +54,12 @@
         </tab>
         
         <tab name="Report Options">
-        	<p>Master reporting tab, to control the selection of custom report fields in OutPort1.</p>
             <option name="Select report">Use the dropdown menu to select from a number of predefined standard reports.  Select 
             	'Customizable Table' to allow fine-grained selection of all custom report fields, using the individual and group field selectors.</option>
             <option name="Select All">Initialise a Customizable Table with all report fields.</option>
             <option name="Clear All">Initialise a Customizable Table with no report fields.</option>
         </tab>
-        
-        
+     
     </fullDescription>
     
     <ports>

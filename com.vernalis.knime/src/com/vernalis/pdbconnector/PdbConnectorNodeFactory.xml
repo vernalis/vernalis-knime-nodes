@@ -34,7 +34,6 @@
         </intro>
         
         <tab name="Query Options">
-        	<p>The master query tab, used to control options sent to the remote webservice, including query logic, and test the query.</p>
         	<option name="Remove Similar Sequences">Control the (optional) sequence similarity filter, used to remove similar 
         		sequences from the search hits.</option>
         	<option name="Match multiple query terms using">Control the composite query logic (individual query options can 
@@ -53,20 +52,17 @@
         </tab>
         
         <tab name="Report Options">
-        	<p>Master reporting tab, to control the selection of custom report fields in OutPort1.</p>
+
             <option name="Select report">Use the dropdown menu to select from a number of predefined standard reports.  Select 
             	'Customizable Table' to allow fine-grained selection of all custom report fields, using the individual and group field selectors.</option>
             <option name="Select All">Initialise a Customizable Table with all report fields.</option>
             <option name="Clear All">Initialise a Customizable Table with no report fields.</option>
         </tab>
         
-        
-        <tab name="All other tabs">The remaining tabs display the individual query options within each search category.
-            <ul>
-                <li>To select a query option, either check the "Selected" checkbox or click anywhere on one of the individual query parameters.</li>
-                <li>Enter the desired query parameters using the controls provided.</li>
-                <li>To unselect a query option, uncheck the "Selected" checkbox.</li>
-            </ul>
+        <tab name="Other query option tabs">
+			<option name="Selected">To select a query option, either check the "Selected" checkbox or click anywhere on one 
+			of the individual query parameters.  To unselect a query option, uncheck the "Selected" checkbox.</option>
+            <option name="Value(s)">Enter values for the query term in the box(es) provided</option>
         </tab>
         
     </fullDescription>
