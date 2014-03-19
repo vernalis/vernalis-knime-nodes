@@ -19,7 +19,8 @@
                 is encouraged to explore this resource for a full explanation of each search option.  The query is entered as a single XML string
                 in this node (For a user-friendly query builder version, see the original <i>PDB Connector</i> node).  This query can be copied
                 and pasted from the "Query Details" link on a PDB query results page at the <a href="http://www.rcsb.org">RCSB PDB</a>.  
-                The XML Query is made available as a flow variable (<i>xmlQuery</i>) after node execution.</p>
+                The XML Query is made available as a flow variable (<i>xmlQuery</i>) after node execution.  Worked examples of using the node 
+                using these methods are provided <a href="http://tech.knime.org/book/examples-of-using-the-pdb-connector-xml-query-node">here</a>.</p>
             <p>The node also allows for simple generation of a second report format table from a query run in either this or the <i>PDB Connector</i> node, as
             both nodes provide the query xml as a flow variable at the output ports.</p>
             <p>The node provides options to use either POST or GET report webservice variants.  The POST option is newer, and should be used unless machine memory is an issue 
@@ -36,28 +37,30 @@
                 For feedback and more information, please contact <a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
                 </p>
         </intro>
-        <option name="Query Options">Master query tab. Use this tab to:
-            <ul>
-                <li>Control the (optional) sequence similarity filter, used to remove similar sequences from the search hits.</li>
-                <li>Control the composite query logic (individual query options can be either ANDed or ORed together).</li>
-                <li>Select the ligand image size to use in the generation of ligand image URLs (applies to Ligand Image field only).</li>
-                <li>Clear all query options.</li>
-                <li>Test the current query, with display of xml query string and result count.  If a flow variable has been specified for the xml query, it's 
-                	value will be used in the test. (NB This behaviour is different from that in the PDB Connector node, where the 'Test' button uses 
-                	the query configured in the dialog, without reference to flow variable settings.)</li>
-                <li>Select the POST or GET service.  GET is older, but may limit number of report fields which can be returned, and is slower.  If using the GET
-                option, the maximum URL length can be set between 2000 and 8000.  Higher values allow more fields to be returned, and result in fewer calls to 
-                the webservice, but may fall foul of proxy servers.  The use of the POST service is recommended unless machine memory is a major issue.</li>
-            </ul>
-        </option>
-        <option name="Report Options">Master reporting tab, to control the selection of custom report fields in OutPort1.
-            <ul>
-                <li>Use the dropdown menu to select from a number of predefined standard reports</li>
-                <li>Or select Customizable Table to allow fine-grained selection of all custom report fields.</li>
-                <li>Use Select All to initialise a Customizable Table with all report fields.</li>
-                <li>Use Clear All to initialise a Customizable Table with no report fields.</li>
-            </ul>
-        </option>
+        
+        <tab name="Query Options">
+        	<p>The master query tab, used to control options sent to the remote webservice, and enter and test the query.</p>
+        	<option name="Ligand Image Size">Select the ligand image size to use in the generation of ligand image URLs 
+        		(applies to Ligand Image field only).</option>
+        	<option name="Use POST Query method (Faster)">Select the POST or GET service.  GET is older, but may limit number of report fields which can 
+        		be returned, and is slower.  If using the GET option, the maximum URL length can be set</option>
+        	<option name="Max. Report GET URL Length">If using the GET option, the maximum URL length can be set between 2000 and 8000.  Higher values 
+        		allow more fields to be returned, and result in fewer calls to the webservice, but may fall foul of proxy servers.</option>
+        	<option name="Clear Query">Clear all query options.  If a flow variable has been set for the XML Query, this will also be un-set</option>
+            <option name="Test Query">Test the current query, with display of result count.  If a flow variable has been 
+            	specified for the xml query, it's value will be used in the test. (NB This behaviour is different from that in the PDB Connector node, 
+            	where the 'Test' button uses the query configured in the dialog, without reference to flow variable settings.)</option>
+            <option name="Messages">Messages relating to the Test Query button are displayed in this area</option>
+            <option name="XML Query">The PDB XML advanced query text should be entered here.  See above for details</option>
+        </tab>
+        
+        <tab name="Report Options">
+        	<p>Master reporting tab, to control the selection of custom report fields in OutPort1.</p>
+            <option name="Select report">Use the dropdown menu to select from a number of predefined standard reports.  Select 
+            	'Customizable Table' to allow fine-grained selection of all custom report fields, using the individual and group field selectors.</option>
+            <option name="Select All">Initialise a Customizable Table with all report fields.</option>
+            <option name="Clear All">Initialise a Customizable Table with no report fields.</option>
+        </tab>
         
         
     </fullDescription>

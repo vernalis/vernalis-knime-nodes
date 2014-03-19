@@ -32,33 +32,42 @@
                 For feedback and more information, please contact <a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
                 </p>
         </intro>
-        <option name="Query Options">Master query tab. Use this tab to:
-            <ul>
-                <li>Control the (optional) sequence similarity filter, used to remove similar sequences from the search hits.</li>
-                <li>Control the composite query logic (individual query options can be either ANDed or ORed together).</li>
-                <li>Select the ligand image size to use in the generation of ligand image URLs (applies to Ligand Image field only).</li>
-                <li>Clear all query options.</li>
-                <li>Test the current query, with display of xml query string and result count.</li>
-                <li>Select the POST or GET service.  GET is older, but may limit number of report fields which can be returned, and is slower.  If using the GET
-                option, the maximum URL length can be set between 2000 and 8000.  Higher values allow more fields to be returned, and result in fewer calls to 
-                the webservice, but may fall foul of proxy servers.  The use of the POST service is recommended unless machine memory is a major issue.</li>
-            </ul>
-        </option>
-        <option name="Report Options">Master reporting tab, to control the selection of custom report fields in OutPort1.
-            <ul>
-                <li>Use the dropdown menu to select from a number of predefined standard reports</li>
-                <li>Or select Customizable Table to allow fine-grained selection of all custom report fields.</li>
-                <li>Use Select All to initialise a Customizable Table with all report fields.</li>
-                <li>Use Clear All to initialise a Customizable Table with no report fields.</li>
-            </ul>
-        </option>
-        <option name="All other tabs">The remaining tabs display the individual query options within each search category.
+        
+        <tab name="Query Options">
+        	<p>The master query tab, used to control options sent to the remote webservice, including query logic, and test the query.</p>
+        	<option name="Remove Similar Sequences">Control the (optional) sequence similarity filter, used to remove similar 
+        		sequences from the search hits.</option>
+        	<option name="Match multiple query terms using">Control the composite query logic (individual query options can 
+        		be either ANDed or ORed together)</option>
+        	<option name="Ligand Image Size">Select the ligand image size to use in the generation of ligand image URLs 
+        		(applies to Ligand Image field only).</option>
+        	<option name="Use POST Query method (Faster)">Select the POST or GET service.  GET is older, but may limit number of report fields which can 
+        		be returned, and is slower.  If using the GET option, the maximum URL length can be set</option>
+        	<option name="Max. Report GET URL Length">If using the GET option, the maximum URL length can be set between 2000 and 8000.  Higher values 
+        		allow more fields to be returned, and result in fewer calls to the webservice, but may fall foul of proxy servers.</option>
+        	<option name="Clear Query">Clear all query options</option>
+            <option name="Test Query">Test the current query, with display of xml query string and result count.  NB The 'Test' button uses 
+            	the query configured in the dialog, without reference to flow variable settings.</option>
+            <option name="xmlQuery string">The xml query string generated from the user settings is displayed here when the 
+            	'Test' button has been pressed</option>
+        </tab>
+        
+        <tab name="Report Options">
+        	<p>Master reporting tab, to control the selection of custom report fields in OutPort1.</p>
+            <option name="Select report">Use the dropdown menu to select from a number of predefined standard reports.  Select 
+            	'Customizable Table' to allow fine-grained selection of all custom report fields, using the individual and group field selectors.</option>
+            <option name="Select All">Initialise a Customizable Table with all report fields.</option>
+            <option name="Clear All">Initialise a Customizable Table with no report fields.</option>
+        </tab>
+        
+        
+        <tab name="All other tabs">The remaining tabs display the individual query options within each search category.
             <ul>
                 <li>To select a query option, either check the "Selected" checkbox or click anywhere on one of the individual query parameters.</li>
                 <li>Enter the desired query parameters using the controls provided.</li>
                 <li>To unselect a query option, uncheck the "Selected" checkbox.</li>
             </ul>
-        </option>
+        </tab>
         
     </fullDescription>
     
