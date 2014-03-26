@@ -18,26 +18,22 @@ package com.vernalis.nodes.fingerprint.properties;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
-
+import java.util.Map.Entry;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
-import org.knime.core.data.RowKey;
-import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.container.AbstractCellFactory;
+import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.vector.bitvector.BitVectorValue;
 import org.knime.core.data.vector.bitvector.DenseBitVectorCell;
 import org.knime.core.data.vector.bitvector.SparseBitVectorCell;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -61,23 +57,22 @@ public class FpPropsNodeModel extends NodeModel {
 	static final String CFG_FPLENGTH = "Fingerprint_Length";
 	static final String CFG_FPCARDINALITY = "Fingerprint_Cardinality";
 
-	private final SettingsModelString m_fpColName = new SettingsModelString(
+	private SettingsModelString m_fpColName = new SettingsModelString(
 			CFG_FPCOL, null);
-	private final SettingsModelBoolean m_fpType = new SettingsModelBoolean(
+	private SettingsModelBoolean m_fpType = new SettingsModelBoolean(
 			CFG_FPTYPE, true);
-	private final SettingsModelBoolean m_fpLen = new SettingsModelBoolean(
+	private SettingsModelBoolean m_fpLen = new SettingsModelBoolean(
 			CFG_FPLENGTH, true);
-	private final SettingsModelBoolean m_fpCardinality = new SettingsModelBoolean(
+	private SettingsModelBoolean m_fpCardinality = new SettingsModelBoolean(
 			CFG_FPCARDINALITY, true);
 
 	private DataTableSpec m_Spec_0; // The datatable spec
+	private Map<String, DataType> m_NewColNames_0;
 
 	/**
 	 * Constructor for the node model.
 	 */
 	protected FpPropsNodeModel() {
-
-		// TODO: Specify the amount of input and output ports needed.
 		super(1, 1);
 	}
 
@@ -87,108 +82,79 @@ public class FpPropsNodeModel extends NodeModel {
 	@Override
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
 			final ExecutionContext exec) throws Exception {
-		// Find the FP column
-		BufferedDataTable table = inData[0];
-		final int fpInd = table.getSpec().findColumnIndex(
-				m_fpColName.getStringValue());
+		ColumnRearranger rearranger = createColumnRearranger(inData[0]
+				.getDataTableSpec());
+		BufferedDataTable outTable = exec.createColumnRearrangeTable(inData[0],
+				rearranger, exec);
+		// // Find the FP column
+		// BufferedDataTable table = inData[0];
+		// final int fpInd = table.getSpec().findColumnIndex(
+		// m_fpColName.getStringValue());
+		//
+		// // Create the new output table Buffered Data Containers
+		// final BufferedDataContainer dc_0 =
+		// exec.createDataContainer(m_Spec_0);
+		//
+		// // Handle Empty Tables
+		// if (table.getRowCount() == 0) {
+		// dc_0.close();
+		// return new BufferedDataTable[] { dc_0.getTable() };
+		// }
+		//
+		// // Count the new columns
+		// int newColCnt = 0;
+		// newColCnt += (m_fpType.getBooleanValue()) ? 1 : 0;
+		// newColCnt += (m_fpLen.getBooleanValue()) ? 1 : 0;
+		// newColCnt += (m_fpCardinality.getBooleanValue()) ? 1 : 0;
+		//
+		// // Now loop through the table
+		// int nRows = table.getRowCount();
+		// Double progressPerRow = 1.0 / nRows;
+		// int rowCnt = 0;
+		// DataType fpType = inData[0].getDataTableSpec()
+		// .getColumnSpec(m_fpColName.getStringValue()).getType();
+		//
+		// for (final DataRow row : table) {
+		// exec.checkCanceled();
+		// exec.setProgress((rowCnt * progressPerRow), "Processing Row "
+		// + (rowCnt++) + " of " + nRows);
+		//
+		// DataCell fpCell = row.getCell(fpInd);
+		//
+		// // Create a container array for the new cells with missing values
+		// DataCell[] newCells = new DataCell[newColCnt];
+		// Arrays.fill(newCells, DataType.getMissingCell());
+		//
+		// if (fpCell.isMissing()) {
+		// // Deal with a missing FP cell
+		// dc_0.addRowToTable(createClone(row.getKey(), row, newCells));
+		// continue;
+		// }
+		//
+		// int newColId = 0;
+		// if (m_fpType.getBooleanValue()) {
+		// newCells[newColId++] = new StringCell(fpType.toString());
+		// }
+		//
+		// if (m_fpLen.getBooleanValue()) {
+		// newCells[newColId++] = new LongCell(
+		// (fpType == SparseBitVectorCell.TYPE) ? ((SparseBitVectorCell) fpCell)
+		// .length() : ((DenseBitVectorCell) fpCell)
+		// .length());
+		// }
+		//
+		// if (m_fpCardinality.getBooleanValue()) {
+		// newCells[newColId++] = new LongCell(
+		// (fpType == SparseBitVectorCell.TYPE) ? ((SparseBitVectorCell) fpCell)
+		// .cardinality() : ((DenseBitVectorCell) fpCell)
+		// .cardinality());
+		// }
+		// dc_0.addRowToTable(createClone(row.getKey(), row, newCells));
+		// }
+		// dc_0.close();
+		// BufferedDataTable outTable = dc_0.getTable();
 
-		// Create the new output table Buffered Data Containers
-		final BufferedDataContainer dc_0 = exec.createDataContainer(m_Spec_0);
-
-		// Handle Empty Tables
-		if (table.getRowCount() == 0) {
-			dc_0.close();
-			return new BufferedDataTable[] { dc_0.getTable() };
-		}
-
-		// Count the new columns
-		int newColCnt = 0;
-		newColCnt += (m_fpType.getBooleanValue()) ? 1 : 0;
-		newColCnt += (m_fpLen.getBooleanValue()) ? 1 : 0;
-		newColCnt += (m_fpCardinality.getBooleanValue()) ? 1 : 0;
-
-		// Now loop through the table
-		int nRows = table.getRowCount();
-		Double progressPerRow = 1.0 / nRows;
-		int rowCnt = 0;
-		DataType fpType = inData[0].getDataTableSpec()
-				.getColumnSpec(m_fpColName.getStringValue()).getType();
-
-		for (final DataRow row : table) {
-			exec.checkCanceled();
-			exec.setProgress((rowCnt * progressPerRow), "Processing Row "
-					+ (rowCnt++) + " of " + nRows);
-
-			DataCell fpCell = row.getCell(fpInd);
-
-			// Create a container array for the new cells with missing values
-			DataCell[] newCells = new DataCell[newColCnt];
-			Arrays.fill(newCells, DataType.getMissingCell());
-
-			if (fpCell.isMissing()) {
-				// Deal with a missing FP cell
-				dc_0.addRowToTable(createClone(row.getKey(), row, newCells));
-				continue;
-			}
-
-			int newColId = 0;
-			if (m_fpType.getBooleanValue()) {
-				newCells[newColId++] = new StringCell(fpType.toString());
-			}
-
-			if (m_fpLen.getBooleanValue()) {
-				newCells[newColId++] = new LongCell(
-						(fpType == SparseBitVectorCell.TYPE) ? ((SparseBitVectorCell) fpCell)
-								.length() : ((DenseBitVectorCell) fpCell)
-								.length());
-			}
-			
-			if (m_fpCardinality.getBooleanValue()) {
-				newCells[newColId++] = new LongCell(
-						(fpType == SparseBitVectorCell.TYPE) ? ((SparseBitVectorCell) fpCell)
-								.cardinality() : ((DenseBitVectorCell) fpCell)
-								.cardinality());
-			}
-			dc_0.addRowToTable(createClone(row.getKey(), row, newCells));
-		}
-		dc_0.close();
-
-		// TODO: Return a BufferedDataTable for each output port
-		return new BufferedDataTable[] { dc_0.getTable() };
-	}
-
-	/**
-	 * Function to create a clone of a row and add new cells to it
-	 * 
-	 * @param newKey
-	 *            The new RowKey
-	 * @param row
-	 *            The existing data row
-	 * @param newCells
-	 *            Array containing the new DataCells
-	 * @return
-	 */
-	private DefaultRow createClone(final RowKey newKey, final DataRow row,
-			final DataCell[] newCells) {
-		// Create a clone of the existing row adding the new columns to the end
-		// Calculate number of cells
-		int cellCount = row.getNumCells();
-		cellCount += newCells.length;
-
-		final DataCell[] newRowCells = new DataCell[cellCount];
-		int cellIdx = 0;
-
-		// First loop through the existing cells in the row, adding them to the
-		// new row
-		for (int i = 0, length = row.getNumCells(); i < length; i++) {
-			newRowCells[cellIdx++] = row.getCell(i);
-		}
-
-		// now add the new cells
-		for (DataCell temp : newCells) {
-			newRowCells[cellIdx++] = temp;
-		}
-		return new DefaultRow(newKey, newRowCells);
+		return new BufferedDataTable[] { outTable };
 	}
 
 	/**
@@ -196,7 +162,6 @@ public class FpPropsNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO: generated method stub
 	}
 
 	/**
@@ -253,103 +218,79 @@ public class FpPropsNodeModel extends NodeModel {
 		// We omit the old FP column and create a new DenseBitVector column with
 		// the same name
 		String suffix = " (" + m_fpColName.getStringValue() + ")";
-		Map<String, DataType> newColNames_0 = new LinkedHashMap<String, DataType>();
+		m_NewColNames_0 = new LinkedHashMap<String, DataType>();
 		if (m_fpType.getBooleanValue()) {
-			newColNames_0.put("Fingerprint Type" + suffix, StringCell.TYPE);
+			m_NewColNames_0.put("Fingerprint Type" + suffix, StringCell.TYPE);
 		}
 		if (m_fpLen.getBooleanValue()) {
-			newColNames_0.put("Fingerprint Length" + suffix, LongCell.TYPE);
+			m_NewColNames_0.put("Fingerprint Length" + suffix, LongCell.TYPE);
 		}
 		if (m_fpCardinality.getBooleanValue()) {
-			newColNames_0
-					.put("Fingerprint Cardinality" + suffix, LongCell.TYPE);
+			m_NewColNames_0.put("Fingerprint Cardinality" + suffix,
+					LongCell.TYPE);
 		}
 
-		if (newColNames_0.isEmpty()) {
+		if (m_NewColNames_0.isEmpty()) {
 			// Check we are actually adding some columns
 			setWarningMessage("No new columns selected");
 			throw new InvalidSettingsException("No new columns selected");
 		}
 
-		m_Spec_0 = createTableSpec(inSpecs[0], newColNames_0);
+		m_Spec_0 = createColumnRearranger(inSpecs[0]).createSpec();
+		// m_Spec_0 = createTableSpec(inSpecs[0], newColNames_0);
 		return new DataTableSpec[] { m_Spec_0 };
 	}
 
-	/**
-	 * Method to add a Map of Column Names and Types to an existing input table.
-	 * Use a LinkedHashMap to preserve the order of columns
-	 * 
-	 * @param spec
-	 *            The existing input DataTableSpec
-	 * @param newColNames
-	 *            Map<String, DataType> object of new column names and Types
-	 * @return DataTableSpec object containing the new columns appended to spec
-	 */
-	private DataTableSpec createTableSpec(final DataTableSpec spec,
-			Map<String, DataType> newColNames) {
-		// create a collection to put the existing columns into
-		final Collection<DataColumnSpec> specs = new LinkedList<DataColumnSpec>();
+	private ColumnRearranger createColumnRearranger(DataTableSpec spec) {
+		ColumnRearranger rearranger = new ColumnRearranger(spec);
 
-		// Start by adding the existing columns
-		final int noOfCols = spec.getNumColumns();
-		for (int i = 0; i < noOfCols; i++) {
-			final DataColumnSpec currentSpec = spec.getColumnSpec(i);
-			specs.add(currentSpec);
+		// Create the specs of the new columns
+		DataColumnSpec[] colSpecs = new DataColumnSpec[m_NewColNames_0.size()];
+		int colind = 0;
+		for (Entry<String, DataType> col : m_NewColNames_0.entrySet()) {
+			colSpecs[colind++] = new DataColumnSpecCreator(col.getKey(),
+					col.getValue()).createSpec();
 		}
 
-		// Now we need to add the new columns - making sure names are unique
-		DataColumnSpecCreator specCreator;
-		for (String newColName : newColNames.keySet()) {
-			specCreator = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(spec, newColName),
-					newColNames.get(newColName));
-			specs.add(specCreator.createSpec());
-		}
+		final int fpInd = spec.findColumnIndex(m_fpColName.getStringValue());
 
-		final DataTableSpec resultSpec = new DataTableSpec(
-				specs.toArray(new DataColumnSpec[0]));
-		return resultSpec;
-	}
+		final DataType fpType = spec
+				.getColumnSpec(m_fpColName.getStringValue()).getType();
+		rearranger.append(new AbstractCellFactory(colSpecs) {
 
-	/**
-	 * Method to add a Map of Column Names and Types to an existing input table.
-	 * Use a LinkedHashMap to preserve the order of columns
-	 * 
-	 * @param spec
-	 *            The existing input DataTableSpec
-	 * @param colsToSkip
-	 *            A Set of the column indices from the input table to skip in
-	 *            the output table
-	 * @param newColNames
-	 *            Map<String, DataType> object of new column names and Types
-	 * @return DataTableSpec object containing the new columns appended to spec
-	 */
-	private DataTableSpec createTableSpec(final DataTableSpec spec,
-			Set<Integer> colsToSkip, Map<String, DataType> newColNames) {
-		// create a collection to put the existing columns into
-		final Collection<DataColumnSpec> specs = new LinkedList<DataColumnSpec>();
+			@Override
+			public DataCell[] getCells(DataRow row) {
 
-		// Start by adding the existing columns
-		final int noOfCols = spec.getNumColumns();
-		for (int i = 0; i < noOfCols; i++) {
-			if (!colsToSkip.contains(i)) {
-				final DataColumnSpec currentSpec = spec.getColumnSpec(i);
-				specs.add(currentSpec);
+				DataCell[] resultCells = new DataCell[m_NewColNames_0.size()];
+				Arrays.fill(resultCells, DataType.getMissingCell());
+				DataCell fpCell = row.getCell(fpInd);
+				if (!fpCell.isMissing()) {
+					int newColId = 0;
+					if (m_fpType.getBooleanValue()) {
+						resultCells[newColId++] = new StringCell(fpType
+								.toString());
+					}
+
+					if (m_fpLen.getBooleanValue()) {
+						resultCells[newColId++] = new LongCell(
+								(fpType == SparseBitVectorCell.TYPE) ? ((SparseBitVectorCell) fpCell)
+										.length()
+										: ((DenseBitVectorCell) fpCell)
+												.length());
+					}
+
+					if (m_fpCardinality.getBooleanValue()) {
+						resultCells[newColId++] = new LongCell(
+								(fpType == SparseBitVectorCell.TYPE) ? ((SparseBitVectorCell) fpCell)
+										.cardinality()
+										: ((DenseBitVectorCell) fpCell)
+												.cardinality());
+					}
+				}
+				return resultCells;
 			}
-		}
-
-		// Now we need to add the new columns - making sure names are unique
-		DataColumnSpecCreator specCreator;
-		for (String newColName : newColNames.keySet()) {
-			specCreator = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(spec, newColName),
-					newColNames.get(newColName));
-			specs.add(specCreator.createSpec());
-		}
-
-		final DataTableSpec resultSpec = new DataTableSpec(
-				specs.toArray(new DataColumnSpec[0]));
-		return resultSpec;
+		});
+		return rearranger;
 	}
 
 	/**
@@ -394,7 +335,7 @@ public class FpPropsNodeModel extends NodeModel {
 	protected void loadInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
-		// TODO: generated method stub
+
 	}
 
 	/**
@@ -404,7 +345,7 @@ public class FpPropsNodeModel extends NodeModel {
 	protected void saveInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
-		// TODO: generated method stub
+
 	}
 
 }
