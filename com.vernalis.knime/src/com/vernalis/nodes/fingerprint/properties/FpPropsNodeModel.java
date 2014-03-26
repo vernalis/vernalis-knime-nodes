@@ -151,14 +151,16 @@ public class FpPropsNodeModel extends NodeModel {
 		String suffix = " (" + m_fpColName.getStringValue() + ")";
 		m_NewColNames_0 = new LinkedHashMap<String, DataType>();
 		if (m_fpType.getBooleanValue()) {
-			m_NewColNames_0.put("Fingerprint Type" + suffix, StringCell.TYPE);
+			m_NewColNames_0.put(DataTableSpec.getUniqueColumnName(inSpecs[0],
+					"Fingerprint Type" + suffix), StringCell.TYPE);
 		}
 		if (m_fpLen.getBooleanValue()) {
-			m_NewColNames_0.put("Fingerprint Length" + suffix, LongCell.TYPE);
+			m_NewColNames_0.put(DataTableSpec.getUniqueColumnName(inSpecs[0],
+					"Fingerprint Length" + suffix), LongCell.TYPE);
 		}
 		if (m_fpCardinality.getBooleanValue()) {
-			m_NewColNames_0.put("Fingerprint Cardinality" + suffix,
-					LongCell.TYPE);
+			m_NewColNames_0.put(DataTableSpec.getUniqueColumnName(inSpecs[0],
+					"Fingerprint Cardinality" + suffix), LongCell.TYPE);
 		}
 
 		if (m_NewColNames_0.isEmpty()) {
@@ -173,7 +175,7 @@ public class FpPropsNodeModel extends NodeModel {
 	}
 
 	private ColumnRearranger createColumnRearranger(DataTableSpec spec) {
-		
+
 		// Create the specs of the new columns
 		DataColumnSpec[] colSpecs = new DataColumnSpec[m_NewColNames_0.size()];
 		int colind = 0;
@@ -182,22 +184,22 @@ public class FpPropsNodeModel extends NodeModel {
 					col.getValue()).createSpec();
 		}
 
-		//Find the Fingerprint column and Type
+		// Find the Fingerprint column and Type
 		final int fpInd = spec.findColumnIndex(m_fpColName.getStringValue());
 		final DataType fpType = spec
 				.getColumnSpec(m_fpColName.getStringValue()).getType();
-		
-		//Create the rearranger
+
+		// Create the rearranger
 		ColumnRearranger rearranger = new ColumnRearranger(spec);
 		rearranger.append(new AbstractCellFactory(colSpecs) {
 
 			@Override
 			public DataCell[] getCells(DataRow row) {
-				//Do the calculation
+				// Do the calculation
 				DataCell[] resultCells = new DataCell[m_NewColNames_0.size()];
 				Arrays.fill(resultCells, DataType.getMissingCell());
-				
-				//Get the Fingerprint
+
+				// Get the Fingerprint
 				DataCell fpCell = row.getCell(fpInd);
 				if (!fpCell.isMissing()) {
 					int newColId = 0;
