@@ -86,73 +86,6 @@ public class FpPropsNodeModel extends NodeModel {
 				.getDataTableSpec());
 		BufferedDataTable outTable = exec.createColumnRearrangeTable(inData[0],
 				rearranger, exec);
-		// // Find the FP column
-		// BufferedDataTable table = inData[0];
-		// final int fpInd = table.getSpec().findColumnIndex(
-		// m_fpColName.getStringValue());
-		//
-		// // Create the new output table Buffered Data Containers
-		// final BufferedDataContainer dc_0 =
-		// exec.createDataContainer(m_Spec_0);
-		//
-		// // Handle Empty Tables
-		// if (table.getRowCount() == 0) {
-		// dc_0.close();
-		// return new BufferedDataTable[] { dc_0.getTable() };
-		// }
-		//
-		// // Count the new columns
-		// int newColCnt = 0;
-		// newColCnt += (m_fpType.getBooleanValue()) ? 1 : 0;
-		// newColCnt += (m_fpLen.getBooleanValue()) ? 1 : 0;
-		// newColCnt += (m_fpCardinality.getBooleanValue()) ? 1 : 0;
-		//
-		// // Now loop through the table
-		// int nRows = table.getRowCount();
-		// Double progressPerRow = 1.0 / nRows;
-		// int rowCnt = 0;
-		// DataType fpType = inData[0].getDataTableSpec()
-		// .getColumnSpec(m_fpColName.getStringValue()).getType();
-		//
-		// for (final DataRow row : table) {
-		// exec.checkCanceled();
-		// exec.setProgress((rowCnt * progressPerRow), "Processing Row "
-		// + (rowCnt++) + " of " + nRows);
-		//
-		// DataCell fpCell = row.getCell(fpInd);
-		//
-		// // Create a container array for the new cells with missing values
-		// DataCell[] newCells = new DataCell[newColCnt];
-		// Arrays.fill(newCells, DataType.getMissingCell());
-		//
-		// if (fpCell.isMissing()) {
-		// // Deal with a missing FP cell
-		// dc_0.addRowToTable(createClone(row.getKey(), row, newCells));
-		// continue;
-		// }
-		//
-		// int newColId = 0;
-		// if (m_fpType.getBooleanValue()) {
-		// newCells[newColId++] = new StringCell(fpType.toString());
-		// }
-		//
-		// if (m_fpLen.getBooleanValue()) {
-		// newCells[newColId++] = new LongCell(
-		// (fpType == SparseBitVectorCell.TYPE) ? ((SparseBitVectorCell) fpCell)
-		// .length() : ((DenseBitVectorCell) fpCell)
-		// .length());
-		// }
-		//
-		// if (m_fpCardinality.getBooleanValue()) {
-		// newCells[newColId++] = new LongCell(
-		// (fpType == SparseBitVectorCell.TYPE) ? ((SparseBitVectorCell) fpCell)
-		// .cardinality() : ((DenseBitVectorCell) fpCell)
-		// .cardinality());
-		// }
-		// dc_0.addRowToTable(createClone(row.getKey(), row, newCells));
-		// }
-		// dc_0.close();
-		// BufferedDataTable outTable = dc_0.getTable();
 
 		return new BufferedDataTable[] { outTable };
 	}
@@ -215,8 +148,6 @@ public class FpPropsNodeModel extends NodeModel {
 		}
 
 		// Now we need to build the output table spec
-		// We omit the old FP column and create a new DenseBitVector column with
-		// the same name
 		String suffix = " (" + m_fpColName.getStringValue() + ")";
 		m_NewColNames_0 = new LinkedHashMap<String, DataType>();
 		if (m_fpType.getBooleanValue()) {
@@ -242,8 +173,7 @@ public class FpPropsNodeModel extends NodeModel {
 	}
 
 	private ColumnRearranger createColumnRearranger(DataTableSpec spec) {
-		ColumnRearranger rearranger = new ColumnRearranger(spec);
-
+		
 		// Create the specs of the new columns
 		DataColumnSpec[] colSpecs = new DataColumnSpec[m_NewColNames_0.size()];
 		int colind = 0;
@@ -252,17 +182,22 @@ public class FpPropsNodeModel extends NodeModel {
 					col.getValue()).createSpec();
 		}
 
+		//Find the Fingerprint column and Type
 		final int fpInd = spec.findColumnIndex(m_fpColName.getStringValue());
-
 		final DataType fpType = spec
 				.getColumnSpec(m_fpColName.getStringValue()).getType();
+		
+		//Create the rearranger
+		ColumnRearranger rearranger = new ColumnRearranger(spec);
 		rearranger.append(new AbstractCellFactory(colSpecs) {
 
 			@Override
 			public DataCell[] getCells(DataRow row) {
-
+				//Do the calculation
 				DataCell[] resultCells = new DataCell[m_NewColNames_0.size()];
 				Arrays.fill(resultCells, DataType.getMissingCell());
+				
+				//Get the Fingerprint
 				DataCell fpCell = row.getCell(fpInd);
 				if (!fpCell.isMissing()) {
 					int newColId = 0;
