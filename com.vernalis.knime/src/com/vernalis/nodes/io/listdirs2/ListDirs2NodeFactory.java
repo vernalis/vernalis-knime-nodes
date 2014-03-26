@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright (C) 2013, Vernalis (R&D) Ltd
+ *  Copyright (C) 2013, 2014, Vernalis (R&D) Ltd
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -52,7 +52,7 @@ public class ListDirs2NodeFactory
     @Override
     public NodeView<ListDirs2NodeModel> createNodeView(final int viewIndex,
             final ListDirs2NodeModel nodeModel) {
-        return new ListDirs2NodeView(nodeModel);
+        return null;
     }
 
     /**

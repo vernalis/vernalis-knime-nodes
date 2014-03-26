@@ -21,11 +21,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataType;
+import org.knime.core.data.date.DateAndTimeCell;
+import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.BufferedDataContainer;
@@ -47,207 +52,320 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 public class ListDirs2NodeModel extends NodeModel {
 
 	// the logger instance
-    private static final NodeLogger logger = NodeLogger
-            .getLogger(ListDirs2NodeModel.class);
+	private static final NodeLogger logger = NodeLogger
+			.getLogger(ListDirs2NodeModel.class);
 
-    /** the settings key which is used to retrieve and
-        store the settings (from the dialog or from a settings file)
-       (package visibility to be usable from the dialog). */
+	/**
+	 * the settings key which is used to retrieve and store the settings (from
+	 * the dialog or from a settings file) (package visibility to be usable from
+	 * the dialog).
+	 */
 
 	static final String CFG_PATH = "Path_name";
 	static final String CFG_SUB_DIRS = "Include_Subfolders";
+	static final String CFG_INCL_CTG_PATH = "Include_Containing_Path";
+	static final String CFG_FOLDER_NAME = "Include_Folder_Name";
+	static final String CFG_IS_VIS = "Include_Visibility";
+	static final String CFG_LAST_MOD = "Include_LastModified";
 
+	private final SettingsModelString m_Path = new SettingsModelString(
+			CFG_PATH, null);
 
-    private final SettingsModelString m_Path =
-    		new SettingsModelString(CFG_PATH, null);
+	private final SettingsModelBoolean m_subDirs = new SettingsModelBoolean(
+			CFG_SUB_DIRS, false);
 
-    private final SettingsModelBoolean m_subDirs =
-    		new SettingsModelBoolean(CFG_SUB_DIRS, false);
+	private final SettingsModelBoolean m_ctgDirPath = new SettingsModelBoolean(
+			CFG_INCL_CTG_PATH, true);
 
-    private BufferedDataContainer m_dc;
+	private final SettingsModelBoolean m_folderName = new SettingsModelBoolean(
+			CFG_FOLDER_NAME, true);
 
-    private static final DataTableSpec spec = new DataTableSpec(createDataColumnSpec());
+	private final SettingsModelBoolean m_isVisible = new SettingsModelBoolean(
+			CFG_IS_VIS, true);
 
-    private int m_analysed_files;
+	private final SettingsModelBoolean m_lastModified = new SettingsModelBoolean(
+			CFG_LAST_MOD, true);
 
+	private BufferedDataContainer m_dc;
 
-    private int m_currentRowID;
+	private DataTableSpec spec;
 
+	private int m_analysed_files;
 
-    /**
-     * Constructor for the node model.
-     */
-    protected ListDirs2NodeModel() {
+	private int m_currentRowID;
 
-        super(0, 1);
-    }
+	/**
+	 * Constructor for the node model.
+	 */
+	protected ListDirs2NodeModel() {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
-            final ExecutionContext exec) throws Exception {
+		super(0, 1);
+	}
 
-    	//List the folders from the dialogue
-    	String[] folders = m_Path.getStringValue().split(";");
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
+			final ExecutionContext exec) throws Exception {
 
-    	//Now create a data container for the new output table
+		// List the folders from the dialogue
+		String[] folders = m_Path.getStringValue().split(";");
 
-    	m_dc = exec.createDataContainer(spec);
+		// Now create a data container for the new output table
 
-    	m_currentRowID = 0;
-    	m_analysed_files = 0;
+		m_dc = exec.createDataContainer(spec);
 
-    	for (String folder : folders){
-    		folder = folder.trim();
-    		File location = new File(folder);
-    		if (!location.isDirectory()) {
-    			//Handle URLs instead of paths
-                try {
-                    if (folder.startsWith("file:")) {
+		m_currentRowID = 0;
+		m_analysed_files = 0;
+
+		for (String folder : folders) {
+			folder = folder.trim();
+			File location = new File(folder);
+			if (!location.isDirectory()) {
+				// Handle URLs instead of paths
+				try {
+					if (folder.startsWith("file:")) {
 						folder = folder.substring(5);
-                    }
-                    location = new File((new URI(folder)).getPath());
-                } catch (Exception e) {
-                    throw new InvalidSettingsException("\"" + folder
-                            + "\" does not exist or is not a directory");
-                }
-                if (!location.isDirectory()) {
-                    throw new InvalidSettingsException("\"" + folder
-                            + "\" does not exist or is not a directory");
-                }
-            }
-    		addLocation(location,exec);
+					}
+					location = new File((new URI(folder)).getPath());
+				} catch (Exception e) {
+					throw new InvalidSettingsException("\"" + folder
+							+ "\" does not exist or is not a directory");
+				}
+				if (!location.isDirectory()) {
+					throw new InvalidSettingsException("\"" + folder
+							+ "\" does not exist or is not a directory");
+				}
+			}
+			addLocation(location, exec);
 
-    	}
-    	m_dc.close();
+		}
+		m_dc.close();
 
+		return new BufferedDataTable[] { m_dc.getTable() };
 
-        return new BufferedDataTable[] {m_dc.getTable()};
+	}
 
-    }
+	private void addLocation(final File location, final ExecutionContext exec)
+			throws CanceledExecutionException {
 
-    private void addLocation (final File location, final ExecutionContext exec)
-    throws CanceledExecutionException{
+		// List the folders - recursively if we are doing subfolders too
+		m_analysed_files++;
+		exec.setProgress(m_analysed_files
+				+ " file(s) and folder(s) analysed..." + m_currentRowID
+				+ " added to output");
+		exec.checkCanceled();
 
-    	//List the folders - recursively if we are doing subfolders too
-    	m_analysed_files++;
-    	exec.setProgress(m_analysed_files + " file(s) and folder(s) analysed..." + m_currentRowID +" added to output");
-    	exec.checkCanceled();
+		if (location.isDirectory()) {
+			File[] listFiles = location.listFiles();
+			if (listFiles != null) {
+				for (File loc : listFiles) {
+					if (loc.isDirectory()) {
+						// We need to add a directory whenever it is found
+						try {
+							DataCell[] row = new DataCell[spec.getNumColumns()];
+							Arrays.fill(row, DataType.getMissingCell());
+							int colIndex = 0;
+							row[colIndex++] = new StringCell(
+									loc.getAbsolutePath());
+							row[colIndex++] = new StringCell(loc
+									.getAbsoluteFile().toURI().toURL()
+									.toString());
 
-    	if (location.isDirectory()){
-    		File[] listFiles = location.listFiles();
-    		if (listFiles != null){
-    			for (File loc:listFiles){
-    				if (loc.isDirectory()){
-    					//We need to add a directory whenever it is found
-    					try{
-    						DataCell[] row = new DataCell[2];
-    						row[0] = new StringCell(loc.getAbsolutePath());
-    						row[1] = new StringCell(loc.getAbsoluteFile().toURI().toURL().toString());
-    						m_dc.addRowToTable(new DefaultRow("Row " + m_currentRowID, row));
-    						m_currentRowID++;
+							if (m_folderName.getBooleanValue()) {
+								row[colIndex++] = new StringCell(loc.getName());
+							}
 
-    					} catch (MalformedURLException e){
-    						logger.error("Unable to create URL to folder", e);
-    					}
+							if (m_ctgDirPath.getBooleanValue()) {
+								File parent = loc.getParentFile();
+								if (parent != null) {
+									row[colIndex++] = new StringCell(
+											parent.getAbsolutePath());
+									row[colIndex++] = new StringCell(parent
+											.getAbsoluteFile().toURI().toURL()
+											.toString());
+								}
+							}
 
-    					//Now deal with subfolders
-    					if (m_subDirs.getBooleanValue()){
-    						//Recursively call to add them
-    						addLocation(loc,exec);
+							if (m_isVisible.getBooleanValue()) {
+								// NB we return opposite result of "isHidden" as
+								// we are asking "isVisible"
+								row[colIndex++] = (loc.isHidden()) ? BooleanCell.FALSE
+										: BooleanCell.TRUE;
+							}
 
-    					}
-    				}
-    			}
-    		}
-    	}
-    }
+							if (m_lastModified.getBooleanValue()) {
+								row[colIndex++] = longTimeToDateAndTimeCell(loc
+										.lastModified());
+							}
 
-    private static DataColumnSpec[] createDataColumnSpec() {
-    	//Create the output table spec
-        DataColumnSpec[] dcs = new DataColumnSpec[2];
-        dcs[0] =
-            new DataColumnSpecCreator("Location", StringCell.TYPE).createSpec();
-        dcs[1] = new DataColumnSpecCreator("URL", StringCell.TYPE).createSpec();
-        return dcs;
-    }
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void reset() {
-        // TODO: generated method stub
-    }
+							m_dc.addRowToTable(new DefaultRow("Row "
+									+ m_currentRowID, row));
+							m_currentRowID++;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
-            throws InvalidSettingsException {
+						} catch (MalformedURLException e) {
+							logger.error("Unable to create URL to folder", e);
+						}
 
-    	//Check there is something in the path box
-    	if (m_Path == null){
-    		throw new InvalidSettingsException("No folder selected");
-    	}
+						// Deal with last-modified and isVisible
 
-        return new DataTableSpec[]{spec};
-    }
+						// Now deal with subfolders
+						if (m_subDirs.getBooleanValue()) {
+							// Recursively call to add them
+							addLocation(loc, exec);
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void saveSettingsTo(final NodeSettingsWO settings) {
+						}
+					}
+				}
+			}
+		}
+	}
 
-    	m_Path.saveSettingsTo(settings);
-    	m_subDirs.saveSettingsTo(settings);
+	private DataCell longTimeToDateAndTimeCell(long lastModified) {
 
-    }
+		return new DateAndTimeCell(lastModified, true, true, true);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-            throws InvalidSettingsException {
+	/**
+	 * Return the DataColumnSpec for the output table, taking into account the
+	 * user settings
+	 * 
+	 * @return {@link DataColumnSpec}[] of the output columns
+	 */
+	private DataColumnSpec[] createDataColumnSpec() {
+		// Create the output table spec
+		// Use an array list as saves counting columns via if statements and
+		// then
+		// Counting through them all again
+		ArrayList<DataColumnSpec> dcs = new ArrayList<DataColumnSpec>();
 
-    	m_Path.loadSettingsFrom(settings);
-    	m_subDirs.loadSettingsFrom(settings);
-    }
+		dcs.add(new DataColumnSpecCreator("Location", StringCell.TYPE)
+				.createSpec());
+		dcs.add(new DataColumnSpecCreator("URL", StringCell.TYPE).createSpec());
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void validateSettings(final NodeSettingsRO settings)
-            throws InvalidSettingsException {
+		if (m_folderName.getBooleanValue()) {
+			dcs.add(new DataColumnSpecCreator("Folder Name", StringCell.TYPE)
+					.createSpec());
+		}
 
-    	m_Path.validateSettings(settings);
-    	m_subDirs.validateSettings(settings);
-    }
+		if (m_ctgDirPath.getBooleanValue()) {
+			dcs.add(new DataColumnSpecCreator("Parent Location",
+					StringCell.TYPE).createSpec());
+			dcs.add(new DataColumnSpecCreator("Parent URL", StringCell.TYPE)
+					.createSpec());
+		}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void loadInternals(final File internDir,
-            final ExecutionMonitor exec) throws IOException,
-            CanceledExecutionException {
-        // TODO: generated method stub
-    }
+		if (m_isVisible.getBooleanValue()) {
+			dcs.add(new DataColumnSpecCreator("Is Visible?", BooleanCell.TYPE)
+					.createSpec());
+		}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void saveInternals(final File internDir,
-            final ExecutionMonitor exec) throws IOException,
-            CanceledExecutionException {
-        // TODO: generated method stub
-    }
+		if (m_lastModified.getBooleanValue()) {
+			dcs.add(new DataColumnSpecCreator("Last Modified Date",
+					DateAndTimeCell.TYPE).createSpec());
+		}
+
+		return dcs.toArray(new DataColumnSpec[0]);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void reset() {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
+			throws InvalidSettingsException {
+
+		// Check there is something in the path box
+		if (m_Path == null) {
+			throw new InvalidSettingsException("No folder selected");
+		}
+		spec = new DataTableSpec(createDataColumnSpec());
+		return new DataTableSpec[] { spec };
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void saveSettingsTo(final NodeSettingsWO settings) {
+
+		m_Path.saveSettingsTo(settings);
+		m_subDirs.saveSettingsTo(settings);
+		m_folderName.saveSettingsTo(settings);
+		m_ctgDirPath.saveSettingsTo(settings);
+		m_isVisible.saveSettingsTo(settings);
+		m_lastModified.saveSettingsTo(settings);
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
+
+		m_Path.loadSettingsFrom(settings);
+		m_subDirs.loadSettingsFrom(settings);
+		// Emulate old behaviour with new settings
+		try {
+			m_ctgDirPath.loadSettingsFrom(settings);
+		} catch (Exception e) {
+			m_ctgDirPath.setBooleanValue(false);
+		}
+		try {
+			m_folderName.loadSettingsFrom(settings);
+		} catch (Exception e) {
+			m_folderName.setBooleanValue(false);
+		}
+		try {
+			m_isVisible.loadSettingsFrom(settings);
+		} catch (Exception e) {
+			m_isVisible.setBooleanValue(false);
+		}
+		try {
+			m_lastModified.loadSettingsFrom(settings);
+		} catch (Exception e) {
+			m_lastModified.setBooleanValue(false);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
+
+		m_Path.validateSettings(settings);
+		m_subDirs.validateSettings(settings);
+		// Newer settings are not validated to allow backwards compatibility
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec) throws IOException,
+			CanceledExecutionException {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec) throws IOException,
+			CanceledExecutionException {
+	}
 
 }
-

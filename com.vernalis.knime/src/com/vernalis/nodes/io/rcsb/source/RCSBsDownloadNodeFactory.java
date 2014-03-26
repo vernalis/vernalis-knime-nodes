@@ -51,7 +51,7 @@ public class RCSBsDownloadNodeFactory
     @Override
     public NodeView<RCSBsDownloadNodeModel> createNodeView(final int viewIndex,
             final RCSBsDownloadNodeModel nodeModel) {
-        return new RCSBsDownloadNodeView(nodeModel);
+        return null;
     }
 
     /**

@@ -51,7 +51,7 @@ public class SavePDBLocalNodeFactory
     @Override
     public NodeView<SavePDBLocalNodeModel> createNodeView(final int viewIndex,
             final SavePDBLocalNodeModel nodeModel) {
-        return new SavePDBLocalNodeView(nodeModel);
+        return null;
     }
 
     /**

@@ -51,7 +51,7 @@ public class LocalPDBLoadNodeFactory2
     @Override
     public NodeView<LocalPDBLoadNodeModel2> createNodeView(final int viewIndex,
             final LocalPDBLoadNodeModel2 nodeModel) {
-        return new LocalPDBLoadNodeView2(nodeModel);
+        return null;
     }
 
     /**

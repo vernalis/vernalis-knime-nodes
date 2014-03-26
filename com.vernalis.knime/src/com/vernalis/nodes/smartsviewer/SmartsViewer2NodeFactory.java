@@ -52,7 +52,7 @@ public class SmartsViewer2NodeFactory
     @Override
     public NodeView<SmartsViewer2NodeModel> createNodeView(final int viewIndex,
             final SmartsViewer2NodeModel nodeModel) {
-        return new SmartsViewer2NodeView(nodeModel);
+        return null;
     }
 
     /**

@@ -49,7 +49,7 @@ public class RandomNumbersNodeFactory
     @Override
     public NodeView<RandomNumbersNodeModel> createNodeView(final int viewIndex,
             final RandomNumbersNodeModel nodeModel) {
-        return new RandomNumbersNodeView(nodeModel);
+        return null;
     }
 
     /**

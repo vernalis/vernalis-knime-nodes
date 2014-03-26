@@ -30,19 +30,36 @@ import org.knime.core.node.util.FilesHistoryPanel;
  * <code>NodeDialog</code> for the "ListDirs" Node.
  */
 public class ListDirs2NodeDialog extends DefaultNodeSettingsPane {
-	private final FilesHistoryPanel m_history =
-    		new FilesHistoryPanel ("list_dir");
-    /**
-     * New pane for configuring the ListDirs node.
-     */
-    protected ListDirs2NodeDialog() {
-    	super();
-    	createNewGroup("Select Folder(s)");
-        addDialogComponent (new DialogComponentFileChooser(new SettingsModelString(ListDirs2NodeModel.CFG_PATH,null),
-        		"list_dir", JFileChooser.OPEN_DIALOG, true));
-        
-        addDialogComponent (new DialogComponentBoolean(new SettingsModelBoolean(ListDirs2NodeModel.CFG_SUB_DIRS,false), "Include Sub-folders"));
-        closeCurrentGroup();
-    }
-}
+	private final FilesHistoryPanel m_history = new FilesHistoryPanel(
+			"list_dir");
 
+	/**
+	 * New pane for configuring the ListDirs node.
+	 */
+	protected ListDirs2NodeDialog() {
+		super();
+		createNewGroup("Select Folder(s)");
+		addDialogComponent(new DialogComponentFileChooser(
+				new SettingsModelString(ListDirs2NodeModel.CFG_PATH, null),
+				"list_dir", JFileChooser.OPEN_DIALOG, true));
+
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				ListDirs2NodeModel.CFG_SUB_DIRS, false), "Include Sub-folders"));
+		closeCurrentGroup();
+		
+		createNewGroup("Output Option(s)");
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				ListDirs2NodeModel.CFG_FOLDER_NAME, true),
+				"Folder Name"));
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				ListDirs2NodeModel.CFG_INCL_CTG_PATH, true),
+				"Containing (Parent) Folder Path and URL"));
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				ListDirs2NodeModel.CFG_IS_VIS, true),
+				"Is Visible?"));
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				ListDirs2NodeModel.CFG_LAST_MOD, true),
+				"Last Modified"));
+
+	}
+}

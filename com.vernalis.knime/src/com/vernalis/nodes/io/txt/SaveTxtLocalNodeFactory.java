@@ -52,7 +52,7 @@ public class SaveTxtLocalNodeFactory
     @Override
     public NodeView<SaveTxtLocalNodeModel> createNodeView(final int viewIndex,
             final SaveTxtLocalNodeModel nodeModel) {
-        return new SaveTxtLocalNodeView(nodeModel);
+        return null;
     }
 
     /**

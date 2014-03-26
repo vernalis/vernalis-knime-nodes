@@ -51,7 +51,7 @@ public class FASTASequenceNodeFactory_2
     @Override
     public NodeView<FASTASequenceNodeModel_2> createNodeView(final int viewIndex,
             final FASTASequenceNodeModel_2 nodeModel) {
-        return new FASTASequenceNodeView_2(nodeModel);
+        return null;
     }
 
     /**

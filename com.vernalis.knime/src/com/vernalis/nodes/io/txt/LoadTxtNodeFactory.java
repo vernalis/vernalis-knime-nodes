@@ -52,7 +52,7 @@ public class LoadTxtNodeFactory
     @Override
     public NodeView<LoadTxtNodeModel> createNodeView(final int viewIndex,
             final LoadTxtNodeModel nodeModel) {
-        return new LoadTxtNodeView(nodeModel);
+        return null;
     }
 
     /**
