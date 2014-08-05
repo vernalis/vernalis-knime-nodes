@@ -120,7 +120,7 @@ public class SmartsViewer2NodeModel extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO: generated method stub
+		// nothing
 	}
 
 	/**
@@ -208,6 +208,7 @@ public class SmartsViewer2NodeModel extends NodeModel {
 						m_VisModus.getStringValue(), m_Legend.getStringValue(),
 						((StringValue) smartscell).getStringValue());
 
+				logger.info("Sending URL to server: " + url);
 				int triesLeft = m_maxRetries.getIntValue();
 
 				while (triesLeft >= 0) {
@@ -304,7 +305,7 @@ public class SmartsViewer2NodeModel extends NodeModel {
 	protected void loadInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
-		// TODO: generated method stub
+		// nothing
 	}
 
 	/**
@@ -314,7 +315,7 @@ public class SmartsViewer2NodeModel extends NodeModel {
 	protected void saveInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
-		// TODO: generated method stub
+		// nothing
 	}
 
 }

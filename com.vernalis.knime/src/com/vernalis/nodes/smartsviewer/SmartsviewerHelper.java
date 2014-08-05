@@ -19,11 +19,11 @@ package com.vernalis.nodes.smartsviewer;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.image.png.PNGImageContent;
-import org.knime.core.util.FileUtil;
 
 /**
  * Utility Class to assist with retrieving SMARTSViewer renderings from a SMARTS
@@ -74,8 +74,16 @@ public class SmartsviewerHelper {
 	 * @throws IOException
 	 */
 	public static DataCell toPNGCell(final String urlValue) throws IOException {
+		
 		URL url = new URL(urlValue);
-		InputStream in = FileUtil.openStreamWithTimeout(url);
+		
+		HttpURLConnection conn = (HttpURLConnection)url.openConnection(); 
+		if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+			throw new IOException(conn.getResponseMessage());
+		}
+		
+		//InputStream in = FileUtil.openStreamWithTimeout(url);
+		InputStream in = conn.getInputStream();
 		try {
 			PNGImageContent pngImageContent = new PNGImageContent(in);
 			return pngImageContent.toImageCell();
