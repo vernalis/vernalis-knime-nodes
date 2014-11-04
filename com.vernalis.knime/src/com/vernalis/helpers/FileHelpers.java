@@ -27,6 +27,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.zip.GZIPInputStream;
 
+import org.knime.core.node.NodeLogger;
+
+import com.vernalis.nodes.io.txt.FileEncodingWithGuess;
+
 /**
  * Utility class to provide basic file operations for a number of the Vernalis
  * KNIME nodes. N.B. Some of these duplicate PDBHelperFunctions which are
@@ -36,6 +40,11 @@ import java.util.zip.GZIPInputStream;
  * 
  */
 public class FileHelpers {
+
+	/**
+	 * The default encoding, assumed if no other encoding is able to be found
+	 */
+	public static final String DEFAULT_ENCODING = "UTF-8";
 
 	/**
 	 * Utility function to attempt to co-erce a filepath to a valid URL
@@ -158,9 +167,10 @@ public class FileHelpers {
 	 *            A String containing the URL of the file of interest
 	 * @return A String containing the (unzipped if appropriate) content of the
 	 *         file.
+	 * @see #readURLToString(String, FileEncodingWithGuess)
 	 */
 	public static String readURLToString(String urlToRetrieve) {
-
+		NodeLogger logger = NodeLogger.getLogger(FileHelpers.class);
 		try {
 			// Form a URL connection
 			URL url = new URL(urlToRetrieve);
@@ -176,8 +186,8 @@ public class FileHelpers {
 			String contentType = uc.getContentType();
 
 			// Default type is UTF-8
-			String encoding = "UTF-8";
-			if (contentType != null) {
+			String encoding = DEFAULT_ENCODING;
+			if (contentType != null && !contentType.equals("content/unknown")) {
 				int chsIndex = contentType.indexOf("charset=");
 				if (chsIndex != -1) {
 					encoding = contentType.split("charset=")[1];
@@ -186,11 +196,195 @@ public class FileHelpers {
 					}
 					encoding = encoding.trim();
 				}
+				logger.info("Assigned charset encoding " + encoding
+						+ " to file " + urlToRetrieve
+						+ " based on URL Connection meta-info");
+			} else {
+				// The URL connection didnt provide an encoding, so let's try
+				// the first 4 (BOM) chars
+				is.mark(4);
+				try {
+
+					byte[] buffer = new byte[4];
+					is.read(buffer);
+					boolean foundEnc = false;
+					if (buffer[0] == (byte) 0xEF && buffer[1] == (byte) 0xBB
+							&& buffer[2] == (byte) 0xBF) {
+						encoding = "UTF-8";
+						foundEnc = true;
+					} else if (buffer[0] == (byte) 0xFE
+							&& buffer[1] == (byte) 0xFF) {
+						encoding = "UTF-16BE";
+						foundEnc = true;
+					} else if (buffer[0] == (byte) 0xFF
+							&& buffer[1] == (byte) 0xFE) {
+						encoding = "UTF-16LE";
+						foundEnc = true;
+					} else if (buffer[0] == (byte) 0x00
+							&& buffer[1] == (byte) 0x00
+							&& buffer[2] == (byte) 0xFE
+							&& buffer[3] == (byte) 0xFF) {
+						encoding = "UTF-32BE";
+						foundEnc = true;
+					} else if (buffer[0] == (byte) 0xFF
+							&& buffer[1] == (byte) 0xFE
+							&& buffer[2] == (byte) 0x00
+							&& buffer[3] == (byte) 0x00) {
+						encoding = "UTF-32LE";
+						foundEnc = true;
+					}
+					// TODO:Add others here from e.g.
+					// http://en.wikipedia.org/wiki/Byte_order_mark use >>> for
+					// last byte of UTF7
+					if (foundEnc) {
+						logger.info("Assigned charset encoding " + encoding
+								+ " to file " + urlToRetrieve + " based on BOM");
+					} else {
+						logger.warn("Unable to assign charset encoding to file "
+								+ urlToRetrieve
+								+ "; Using default ("
+								+ encoding + ")");
+					}
+				} finally {
+					is.reset();
+				}
+
 			}
 
 			// Now set up a buffered reader to read it
 			BufferedReader in = new BufferedReader(new InputStreamReader(is,
 					encoding));
+
+			StringBuilder output = new StringBuilder();
+			String str;
+			boolean first = true;
+			while ((str = in.readLine()) != null) {
+				if (!first)
+					output.append("\n");
+				first = false;
+				output.append(str);
+			}
+			in.close();
+
+			// Return the result as a string
+			return output.toString();
+		} catch (Exception e) {
+			// e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * Helper function to retrieve a file from a local or remote URL and return
+	 * entire contents as a string. UTF-8 encoding is assumed by default. URLs
+	 * ending '.gz' will be treated as gzipped and unzipped.
+	 * 
+	 * @param urlToRetrieve
+	 *            A String containing the URL of the file of interest
+	 * @param fileEncoding
+	 *            The file encoding option
+	 * @return A String containing the (unzipped if appropriate) content of the
+	 *         file.
+	 * @see #readURLToString(String)
+	 */
+	public static String readURLToString(String urlToRetrieve,
+			FileEncodingWithGuess fileEncoding) {
+		NodeLogger logger = NodeLogger.getLogger(FileHelpers.class);
+		try {
+			// Form a URL connection
+			URL url = new URL(urlToRetrieve);
+			URLConnection uc = url.openConnection();
+			InputStream is = uc.getInputStream();
+
+			// decompress, if necessary
+			if (urlToRetrieve.endsWith(".gz")) {
+				is = new GZIPInputStream(is);
+			}
+
+			// Now detect encoding associated with the URL
+			String contentType = uc.getContentType();
+
+			String encoding;
+			if (fileEncoding == FileEncodingWithGuess.GUESS) {
+				encoding = DEFAULT_ENCODING;
+
+				if (contentType != null
+						&& !contentType.equals("content/unknown")) {
+					int chsIndex = contentType.indexOf("charset=");
+					if (chsIndex != -1) {
+						encoding = contentType.split("charset=")[1];
+						if (encoding.indexOf(';') != -1) {
+							encoding = encoding.split(";")[0];
+						}
+						encoding = encoding.trim();
+					}
+					logger.info("Assigned charset encoding " + encoding
+							+ " to file " + urlToRetrieve
+							+ " based on URL Connection meta-info");
+				} else {
+					// The URL connection didnt provide an encoding, so let's
+					// try
+					// the first 4 (BOM) chars
+					is.mark(4);
+					try {
+
+						byte[] buffer = new byte[4];
+						is.read(buffer);
+						boolean foundEnc = false;
+						if (buffer[0] == (byte) 0xEF
+								&& buffer[1] == (byte) 0xBB
+								&& buffer[2] == (byte) 0xBF) {
+							encoding = "UTF-8";
+							foundEnc = true;
+						} else if (buffer[0] == (byte) 0xFE
+								&& buffer[1] == (byte) 0xFF) {
+							encoding = "UTF-16BE";
+							foundEnc = true;
+						} else if (buffer[0] == (byte) 0xFF
+								&& buffer[1] == (byte) 0xFE) {
+							encoding = "UTF-16LE";
+							foundEnc = true;
+						} else if (buffer[0] == (byte) 0x00
+								&& buffer[1] == (byte) 0x00
+								&& buffer[2] == (byte) 0xFE
+								&& buffer[3] == (byte) 0xFF) {
+							encoding = "UTF-32BE";
+							foundEnc = true;
+						} else if (buffer[0] == (byte) 0xFF
+								&& buffer[1] == (byte) 0xFE
+								&& buffer[2] == (byte) 0x00
+								&& buffer[3] == (byte) 0x00) {
+							encoding = "UTF-32LE";
+							foundEnc = true;
+						}
+						// TODO:Add others here from e.g.
+						// http://en.wikipedia.org/wiki/Byte_order_mark use >>>
+						// for
+						// last byte of UTF7
+						if (foundEnc) {
+							logger.info("Assigned charset encoding " + encoding
+									+ " to file " + urlToRetrieve
+									+ " based on BOM");
+						} else {
+							logger.warn("Unable to assign charset encoding to file "
+									+ urlToRetrieve
+									+ "; Using default ("
+									+ encoding + ")");
+						}
+					} finally {
+						is.reset();
+					}
+				}
+
+			} else {
+				//Use the user-specified value
+				encoding = fileEncoding.getActionCommand();
+			}
+
+			// Now set up a buffered reader to read it
+			BufferedReader in = new BufferedReader(new InputStreamReader(is,
+					encoding));
+
 			StringBuilder output = new StringBuilder();
 			String str;
 			boolean first = true;

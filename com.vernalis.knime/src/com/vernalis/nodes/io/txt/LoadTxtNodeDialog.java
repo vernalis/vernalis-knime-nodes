@@ -19,6 +19,7 @@ package com.vernalis.nodes.io.txt;
 
 import org.knime.core.data.StringValue;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
+import org.knime.core.node.defaultnodesettings.DialogComponentButtonGroup;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
@@ -39,6 +40,7 @@ public class LoadTxtNodeDialog extends DefaultNodeSettingsPane {
 	/**
 	 * New pane for configuring the LoadAEVs node.
 	 */
+	@SuppressWarnings("unchecked")
 	protected LoadTxtNodeDialog() {
 		super();
 		createNewGroup("File Paths");
@@ -47,6 +49,12 @@ public class LoadTxtNodeDialog extends DefaultNodeSettingsPane {
 						null), "Select a column containing the file paths:", 0,
 				true, StringValue.class));
 
+		addDialogComponent(new DialogComponentButtonGroup(
+				new SettingsModelString(LoadTxtNodeModel.CFG_ENCODING,
+						FileEncodingWithGuess.getDefaultMethod()
+								.getActionCommand()), "Select file encoding",
+				true, FileEncodingWithGuess.values()));
+		
 		closeCurrentGroup();
 
 		createNewGroup("Destination Column:");

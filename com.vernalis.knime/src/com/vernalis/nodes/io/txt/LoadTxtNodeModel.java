@@ -55,13 +55,14 @@ public class LoadTxtNodeModel extends NodeModel {
 			.getLogger(LoadTxtNodeModel.class);
 
 	/**
-	 * the settings key which is used to retrieve and store the settings (from
+	 * the settings keys which are used to retrieve and store the settings (from
 	 * the dialog or from a settings file) (package visibility to be usable from
 	 * the dialog).
 	 */
 
 	static final String CFG_PATH_COLUMN_NAME = "Path_column_name";
 	static final String CFG_FILE_COLUMN_NAME = "File_column_name";
+	static final String CFG_ENCODING = "File Encoding";
 
 	private final SettingsModelString m_PathColumnName = new SettingsModelString(
 			CFG_PATH_COLUMN_NAME, null);
@@ -69,12 +70,16 @@ public class LoadTxtNodeModel extends NodeModel {
 	private final SettingsModelString m_FilecolumnName = new SettingsModelString(
 			CFG_FILE_COLUMN_NAME, "Text File");
 
+	private final SettingsModelString m_FileEncoding = new SettingsModelString(
+			CFG_ENCODING, FileEncodingWithGuess.getDefaultMethod()
+					.getActionCommand());
+
+	private FileEncodingWithGuess m_encoding;
+
 	/**
 	 * Constructor for the node model.
 	 */
 	protected LoadTxtNodeModel() {
-
-		// TODO: Specify the amount of input and output ports needed.
 		super(1, 1);
 	}
 
@@ -84,9 +89,6 @@ public class LoadTxtNodeModel extends NodeModel {
 	@Override
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
 			final ExecutionContext exec) throws Exception {
-
-		// TODO do something here
-		logger.info("Node Model Stub... this is not yet implemented !");
 
 		// the data table spec of the single output table,
 		// the table will have three columns:
@@ -123,8 +125,10 @@ public class LoadTxtNodeModel extends NodeModel {
 				// Now, if it is a Location, convert to a URL
 				urlToRetrieve = FileHelpers.forceURL(urlToRetrieve);
 
-				// Only try to load the files - do not check type!
-				String r = FileHelpers.readURLToString(urlToRetrieve);
+				// Only try to load the files - do not check type! Encoding and
+				// un-zipping will be handled
+				String r = FileHelpers.readURLToString(urlToRetrieve,
+						m_encoding);
 				if (!(r == null || "".equals(r))) {
 					return new StringCell(r);
 				}
@@ -140,9 +144,7 @@ public class LoadTxtNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO Code executed on reset.
-		// Models build during execute are cleared here.
-		// Also data handled in load/saveInternals will be erased here.
+		// Do Nothing
 	}
 
 	/**
@@ -151,12 +153,6 @@ public class LoadTxtNodeModel extends NodeModel {
 	@Override
 	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
 			throws InvalidSettingsException {
-
-		// TODO: check if user settings are available, fit to the incoming
-		// table structure, and the incoming types are feasible for the node
-		// to execute. If the node can execute in its current state return
-		// the spec of its output data table(s) (if you can, otherwise an array
-		// with null elements), or throw an exception with a useful user message
 
 		int colIndex = -1;
 		if (m_PathColumnName.getStringValue() == null) {
@@ -201,6 +197,14 @@ public class LoadTxtNodeModel extends NodeModel {
 			throw new InvalidSettingsException(
 					"Path column name cannot be empty");
 		}
+
+		m_encoding = FileEncodingWithGuess.valueOf(m_FileEncoding
+				.getStringValue());
+		if (m_encoding != FileEncodingWithGuess.GUESS) {
+			logger.warn("Using " + m_encoding.getActionCommand()
+					+ " file encoding.  Nonsense may result!");
+		}
+
 		// everything seems to fine
 		ColumnRearranger c = createColumnRearranger(inSpecs[0]);
 		return new DataTableSpec[] { c.createSpec() };
@@ -211,11 +215,9 @@ public class LoadTxtNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
-
-		// TODO save user settings to the config object.
-
 		m_FilecolumnName.saveSettingsTo(settings);
 		m_PathColumnName.saveSettingsTo(settings);
+		m_FileEncoding.saveSettingsTo(settings);
 
 	}
 
@@ -226,12 +228,17 @@ public class LoadTxtNodeModel extends NodeModel {
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
 
-		// TODO load (valid) settings from the config object.
-		// It can be safely assumed that the settings are valided by the
-		// method below.
-
 		m_FilecolumnName.loadSettingsFrom(settings);
 		m_PathColumnName.loadSettingsFrom(settings);
+		try {
+			m_FileEncoding.loadSettingsFrom(settings);
+		} catch (Exception e) {
+			logger.info("No file encoding setting found, using default ("
+					+ FileEncodingWithGuess.getDefaultMethod()
+							.getActionCommand() + ")");
+			m_FileEncoding.setStringValue(FileEncodingWithGuess
+					.getDefaultMethod().getActionCommand());
+		}
 
 	}
 
@@ -242,13 +249,9 @@ public class LoadTxtNodeModel extends NodeModel {
 	protected void validateSettings(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
 
-		// TODO check if the settings could be applied to our model
-		// e.g. if the count is in a certain range (which is ensured by the
-		// SettingsModel).
-		// Do not actually set any values of any member variables.
-
 		m_FilecolumnName.validateSettings(settings);
 		m_PathColumnName.validateSettings(settings);
+		//Do not validate m_fileEncoding - new setting added to v 1.1.5
 
 	}
 
@@ -259,13 +262,7 @@ public class LoadTxtNodeModel extends NodeModel {
 	protected void loadInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
-
-		// TODO load internal data.
-		// Everything handed to output ports is loaded automatically (data
-		// returned by the execute method, models loaded in loadModelContent,
-		// and user settings set through loadSettingsFrom - is all taken care
-		// of). Load here only the other internals that need to be restored
-		// (e.g. data used by the views).
+		// DO nothing
 
 	}
 
@@ -276,13 +273,7 @@ public class LoadTxtNodeModel extends NodeModel {
 	protected void saveInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
-
-		// TODO save internal models.
-		// Everything written to output ports is saved automatically (data
-		// returned by the execute method, models saved in the saveModelContent,
-		// and user settings saved through saveSettingsTo - is all taken care
-		// of). Save here only the other internals that need to be preserved
-		// (e.g. data used by the views).
+		// DO Nothing
 
 	}
 
