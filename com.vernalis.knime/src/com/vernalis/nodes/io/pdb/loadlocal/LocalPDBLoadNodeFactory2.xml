@@ -1,41 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
-<knimeNode icon="./Disk2PDB.png" type="Manipulator">
-    <name>PDB Loader</name>
-    
-    <shortDescription>
+<knimeNode icon="./Disk2PDB.png" type="Manipulator"
+	xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
+	<name>PDB Loader</name>
+
+	<shortDescription>
         Load a local copy of a PDB files from a column of source filepaths or URLs
     </shortDescription>
-    
-    <fullDescription>
-        <intro>Loads PDB files specified by a valid full file path or URL into a table.<br />
-        Files may be local or remote, as long as the URL is accessible.<br />
-        Only paths ending .pdb or .pdb.gz will be loaded.  The resulting column will be cast as PDBCells.
-        <p>This node was developed by <a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>.
-        For feedback and more information, please contact <a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
-        </p>
-        </intro>
-        
-        
-        <option name="Select a column contaning the PDB paths">Select the column containing the file paths or URLs</option>
-        <option name="PDB File column name">Enter name of column for PDB cells</option>
-        <!-- possibly more options that can also be grouped by tabs -->
-        <!--
-        <tab name="Standard Options">
-            <option name="short name of first option (like in the dialog)">description of first option</option>
-            <option name="short name of second option (like in the dialog)">description of second option</option>
-        </tab>
-        <tab name="Advanced Options">
-            <option name="short name of first advanced option (like in the dialog)">description of first advanced option</option>
-        </tab>
-        -->
-    </fullDescription>
-    
-    <ports>
-        <inPort index="0" name="In-Port 0">Input table containing paths or URLs to pdb files to load</inPort>
-        <!-- possibly more input ports here-->
-        <outPort index="0" name="Appended files">Output table with pdb files loaded</outPort>
-        <!-- possibly more output ports here-->
-    </ports>    
+
+	<fullDescription>
+		<intro>
+			Loads PDB files specified by a valid full file path or URL into a
+			table.
+			<br />
+			Files may be local or remote, as long as the URL is accessible.
+			<br />
+			Only paths ending .pdb or .pdb.gz will be loaded. The resulting
+			column will be cast as PDBCells.
+			<p>
+				File encoding is attempted as follows:
+				<ol>
+					<li>Firstly, the URL connection to the supplied
+						file is inspected
+						for encoding information.
+					</li>
+					<li>
+						If none is available, then the first 4 bytes of the file are
+						inspected for any
+						<a href="http://en.wikipedia.org/wiki/Byte_order_mark">BOM</a>
+						present, and if so, the following are recognised:
+						<br />
+						&#8226; UTF-8
+						<br />
+						&#8226; UTF-16 (Big- and Little Endian)
+						<br />
+						&#8226; UTF-32 (Big- and Little Endian)
+						<br />
+					</li>
+					<li>
+						Finally, the default (UTF-8) is assumed. As UTF-8 is not
+						required
+						to provide a BOM, this is a reasonable guess in
+						<i>most</i>
+						cases.
+					</li>
+				</ol>
+				A console
+				<i>INFO</i>
+				entry is added for each file format detected, and a
+				<i>WARN</i>
+				entry added when the default is used because none could be
+				detected.
+				If manual control of the file encoding is required, then the
+				<i>Load text-based files</i>
+				node should be used, followed by a
+				<i>Molecule Type Cast</i>
+				node
+			</p>
+
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+		</intro>
+
+
+		<option name="Select a column contaning the PDB paths">Select the column containing the file paths or
+			URLs
+		</option>
+		<option name="PDB File column name">Enter name of column for PDB cells</option>
+
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="In-Port 0">Input table containing paths or URLs to
+			pdb files to load
+		</inPort>
+		<!-- possibly more input ports here -->
+		<outPort index="0" name="Appended files">Output table with pdb files loaded
+		</outPort>
+		<!-- possibly more output ports here -->
+	</ports>
 
 </knimeNode>

@@ -43,8 +43,12 @@
 						&#8226; UTF-32 (Big- and Little Endian)
 						<br />
 					</li>
-					<li>Finally, the default (UTF-8) is assumed. As UTF-8 is not
-						required to provide a BOM, this is a reasonable guess
+					<li>
+						Finally, the default (UTF-8) is assumed. As UTF-8 is not
+						required
+						to provide a BOM, this is a reasonable guess in
+						<i>most</i>
+						cases.
 					</li>
 				</ol>
 				A console
@@ -54,6 +58,13 @@
 				entry added when the default is used because none could be
 				detected.
 
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
 			</p>
 		</intro>
 
