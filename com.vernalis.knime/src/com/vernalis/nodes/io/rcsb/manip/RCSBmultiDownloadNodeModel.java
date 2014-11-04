@@ -56,6 +56,7 @@ import com.vernalis.helpers.PDBHelperFunctions;
 public class RCSBmultiDownloadNodeModel extends NodeModel {
 
 	// the logger instance
+	@SuppressWarnings("unused")
 	private static final NodeLogger logger = NodeLogger
 			.getLogger(RCSBmultiDownloadNodeModel.class);
 
