@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./LoopEnd_3.png" type="LoopEnd"
+	xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
+	<name>Loop End (3 ports)</name>
+
+	<shortDescription>
+        Loop end node to handle 3 input ports
+    </shortDescription>
+
+	<fullDescription>
+		<intro>
+			Node at the end of a loop. It is used to mark the end of a workflow
+			loop and collects the intermediate results by row-wise
+			concatenation of the incoming tables. The start of the loop is defined by the loop
+			start node, in which you can define how often
+			the loop should be executed (either fixed or derived from data, e.g. the
+			"group loop start"). All nodes in between are executed
+			that many times.
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+
+		<option name="Add iteration column">Adds a column to each output table containing the
+			iteration number, starting with 0</option>
+		<option name="Uniquify row IDs">If set, ensure row IDs are unique by suffixing
+			incoming row IDs with '_Iter#' followed by the
+			iteration number
+		</option>
+		<option name="Ignore empty input tables at port ...">Selecting this option means the structure of empty
+			input tables at the
+			specified port will be ignored and they will not cause the node to fail
+		</option>
+
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="In-port 0">The first input port</inPort>
+		<inPort index="1" name="In-port 1">The second input port</inPort>
+		<inPort index="2" name="In-port 2">The third input port</inPort>
+
+		<outPort index="0" name="Out-Port 0">The first output port</outPort>
+		<outPort index="1" name="Out-Port 1">The second output port</outPort>
+		<outPort index="2" name="Out-Port 2">The third output port</outPort>
+
+	</ports>
+
+</knimeNode>
