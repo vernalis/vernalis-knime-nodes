@@ -84,40 +84,6 @@
             id="EuroPmcAdvancedSearchNodeFactory">
       </node>
       <node
-            category-path="/community/vernalis/flowcontrol/fv"
-            expert-flag="false"
-            factory-class="com.vernalis.flowcontrol.nodes.fv.ifswitch.FVarIfSwitchNodeFactory"
-            id="FVarIfSwitchNodeFactory">
-      </node>
-      <node
-            after="FVarIfSwitchNodeFactory"
-            category-path="/community/vernalis/flowcontrol/fv"
-            expert-flag="false"
-            factory-class="com.vernalis.flowcontrol.nodes.fv.varvalifswitch.FlowVarFvvalIfSwitchNodeFactory"
-            id="FlowVarFvvalIfSwitchNodeFactory">
-      </node>
-      <node
-            after="FlowVarFvvalIfSwitchNodeFactory"
-            category-path="/community/vernalis/flowcontrol/fv"
-            expert-flag="false"
-            factory-class="com.vernalis.flowcontrol.nodes.fv.endif.FlowVarEndIfNodeFactory"
-            id="FlowVarEndIfNodeFactory">
-      </node>
-      <node
-            after="FlowVarEndIfNodeFactory"
-            category-path="/community/vernalis/flowcontrol/fv"
-            expert-flag="false"
-            factory-class="com.vernalis.flowcontrol.nodes.fv.caseselect.FVarFVCaseSelectNodeFactory"
-            id="FVarFVCaseSelectNodeFactory">
-      </node>
-      <node
-            after="FVarFVCaseSelectNodeFactory"
-            category-path="/community/vernalis/flowcontrol/fv"
-            expert-flag="false"
-            factory-class="com.vernalis.flowcontrol.nodes.fv.endcase.FlowVarEndCaseNodeFactory"
-            id="FlowVarEndCaseNodeFactory">
-      </node>
-      <node
             category-path="/community/vernalis/sequence"
             expert-flag="false"
             factory-class="com.vernalis.nodes.pdb.getsequence.Pdb2SequenceNodeFactory"
@@ -190,21 +156,6 @@
             locked="true"
             name="European PubMed Central"
             path="/community/vernalis/">
-      </category>
-      <category
-            description="Flow control nodes"
-            icon="icons/FlowControlGroup_16x16.png"
-            level-id="flowcontrol"
-            locked="true"
-            name="Flow Control"
-            path="/community/vernalis/">
-      </category>
-      <category
-            icon="icons/FlowControlGroupFlowVars_16x16.png"
-            level-id="fv"
-            locked="true"
-            name="Flow Variable Flow Control"
-            path="/community/vernalis/flowcontrol/">
       </category>
       <category
             after="sequence"
