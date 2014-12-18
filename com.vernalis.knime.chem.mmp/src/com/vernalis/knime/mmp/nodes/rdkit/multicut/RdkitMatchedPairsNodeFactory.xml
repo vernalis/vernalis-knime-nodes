@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./MMPs.png" type="Manipulator" xmlns="http://knime.org/node/v2.8"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
+	<name>Matched Molecular Pairs (RDKit)</name>
+
+	<shortDescription>
+        This node implements the Hussain and Rea algorithm for Matched Molecular Pair finding.
+    </shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>This node implements the Hussain and Rea algorithm for finding
+				Matched Molecular Pairs in a dataset. The user can specify the
+				number
+				of cuts to be made (1 - 10), and whether Hydrogens should be
+				added.
+			</p>
+			<p>The algorithm is implemented using the RDKit toolkit.</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+			<p>
+				1.J. Hussain and C Rea, "
+				<i>Computationally efficient algorithm to identify matched molecular pairs (MMPs) in large datasets</i>
+				",
+				<i>J. Chem. Inf. Model.</i>
+				, 2010,
+				<b>50</b>
+				, 339-348 (DOI:
+				<a href="http://dx.doi.org/10.1021/ci900450m">10.1021/ci900450m</a>
+				).
+			</p>
+		</intro>
+
+		<tab name="Options">
+			<option name="Select Molecules SMILES column">Select the column containing the molecules as
+				SMILES strings
+			</option>
+			<option name="Select Molecules IDs column">Select the column containing the molecule IDs
+			</option>
+			<option name="Select the Fragmentation Type">Select the required fragmentation option</option>
+			<option name="Number of cuts">
+				Select the number of cuts (1-10).
+				<i>NB Large values can result in slow processing times</i>
+			</option>
+			<option name="Track Connectivity?">When more than one bond is being cut, tracking
+				connectivity ensures that substituents on core replacements have the
+				correct regiochemistry, as described in Hussain and Rea. Unsetting
+				this option loses this regiochemistry information, but may serve use
+				in a broader 'ideas generation' context
+			</option>
+		</tab>
+		<tab name="Advanced Settings">
+			<option name="Add H's prior to fragmentation">If checked, pairs with -H as a substituent will
+				be included. This is recommended for when the number of cuts is 1,
+				and is unavailable for other values
+			</option>
+			<option name="Remove Explicit H's from output">Explicit hydrogens will be removed from the
+				output if selected (Only available when 'Add H's prior to
+				fragmentation' is selected and enabled)
+			</option>
+			<option name="Filter by maximum number of changing heavy atoms?">If checked, the user can specify a maximum number
+				of heavy atoms which are allowed to change between Matched Pairs
+			</option>
+			<option name="Maximum Number of variable heavy atoms">The maximum number of heavy atoms which are
+				allowed to change between pairs
+			</option>
+			<option name="Filter by ratio of changing / unchanging atoms?">If checked, the user can specify a maximum ratio
+				of changing to unchanging heavy atoms during fragmentation
+			</option>
+			<option name="Minimum ratio of changing to unchanging heavy atoms">The minimum ratio of changing to unchanging heavy
+				atoms
+			</option>
+		</tab>
+		<tab name="Output Settings">
+			<option name="Show unchanging portion">A SMILES cell will be included showing the 'key'
+				resulting in the fragmentation pattern
+			</option>
+			<option name="Show number of changing atoms">The number of heavy atoms (not including 'A', the
+				attachment point) will be included for Left and Right fragments
+			</option>
+			<option name="Show ratio of constant / changing heavy atoms">The ratio of constant / changing heavy atoms (not
+				including 'A', the attachment point) will be included for Left and
+				Right fragments
+			</option>
+		</tab>
+
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Molecules">Molecules for fragmenting to find
+			matched pairs
+		</inPort>
+		<outPort index="0" name="MMP transforms">Matched pair transformations
+		</outPort>
+		<outPort name="Failed Input Rows" index="1">Input rows for which
+			the molecule could not be parsed in RDKit</outPort>
+	</ports>
+
+</knimeNode>
