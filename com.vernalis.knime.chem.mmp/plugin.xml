@@ -16,17 +16,17 @@
 <extension point="org.knime.workbench.repository.nodes">
 
  <node
-       category-path="/vernalis.int/chem/mmp"
+       category-path="/community/vernalis/mmp"
        factory-class="com.vernalis.knime.mmp.nodes.rdkit.multicut.RdkitMatchedPairsNodeFactory"
        id="RdkitMatchedPairsNodeFactory">
  </node>
  <node
-       category-path="/vernalis.int/chem/mmp"
+       category-path="/community/vernalis/mmp"
        factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment.RdkitMMPFragmentNodeFactory"
        id="RdkitMMPFragmentNodeFactory">
  </node>
  <node
-       category-path="/vernalis.int/chem/mmp"
+       category-path="/community/vernalis/mmp"
        factory-class="com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeFactory"
        id="Frag2PairNodeFactory">
  </node>
@@ -38,7 +38,7 @@
        icon="icons/MMPCut.png"
        level-id="mmp"
        name="Matched Molecular Pairs"
-       path="/vernalis.int/chem/">
+       path="/community/vernalis/">
 	</category>
    </extension>
    
