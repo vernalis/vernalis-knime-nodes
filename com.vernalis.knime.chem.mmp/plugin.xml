@@ -21,11 +21,13 @@
        id="RdkitMatchedPairsNodeFactory">
  </node>
  <node
+       after="RdkitMatchedPairsNodeFactory"
        category-path="/community/vernalis/mmp"
        factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment.RdkitMMPFragmentNodeFactory"
        id="RdkitMMPFragmentNodeFactory">
  </node>
  <node
+       after="RdkitMMPFragmentNodeFactory"
        category-path="/community/vernalis/mmp"
        factory-class="com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeFactory"
        id="Frag2PairNodeFactory">
