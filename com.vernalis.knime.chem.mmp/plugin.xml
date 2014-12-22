@@ -39,7 +39,7 @@
        description="Vernalis Matched Molecular Pairs implementation"
        icon="icons/MMPCut.png"
        level-id="mmp"
-       name="Matched Molecular Pairs"
+       name="Matched Molecular Pairs (MMPs)"
        path="/community/vernalis/">
 	</category>
    </extension>
