@@ -40,10 +40,8 @@
 		</intro>
 
 		<tab name="Options">
-			<option name="Select Molecules SMILES column">Select the column containing the molecules as
-				SMILES strings
-			</option>
-			<option name="Select Molecules IDs column">Select the column containing the molecule IDs
+			<option name="Select Molecule column">Select the column containing the molecules</option>
+			<option name="Select Molecule IDs column">Select the column containing the molecule IDs
 			</option>
 			<option name="Select the Fragmentation Type">Select the required fragmentation option</option>
 			<option name="Number of cuts">

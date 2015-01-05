@@ -57,11 +57,11 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 
 		addDialogComponent(new DialogComponentColumnNameSelection(
 				createMolColumnSettingsModel(),
-				"Select Molecules SMILES column", 0,
+ "Select Molecule column", 0,
 				MolFormats.m_RDKitmolFormats.toArray(new Class[0])));
 
 		addDialogComponent(new DialogComponentColumnNameSelection(
-				createIDColumnSettingsModel(), "Select Molecules IDs column",
+				createIDColumnSettingsModel(), "Select Molecule IDs column",
 				0, StringValue.class));
 
 		addDialogComponent(new DialogComponentButtonGroup(createSMIRKSModel(),
