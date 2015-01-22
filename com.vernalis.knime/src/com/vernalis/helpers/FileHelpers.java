@@ -378,7 +378,7 @@ public class FileHelpers {
 
 			} else {
 				//Use the user-specified value
-				encoding = fileEncoding.getActionCommand();
+				encoding = fileEncoding.getText();
 			}
 
 			// Now set up a buffered reader to read it
