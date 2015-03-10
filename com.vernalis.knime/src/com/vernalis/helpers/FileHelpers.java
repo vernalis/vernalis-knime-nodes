@@ -60,8 +60,9 @@ public class FileHelpers {
 		 */
 		String r = pathToFile;
 		if (!(r.toLowerCase().startsWith("http:")
-				|| r.toLowerCase().startsWith("file:") || r.toLowerCase()
-				.startsWith("ftp:"))) {
+				|| r.toLowerCase().startsWith("file:")
+				|| r.toLowerCase().startsWith("ftp:") || r.toLowerCase()
+				.startsWith("knime:"))) {
 			try {
 				r = new File(r).toURI().toURL().toString();
 			} catch (Exception e) {
@@ -377,7 +378,7 @@ public class FileHelpers {
 				}
 
 			} else {
-				//Use the user-specified value
+				// Use the user-specified value
 				encoding = fileEncoding.getText();
 			}
 
