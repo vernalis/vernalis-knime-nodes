@@ -19,23 +19,30 @@ import org.knime.core.node.util.ButtonGroupEnumInterface;
 /**
  * Enum containing the fragmentation patterns provided in the node dialog. The
  * {@link #getSMIRKS()} method provides the RDKit Reaction SMARTS string.
- * Attachment points should be included as '[*]' to allow corrsect tagging.
+ * Attachment points should be included as '[*]' to allow correct tagging.
  * 
  * @author "Stephen Roughley  <s.roughley@vernalis.com>"
  * 
  */
 public enum FragmentationTypes implements ButtonGroupEnumInterface {
-	ALL_ACYCLIC("All Acyclic single bonds",
+	ALL_ACYCLIC("All acyclic single bonds",
 			"Break all acyclic single bonds during fragmentation",
 			"[*:1]!@!=!#[*:2]>>[*:1]-[*].[*:2]-[*]"),
 
-	RING_ACYCLIC("Only Acyclic single bonds to rings",
+	RING_ACYCLIC("Only acyclic single bonds to rings",
 			"Break only single acyclic bonds with at least one ring atom",
 			"[*;R:1]!@!=!#[*:2]>>[*:1]-[*].[*:2]-[*]"),
 
 	HETATM_ACYCLIC("Only single bonds to a heteroatom",
 			"Break only single acyclic bonds with at least one non-C atom",
-			"[!#6:1]!@!=!#[*:2]>>[*:1]-[*].[*:2]-[*]");
+			"[!#6:1]!@!=!#[*:2]>>[*:1]-[*].[*:2]-[*]"),
+
+	HUSSAIN_GSK("Non-functional group single bonds",
+			"Break only single bonds which are not part of a functional group",
+			"[#6+0;!$(*=,#[!#6]):1]!@!=!#[*:2]>>[*:1]-[*].[*:2]-[*]"),
+
+	USER_DEFINED("User defined",
+			"Enter a reaction SMARTS transformation below", null);
 
 	private final String m_name;
 	private final String m_tooltip;
@@ -69,7 +76,7 @@ public enum FragmentationTypes implements ButtonGroupEnumInterface {
 
 	/**
 	 * @return The RDKit format Reaction SMARTS representing the transformation.
-	 *         Attachment points should be included as '[*]' to allow corrsect
+	 *         Attachment points should be included as '[*]' to allow correct
 	 *         tagging.
 	 */
 	public String getSMIRKS() {
@@ -85,4 +92,5 @@ public enum FragmentationTypes implements ButtonGroupEnumInterface {
 		return ALL_ACYCLIC;
 	}
 
+	
 }

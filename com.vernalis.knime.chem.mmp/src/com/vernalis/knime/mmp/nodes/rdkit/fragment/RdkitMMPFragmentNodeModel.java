@@ -93,6 +93,10 @@ public class RdkitMMPFragmentNodeModel extends
 		// Sort out the reaction
 		String fragSMIRKS = FragmentationTypes.valueOf(
 				m_fragSMIRKS.getStringValue()).getSMIRKS();
+		if ((fragSMIRKS == null || "".equals(fragSMIRKS))
+				&& FragmentationTypes.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED) {
+			fragSMIRKS = m_customSmarts.getStringValue();
+		}
 
 		// Now do some final setting up
 		int numCuts = m_numCuts.getIntValue();
@@ -152,7 +156,7 @@ public class RdkitMMPFragmentNodeModel extends
 
 			// Do the fragmentation
 			HashMap<FragmentKey, TreeSet<FragmentValue>> newFrags = doRDKitFragmentation(
-					roMol, molID, numCuts, fragSMIRKS, trackCutConnectivity);
+					roMol, molID, numCuts, fragSMIRKS, trackCutConnectivity, exec);
 
 			// Clean up the new fragments (apply max change etc settings -
 			newFrags = filterFragments(newFrags, maxNumVarAtm,
@@ -184,7 +188,9 @@ public class RdkitMMPFragmentNodeModel extends
 					dc_0.addRowToTable(new DefaultRow(rowId, cells));
 				}
 			}
-			progress = (double) rowCnt++ / (double) numRows;
+			roMol.delete();
+			newFrags.clear();
+			progress = (double) ++rowCnt / (double) numRows;
 			exec.checkCanceled();
 			exec.setProgress(progress, "Fragmented Row " + rowCnt + " of "
 					+ numRows);
@@ -194,12 +200,8 @@ public class RdkitMMPFragmentNodeModel extends
 		return new BufferedDataTable[] { dc_0.getTable(), dc_1.getTable() };
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.vernalis.knime.mmp.nodes.indigo.abstrct.
-	 * AbstractMatchedPairsMultipleCutsNodeModel
-	 * #createSpec_0(org.knime.core.data.DataTableSpec)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	protected DataTableSpec createSpec_0(DataTableSpec spec) {

@@ -35,8 +35,8 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
  * 
  */
 public class Frag2PairNodeDialog extends DefaultNodeSettingsPane {
-private final SettingsModelBoolean m_areSorted, m_checkSorted;
-	
+	private final SettingsModelBoolean m_areSorted, m_checkSorted;
+
 	/**
 	 * Constructor
 	 */
@@ -50,18 +50,18 @@ private final SettingsModelBoolean m_areSorted, m_checkSorted;
 
 		m_areSorted = createSortedKeysModel();
 		m_areSorted.addChangeListener(new ChangeListener() {
-			
+
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				m_checkSorted.setEnabled(m_areSorted.getBooleanValue());
-				
+
 			}
 		});
 		m_checkSorted = createCheckSortedModel();
-		
+
 		addDialogComponent(new DialogComponentBoolean(m_areSorted,
 				"Keys are sorted"));
-		
+
 		addDialogComponent(new DialogComponentBoolean(m_checkSorted,
 				"Check keys are sorted"));
 
@@ -75,7 +75,7 @@ private final SettingsModelBoolean m_areSorted, m_checkSorted;
 		createNewTab("Output Settings");
 		addDialogComponent(new DialogComponentBoolean(createStripHModel(),
 				"Remove Explicit H's from output"));
-		
+
 		addDialogComponent(new DialogComponentBoolean(createOutputKeyModel(),
 				"Show unchanging portion"));
 
@@ -86,6 +86,22 @@ private final SettingsModelBoolean m_areSorted, m_checkSorted;
 				createOutputHARatiosModel(),
 				"Show ratio of constant / changing heavy atoms"));
 
+		addDialogComponent(new DialogComponentBoolean(
+				createShowReverseTransformsModel(),
+				"Show reverse-direction transforms"));
+
+		addDialogComponent(new DialogComponentBoolean(
+				createShowSmartsTransformsModel(), "Include Reaction SMARTS"));
+	}
+
+	/** Create model to include Reaction SMARTS */
+	protected static SettingsModelBoolean createShowSmartsTransformsModel() {
+		return new SettingsModelBoolean("Include Reaction SMARTS", true);
+	}
+
+	/** Create model to include reverse transforms in outpu */
+	protected static SettingsModelBoolean createShowReverseTransformsModel() {
+		return new SettingsModelBoolean("Show Reverse Transforms", true);
 	}
 
 	/** Create model for checking sorted keys */
@@ -117,7 +133,7 @@ private final SettingsModelBoolean m_areSorted, m_checkSorted;
 	protected static SettingsModelBoolean createStripHModel() {
 		return new SettingsModelBoolean("Remove Explicit H's from output", true);
 	}
-	
+
 	/** Create the settings model for the output fragment key model */
 	protected static SettingsModelBoolean createOutputKeyModel() {
 		return new SettingsModelBoolean("Output fragment key", false);

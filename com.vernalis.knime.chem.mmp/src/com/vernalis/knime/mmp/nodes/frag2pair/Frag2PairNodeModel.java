@@ -17,6 +17,7 @@
  */
 package com.vernalis.knime.mmp.nodes.frag2pair;
 
+import static com.vernalis.knime.mmp.RDKitFragment.convertSmirksToReactionSmarts;
 import static com.vernalis.knime.mmp.RDKitFragment.getTransforms;
 import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createCheckSortedModel;
 import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createFragKeyModel;
@@ -25,6 +26,8 @@ import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createI
 import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createOutputChangingHACountsModel;
 import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createOutputHARatiosModel;
 import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createOutputKeyModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createShowReverseTransformsModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createShowSmartsTransformsModel;
 import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createSortedKeysModel;
 import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createStripHModel;
 
@@ -36,6 +39,7 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
+import org.knime.chem.types.SmartsCell;
 import org.knime.chem.types.SmilesCell;
 import org.knime.chem.types.SmilesValue;
 import org.knime.core.data.DataCell;
@@ -83,6 +87,8 @@ public class Frag2PairNodeModel extends NodeModel {
 	private final SettingsModelBoolean m_includeHACount = createOutputChangingHACountsModel();
 	private final SettingsModelBoolean m_includeHARatio = createOutputHARatiosModel();
 	private final SettingsModelBoolean m_stripHsAtEnd = createStripHModel();
+	private final SettingsModelBoolean m_showReverseTransforms = createShowReverseTransformsModel();
+	private final SettingsModelBoolean m_includeReactionSMARTS = createShowSmartsTransformsModel();
 
 	/** The NodeLogger Instance */
 	static final NodeLogger m_logger = NodeLogger
@@ -178,16 +184,22 @@ public class Frag2PairNodeModel extends NodeModel {
 								m_stripHsAtEnd.getBooleanValue(),
 								m_includeUnchangingPortion.getBooleanValue(),
 								m_includeHACount.getBooleanValue(),
-								m_includeHARatio.getBooleanValue());
+								m_includeHARatio.getBooleanValue(),
+								m_showReverseTransforms.getBooleanValue());
 					} else {
 						newRows = getTransforms(
 								vals,
 								numCols,
 								m_stripHsAtEnd.isEnabled()
 										&& m_stripHsAtEnd.getBooleanValue(),
-								m_includeHACount.getBooleanValue());
+								m_includeHACount.getBooleanValue(),
+								m_showReverseTransforms.getBooleanValue());
 					}
 					for (DataCell[] cells : newRows) {
+						// Deal with need for rSMARTS
+						if (m_includeReactionSMARTS.getBooleanValue()) {
+							cells = addReactionSmartsCell(cells);
+						}
 						RowKey rowKey = new RowKey("Row_" + outRow++);
 						dc0.addRowToTable(new DefaultRow(rowKey, cells));
 					}
@@ -218,16 +230,22 @@ public class Frag2PairNodeModel extends NodeModel {
 						m_stripHsAtEnd.getBooleanValue(),
 						m_includeUnchangingPortion.getBooleanValue(),
 						m_includeHACount.getBooleanValue(),
-						m_includeHARatio.getBooleanValue());
+						m_includeHARatio.getBooleanValue(),
+						m_showReverseTransforms.getBooleanValue());
 			} else {
 				newRows = getTransforms(
 						vals,
 						numCols,
 						m_stripHsAtEnd.isEnabled()
 								&& m_stripHsAtEnd.getBooleanValue(),
-						m_includeHACount.getBooleanValue());
+						m_includeHACount.getBooleanValue(),
+						m_showReverseTransforms.getBooleanValue());
 			}
 			for (DataCell[] cells : newRows) {
+				// Deal with need for rSMARTS
+				if (m_includeReactionSMARTS.getBooleanValue()) {
+					cells = addReactionSmartsCell(cells);
+				}
 				RowKey rowKey = new RowKey("Row_" + outRow++);
 				dc0.addRowToTable(new DefaultRow(rowKey, cells));
 			}
@@ -290,7 +308,8 @@ public class Frag2PairNodeModel extends NodeModel {
 							m_stripHsAtEnd.getBooleanValue(),
 							m_includeUnchangingPortion.getBooleanValue(),
 							m_includeHACount.getBooleanValue(),
-							m_includeHARatio.getBooleanValue());
+							m_includeHARatio.getBooleanValue(),
+							m_showReverseTransforms.getBooleanValue());
 					for (DataCell[] cells : newRows) {
 						RowKey rowKey = new RowKey("Row_" + rowIdx++);
 						dc0.addRowToTable(new DefaultRow(rowKey, cells));
@@ -309,9 +328,14 @@ public class Frag2PairNodeModel extends NodeModel {
 					ArrayList<DataCell[]> newRows = getTransforms(vals,
 							numCols, m_stripHsAtEnd.isEnabled()
 									&& m_stripHsAtEnd.getBooleanValue(),
-							m_includeHACount.getBooleanValue());
+							m_includeHACount.getBooleanValue(),
+							m_showReverseTransforms.getBooleanValue());
 
 					for (DataCell[] cells : newRows) {
+						// Deal with need for rSMARTS
+						if (m_includeReactionSMARTS.getBooleanValue()) {
+							cells = addReactionSmartsCell(cells);
+						}
 						RowKey rowKey = new RowKey("Row_" + rowIdx++);
 						dc0.addRowToTable(new DefaultRow(rowKey, cells));
 					}
@@ -327,6 +351,17 @@ public class Frag2PairNodeModel extends NodeModel {
 
 		dc0.close();
 		return new BufferedDataTable[] { dc0.getTable() };
+	}
+
+	/**
+	 * @param cells
+	 * @return
+	 */
+	private DataCell[] addReactionSmartsCell(DataCell[] cells) {
+		String SMIRKS = ((SmilesValue) cells[0]).getSmilesValue();
+		String rSMARTS = convertSmirksToReactionSmarts(SMIRKS);
+		cells[cells.length - 1] = new SmartsCell(rSMARTS);
+		return cells;
 	}
 
 	/*
@@ -380,6 +415,9 @@ public class Frag2PairNodeModel extends NodeModel {
 		if (m_includeHARatio.getBooleanValue()) {
 			numCols += 2;
 		}
+		if (m_includeReactionSMARTS.getBooleanValue()) {
+			numCols++;
+		}
 
 		DataColumnSpec[] specs = new DataColumnSpec[numCols];
 		int i = 0;
@@ -405,6 +443,10 @@ public class Frag2PairNodeModel extends NodeModel {
 			specs[i++] = createColSpec(
 					"Ratio of Changing / Unchanging Heavy Atoms (Right)",
 					DoubleCell.TYPE);
+		}
+		if (m_includeReactionSMARTS.getBooleanValue()) {
+			specs[i++] = createColSpec("Transformation Reaction SMARTS",
+					SmartsCell.TYPE);
 		}
 
 		return new DataTableSpec(specs);
@@ -534,6 +576,8 @@ public class Frag2PairNodeModel extends NodeModel {
 		m_includeHACount.saveSettingsTo(settings);
 		m_includeHARatio.saveSettingsTo(settings);
 		m_stripHsAtEnd.saveSettingsTo(settings);
+		m_showReverseTransforms.saveSettingsTo(settings);
+		m_includeReactionSMARTS.saveSettingsTo(settings);
 	}
 
 	/*
@@ -554,6 +598,8 @@ public class Frag2PairNodeModel extends NodeModel {
 		m_includeHACount.validateSettings(settings);
 		m_includeHARatio.validateSettings(settings);
 		m_stripHsAtEnd.validateSettings(settings);
+		// Dont validate new settings m_showReverseTransforms and
+		// m_includeReactionSMARTS
 	}
 
 	/*
@@ -575,6 +621,18 @@ public class Frag2PairNodeModel extends NodeModel {
 		m_includeHACount.loadSettingsFrom(settings);
 		m_includeHARatio.loadSettingsFrom(settings);
 		m_stripHsAtEnd.loadSettingsFrom(settings);
+		try {
+			m_showReverseTransforms.loadSettingsFrom(settings);
+		} catch (InvalidSettingsException e) {
+			// Set the backwards compatible value
+			m_showReverseTransforms.setBooleanValue(false);
+		}
+		try {
+			m_includeReactionSMARTS.loadSettingsFrom(settings);
+		} catch (InvalidSettingsException e) {
+			// Set the backwards compatible value
+			m_includeReactionSMARTS.setBooleanValue(false);
+		}
 	}
 
 	/*

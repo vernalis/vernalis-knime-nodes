@@ -16,9 +16,10 @@
  * 
  */
 package com.vernalis.knime.mmp.nodes.rdkit.abstrct;
-
 import static com.vernalis.knime.mmp.MolFormats.isColTypeRDKitCompatible;
+import static com.vernalis.knime.mmp.RDKitFragment.validateReactionSmarts;
 import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createAddHModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createCustomSMARTSModel;
 import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createCutsModel;
 import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createHasHARatioFilterModel;
 import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createHasMaxChangingAtomsModel;
@@ -61,6 +62,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.rdkit.knime.types.RDKitMolValue;
 
+import com.vernalis.knime.mmp.FragmentationTypes;
 import com.vernalis.knime.mmp.RowExecutionException;
 
 /**
@@ -85,6 +87,7 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 	protected final SettingsModelString m_molColName = createMolColumnSettingsModel();
 	protected final SettingsModelString m_idColName = createIDColumnSettingsModel();
 	protected final SettingsModelString m_fragSMIRKS = createSMIRKSModel();
+	protected final SettingsModelString m_customSmarts = createCustomSMARTSModel();
 	protected final SettingsModelIntegerBounded m_numCuts = createCutsModel();
 	protected final SettingsModelBoolean m_AddHs = createAddHModel();
 	protected final SettingsModelBoolean m_hasChangingAtoms = createHasMaxChangingAtomsModel();
@@ -112,6 +115,8 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 		m_trackCutConnectivity.setEnabled(m_numCuts.getIntValue() > 1);
 		m_maxChangingAtoms.setEnabled(m_hasChangingAtoms.getBooleanValue());
 		m_minHARatioFilter.setEnabled(m_hasHARatioFilter.getBooleanValue());
+		m_customSmarts.setEnabled(FragmentationTypes.valueOf(m_fragSMIRKS
+				.getStringValue()) == FragmentationTypes.USER_DEFINED);
 	}
 
 	/**
@@ -193,6 +198,24 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 						+ " is not String-compatible");
 			}
 		}
+
+		if (FragmentationTypes.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED) {
+			if (m_customSmarts.getStringValue() == null
+					|| "".equals(m_customSmarts.getStringValue())) {
+				m_Logger.error("A reaction SMARTS string must be provided "
+						+ "for user-defined fragmentation patterns");
+				throw new InvalidSettingsException(
+						"A reaction SMARTS string must be provided "
+								+ "for user-defined fragmentation patterns");
+			}
+			String rSMARTSCheck = validateReactionSmarts(m_customSmarts
+					.getStringValue());
+			if (rSMARTSCheck != null) {
+				m_Logger.error("Error parsing rSMARTS: " + rSMARTSCheck);
+				throw new InvalidSettingsException("Error parsing rSMARTS: "
+						+ rSMARTSCheck);
+			}
+		}
 		m_spec = createSpec_0(inSpecs[0]);
 		numCols = m_spec.getNumColumns();
 
@@ -244,7 +267,7 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 				RWMol rwMol = RWMol.MolFromSmiles(
 						((SmilesValue) cell).getSmilesValue(), 0, false);
 				RDKFuncs.sanitizeMol(rwMol);
-				mol = (ROMol) rwMol;
+				mol = rwMol;
 			} else if (type.isCompatible(MolValue.class)) {
 				mol = RWMol.MolFromMolBlock(((MolValue) cell).getMolValue(),
 						true, false);
@@ -267,12 +290,8 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 		return mol;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.vernalis.knime.mmp.nodes.indigo.abstrct.
-	 * AbstractMatchedPairsMultipleCutsNodeModel
-	 * #saveSettingsTo(org.knime.core.node.NodeSettingsWO)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	protected void saveSettingsTo(NodeSettingsWO settings) {
@@ -280,6 +299,7 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 		m_idColName.saveSettingsTo(settings);
 		m_molColName.saveSettingsTo(settings);
 		m_fragSMIRKS.saveSettingsTo(settings);
+		m_customSmarts.saveSettingsTo(settings);
 		m_numCuts.saveSettingsTo(settings);
 		m_hasChangingAtoms.saveSettingsTo(settings);
 		m_hasHARatioFilter.saveSettingsTo(settings);
@@ -291,12 +311,8 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 		m_trackCutConnectivity.saveSettingsTo(settings);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.vernalis.knime.mmp.nodes.indigo.abstrct.
-	 * AbstractMatchedPairsMultipleCutsNodeModel
-	 * #loadValidatedSettingsFrom(org.knime.core.node.NodeSettingsRO)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	protected void loadValidatedSettingsFrom(NodeSettingsRO settings)
@@ -305,6 +321,11 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 		m_idColName.loadSettingsFrom(settings);
 		m_molColName.loadSettingsFrom(settings);
 		m_fragSMIRKS.loadSettingsFrom(settings);
+		try {
+			m_customSmarts.loadSettingsFrom(settings);
+		} catch (InvalidSettingsException e) {
+			m_customSmarts.setStringValue("");
+		}
 		m_numCuts.loadSettingsFrom(settings);
 		m_hasChangingAtoms.loadSettingsFrom(settings);
 		m_hasHARatioFilter.loadSettingsFrom(settings);
@@ -321,12 +342,8 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.vernalis.knime.mmp.nodes.indigo.abstrct.
-	 * AbstractMatchedPairsMultipleCutsNodeModel
-	 * #validateSettings(org.knime.core.node.NodeSettingsRO)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	protected void validateSettings(NodeSettingsRO settings)

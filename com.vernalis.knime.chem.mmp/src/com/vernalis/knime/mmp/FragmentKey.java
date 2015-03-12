@@ -135,7 +135,7 @@ public class FragmentKey implements Comparable<FragmentKey> {
 			if (smi.equals("[*H]") || smi.equals("[*]")) {
 				smi = "[*][H]";
 			}
-
+			
 			sb.append(smi);
 
 		}

@@ -13,13 +13,15 @@
 			<p>This node implements the Hussain and Rea algorithm for finding
 				Matched Molecular Pairs in a dataset. The node takes an input table
 				of fragments generated either by the MMP Molecule
-				Fragment node and generates an output table of matched molecular
+				Fragment node and
+				generates an output table of matched molecular
 				pairs (MMPs)
 			</p>
 			<p>The node requires two SMILES input columns, representing the 'key'
 				(unchanging atoms) and 'value', and a string column containing the
 				ID. The node will attempt to
-				auto-guess these column selections based on the default names for
+				auto-guess these column selections based
+				on the default names for
 				the columns output by the fragment node.
 			</p>
 			<p>Optionally, the user can specify that the table is pre-sorted by
@@ -31,9 +33,14 @@
 				is recommended to pre-sort the input table by key, and then use this
 				setting.
 			</p>
-			<p>This node was developed by <a href="http://www.vernalis-research.com/">Vernalis Research</a>. 
-			For feedback and more information, please contact <a href="mailto:knime@vernalis.com">
-			knime@vernalis.com</a></p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
 			<p>
 				1.J. Hussain and C Rea, "
 				<i>Computationally efficient algorithm to identify matched molecular pairs (MMPs) in large datasets</i>
@@ -79,6 +86,14 @@
 			<option name="Show ratio of constant / changing heavy atoms">The ratio of constant / changing heavy atoms (not
 				including 'A', the attachment point) will be included for Left and
 				Right fragments
+			</option>
+			<option name="Show reverse-direction transforms">The transformations will be duplicated in the
+				'reverse' direction, e.g. A-->B and B-->A
+			</option>
+			<option name="Include Reactions SMARTS">In addition to the SMIRKS representation of the
+				transformation, the transform is shown in an rSMARTS representation
+				with atom mappings. Using this option without the 'Track
+				Connectivity' option selected will produce nonsense rSMARTS!
 			</option>
 		</tab>
 

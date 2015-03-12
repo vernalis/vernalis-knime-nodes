@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.RDKit.ChemicalReaction;
 import org.RDKit.ROMol;
@@ -25,6 +27,8 @@ import org.RDKit.ROMol_Vect;
 import org.RDKit.ROMol_Vect_Vect;
 import org.knime.chem.types.SmilesCell;
 import org.knime.core.data.DataCell;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.NodeModel;
 
 /**
@@ -55,10 +59,12 @@ public class RDKitFragment {
 	 *            to preserve regiochemistry
 	 * @return {@link HashMap} of {@link FragmentKey}s linking to
 	 *         {@link TreeSet} of {@link FragmentValue}s
+	 * @throws CanceledExecutionException
 	 */
 	public static HashMap<FragmentKey, TreeSet<FragmentValue>> doRDKitFragmentation(
 			ROMol roMol, String ID, int numFragmentations, String fragSMIRKS,
-			boolean trackCutConnectivity) {
+			boolean trackCutConnectivity, ExecutionContext exec)
+			throws CanceledExecutionException {
 
 		// Load up the ROMol and ID into the relevant formats
 		HashMap<FragmentKey, TreeSet<FragmentValue>> tmp = new HashMap<FragmentKey, TreeSet<FragmentValue>>();
@@ -70,7 +76,7 @@ public class RDKitFragment {
 
 		// Send to the recursive method
 		return doRDKitFragmentation(tmp, numFragmentations, fragSMIRKS,
-				trackCutConnectivity);
+				trackCutConnectivity, exec);
 
 	}
 
@@ -93,15 +99,18 @@ public class RDKitFragment {
 	 * @param trackCutConnectivity
 	 *            If <code>true</code>, then the attachment points are labelled
 	 *            to preserve regiochemistry
+	 * @param exec
 	 * @return {@link HashMap} of {@link FragmentKey}s linking to
 	 *         {@link TreeSet} of {@link FragmentValue}s
+	 * @throws CanceledExecutionException
 	 * @see {@link #doRDKitFragmentation(ROMol, String, int, String, boolean)}
 	 *      for preferred entry point
 	 */
 	public static HashMap<FragmentKey, TreeSet<FragmentValue>> doRDKitFragmentation(
 			HashMap<FragmentKey, TreeSet<FragmentValue>> fragments,
 			int numFragmentations, String fragSMIRKS,
-			boolean trackCutConnectivity) {
+			boolean trackCutConnectivity, ExecutionContext exec)
+			throws CanceledExecutionException {
 		if (numFragmentations == 0) {
 			return fragments;
 		} else {
@@ -115,7 +124,7 @@ public class RDKitFragment {
 
 					HashMap<FragmentKey, TreeSet<FragmentValue>> frags = runRDKitFragment(
 							roMol, fragVal.getID(), fragSMIRKS,
-							numFragmentations, trackCutConnectivity);
+							numFragmentations, trackCutConnectivity, exec);
 
 					// Now we need to add the result to the retVal
 					for (Entry<FragmentKey, TreeSet<FragmentValue>> ent1 : frags
@@ -127,13 +136,17 @@ public class RDKitFragment {
 						}
 						tmp.get(newKey).addAll(ent1.getValue());
 					}
+
+					// Delete the ROMol
+					roMol.delete();
+					exec.checkCanceled();
 				}
 			}
 
 			// And supply the result to recursion
 			HashMap<FragmentKey, TreeSet<FragmentValue>> retVal = doRDKitFragmentation(
 					tmp, numFragmentations - 1, fragSMIRKS,
-					trackCutConnectivity);
+					trackCutConnectivity, exec);
 			return retVal;
 		}
 	}
@@ -143,11 +156,15 @@ public class RDKitFragment {
 	 * use is discouraged! It is called repeatedly from
 	 * {@link #doRDKitFragmentation(HashMap, int, String, boolean)}.
 	 * 
+	 * @param exec
+	 * @throws CanceledExecutionException
+	 * 
 	 * @see #doRDKitFragmentation(HashMap, int, String, boolean)
 	 */
 	private static HashMap<FragmentKey, TreeSet<FragmentValue>> runRDKitFragment(
 			ROMol roMol, String id, String fragSMIRKS, Integer cutIndex,
-			boolean trackCutConnectivity) {
+			boolean trackCutConnectivity, ExecutionContext exec)
+			throws CanceledExecutionException {
 
 		ChemicalReaction rxn;
 		if (trackCutConnectivity) {
@@ -189,7 +206,11 @@ public class RDKitFragment {
 				}
 				retVal.get(key1).add(new FragmentValue(smi[0], id));
 			}
+			prod.delete();
+			exec.checkCanceled();
 		}
+		rxnProds.delete();
+		rxn.delete();
 
 		return retVal;
 	}
@@ -210,6 +231,9 @@ public class RDKitFragment {
 	 * @param includeNumChangingHAs
 	 *            If true, then the number of changing heavy atoms are added for
 	 *            each fragment
+	 * @param showReverseTransforms
+	 *            If
+	 *            <code>true<code>, then the output includes transformations in both directions
 	 * @return An {@link ArrayList} of {@link DataCell}s for each new transform
 	 *         to be added derived from the {@link TreeSet} of
 	 *         {@link FragmentValue}s
@@ -218,7 +242,8 @@ public class RDKitFragment {
 	 */
 	public static ArrayList<DataCell[]> getTransforms(
 			TreeSet<FragmentValue> fragmentValues, int numNewCols,
-			boolean removeExplicitHs, boolean includeNumChangingHAs) {
+			boolean removeExplicitHs, boolean includeNumChangingHAs,
+			boolean showReverseTransforms) {
 
 		ArrayList<DataCell[]> retVal = new ArrayList<DataCell[]>();
 		TreeSet<FragmentValue> orderedFrags = new TreeSet<FragmentValue>(
@@ -227,22 +252,57 @@ public class RDKitFragment {
 			for (FragmentValue rightFrag : orderedFrags
 					.tailSet(leftFrag, false)) {
 				if (!leftFrag.getID().equals(rightFrag.getID())) {
-					DataCell[] transform = new DataCell[numNewCols];
-					int i = 0;
-					transform[i++] = new SmilesCell(
-							leftFrag.getSMILES(removeExplicitHs) + ">>"
-									+ rightFrag.getSMILES(removeExplicitHs));
-					transform[i++] = leftFrag.getIDCell();
-					transform[i++] = rightFrag.getIDCell();
-					transform[i++] = leftFrag.getSMILESCell(removeExplicitHs);
-					transform[i++] = rightFrag.getSMILESCell(removeExplicitHs);
-					if (includeNumChangingHAs) {
-						transform[i++] = leftFrag.getNumberChangingAtomsCell();
-						transform[i++] = rightFrag.getNumberChangingAtomsCell();
-					}
+					DataCell[] transform = buildSimpleTransform(numNewCols,
+							removeExplicitHs, includeNumChangingHAs, leftFrag,
+							rightFrag);
 					retVal.add(transform);
+					if (showReverseTransforms) {
+						transform = buildSimpleTransform(numNewCols,
+								removeExplicitHs, includeNumChangingHAs,
+								rightFrag, leftFrag);
+						retVal.add(transform);
+					}
 				}
 			}
+		}
+		return retVal;
+	}
+
+	/**
+	 * Actually builds the transformation cells array from the Left and Right
+	 * {@link FragmentValue}s. Called by
+	 * {@link #getTransforms(TreeSet, int, boolean, boolean, boolean)}. Called
+	 * twice if reverse transforms are also to be shown, with the Left and Right
+	 * {@link FragmentValue}s transposed
+	 * 
+	 * @param numNewCols
+	 *            The number of new columns - supplied so only calculated once
+	 *            during the {@link NodeModel} <code>#configure</code> method.
+	 * @param removeExplicitHs
+	 *            If true, then explicit hydrogens are removed from the outputs
+	 * @param includeNumChangingHAs
+	 *            If true, then the number of changing heavy atoms are added for
+	 *            each fragment
+	 * @param leftFrag
+	 *            The {@link FragmentValue} for the 'Left' molecule
+	 * @param rightFrag
+	 *            The {@link FragmentValue} for the 'Right' molecule
+	 * @return The {@link DataCell}s for the new row representing the tranform
+	 */
+	private static DataCell[] buildSimpleTransform(int numNewCols,
+			boolean removeExplicitHs, boolean includeNumChangingHAs,
+			FragmentValue leftFrag, FragmentValue rightFrag) {
+		DataCell[] retVal = new DataCell[numNewCols];
+		int i = 0;
+		retVal[i++] = new SmilesCell(leftFrag.getSMILES(removeExplicitHs)
+				+ ">>" + rightFrag.getSMILES(removeExplicitHs));
+		retVal[i++] = leftFrag.getIDCell();
+		retVal[i++] = rightFrag.getIDCell();
+		retVal[i++] = leftFrag.getSMILESCell(removeExplicitHs);
+		retVal[i++] = rightFrag.getSMILESCell(removeExplicitHs);
+		if (includeNumChangingHAs) {
+			retVal[i++] = leftFrag.getNumberChangingAtomsCell();
+			retVal[i++] = rightFrag.getNumberChangingAtomsCell();
 		}
 		return retVal;
 	}
@@ -272,6 +332,9 @@ public class RDKitFragment {
 	 * @param includeRatioHAs
 	 *            If true, then the rations of changing / unchanging heavy atoms
 	 *            are added for each transformation
+	 * @param showReverseTransforms
+	 *            If
+	 *            <code>true<code>, then the output includes transformations in both directions
 	 * @return An {@link ArrayList} of {@link DataCell}s for each new transform
 	 *         to be added derived from the {@link TreeSet} of
 	 *         {@link FragmentValue}s
@@ -280,7 +343,8 @@ public class RDKitFragment {
 	public static ArrayList<DataCell[]> getTransforms(
 			TreeSet<FragmentValue> fragmentValues, FragmentKey fragmentKey,
 			int numNewCols, boolean removeExplicitHs, boolean includeKeySMILES,
-			boolean includeNumChangingHAs, boolean includeRatioHAs) {
+			boolean includeNumChangingHAs, boolean includeRatioHAs,
+			boolean showReverseTransforms) {
 
 		ArrayList<DataCell[]> retVal = new ArrayList<DataCell[]>();
 		TreeSet<FragmentValue> orderedFrags = new TreeSet<FragmentValue>(
@@ -289,34 +353,180 @@ public class RDKitFragment {
 			for (FragmentValue rightFrag : orderedFrags
 					.tailSet(leftFrag, false)) {
 				if (!leftFrag.getID().equals(rightFrag.getID())) {
-					DataCell[] transform = new DataCell[numNewCols];
-					int i = 0;
-					transform[i++] = new SmilesCell(
-							leftFrag.getSMILES(removeExplicitHs) + ">>"
-									+ rightFrag.getSMILES(removeExplicitHs));
-					transform[i++] = leftFrag.getIDCell();
-					transform[i++] = rightFrag.getIDCell();
-					transform[i++] = leftFrag.getSMILESCell(removeExplicitHs);
-					transform[i++] = rightFrag.getSMILESCell(removeExplicitHs);
-					if (includeKeySMILES) {
-						transform[i++] = fragmentKey
-								.getKeyAsDataCell(removeExplicitHs);
-					}
-					if (includeNumChangingHAs) {
-						transform[i++] = leftFrag.getNumberChangingAtomsCell();
-						transform[i++] = rightFrag.getNumberChangingAtomsCell();
-					}
-					if (includeRatioHAs) {
-						transform[i++] = fragmentKey
-								.getConstantToVaryingAtomRatioCell(leftFrag);
-						transform[i++] = fragmentKey
-								.getConstantToVaryingAtomRatioCell(rightFrag);
-					}
+					DataCell[] transform = buildTransform(fragmentKey,
+							removeExplicitHs, includeKeySMILES,
+							includeNumChangingHAs, includeRatioHAs, leftFrag,
+							rightFrag, numNewCols);
 					retVal.add(transform);
+					if (showReverseTransforms) {
+						transform = buildTransform(fragmentKey,
+								removeExplicitHs, includeKeySMILES,
+								includeNumChangingHAs, includeRatioHAs,
+								rightFrag, leftFrag, numNewCols);
+						retVal.add(transform);
+					}
 				}
 			}
 		}
 		return retVal;
+	}
+
+	/**
+	 * Actually builds the transformation cells array from the Left and Right
+	 * {@link FragmentValue}s. Called by
+	 * {@link #getTransforms(TreeSet, FragmentKey, int, boolean, boolean, boolean, boolean, boolean)}
+	 * . Called twice if reverse transforms are also to be shown, with the Left
+	 * and Right {@link FragmentValue}s transposed
+	 * 
+	 * @param fragmentKey
+	 *            The {@link FragmentKey} for the transformation
+	 * @param removeExplicitHs
+	 *            If true, then explicit hydrogens are removed from the outputs
+	 * @param includeKeySMILES
+	 *            If true, then include the smiles of the Key in the output
+	 * @param includeNumChangingHAs
+	 *            If true, then the number of changing heavy atoms are added for
+	 *            each fragment * @param includeRatioHAs
+	 * @param leftFrag
+	 *            The {@link FragmentValue} for the 'Left' molecule
+	 * @param rightFrag
+	 *            The {@link FragmentValue} for the 'Right' molecule
+	 * @param numNewCols
+	 *            The number of new columns - supplied so only calculated once
+	 *            during the {@link NodeModel} <code>#configure</code> method. * @return
+	 *            The {@link DataCell}s for the new row representing the
+	 *            tranform
+	 */
+	private static DataCell[] buildTransform(FragmentKey fragmentKey,
+			boolean removeExplicitHs, boolean includeKeySMILES,
+			boolean includeNumChangingHAs, boolean includeRatioHAs,
+			FragmentValue leftFrag, FragmentValue rightFrag, int numNewCols) {
+		DataCell[] retVal = new DataCell[numNewCols];
+
+		int i = 0;
+		retVal[i++] = new SmilesCell(leftFrag.getSMILES(removeExplicitHs)
+				+ ">>" + rightFrag.getSMILES(removeExplicitHs));
+		retVal[i++] = leftFrag.getIDCell();
+		retVal[i++] = rightFrag.getIDCell();
+		retVal[i++] = leftFrag.getSMILESCell(removeExplicitHs);
+		retVal[i++] = rightFrag.getSMILESCell(removeExplicitHs);
+		if (includeKeySMILES) {
+			retVal[i++] = fragmentKey.getKeyAsDataCell(removeExplicitHs);
+		}
+		if (includeNumChangingHAs) {
+			retVal[i++] = leftFrag.getNumberChangingAtomsCell();
+			retVal[i++] = rightFrag.getNumberChangingAtomsCell();
+		}
+		if (includeRatioHAs) {
+			retVal[i++] = fragmentKey
+					.getConstantToVaryingAtomRatioCell(leftFrag);
+			retVal[i++] = fragmentKey
+					.getConstantToVaryingAtomRatioCell(rightFrag);
+		}
+		return retVal;
+	}
+
+	/**
+	 * Function to convert the SMIRKS representation, with attachment points
+	 * labelled by isotopic value (e.g. [2*]), to Reaction SMARTS, with
+	 * attachment points labelled by atom label (e.g. ([*:2]). Unlabelled
+	 * attachments are labelled '1'.
+	 * 
+	 * @param SMIRKS
+	 *            The isotopically labelled reaction SMIRKS
+	 * @return The Reaction SMARTS with correct attachment point labelling
+	 */
+	public static String convertSmirksToReactionSmarts(String SMIRKS) {
+		String retVal = SMIRKS.replaceAll("\\[([0-9]+)\\*\\]", "[*:$1]");
+		// String retVal = SMIRKS;
+		return retVal.replace("[*]", "[*:1]");
+	}
+
+	/**
+	 * Methods to validate reaction SMARTS
+	 * <ul>
+	 * <li>'>>' is required to separate reactants and products</li>
+	 * <li>Products require '[*]' to occur twice, for the attachment points (the
+	 * node will handle the tagging of these)</li>
+	 * <li>Reactants and products require exactly two atom mappings, e.g. :1]
+	 * and :2] (other values could be used).</li>
+	 * <li>The atom mappings must be two different values</li>
+	 * <li>The same atom mappings must be used for reactants and products</li>
+	 * </ul>
+	 * 
+	 * @param rSMARTS
+	 *            The Reaction SMARTS to validate
+	 * @return <code>null</code> if the SMARTS was validated, otherwise an error
+	 *         message informing of the first problem encountered
+	 */
+	public static String validateReactionSmarts(String rSMARTS) {
+		// Firstly, it must contain ">>" - 10 is [*:1]-[*:2]
+		if (rSMARTS.indexOf(">>") < 10) {
+			return "rSMARTS must contain the substring '>>' "
+					+ "to separate reactants and products";
+		}
+
+		// Needs to also contain 2 matching pairs of atom indices before and
+		// after '>>', and 2 unmapped attachment points [*]
+		String reactants = rSMARTS.split(">>")[0];
+		
+		String products = rSMARTS.split(">>")[1];
+		if (products.split("\\[\\*\\]").length != 2) {
+			return "rSMARTS products need exactly two unmapped attachment points, "
+					+ "of the form '[*]' for correct tagging";
+		}
+		
+		Pattern idMatch = Pattern.compile(".*:(\\d+)\\].*:(\\d+)\\].*");
+		Matcher m = idMatch.matcher(reactants);
+		int rctMapId_0, rctMapId_1;
+		if(m.find()){
+			try {
+				rctMapId_0 = Integer.parseInt(m.group(1));
+				rctMapId_1 = Integer.parseInt(m.group(2));
+			} catch (NumberFormatException e) {
+				return "rSMARTS reactants need exactly two mapped atoms, "
+						+ "of the form '[{atom match}:n]', where n is a number";
+			}
+		} else {
+			return "rSMARTS reactants need exactly two mapped atoms, "
+					+ "of the form '[{atom match}:n]', where n is a number";
+		}
+		if (rctMapId_0 == rctMapId_1) {
+			return "rSMARTS reactants need exactly two *differently* mapped atoms, "
+					+ "of the form '[{atom match}:n]', where n is a number (e.g. 1 and 2)";
+		}
+		
+		m = idMatch.matcher(products);
+		int prodMapId_0, prodMapId_1;
+		if (m.find()) {
+			try {
+				prodMapId_0 = Integer.parseInt(m.group(1));
+				prodMapId_1 = Integer.parseInt(m.group(2));
+			} catch (NumberFormatException e) {
+				return "rSMARTS products need exactly two mapped atoms, "
+						+ "of the form '[{atom match}:n]', where n is a number";
+			}
+		} else {
+			return "rSMARTS products need exactly two mapped atoms, "
+					+ "of the form '[{atom match}:n]', where n is a number";
+		}
+		if (prodMapId_0 == prodMapId_1) {
+			return "rSMARTS products need exactly two *differently* mapped atoms, "
+					+ "of the form '[{atom match}:n]', where n is a number (e.g. 1 and 2)";
+		}
+		// finally, check the same indices occur on both sides.
+		if ((rctMapId_0 != prodMapId_0 && rctMapId_0 != prodMapId_1)
+				|| (rctMapId_1 != prodMapId_0 && rctMapId_1 != prodMapId_1)) {
+			return "rSMARTS mapping indices need to be the same for reactants (Here: "
+					+ rctMapId_0
+					+ ", "
+					+ rctMapId_1
+					+ ") and products (Here: "
+					+ prodMapId_0 + ", " + prodMapId_1 + ")";
+		}
+		
+		//We got there!
+		return null;
 	}
 
 	/** Convert a {@link ROMol_Vect} object to an array of SMILES strings. */
@@ -478,9 +688,7 @@ public class RDKitFragment {
 				if (!retVal.containsKey(key0)) {
 					retVal.put(key0, new TreeSet<FragmentValue>());
 				}
-				// TODO: This is where the cut index needs to be introduced =
-				// smi[1].replace("[*]","[*:"+cutIndex+"]")
-				// FragmentValue will need to be updated too to cope...
+				
 				retVal.get(key0).add(new FragmentValue(smi[1], id));
 			}
 

@@ -18,10 +18,13 @@
 package com.vernalis.knime.mmp.nodes.rdkit.multicut;
 
 
+import static com.vernalis.knime.mmp.RDKitFragment.convertSmirksToReactionSmarts;
 import static com.vernalis.knime.mmp.RDKitFragment.doRDKitFragmentation;
 import static com.vernalis.knime.mmp.RDKitFragment.filterFragments;
 import static com.vernalis.knime.mmp.RDKitFragment.getTransforms;
 import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createOutputKeyModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createShowReverseTransformsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createShowSmartsTransformsModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +32,9 @@ import java.util.Map.Entry;
 import java.util.TreeSet;
 
 import org.RDKit.ROMol;
+import org.knime.chem.types.SmartsCell;
 import org.knime.chem.types.SmilesCell;
+import org.knime.chem.types.SmilesValue;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataRow;
@@ -67,6 +72,8 @@ public class RdkitMatchedPairsNodeModel extends
 		AbstractRdkitMatchedPairsMultipleCutsNodeModel {
 
 	protected final SettingsModelBoolean m_outputKey = createOutputKeyModel();
+	private final SettingsModelBoolean m_showReverseTransforms = createShowReverseTransformsModel();
+	private final SettingsModelBoolean m_includeReactionSMARTS = createShowSmartsTransformsModel();
 
 	/**
 	 * Node Model Constructor
@@ -104,6 +111,10 @@ public class RdkitMatchedPairsNodeModel extends
 		// Sort out the reaction
 		String fragSMIRKS = FragmentationTypes.valueOf(
 				m_fragSMIRKS.getStringValue()).getSMIRKS();
+		if ((fragSMIRKS == null || "".equals(fragSMIRKS))
+				&& FragmentationTypes.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED) {
+			fragSMIRKS = m_customSmarts.getStringValue();
+		}
 
 		// Now do some final setting up
 		int numCuts = m_numCuts.getIntValue();
@@ -167,7 +178,8 @@ public class RdkitMatchedPairsNodeModel extends
 
 			// Do the fragmentation
 			HashMap<FragmentKey, TreeSet<FragmentValue>> newFrags = doRDKitFragmentation(
-					roMol, molID, numCuts, fragSMIRKS, trackCutConnectivity);
+					roMol, molID, numCuts, fragSMIRKS, trackCutConnectivity,
+					exec);
 
 			// Clean up the new fragments (apply max change etc settings -
 			newFrags = filterFragments(newFrags, maxNumVarAtm,
@@ -206,8 +218,13 @@ public class RdkitMatchedPairsNodeModel extends
 								&& m_stripHsAtEnd.getBooleanValue(),
 						m_outputKey.getBooleanValue(),
 						m_outputNumChgHAs.getBooleanValue(),
-						m_outputHARatio.getBooleanValue());
+						m_outputHARatio.getBooleanValue(),
+						m_showReverseTransforms.getBooleanValue());
 				for (DataCell[] cells : newRows) {
+					// Deal with need for rSMARTS
+					if (m_includeReactionSMARTS.getBooleanValue()) {
+						cells = addReactionSmartsCell(cells);
+					}
 					RowKey rowKey = new RowKey("Row_" + rowIdx++);
 					dc_0.addRowToTable(new DefaultRow(rowKey, cells));
 				}
@@ -226,9 +243,14 @@ public class RdkitMatchedPairsNodeModel extends
 						numCols,
 						m_stripHsAtEnd.isEnabled()
 								&& m_stripHsAtEnd.getBooleanValue(),
-						m_outputNumChgHAs.getBooleanValue());
+						m_outputNumChgHAs.getBooleanValue(),
+						m_showReverseTransforms.getBooleanValue());
 
 				for (DataCell[] cells : newRows) {
+					// Deal with need for rSMARTS
+					if (m_includeReactionSMARTS.getBooleanValue()) {
+						cells = addReactionSmartsCell(cells);
+					}
 					RowKey rowKey = new RowKey("Row_" + rowIdx++);
 					dc_0.addRowToTable(new DefaultRow(rowKey, cells));
 				}
@@ -242,6 +264,17 @@ public class RdkitMatchedPairsNodeModel extends
 		dc_1.close();
 		m_Logger.info("Pair-finding complete. " + rowIdx + " transforms added");
 		return new BufferedDataTable[] { dc_0.getTable(), dc_1.getTable() };
+	}
+
+	/**
+	 * @param cells
+	 * @return
+	 */
+	private DataCell[] addReactionSmartsCell(DataCell[] cells) {
+		cells[cells.length - 1] = new SmartsCell(
+				convertSmirksToReactionSmarts(((SmilesValue) cells[0])
+						.getSmilesValue()));
+		return cells;
 	}
 
 	/*
@@ -262,6 +295,9 @@ public class RdkitMatchedPairsNodeModel extends
 		}
 		if (m_outputHARatio.getBooleanValue()) {
 			numCols += 2;
+		}
+		if (m_includeReactionSMARTS.getBooleanValue()) {
+			numCols++;
 		}
 
 		DataColumnSpec[] specs = new DataColumnSpec[numCols];
@@ -289,6 +325,10 @@ public class RdkitMatchedPairsNodeModel extends
 					"Ratio of Changing / Unchanging Heavy Atoms (Right)",
 					DoubleCell.TYPE);
 		}
+		if (m_includeReactionSMARTS.getBooleanValue()) {
+			specs[i++] = createColSpec("Transformation Reaction SMARTS",
+					SmartsCell.TYPE);
+		}
 
 		return new DataTableSpec(specs);
 	}
@@ -304,6 +344,8 @@ public class RdkitMatchedPairsNodeModel extends
 	protected void saveSettingsTo(NodeSettingsWO settings) {
 		super.saveSettingsTo(settings);
 		m_outputKey.saveSettingsTo(settings);
+		m_showReverseTransforms.saveSettingsTo(settings);
+		m_includeReactionSMARTS.saveSettingsTo(settings);
 	}
 
 	/*
@@ -318,6 +360,18 @@ public class RdkitMatchedPairsNodeModel extends
 			throws InvalidSettingsException {
 		super.loadValidatedSettingsFrom(settings);
 		m_outputKey.loadSettingsFrom(settings);
+		try {
+			m_showReverseTransforms.loadSettingsFrom(settings);
+		} catch (InvalidSettingsException e) {
+			// Set the backwards compatible value
+			m_showReverseTransforms.setBooleanValue(false);
+		}
+		try {
+			m_includeReactionSMARTS.loadSettingsFrom(settings);
+		} catch (InvalidSettingsException e) {
+			// Set the backwards compatible value
+			m_includeReactionSMARTS.setBooleanValue(false);
+		}
 	}
 
 	/*
@@ -332,6 +386,8 @@ public class RdkitMatchedPairsNodeModel extends
 			throws InvalidSettingsException {
 		super.validateSettings(settings);
 		m_outputKey.validateSettings(settings);
+		// Dont validate new settings m_showReverseTransforms and
+		// m_includeReactionSMARTS
 	}
 
 }

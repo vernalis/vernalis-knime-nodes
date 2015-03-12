@@ -23,6 +23,7 @@ import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentButtonGroup;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
 import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
+import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelDoubleBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
@@ -43,30 +44,43 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 			m_stripHsAtEnd, m_trackCutConnectivity;
 	SettingsModelIntegerBounded m_maxChangingAtoms, m_NumCuts;
 	SettingsModelDoubleBounded m_minHARatioFilter;
+	SettingsModelString m_fragmentationType, m_customRSMARTS;
 
 	/**
 	 * New pane for configuring the MatchedPairsMultipleCuts node.
 	 * 
-	 * @param includeShowUnchangingPortionOption
+	 * @param includeMMPGenerationOptions
 	 *            Setting to show optional 'Show unchanging portion' dialog
-	 *            option.
+	 *            option, and options relating to transform output
 	 */
 	@SuppressWarnings("unchecked")
 	public AbstractRdkitMatchedPairsMultipleCutsNodeDialog(
-			boolean includeShowUnchangingPortionOption) {
+			boolean includeMMPGenerationOptions) {
 
 		addDialogComponent(new DialogComponentColumnNameSelection(
-				createMolColumnSettingsModel(),
- "Select Molecule column", 0,
+				createMolColumnSettingsModel(), "Select Molecule column", 0,
 				MolFormats.m_RDKitmolFormats.toArray(new Class[0])));
 
 		addDialogComponent(new DialogComponentColumnNameSelection(
-				createIDColumnSettingsModel(), "Select Molecule IDs column",
-				0, StringValue.class));
+				createIDColumnSettingsModel(), "Select Molecule IDs column", 0,
+				StringValue.class));
 
-		addDialogComponent(new DialogComponentButtonGroup(createSMIRKSModel(),
+		m_fragmentationType = createSMIRKSModel();
+		m_customRSMARTS = createCustomSMARTSModel();
+		m_fragmentationType.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				m_customRSMARTS.setEnabled(FragmentationTypes
+						.valueOf(m_fragmentationType.getStringValue()) == FragmentationTypes.USER_DEFINED);
+			}
+		});
+
+		addDialogComponent(new DialogComponentButtonGroup(m_fragmentationType,
 				"Select the fragmentation type", true,
 				FragmentationTypes.values()));
+		addDialogComponent(new DialogComponentString(m_customRSMARTS,
+				"User rSMARTS:"));
 
 		m_NumCuts = createCutsModel();
 		m_trackCutConnectivity = createTrackCutConnectivityModel();
@@ -142,7 +156,7 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 		 * * The OUTPUT SETTINGS tab * ***************************
 		 */
 		createNewTab("Output Settings");
-		if (includeShowUnchangingPortionOption) {
+		if (includeMMPGenerationOptions) {
 			addDialogComponent(new DialogComponentBoolean(
 					createOutputKeyModel(), "Show unchanging portion"));
 		}
@@ -152,6 +166,15 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 		addDialogComponent(new DialogComponentBoolean(
 				createOutputHARatiosModel(),
 				"Show ratio of constant / changing heavy atoms"));
+		if (includeMMPGenerationOptions) {
+			addDialogComponent(new DialogComponentBoolean(
+					createShowReverseTransformsModel(),
+					"Show reverse-direction transforms"));
+
+			addDialogComponent(new DialogComponentBoolean(
+					createShowSmartsTransformsModel(),
+					"Include Reaction SMARTS"));
+		}
 
 	}
 
@@ -179,6 +202,21 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 	protected void updateStripHs() {
 		m_stripHsAtEnd.setEnabled(m_NumCuts.getIntValue() == 1
 				&& m_AddHs.getBooleanValue());
+	}
+
+	/** Create model for customReaction SMARTS */
+	public static SettingsModelString createCustomSMARTSModel() {
+		return new SettingsModelString("Custom rSMARTS", null);
+	}
+
+	/** Create model to include Reaction SMARTS */
+	public static SettingsModelBoolean createShowSmartsTransformsModel() {
+		return new SettingsModelBoolean("Include Reaction SMARTS", true);
+	}
+
+	/** Create model to include reverse transforms in outpu */
+	public static SettingsModelBoolean createShowReverseTransformsModel() {
+		return new SettingsModelBoolean("Show Reverse Transforms", true);
 	}
 
 	/*
