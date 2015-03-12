@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./MMPs.png" type="Manipulator" xmlns="http://knime.org/node/v2.8"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
+	<name>Matched Molecular Pairs (RDKit)</name>
+
+	<shortDescription>
+        This node implements the Hussain and Rea algorithm for Matched Molecular Pair finding.
+    </shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>This node implements the Hussain and Rea algorithm for finding
+				Matched Molecular Pairs in a dataset (See Ref. 1). The user can specify the
+				number
+				of cuts to be made (1 - 10), and whether Hydrogens should be
+				added.
+			</p>
+			<p>
+				A variety of fragmentation options are included:
+				<ol>
+					<li>"All acyclic single bonds" - Any acyclic single bond between
+						any two atoms will be broken. This is the most exhaustive
+						approach, but can generate a large number of pairs (rSMARTS:
+						[*:1]!@!=!#[*:2]>>[*:1]-[*].[*:2]-[*])
+					</li>
+					<li>"Only acyclic single bonds to rings" - Single acyclic bonds
+						between any atoms will be broken, as long as at least one atom is
+						in a ring (rSMARTS: [*;R:1]!@!=!#[*:2]>>[*:1]-[*].[*:2]-[*]).
+					</li>
+					<li>"Only single bonds to a heteroatom" - Single acyclic bonds
+						between any two atoms, at least one of which is not Carbon will be
+						broken. Included to mirror C-X bond breaking chemistry prevalent
+						in modern drug discovery (e.g. SNAr, Reductive Aminations, Amide
+						formations etc. See Ref. 2) (rSMARTS:
+						[!#6:1]!@!=!#[*:2]>>[*:1]-[*].[*:2]-[*])
+					</li>
+					<li>"Non-functional group single bonds" - This
+						reproduces the fragmentation pattern used in the original
+						Hussein/Rea paper (See footnote 24, Ref. 1), and also used in the
+						RDKit Python implementation (Ref 3) (rSMARTS:
+						[#6+0;!$(*=,#[!#6]):1]!@!=!#[*:2]>>[*:1]-[*].[*:2]-[*])
+					</li>
+					<li>"User defined" - The user needs to provide their own rSMARTS
+						fragmentation definition, following the guidelines below.
+					</li>
+				</ol>
+			</p>
+			<p>
+				<i>Guidelines for Custom rSMARTS Definition</i>
+				<br />
+				<ul>
+					<li>'>>' is required to separate reactants and products</li>
+					<li>Products require '[*]' to occur twice, for the attachment
+						points (the node will handle the tagging of these)
+					</li>
+					<li>Reactants and products require exactly two atom mappings, e.g.
+						:1] and :2] (other values could be used).
+					</li>
+					<li>The atom mappings must be two different values</li>
+					<li>The same atom mappings must be used for reactants and products
+					</li>
+				</ul>
+				rSMARTS not conforming to these guidelines will be rejected during
+				node configuration.
+			</p>
+			<p>The algorithm is implemented using the RDKit toolkit.</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+			<p>
+				1.J. Hussain and C Rea, "
+				<i>Computationally efficient algorithm to identify matched molecular pairs (MMPs) in large datasets</i>
+				",
+				<i>J. Chem. Inf. Model.</i>
+				, 2010,
+				<b>50</b>
+				, 339-348 (DOI:
+				<a href="http://dx.doi.org/10.1021/ci900450m">10.1021/ci900450m</a>
+				).
+			</p>
+			<p>
+				2. S. D. Roughley and A. M. Jordan "
+				<i>The Medicinal Chemist’s Toolbox: An Analysis of Reactions Used in the Pursuit of Drug Candidates</i>
+				",
+				<i>J. Med. Chem.</i>
+				, 2011,
+				<b>54</b>
+				, 3451-3479 (DOI:
+				<a href="http://dx.doi.org/10.1021/jm200187y">10.1021/jm200187y</a>
+				)
+			</p>
+			<p>
+				3. G. Landrum "
+				<a href="http://www.rdkit.org/docs/Overview.html#the-contrib-directory">An Overview of RDKit</a>
+				" (section entitled 'mmpa')
+			</p>
+		</intro>
+
+		<tab name="Options">
+			<option name="Select Molecule column">Select the column containing the molecules
+			</option>
+			<option name="Select Molecule IDs column">Select the column containing the molecule IDs
+			</option>
+			<option name="Select the Fragmentation Type">Select the required fragmentation option</option>
+			<option name="User rSMARTS">The optional user-defined rSMARTS (see above for
+				details)
+			</option>
+			<option name="Number of cuts">
+				Select the number of cuts (1-10).
+				<i>NB Large values can result in slow processing times</i>
+			</option>
+			<option name="Track Connectivity?">When more than one bond is being cut, tracking
+				connectivity ensures that substituents on core replacements have the
+				correct regiochemistry, as described in Hussain and Rea. Unsetting
+				this option loses this regiochemistry information, but may serve use
+				in a broader 'ideas generation' context
+			</option>
+		</tab>
+		<tab name="Advanced Settings">
+			<option name="Add H's prior to fragmentation">If checked, pairs with -H as a substituent will
+				be included. This is recommended for when the number of cuts is 1,
+				and is unavailable for other values
+			</option>
+			<option name="Remove Explicit H's from output">Explicit hydrogens will be removed from the
+				output if selected (Only available when 'Add H's prior to
+				fragmentation' is selected and enabled)
+			</option>
+			<option name="Filter by maximum number of changing heavy atoms?">If checked, the user can specify a maximum number
+				of heavy atoms which are allowed to change between Matched Pairs
+			</option>
+			<option name="Maximum Number of variable heavy atoms">The maximum number of heavy atoms which are
+				allowed to change between pairs
+			</option>
+			<option name="Filter by ratio of changing / unchanging atoms?">If checked, the user can specify a maximum ratio
+				of changing to unchanging heavy atoms during fragmentation
+			</option>
+			<option name="Minimum ratio of changing to unchanging heavy atoms">The minimum ratio of changing to unchanging heavy
+				atoms
+			</option>
+		</tab>
+		<tab name="Output Settings">
+			<option name="Show unchanging portion">A SMILES cell will be included showing the 'key'
+				resulting in the fragmentation pattern
+			</option>
+			<option name="Show number of changing atoms">The number of heavy atoms (not including 'A', the
+				attachment point) will be included for Left and Right fragments
+			</option>
+			<option name="Show ratio of constant / changing heavy atoms">The ratio of constant / changing heavy atoms (not
+				including 'A', the attachment point) will be included for Left and
+				Right fragments
+			</option>
+			<option name="Show reverse-direction transforms">The transformations will be duplicated in the
+				'reverse' direction, e.g. A-->B and B-->A
+			</option>
+			<option name="Include Reactions SMARTS">In addition to the SMIRKS representation of the
+				transformation, the transform is shown in an rSMARTS representation
+				with atom mappings. Using this option without the 'Track
+				Connectivity' option selected will produce nonsense rSMARTS!
+			</option>
+		</tab>
+
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Molecules">Molecules for fragmenting to find
+			matched pairs
+		</inPort>
+		<outPort index="0" name="MMP transforms">Matched pair transformations
+		</outPort>
+		<outPort name="Failed Input Rows" index="1">Input rows for which
+			the molecule could not be parsed in RDKit
+		</outPort>
+	</ports>
+
+</knimeNode>
