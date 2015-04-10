@@ -55,7 +55,7 @@ public class FragmentKeyMorganFP extends DefaultFragmentKeyFingerprinted {
 	 */
 	public FragmentKeyMorganFP() {
 		super();
-		m_apEnvironments = new HashMap<>();
+		m_apEnvironments = new HashMap<String, ExplicitBitVect>();
 		m_radius = DEFAULT_FP_RADIUS;
 		m_numBits = DEFAULT_FP_LENGTH;
 		m_useChirality = DEFAULT_USE_CHIRALITY;
@@ -101,7 +101,7 @@ public class FragmentKeyMorganFP extends DefaultFragmentKeyFingerprinted {
 			m_useChirality = ((FragmentKeyMorganFP) existingKey).m_useChirality;
 			m_useBondTypes = ((FragmentKeyMorganFP) existingKey).m_useBondTypes;
 		} else {
-			m_apEnvironments = new HashMap<>();
+			m_apEnvironments = new HashMap<String, ExplicitBitVect>();
 			m_radius = DEFAULT_FP_RADIUS;
 			m_numBits = DEFAULT_FP_LENGTH;
 			m_useChirality = DEFAULT_USE_CHIRALITY;
@@ -140,7 +140,7 @@ public class FragmentKeyMorganFP extends DefaultFragmentKeyFingerprinted {
 				m_numBits = numBits;
 				m_useChirality = useChirality;
 				m_useBondTypes = useBondTypes;
-				m_apEnvironments = new HashMap<>();
+				m_apEnvironments = new HashMap<String, ExplicitBitVect>();
 				calculateAttPointEnvironments(m_keyComponents);
 			} else {
 				// Parameters are the same to transfer everything
@@ -156,7 +156,7 @@ public class FragmentKeyMorganFP extends DefaultFragmentKeyFingerprinted {
 			m_numBits = numBits;
 			m_useChirality = useChirality;
 			m_useBondTypes = useBondTypes;
-			m_apEnvironments = new HashMap<>();
+			m_apEnvironments = new HashMap<String, ExplicitBitVect>();
 			calculateAttPointEnvironments(m_keyComponents);
 		}
 	}
@@ -173,8 +173,7 @@ public class FragmentKeyMorganFP extends DefaultFragmentKeyFingerprinted {
 	 */
 	public FragmentKeyMorganFP(String keyAsString) {
 		super(keyAsString);
-		m_apEnvironments = new HashMap<>();
-		m_apEnvironments = new HashMap<>();
+		m_apEnvironments = new HashMap<String, ExplicitBitVect>();
 		m_radius = DEFAULT_FP_RADIUS;
 		m_numBits = DEFAULT_FP_LENGTH;
 		m_useChirality = DEFAULT_USE_CHIRALITY;

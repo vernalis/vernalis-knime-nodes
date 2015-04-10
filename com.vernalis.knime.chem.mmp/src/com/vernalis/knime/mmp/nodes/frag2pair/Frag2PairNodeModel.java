@@ -268,7 +268,7 @@ public class Frag2PairNodeModel extends NodeModel {
 			// Container for the fragmentations
 			HashMap<FragmentKey, TreeSet<FragmentValue>> frags = new HashMap<FragmentKey, TreeSet<FragmentValue>>();
 			// And for the fingerprints
-			HashMap<FragmentKey, DataCell[]> keyFps = new HashMap<>();
+			HashMap<FragmentKey, DataCell[]> keyFps = new HashMap<FragmentKey, DataCell[]>();
 
 			m_logger.info("Compiling fragment dictionary");
 			exec.setMessage("Compiling fragment dictionary");
@@ -475,8 +475,8 @@ public class Frag2PairNodeModel extends NodeModel {
 
 		// Deal with possibility of incoming AP FPs
 		String[] colNames = dataTableSpec.getColumnNames();
-		ArrayList<String> fpColNames = new ArrayList<>();
-		m_fpColIdx = new ArrayList<>();
+		ArrayList<String> fpColNames = new ArrayList<String>();
+		m_fpColIdx = new ArrayList<Integer>();
 		for (String colName : colNames) {
 			if (colName.matches("Attachment point \\d+ fingerprint.*")) {
 				fpColNames.add(colName);
