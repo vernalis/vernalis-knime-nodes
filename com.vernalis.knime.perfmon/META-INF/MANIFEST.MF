@@ -9,9 +9,11 @@ Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.core.runtime,
  org.knime.workbench.core,
  org.knime.workbench.repository,
- org.knime.base,
- com.vernalis.knime.internal.core;bundle-version="1.0.0"
+ org.knime.base
 Bundle-ActivationPolicy: lazy
-Export-Package: com.vernalis.knime.perfmon.nodes.timing.start
+Export-Package: com.vernalis.knime.perfmon,
+ com.vernalis.knime.perfmon.nodes.timing.abstrct,
+ com.vernalis.knime.perfmon.nodes.timing.end,
+ com.vernalis.knime.perfmon.nodes.timing.start
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 
