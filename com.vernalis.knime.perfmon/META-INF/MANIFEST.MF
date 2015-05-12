@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-SymbolicName: com.vernalis.knime.internal.perfmon;singleton:=true
+Bundle-Version: 1.3.6.qualifier
+Bundle-ClassPath: timingstart.jar
+Bundle-Activator: com.vernalis.knime.perfmon.TimingStartNodePlugin
+Bundle-Vendor: %Bundle-Vendor
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.base,
+ com.vernalis.knime.internal.core;bundle-version="1.0.0"
+Bundle-ActivationPolicy: lazy
+Export-Package: com.vernalis.knime.perfmon.nodes.timing.start
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+
