@@ -6,7 +6,9 @@
       provider-name="Vernalis">
 
    <description>
-      This feature contains Vernalis KNIME nodes for interfacing with the RCSB PDB, handling PDB files and various other tasks within knime.
+      This feature contains Vernalis KNIME nodes for interfacing with
+the RCSB PDB, handling PDB files and various other tasks within
+KNIME.
    </description>
 
    <copyright>
