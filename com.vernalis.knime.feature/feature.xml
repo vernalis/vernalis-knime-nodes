@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="com.vernalis.knime.feature"
-      label="Vernalis Knime Nodes"
+      label="Vernalis KNIME Nodes"
       version="1.4.0.qualifier"
       provider-name="Vernalis">
 
