@@ -1,0 +1,6 @@
+Trying to delete property 'svn:mergeinfo'
+but the property has been locally modified.
+<<<<<<< (local property value)
+/branches/RDKit_Refactored_And_Wizard_30July2012/com.vernalis/com.vernalis.knime:3758-4163
+/branches/v_2_7/com.vernalis/com.vernalis.knime:6364-6408=======
+>>>>>>> (incoming property value)
