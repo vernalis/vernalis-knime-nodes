@@ -110,7 +110,7 @@ public class RdkitMatchedPairsNodeModel extends
 
 		// Sort out the reaction
 		String fragSMIRKS = FragmentationTypes.valueOf(
-				m_fragSMIRKS.getStringValue()).getSMIRKS();
+				m_fragSMIRKS.getStringValue()).getSMARTS();
 		if ((fragSMIRKS == null || "".equals(fragSMIRKS))
 				&& FragmentationTypes.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED) {
 			fragSMIRKS = m_customSmarts.getStringValue();

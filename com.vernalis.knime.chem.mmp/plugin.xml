@@ -12,25 +12,50 @@
             path="/"/>
    </extension>
    -->
-   
-<extension point="org.knime.workbench.repository.nodes">
-
+  <extension point="org.knime.workbench.repository.nodes"> 
  <node
-       category-path="/community/vernalis/mmp"
-       factory-class="com.vernalis.knime.mmp.nodes.rdkit.multicut.RdkitMatchedPairsNodeFactory"
-       id="RdkitMatchedPairsNodeFactory">
+       category-path="/community/vernalis/mmp/filter"
+       factory-class="com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeFactory"
+       id="MmpPrefilterNodeFactory">
  </node>
  <node
-       after="RdkitMatchedPairsNodeFactory"
-       category-path="/community/vernalis/mmp"
-       factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment.RdkitMMPFragmentNodeFactory"
-       id="RdkitMMPFragmentNodeFactory">
+       category-path="/community/vernalis/mmp/filter"
+       factory-class="com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterSplitterNodeFactory"
+       id="MmpPrefilterSplitterNodeFactory">
  </node>
  <node
-       after="RdkitMMPFragmentNodeFactory"
        category-path="/community/vernalis/mmp"
-       factory-class="com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeFactory"
-       id="Frag2PairNodeFactory">
+       factory-class="com.vernalis.knime.mmp.nodes.maxcuts.MmpMaxCutsNodeFactory"
+       id="MmpMaxCutsNodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/mmp/pairgen"
+       factory-class="com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeFactory"
+       id="Frag2Pair2NodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/mmp"
+       expert-flag="false"
+       factory-class="com.vernalis.knime.mmp.nodes.loop.CutTypeLoopStartNodeFactory"
+       id="CutTypeLoopStartNodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/mmp/frag"
+       expert-flag="false"
+       factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeFactory"
+       id="MultipleCutParallelRdkitMMPFragment3NodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/mmp/frag"
+       expert-flag="false"
+       factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment2.ParallelRdkitMMPFragment3NodeFactory"
+       id="ParallelRdkitMMPFragment3NodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/mmp/"
+       expert-flag="false"
+       factory-class="com.vernalis.knime.mmp.nodes.uniquifyids.UniquifyIdsNodeFactory"
+       id="UniquifyIdsNodeFactory">
  </node>
 </extension>
 
@@ -42,6 +67,42 @@
        name="Matched Molecular Pairs (MMPs)"
        path="/community/vernalis/">
 	</category>
+ <category
+       icon="icons/MMPFrag_Cat.png"
+       level-id="frag"
+       locked="false"
+       name="Fragmentation"
+       path="/community/vernalis/mmp/">
+ </category>
+ <category
+       icon="icons/MMP_PairGen_Cat3.png"
+       level-id="pairgen"
+       locked="false"
+       name="Pair Generation"
+       path="/community/vernalis/mmp/">
+ </category>
+ <category
+       icon="icons/MMP_Prefilter_Cat.png"
+       level-id="filter"
+       locked="false"
+       name="Filtering"
+       path="/community/vernalis/mmp/">
+ </category>
    </extension>
+<extension
+      point="org.eclipse.ui.preferencePages">
+   <page
+         category="com.vernalis.knime.core.preferences"
+         class="com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage"
+         id="com.vernalis.knime.chem.mmp.page1"
+         name="Matched Molecular Pairs (MMPs)">
+   </page>
+</extension>
+<extension
+      point="org.eclipse.core.runtime.preferences">
+   <initializer
+         class="com.vernalis.knime.mmp.prefs.MatchedPairPreferenceInitializer">
+   </initializer>
+</extension>
    
 </plugin>

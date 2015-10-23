@@ -18,10 +18,10 @@ import org.knime.core.node.util.ButtonGroupEnumInterface;
 
 /**
  * Enum containing the fragmentation patterns provided in the node dialog. The
- * {@link #getSMIRKS()} method provides the RDKit Reaction SMARTS string.
+ * {@link #getSMARTS()} method provides the RDKit Reaction SMARTS string.
  * Attachment points should be included as '[*]' to allow correct tagging.
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
 public enum FragmentationTypes implements ButtonGroupEnumInterface {
@@ -32,6 +32,12 @@ public enum FragmentationTypes implements ButtonGroupEnumInterface {
 	RING_ACYCLIC("Only acyclic single bonds to rings",
 			"Break only single acyclic bonds with at least one ring atom",
 			"[*;R:1]!@!=!#[*:2]>>[*:1]-[*].[*:2]-[*]"),
+
+	EXTENDED_RING_ACYCLIC(
+			"Only acyclic single bonds to either rings or to double bonds exocyclic to rings",
+			"Break only single acyclic bonds with at least one atom either in "
+					+ "a ring or in a double bond, the other end of which is in a ring",
+			"[*:1]!@!=!#[*;!R0,$(*=!@[*!R0]):2]>>[*:1]-[*].[*:2]-[*]"),
 
 	HETATM_ACYCLIC("Only single bonds to a heteroatom",
 			"Break only single acyclic bonds with at least one non-C atom",
@@ -46,17 +52,22 @@ public enum FragmentationTypes implements ButtonGroupEnumInterface {
 
 	private final String m_name;
 	private final String m_tooltip;
-	private final String m_SMIRKS;
+	private final String m_SMARTS;
 
 	/**
-	 * @param m_name
-	 * @param m_tooltip
-	 * @param m_SMIRKS
+	 * Constructor to set properties
+	 * 
+	 * @param name
+	 *            The name
+	 * @param tooltip
+	 *            The tooltip
+	 * @param rSMARTS
+	 *            The rSMARTS
 	 */
-	private FragmentationTypes(String m_name, String m_tooltip, String m_SMIRKS) {
-		this.m_name = m_name;
-		this.m_tooltip = m_tooltip;
-		this.m_SMIRKS = m_SMIRKS;
+	private FragmentationTypes(String name, String tooltip, String rSMARTS) {
+		this.m_name = name;
+		this.m_tooltip = tooltip;
+		this.m_SMARTS = rSMARTS;
 	}
 
 	@Override
@@ -79,8 +90,8 @@ public enum FragmentationTypes implements ButtonGroupEnumInterface {
 	 *         Attachment points should be included as '[*]' to allow correct
 	 *         tagging.
 	 */
-	public String getSMIRKS() {
-		return m_SMIRKS;
+	public String getSMARTS() {
+		return m_SMARTS;
 	}
 
 	@Override
@@ -88,9 +99,35 @@ public enum FragmentationTypes implements ButtonGroupEnumInterface {
 		return this.equals(FragmentationTypes.getDefaultMethod());
 	}
 
+	/**
+	 * @return The default option
+	 */
 	public static FragmentationTypes getDefaultMethod() {
 		return ALL_ACYCLIC;
 	}
 
-	
+	/** @return Return the SMARTS for the bond match to be broken */
+	public String getBondSMARTS() {
+		if (m_SMARTS == null) {
+			return null;
+		}
+		return m_SMARTS.split(">>")[0].replaceAll(".*\\](.*?)\\[.*", "$1");
+	}
+
+	/** @return Return the SMARTS for atom at the start of the bond to be broken */
+	public String getFirstAtomTypeSMARTS() {
+		if (m_SMARTS == null) {
+			return null;
+		}
+		return m_SMARTS.split(">>")[0].replaceAll(".*?(\\[.*?\\]).*", "$1");
+	}
+
+	/** @return Return the SMARTS for atom at the end of the bond to be broken */
+	public String getSecondAtomTypeSMARTS() {
+		if (m_SMARTS == null) {
+			return null;
+		}
+		return m_SMARTS.split(">>")[0].replaceAll(
+				".*?\\[.*?\\].*?(\\[.*?\\]).*", "$1");
+	}
 }
