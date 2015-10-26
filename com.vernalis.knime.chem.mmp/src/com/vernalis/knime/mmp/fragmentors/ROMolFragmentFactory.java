@@ -67,18 +67,28 @@ import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
  */
 public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	/**
-	 * 
+	 * Property name to flag incomping possible but not stereocentres
 	 */
 	private static final String UNSPECIFIED_STEREOCENTRE = "UNSPECIFIED_STEREOCENTRE";
+
 	/**
 	 * Property name to flag incoming possible but not stereo double bonds
 	 */
 	private static final String UNSPECIFIED_DOUBLE_BOND = "UNSPECIFIED_DOUBLE_BOND";
+
+	/** Property name to hold isotopic label for attachment point until needed */
+	private static final String AP_ISOTOPIC_LABEL = "AP_ISOTOPIC_LABEL";
+
 	private final ROMol mol;
+
 	private boolean isChiral, hasUndefinedChirality;
+
 	private final ISWIGObjectGarbageCollector gc = new SWIGObjectGarbageCollector();
+
 	AtomicInteger gcWave = new AtomicInteger(2);
+
 	private final NodeLogger logger = NodeLogger.getLogger(this.getClass());
+
 	private boolean verboseLogging;
 
 	/**
@@ -273,7 +283,8 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 					// localGcWave);
 					atVal = gc.markForCleanup(new Atom(0), localGcWave);
 					// atVal.setAtomicNum(0);
-					atVal.setIsotope(500);
+					// atVal.setIsotope(500);
+					atVal.setProp(AP_ISOTOPIC_LABEL, "500");
 					value.replaceAtom(atIdx, atVal);
 				} else {
 					// V3 - Zap!
@@ -287,7 +298,8 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 					// localGcWave);
 					atKey = gc.markForCleanup(new Atom(0), localGcWave);
 					atKey.setAtomicNum(0);
-					atKey.setIsotope(500);
+					// atKey.setIsotope(500);
+					atKey.setProp(AP_ISOTOPIC_LABEL, "500");
 					key.replaceAtom(atIdx, atKey);
 				} else {
 					// K3 - Zap!
@@ -303,137 +315,13 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		}
 		assignCreatedDblBondGeometry(key, localGcWave);
 		assignCreatedDblBondGeometry(value, localGcWave);
+		applyAPIsotopicLabels(key, localGcWave);
+		applyAPIsotopicLabels(value, localGcWave);
 
 		String retVal = key.MolToSmiles(true) + "." + value.MolToSmiles(true);
 		gc.cleanupMarkedObjects(localGcWave);
 
 		return new MulticomponentSmilesFragmentParser(retVal);
-	}
-
-	/**
-	 * This assigns chirality to unassigned potentially chiral C atoms which are
-	 * not flagged as {@value #UNSPECIFIED_STEREOCENTRE}
-	 * 
-	 * @param component
-	 *            The molecule to fix
-	 * @param localGcWave
-	 *            The GC wave index for garbage collection
-	 */
-	private void assignAPChirality(RWMol component, int localGcWave)
-			throws MolSanitizeException {
-
-		try {
-			component.sanitizeMol();
-			// Flag possible stereocentres
-			RDKFuncs.assignStereochemistry(component, false, true, true);
-		} catch (MolSanitizeException e) {
-			if (verboseLogging) {
-				logger.info("Problem assigning double bond geometry"
-						+ e.message() == null ? "" : e.message());
-			}
-			return;
-		} catch (Exception e) {
-			if (verboseLogging) {
-				logger.info("Problem assigning double bond geometry"
-						+ e.getMessage() == null ? "" : e.getMessage());
-			}
-			return;
-		}
-
-		// Now check all atoms
-		for (AtomIterator iter = gc.markForCleanup(component.beginAtoms(), 1); iter
-				.ne(gc.markForCleanup(component.endAtoms(), 1)); gc
-				.markForCleanup(iter.next(), 1)) {
-			Atom at = gc.markForCleanup(iter.getAtom(), localGcWave);
-			// At present, only fix Carbon... (Otherwise e.g. MeP(=O)(OH)[*]
-			// is chiral!) and
-			if (at.getAtomicNum() == 6 && !at.hasProp(UNSPECIFIED_STEREOCENTRE)
-					&& at.hasProp("_ChiralityPossible")
-					&& at.getChiralTag() == ChiralType.CHI_UNSPECIFIED) {
-				// Just need to chose one assignment
-				// arbitrarily but consistently
-				at.setChiralTag(ChiralType.CHI_TETRAHEDRAL_CW);
-			}
-		}
-	}
-
-	/**
-	 * Assigns double bond geometry to newly created asymmetric double bonds
-	 * which are not flagged as {@value #UNSPECIFIED_DOUBLE_BOND}
-	 * 
-	 * @param component
-	 *            The molecule to fix
-	 * @param localGcWave
-	 *            The gc wave index
-	 */
-	private void assignCreatedDblBondGeometry(RWMol component, int localGcWave) {
-		try {
-			component.sanitizeMol();
-			// This adds a list of stereoatoms to previously unassigned double
-			// bonds
-			RDKFuncs.findPotentialStereoBonds(component, false);
-		} catch (MolSanitizeException e) {
-			if (verboseLogging) {
-				logger.info("Problem assigning double bond geometry"
-						+ e.message() == null ? "" : e.message());
-			}
-			return;
-		} catch (Exception e) {
-			if (verboseLogging) {
-				logger.info("Problem assigning double bond geometry"
-						+ e.getMessage() == null ? "" : e.getMessage());
-			}
-			return;
-		}
-
-		// Now loop through the bonds
-		for (BondIterator iter = gc.markForCleanup(component.beginBonds(),
-				localGcWave); iter.ne(gc.markForCleanup(component.endBonds(),
-				localGcWave)); gc.markForCleanup(iter.next(), localGcWave)) {
-
-			Bond bd = gc.markForCleanup(iter.getBond(), localGcWave);
-
-			if (bd.getBondType() == BondType.DOUBLE
-					&& !bd.hasProp(UNSPECIFIED_DOUBLE_BOND)) {
-				// We only worry about double bonds
-
-				Int_Vect stereoAtoms = gc.markForCleanup(bd.getStereoAtoms(),
-						localGcWave);
-				if (stereoAtoms.size() > 0) {
-					// And only if they have stereo atoms listed
-
-					// Now we need to find the adjacent bonds from the double
-					// bond termini to the listed stereoatoms
-					Bond beginStereoBond = null;
-					Bond endStereoBond = null;
-					for (int i = 0; i < stereoAtoms.size(); i++) {
-						if (beginStereoBond == null) {
-							beginStereoBond = gc.markForCleanup(
-									component.getBondBetweenAtoms(
-											bd.getBeginAtomIdx(),
-											stereoAtoms.get(i)), localGcWave);
-						}
-						if (endStereoBond == null) {
-							endStereoBond = gc.markForCleanup(
-									component.getBondBetweenAtoms(
-											bd.getEndAtomIdx(),
-											stereoAtoms.get(i)), localGcWave);
-						}
-					}
-
-					// And now we need to assign them arbitrarily and
-					// consistently if they are not already assigned
-					if (beginStereoBond.getBondDir() == BondDir.NONE) {
-						beginStereoBond.setBondDir(BondDir.ENDUPRIGHT);
-					}
-					if (endStereoBond.getBondDir() == BondDir.NONE) {
-						endStereoBond.setBondDir(BondDir.ENDUPRIGHT);
-					}
-				}
-			}
-
-		}
-
 	}
 
 	/*
@@ -571,7 +459,8 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 					// localGcWave);
 					atVal = gc.markForCleanup(new Atom(0), localGcWave);
 					atVal.setAtomicNum(0);
-					atVal.setIsotope(500);
+					// atVal.setIsotope(500);
+					atVal.setProp(AP_ISOTOPIC_LABEL, "500");
 					value.replaceAtom(atIdx, atVal);
 				} else {
 					// V3 - Zap!
@@ -585,7 +474,8 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 					// localGcWave);
 					atKey = gc.markForCleanup(new Atom(0));
 					atKey.setAtomicNum(0);
-					atKey.setIsotope(501);
+					// atKey.setIsotope(501);
+					atKey.setProp(AP_ISOTOPIC_LABEL, "501");
 					key.replaceAtom(atIdx, atKey);
 				} else {
 					// K3 - Zap!
@@ -601,6 +491,8 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 
 		assignCreatedDblBondGeometry(key, localGcWave);
 		assignCreatedDblBondGeometry(value, localGcWave);
+		applyAPIsotopicLabels(key, localGcWave);
+		applyAPIsotopicLabels(value, localGcWave);
 
 		String retVal = key.MolToSmiles(true) + "." + value.MolToSmiles(true);
 		gc.cleanupMarkedObjects(localGcWave);
@@ -751,7 +643,8 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 							at = gc.markForCleanup(new Atom(0), localGcWave);
 							at.setAtomicNum(0);
 
-							at.setIsotope(apIdx);
+							// at.setIsotope(apIdx);
+							at.setProp(AP_ISOTOPIC_LABEL, "" + apIdx);
 							frags[i].replaceAtom(atIdx, at);
 						} else {
 							// Not in this fragment, and not bonded to this
@@ -776,6 +669,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 
 		for (int i = 0; i < frags.length; i++) {
 			assignCreatedDblBondGeometry(frags[i], localGcWave);
+			applyAPIsotopicLabels(frags[i], localGcWave);
 		}
 
 		// Finally put it all together...
@@ -912,7 +806,8 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 					// localGcWave);
 					atVal = gc.markForCleanup(new Atom(0), localGcWave);
 					atVal.setAtomicNum(0);
-					atVal.setIsotope(APLookup.get(atIdx));
+					// atVal.setIsotope(APLookup.get(atIdx));
+					atVal.setProp(AP_ISOTOPIC_LABEL, "" + APLookup.get(atIdx));
 					value.replaceAtom(atIdx, atVal);
 					// If we change it, we need to make sure it isnt bonded to
 					// any attachment points with a different id
@@ -938,7 +833,8 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 					atKey = gc.markForCleanup(new Atom(0), localGcWave);
 					atKey.setAtomicNum(0);
 					int apIndex = APLookup.get(atIdx);
-					atKey.setIsotope(apIndex);
+					// atKey.setIsotope(apIndex);
+					atKey.setProp(AP_ISOTOPIC_LABEL, "" + apIndex);
 					key.replaceAtom(atIdx, atKey);
 					// If we change it, we need to make sure it isnt bonded to
 					// any attachment poins with a different id
@@ -965,6 +861,9 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		assignCreatedDblBondGeometry(key, localGcWave);
 		assignCreatedDblBondGeometry(value, localGcWave);
 
+		applyAPIsotopicLabels(key, localGcWave);
+		applyAPIsotopicLabels(value, localGcWave);
+
 		String retVal = key.MolToSmiles(true) + "." + value.MolToSmiles(true);
 		gc.cleanupMarkedObjects(localGcWave);
 
@@ -972,24 +871,186 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		return new MulticomponentSmilesFragmentParser(retVal.replace(":", "."));
 	}
 
+	// /**
+	// * Check whether the molecule argument has any defined chiral centres
+	// *
+	// * @param mol2
+	// * The molecule to check
+	// * @param wave
+	// * The wave index to use for GC
+	// *
+	// */
+	// protected boolean checkIsChiral(ROMol mol2, int wave) {
+	// for (int i = 0; i < mol2.getNumAtoms(); i++) {
+	// Atom at = gc.markForCleanup(mol2.getAtomWithIdx(i), wave);
+	// if (at.getChiralTag() == ChiralType.CHI_TETRAHEDRAL_CCW
+	// || at.getChiralTag() == ChiralType.CHI_TETRAHEDRAL_CW) {
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
+
 	/**
-	 * Check whether the molecule argument has any defined chiral centres
+	 * This assigns chirality to unassigned potentially chiral C atoms which are
+	 * not flagged as {@value #UNSPECIFIED_STEREOCENTRE}
 	 * 
-	 * @param mol2
-	 *            The molecule to check
-	 * @param wave
-	 *            The wave index to use for GC
-	 * 
+	 * @param component
+	 *            The molecule to fix
+	 * @param localGcWave
+	 *            The GC wave index for garbage collection
 	 */
-	protected boolean checkIsChiral(ROMol mol2, int wave) {
-		for (int i = 0; i < mol2.getNumAtoms(); i++) {
-			Atom at = gc.markForCleanup(mol2.getAtomWithIdx(i), wave);
-			if (at.getChiralTag() == ChiralType.CHI_TETRAHEDRAL_CCW
-					|| at.getChiralTag() == ChiralType.CHI_TETRAHEDRAL_CW) {
-				return true;
+	private void assignAPChirality(RWMol component, int localGcWave)
+			throws MolSanitizeException {
+
+		try {
+			component.sanitizeMol();
+			// Flag possible stereocentres
+			RDKFuncs.assignStereochemistry(component, false, true, true);
+		} catch (MolSanitizeException e) {
+			if (verboseLogging) {
+				logger.info("Problem assigning double bond geometry"
+						+ e.message() == null ? "" : e.message());
+			}
+			return;
+		} catch (Exception e) {
+			if (verboseLogging) {
+				logger.info("Problem assigning double bond geometry"
+						+ e.getMessage() == null ? "" : e.getMessage());
+			}
+			return;
+		}
+
+		// Now check all atoms
+		for (AtomIterator iter = gc.markForCleanup(component.beginAtoms(),
+				localGcWave); iter.ne(gc.markForCleanup(component.endAtoms(),
+				localGcWave)); gc.markForCleanup(iter.next(), localGcWave)) {
+			Atom at = gc.markForCleanup(iter.getAtom(), localGcWave);
+			// At present, only fix Carbon... (Otherwise e.g. MeP(=O)(OH)[*]
+			// is chiral!) and
+			if (at.getAtomicNum() == 6 && !at.hasProp(UNSPECIFIED_STEREOCENTRE)
+					&& at.hasProp("_ChiralityPossible")
+					&& at.getChiralTag() == ChiralType.CHI_UNSPECIFIED) {
+				// Just need to chose one assignment
+				// arbitrarily but consistently
+				at.setChiralTag(ChiralType.CHI_TETRAHEDRAL_CW);
 			}
 		}
-		return false;
+	}
+
+	/**
+	 * Assigns double bond geometry to newly created asymmetric double bonds
+	 * which are not flagged as {@value #UNSPECIFIED_DOUBLE_BOND}
+	 * 
+	 * @param component
+	 *            The molecule to fix
+	 * @param localGcWave
+	 *            The gc wave index
+	 */
+	private void assignCreatedDblBondGeometry(RWMol component, int localGcWave) {
+		try {
+			component.sanitizeMol();
+			// This adds a list of stereoatoms to previously unassigned double
+			// bonds
+			RDKFuncs.findPotentialStereoBonds(component, false);
+		} catch (MolSanitizeException e) {
+			if (verboseLogging) {
+				logger.info("Problem assigning double bond geometry"
+						+ e.message() == null ? "" : e.message());
+			}
+			return;
+		} catch (Exception e) {
+			if (verboseLogging) {
+				logger.info("Problem assigning double bond geometry"
+						+ e.getMessage() == null ? "" : e.getMessage());
+			}
+			return;
+		}
+
+		// Now loop through the bonds
+		for (BondIterator iter = gc.markForCleanup(component.beginBonds(),
+				localGcWave); iter.ne(gc.markForCleanup(component.endBonds(),
+				localGcWave)); gc.markForCleanup(iter.next(), localGcWave)) {
+
+			Bond bd = gc.markForCleanup(iter.getBond(), localGcWave);
+
+			if (bd.getBondType() == BondType.DOUBLE
+					&& !bd.hasProp(UNSPECIFIED_DOUBLE_BOND)) {
+				// We only worry about double bonds
+
+				Int_Vect stereoAtoms = gc.markForCleanup(bd.getStereoAtoms(),
+						localGcWave);
+				if (stereoAtoms.size() > 0) {
+					// And only if they have stereo atoms listed
+
+					// Now we need to find the adjacent bonds from the double
+					// bond termini to the listed stereoatoms
+					Bond beginStereoBond = null;
+					Bond endStereoBond = null;
+					for (int i = 0; i < stereoAtoms.size(); i++) {
+						if (beginStereoBond == null) {
+							beginStereoBond = gc.markForCleanup(
+									component.getBondBetweenAtoms(
+											bd.getBeginAtomIdx(),
+											stereoAtoms.get(i)), localGcWave);
+						}
+						if (endStereoBond == null) {
+							endStereoBond = gc.markForCleanup(
+									component.getBondBetweenAtoms(
+											bd.getEndAtomIdx(),
+											stereoAtoms.get(i)), localGcWave);
+						}
+					}
+
+					// And now we need to assign them arbitrarily and
+					// consistently if they are not already assigned
+					if (beginStereoBond.getBondDir() == BondDir.NONE) {
+						beginStereoBond.setBondDir(BondDir.ENDUPRIGHT);
+					}
+					if (endStereoBond.getBondDir() == BondDir.NONE) {
+						endStereoBond.setBondDir(BondDir.ENDUPRIGHT);
+					}
+				}
+			}
+
+		}
+
+	}
+
+	/**
+	 * <p>
+	 * This method is called finally to apply isotopic labels to the attachment
+	 * point '*' atoms, from the stored property.
+	 * </p>
+	 * <p>
+	 * This method is used to avoid arbitrary stereochemistry assignment (bonds
+	 * and centres) resulting only from the isotopic labels of the attachment
+	 * points. e.g. {@code ClC(Cl)C[C@H](O)C} with 2 Cl-C breaks should give
+	 * {@code Cl-[500*].Cl-[501*] [500*]C([501*])C[C@H](O)C} and not
+	 * {@code Cl-[500*].Cl-[501*] [500*][C@H]([501*])C[C@H](O)C}
+	 * </p>
+	 * <p>
+	 * The method is called as a final step, after stereochemistry and double
+	 * bond geometry assignment
+	 * </p>
+	 * 
+	 * @param component
+	 *            The molecule component to apply labels to
+	 * @param localGCWave
+	 *            The GC Wave for garbage collection
+	 */
+	private void applyAPIsotopicLabels(RWMol component, int localGcWave) {
+		for (AtomIterator iter = gc.markForCleanup(component.beginAtoms(), 1); iter
+				.ne(gc.markForCleanup(component.endAtoms(), 1)); gc
+				.markForCleanup(iter.next(), 1)) {
+			Atom at = gc.markForCleanup(iter.getAtom(), localGcWave);
+
+			if (at.getAtomicNum() == 0 && at.hasProp(AP_ISOTOPIC_LABEL)) {
+				int isotope = Integer.parseInt(at.getProp(AP_ISOTOPIC_LABEL)
+						.trim());
+				at.setIsotope(isotope);
+			}
+		}
 	}
 
 	// protected static int countInversions(List<Long> list) {
