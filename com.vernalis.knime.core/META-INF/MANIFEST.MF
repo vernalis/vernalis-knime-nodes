@@ -9,10 +9,10 @@ Bundle-Activator: com.vernalis.knime.core.VernalisCoreNodePlugin
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.knime.workbench.core,
- org.knime.workbench.repository,
- org.knime.base,
- org.knime.product;bundle-version="2.9.3"
+ org.knime.workbench.core;bundle-version="[3.0.0,4.0.0)",
+ org.knime.workbench.repository;bundle-version="[3.0.0,4.0.0)",
+ org.knime.base;bundle-version="[3.0.0,4.0.0)",
+ org.knime.product;bundle-version="[3.0.0,4.0.0)"
 Bundle-ActivationPolicy: lazy
 Export-Package: com.vernalis.knime.core,
  com.vernalis.knime.dialog.components,
