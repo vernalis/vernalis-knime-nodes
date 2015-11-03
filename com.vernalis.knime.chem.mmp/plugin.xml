@@ -57,6 +57,21 @@
        factory-class="com.vernalis.knime.mmp.nodes.uniquifyids.UniquifyIdsNodeFactory"
        id="UniquifyIdsNodeFactory">
  </node>
+ <node
+       deprecated="true"
+       factory-class="com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeFactory"
+       id="FlowVarFvvalIfSwitchNodeFactory">
+ </node>
+ <node
+       deprecated="true"
+       factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment.RdkitMMPFragmentNodeFactory"
+       id="FlowVarFvvalIfSwitchNodeFactory">
+ </node>
+ <node
+       deprecated="true"
+       factory-class="com.vernalis.knime.mmp.nodes.rdkit.multicut.RdkitMatchedPairsNodeFactory"
+       id="FlowVarFvvalIfSwitchNodeFactory">
+ </node>
 </extension>
 
 <extension point="org.knime.workbench.repository.categories">
