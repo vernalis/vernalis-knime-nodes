@@ -2,7 +2,7 @@ This plugin contains nodes provide by Vernalis Research to provide Matched Molec
 
 For feedback and more information, please contact knime@vernalis.com
 
-Copyright (C) 2014, Vernalis (R&D) Ltd (http://www.vernalis-research.com)
+Copyright (C) 2014, 2015 Vernalis (R&D) Ltd (http://www.vernalis-research.com)
 
 These KNIME Nodes are free software: you can redistribute
 it and/or modify it under the terms of the GNU General Public
