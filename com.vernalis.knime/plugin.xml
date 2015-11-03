@@ -101,6 +101,36 @@
             factory-class="com.vernalis.pdbconnector.PdbConnectorXmlQueryNodeFactory"
             id="PdbConnectorXmlQueryNodeFactory">
       </node>
+      <node
+            deprecated="true"
+            factory-class="com.vernalis.flowcontrol.nodes.fv.caseselect.FVarFVCaseSelectNodeFactory"
+            id="FVarFVCaseSelectNodeFactory">
+      </node>
+      <node
+            deprecated="true"
+            factory-class="com.vernalis.nodes.smartsviewer.SmartsViewerNodeFactory"
+            id="com.vernalis.knime.node6">
+      </node>
+      <node
+            deprecated="true"
+            factory-class="com.vernalis.flowcontrol.nodes.fv.varvalifswitch.FlowVarFvvalIfSwitchNodeFactory"
+            id="FlowVarFvvalIfSwitchNodeFactory">
+      </node>
+      <node
+            deprecated="true"
+            factory-class="com.vernalis.flowcontrol.nodes.fv.ifswitch.FVarIfSwitchNodeFactory"
+            id="FVarIfSwitchNodeFactory">
+      </node>
+      <node
+            deprecated="true"
+            factory-class="com.vernalis.flowcontrol.nodes.fv.endif.FlowVarEndIfNodeFactory"
+            id="FlowVarEndIfNodeFactory">
+      </node>
+      <node
+            deprecated="true"
+            factory-class="com.vernalis.flowcontrol.nodes.fv.endcase.FlowVarEndCaseNodeFactory"
+            id="FlowVarEndCaseNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
