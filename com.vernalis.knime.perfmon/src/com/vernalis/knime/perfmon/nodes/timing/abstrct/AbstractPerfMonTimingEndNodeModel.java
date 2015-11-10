@@ -31,7 +31,7 @@ import org.knime.core.data.RowKey;
 import org.knime.core.data.date.DateAndTimeCell;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
-import org.knime.core.data.def.IntCell;
+import org.knime.core.data.def.LongCell;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
@@ -73,7 +73,7 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements
 	private DataTableSpec m_resultSpec;
 
 	/** The m_current iteration. */
-	private int m_currentIteration = 0;
+	private long m_currentIteration = 0;
 
 	private double m_bestTime = Double.MAX_VALUE;
 	private double m_worstTime = 0.0;
@@ -248,7 +248,7 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements
 			// Only do these on the last iteration
 			pushFlowVariableString("Overall End Time", endTime.toString());
 			pushFlowVariableInt("Total number of iterations",
-					m_currentIteration);
+					(int) m_currentIteration);
 			// Pass on all the variables except the global constant types and
 			// the loop iteration counter
 			Map<String, FlowVariable> inFlowVars = getAvailableInputFlowVariables();
@@ -327,7 +327,7 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements
 		RowKey rKey = new RowKey("Row_" + m_currentIteration);
 		DataCell[] rCells = new DataCell[4];
 		int colIdx = 0;
-		rCells[colIdx++] = new IntCell(m_currentIteration);
+		rCells[colIdx++] = new LongCell(m_currentIteration);
 		rCells[colIdx++] = new DateAndTimeCell(startTime.getTime(), true, true,
 				true);
 		rCells[colIdx++] = new DateAndTimeCell(endTime.getTime(), true, true,
@@ -383,7 +383,7 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements
 		DataColumnSpec[] colSpecs = new DataColumnSpec[4];
 		int colIdx = 0;
 		colSpecs[colIdx++] = new DataColumnSpecCreator("Iteration",
-				IntCell.TYPE).createSpec();
+				LongCell.TYPE).createSpec();
 		colSpecs[colIdx++] = new DataColumnSpecCreator("Start Time",
 				DateAndTimeCell.TYPE).createSpec();
 		colSpecs[colIdx++] = new DataColumnSpecCreator("End Time",

@@ -45,10 +45,10 @@ import com.vernalis.knime.perfmon.PerformanceMonitoringLoopStart;
  * 
  * @author S. Roughley <s.roughley@vernalis.com>
  */
-public class AbstractPerfMonTimingStartNodeModel extends NodeModel implements
-		PerformanceMonitoringLoopStart {
+public class AbstractPerfMonTimingStartNodeModel extends NodeModel
+		implements PerformanceMonitoringLoopStart {
 	private Date m_StartTime;
-	private Integer m_iteration;
+	private Long m_iteration;
 	protected static NodeLogger m_logger = NodeLogger
 			.getLogger(AbstractPerfMonTimingStartNodeModel.class);
 
@@ -56,7 +56,6 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel implements
 	private final SettingsModelIntegerBounded m_maxIterations = createIterationsModel();
 	private final SettingsModelBoolean m_useTimeout = createTimeCutoutModel();
 	private final SettingsModelIntegerBounded m_timeOut = createMaxTimeModel();
-
 
 	/**
 	 * Constructor for the node model.
@@ -183,8 +182,7 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel implements
 	 * NodeSettingsRO)
 	 */
 	@Override
-	protected void validateSettings(NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
 		m_maxIterations.validateSettings(settings);
 		m_useTimeout.validateSettings(settings);
 		m_timeOut.validateSettings(settings);
@@ -212,7 +210,7 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel implements
 	 */
 	@Override
 	protected void reset() {
-		m_iteration = 0;
+		m_iteration = 0L;
 		m_StartTime = null;
 	}
 
@@ -224,21 +222,23 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel implements
 	 * [], org.knime.core.node.ExecutionContext)
 	 */
 	@Override
-	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-			throws Exception {
+	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec) throws Exception {
 		// if (m_loopEndNodeModel == null) {
 		// NodeModel lEnd = (NodeModel) this.getLoopEndNode();
 		// if (lEnd != null && lEnd instanceof PerformanceMonitoringLoopEnd) {
 		// m_loopEndNodeModel = (PerformanceMonitoringLoopEnd) lEnd;
 		// } else {
-		// m_logger.error("Loop must end with Performance monitoring loop end node");
+		// m_logger.error("Loop must end with Performance monitoring loop end
+		// node");
 		// throw new Exception(
 		// "Loop must end with Performance monitoring loop end node");
 		// }
 		// }
 		// Set the start time
 		m_StartTime = new Date();
-		pushFlowVariableInt("currentIteration", m_iteration++);
+
+		pushFlowVariableInt("currentIteration", m_iteration.intValue());
+		m_iteration++;
 		pushFlowVariableInt("maxIterations", m_maxIterations.getIntValue());
 		// Just pass through
 		return inObjects;
@@ -251,13 +251,11 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel implements
 	 * PortObjectSpec[])
 	 */
 	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException {
-		m_iteration = 0;
-		pushFlowVariableInt("currentIteration", m_iteration);
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+		m_iteration = 0L;
+		pushFlowVariableInt("currentIteration", m_iteration.intValue());
 		pushFlowVariableInt("maxIterations", m_maxIterations.getIntValue());
-		pushFlowVariableInt("timeout (s)",
-				(m_timeOut.isEnabled()) ? m_timeOut.getIntValue() : -1);
+		pushFlowVariableInt("timeout (s)", (m_timeOut.isEnabled()) ? m_timeOut.getIntValue() : -1);
 		// Just pass through
 		return inSpecs;
 	}
