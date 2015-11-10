@@ -68,7 +68,7 @@ public class VariableTimedLoopEndNodeModel extends NodeModel implements
 	private BufferedDataContainer m_resultContainer;
 
 	/** The m_iteration. */
-	private int m_iteration = 0;
+	private long m_iteration = 0;
 
 	/**
 	 * Constructor for the VariableTimedLoopEndNodeModel.
@@ -126,7 +126,7 @@ public class VariableTimedLoopEndNodeModel extends NodeModel implements
 			// And add the iteration as a flow variable - the iteration counter
 			// will be one higher!
 			pushFlowVariableInt("Last Iteration",
-					(loopStartModel.getIteration() - 1));
+					(int) (loopStartModel.getIteration() - 1));
 			pushFlowVariableString("End Time", loopStartModel.getEndTime()
 					.toString());
 

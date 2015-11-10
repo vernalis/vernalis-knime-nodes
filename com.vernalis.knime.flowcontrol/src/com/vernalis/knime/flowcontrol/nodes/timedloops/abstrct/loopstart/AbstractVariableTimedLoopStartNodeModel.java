@@ -174,7 +174,7 @@ public class AbstractVariableTimedLoopStartNodeModel extends
 	protected PortObject[] execute(final PortObject[] inData,
 			final ExecutionContext exec) throws Exception {
 		BufferedDataTable table = (BufferedDataTable) inData[0];
-		int rowCount = table.getRowCount();
+		long rowCount = table.size();
 
 		if (m_iteration == m_ZerothIteration.getIntValue()) {
 			// First iteration - set the end time and tables
@@ -210,7 +210,7 @@ public class AbstractVariableTimedLoopStartNodeModel extends
 		}
 		// Update the loop counters
 		pushFlowVariableInt("currentIteration", m_iteration++);
-		pushFlowVariableInt("maxIterations", rowCount);
+		pushFlowVariableInt("maxIterations", (int) rowCount);
 		pushFlowVariableString("endTime", m_endTime.toString());
 		return new PortObject[] { FlowVariablePortObject.INSTANCE };
 	}
@@ -412,9 +412,9 @@ public class AbstractVariableTimedLoopStartNodeModel extends
 		// Here we use the m_skipped Rows to generate the table. This will have
 		// been initiated, but may or may not already contain any rows
 		exec.setMessage("Retrieving unprocessed rows...");
-		int rowsToRetrieve = m_table.getRowCount()
+		long rowsToRetrieve = m_table.size()
 				- ((m_iteration - m_ZerothIteration.getIntValue()) + 1);
-		int rowcnt = 0;
+		long rowcnt = 0;
 		while (m_iterator.hasNext()) {
 			exec.setProgress((double) rowcnt / rowsToRetrieve,
 					"Retrieving unprocessed row " + rowcnt++ + " of "

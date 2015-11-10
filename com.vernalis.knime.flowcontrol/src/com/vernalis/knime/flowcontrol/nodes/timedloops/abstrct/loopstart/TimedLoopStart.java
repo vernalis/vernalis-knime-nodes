@@ -63,6 +63,6 @@ public interface TimedLoopStart {
 	 * 
 	 * @return The iteration counter
 	 */
-	public int getIteration();
+	public long getIteration();
 
 }
