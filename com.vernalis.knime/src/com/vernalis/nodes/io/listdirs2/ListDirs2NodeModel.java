@@ -90,9 +90,9 @@ public class ListDirs2NodeModel extends NodeModel {
 
 	private DataTableSpec spec;
 
-	private int m_analysed_files;
+	private long m_analysed_files;
 
-	private int m_currentRowID;
+	private long m_currentRowID;
 
 	/**
 	 * Constructor for the node model.

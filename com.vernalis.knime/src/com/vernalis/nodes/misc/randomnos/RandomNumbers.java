@@ -19,10 +19,18 @@ package com.vernalis.nodes.misc.randomnos;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+
+import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.IntCell;
+import org.knime.core.node.BufferedDataContainer;
+import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionContext;
 
 /**
  * Utility functions to generate random numbers according to various conditions
@@ -43,7 +51,11 @@ public class RandomNumbers {
 	 *            The number of values to return (will be reduced if greater
 	 *            then max-min)
 	 * @return A set of unique integers
+	 * @deprecated {@link #addUniqueInts(int, int, long, BufferedDataContainer)}
+	 *             should be used in place as allows more than
+	 *             {@value Integer#MAX_VALUE} values to be added
 	 */
+	@Deprecated
 	public static Collection<Integer> getUniqueInts(int min, int max, int n) {
 
 		// Check the range is sensible
@@ -72,6 +84,53 @@ public class RandomNumbers {
 	}
 
 	/**
+	 * Create a collection object of unique random integers
+	 * 
+	 * @param min
+	 *            The minimum value in the collection
+	 * @param max
+	 *            The maximum value in the collections
+	 * @param l
+	 *            The number of values to return (will be reduced if greater
+	 *            then max-min)
+	 * @param dc
+	 *            {@link BufferedDataContainer} to add the numbers too
+	 * @param exec 
+	 * @throws CanceledExecutionException 
+	 */
+	public static void addUniqueInts(int min, int max, long l, BufferedDataContainer dc, ExecutionContext exec) throws CanceledExecutionException {
+
+		// Check the range is sensible
+		if (min > max) {
+			int t = min;
+			min = max;
+			max = t;
+		}
+
+		// Ensure that we dont get stuck in an infinite effort to create more
+		// integers than are in
+		// the min max range
+		if (l > (max - min + 1)) {
+			l = max - min + 1;
+		}
+
+		// Now populate the set
+		Set<Integer> Numbers = new HashSet<Integer>();
+		long numbersAdded = 0;
+		Random rand = new Random();
+		Integer RandomNum;
+		while (numbersAdded < l) {
+			RandomNum = (rand.nextInt(max - min + 1) + min);
+			if (Numbers.add(RandomNum)) {
+				dc.addRowToTable(new DefaultRow("Row_" + (numbersAdded++), new IntCell(RandomNum)));
+				exec.setProgress((double) numbersAdded / l,
+						"Added " + numbersAdded + " of " + l + " rows");
+			}
+			exec.checkCanceled();
+		}
+	}
+
+	/**
 	 * Create a collection object of random integers
 	 * 
 	 * @param min
@@ -81,7 +140,11 @@ public class RandomNumbers {
 	 * @param n
 	 *            The number of values
 	 * @return A List object containing the random integers
+	 * @deprecated {@link #addInts(int, int, long, BufferedDataContainer)}
+	 *             should be used in place as allows more than
+	 *             {@value Integer#MAX_VALUE} values to be added
 	 */
+	@Deprecated
 	public static Collection<Integer> getInts(int min, int max, final int n) {
 
 		// Check the range is sensible
@@ -103,6 +166,42 @@ public class RandomNumbers {
 	}
 
 	/**
+	 * Add a collection object of random integers to a Data Container
+	 * 
+	 * @param min
+	 *            The minimum value
+	 * @param max
+	 *            The maximum value
+	 * @param n
+	 *            The number of values
+	 * @param dc
+	 *            The data container to add values to
+	 * @param exec 
+	 * @throws CanceledExecutionException 
+	 */
+	public static void addInts(int min, int max, final long n, BufferedDataContainer dc, ExecutionContext exec) throws CanceledExecutionException {
+
+		// Check the range is sensible
+		if (min > max) {
+			int t = min;
+			min = max;
+			max = t;
+		}
+
+		// Now populate the set
+		Random rand = new Random();
+		Integer RandomNum;
+		long numbersAdded = 0;
+		while (numbersAdded < n) {
+			RandomNum = (rand.nextInt(max - min + 1) + min);
+			dc.addRowToTable(new DefaultRow("Row_" + (numbersAdded++), new IntCell(RandomNum)));
+			exec.setProgress((double) numbersAdded / n,
+					"Added " + numbersAdded + " of " + n + " rows");
+			exec.checkCanceled();
+		}
+	}
+
+	/**
 	 * Create a collection of unique random doubles
 	 * 
 	 * @param min
@@ -112,9 +211,12 @@ public class RandomNumbers {
 	 * @param n
 	 *            The number of values to include
 	 * @return A Set object of random doubles
+	 * @deprecated {@link #addUniqueDoubles(int, int, long, BufferedDataContainer)}
+	 *             should be used in place as allows more than
+	 *             {@value Integer#MAX_VALUE} values to be added
 	 */
-	public static Collection<Double> getUniqueDoubles(Double min, Double max,
-			final int n) {
+	@Deprecated
+	public static Collection<Double> getUniqueDoubles(Double min, Double max, final int n) {
 
 		// Check the range is sensible
 		if (min > max) {
@@ -134,6 +236,48 @@ public class RandomNumbers {
 	}
 
 	/**
+	 * Create a collection of unique random doubles
+	 * 
+	 * @param min
+	 *            The minimum value in the set
+	 * @param max
+	 *            The maximum value in the set
+	 * @param n
+	 *            The number of values to include
+	 * @param dc
+	 *            The {@link BufferedDataContainer} to add the values to
+	 * @param exec 
+	 * @return A Set object of random doubles
+	 * @throws CanceledExecutionException 
+	 */
+	public static void addUniqueDoubles(Double min, Double max, final long n,
+			BufferedDataContainer dc, ExecutionContext exec) throws CanceledExecutionException {
+
+		// Check the range is sensible
+		if (min > max) {
+			Double t = min;
+			min = max;
+			max = t;
+		}
+
+		// Now populate the set
+		Set<Double> Numbers = new HashSet<Double>();
+		long numbersAdded = 0;
+		Double RandomNum;
+		while (numbersAdded < n) {
+			RandomNum = min + (Math.random() * ((max - min) + 1));
+			if (Numbers.add(RandomNum)) {
+				dc.addRowToTable(
+						new DefaultRow("Row_" + (numbersAdded++), new DoubleCell(RandomNum)));
+				exec.setProgress((double) numbersAdded / n,
+						"Added " + numbersAdded + " of " + n + " rows");
+			}
+			exec.checkCanceled();
+		}
+
+	}
+
+	/**
 	 * Create a collection of random doubles
 	 * 
 	 * @param min
@@ -143,9 +287,12 @@ public class RandomNumbers {
 	 * @param n
 	 *            The number of values to include
 	 * @return A List object of random doubles
+	 * @deprecated {@link #addDoubles(int, int, long, BufferedDataContainer)}
+	 *             should be used in place as allows more than
+	 *             {@value Integer#MAX_VALUE} values to be added
 	 */
-	public static Collection<Double> getDoubles(Double min, Double max,
-			final int n) {
+	@Deprecated
+	public static Collection<Double> getDoubles(Double min, Double max, final int n) {
 
 		// Check the range is sensible
 		if (min > max) {
@@ -164,4 +311,39 @@ public class RandomNumbers {
 		return Numbers;
 	}
 
+	/**
+	 * Create a collection of random doubles
+	 * 
+	 * @param min
+	 *            The minimum value in the set
+	 * @param max
+	 *            The maximum value in the set
+	 * @param n
+	 *            The number of values to include
+	 * @param dc
+	 *            The {@link BufferedDataContainer} to add the values to
+	 * @param exec
+	 * @throws CanceledExecutionException
+	 */
+	public static void addDoubles(Double min, Double max, final long n, BufferedDataContainer dc,
+			ExecutionContext exec) throws CanceledExecutionException {
+
+		// Check the range is sensible
+		if (min > max) {
+			Double t = min;
+			min = max;
+			max = t;
+		}
+
+		// Now populate the set
+		Double RandomNum;
+		long numbersAdded = 0;
+		while (numbersAdded < n) {
+			RandomNum = min + (Math.random() * ((max - min) + 1));
+			dc.addRowToTable(new DefaultRow("Row_" + (numbersAdded++), new DoubleCell(RandomNum)));
+			exec.setProgress((double) numbersAdded / n,
+					"Added " + numbersAdded + " of " + n + " rows");
+			exec.checkCanceled();
+		}
+	}
 }

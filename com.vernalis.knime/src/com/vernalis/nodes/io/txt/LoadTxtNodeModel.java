@@ -111,7 +111,7 @@ public class LoadTxtNodeModel extends NodeModel {
 				.createSpec();
 
 		// utility object that performs the calculation
-		SingleCellFactory factory = new SingleCellFactory(newColSpec) {
+		SingleCellFactory factory = new SingleCellFactory(true, newColSpec) {
 			public DataCell getCell(DataRow row) {
 				DataCell pathcell = row.getCell(colIndex);
 

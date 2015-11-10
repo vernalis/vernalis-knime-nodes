@@ -162,7 +162,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 		logger.info("xmlQuery returned " + pdbIds.size() + " rows");
 		exec0.checkCanceled();
 		// create outport0 table
-		int row = 0;
+		long row = 0;
 		if (pdbIds.size() > 0) {
 			for (String pdbId : pdbIds) {
 				RowKey key = RowKey.createRowKey(row);
@@ -227,7 +227,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 		final String imgSize = m_ligandImgSize.getStringValue();
 		final String urlSuffix = m_ligandImgOptions.isExists(imgSize) ? m_ligandImgOptions
 				.getValue(imgSize) : imgSize;
-		int row = 0;
+		long row = 0;
 		// Increasing delays in seconds - we start with 0 in case the url
 		// timeout is a sufficient delay. Hopefully never relevant with POST
 		// service
@@ -292,7 +292,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 		final String imgSize = m_ligandImgSize.getStringValue();
 		final String urlSuffix = m_ligandImgOptions.isExists(imgSize) ? m_ligandImgOptions
 				.getValue(imgSize) : imgSize;
-		int row = 0;
+		long row = 0;
 		int block = 0;
 		while (!toProcess.isEmpty() && (CHUNK_SIZE > 0)) {
 			double progress = 1.0 - (double) toProcess.size()
@@ -359,8 +359,8 @@ public class PdbConnectorNodeModel extends NodeModel {
 	 * @throws Exception
 	 *             Throws exceptions if the user cancels
 	 */
-	private int addRowsToReport(List<List<String>> report,
-			ExecutionMonitor exec1, int row, DataTableSpec outputSpec1,
+	private long addRowsToReport(List<List<String>> report,
+			ExecutionMonitor exec1, long row, DataTableSpec outputSpec1,
 			String urlSuffix, DataContainer container1) throws Exception {
 		for (List<String> recordVals : report) {
 			exec1.checkCanceled();
@@ -407,9 +407,6 @@ public class PdbConnectorNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO Code executed on reset.
-		// Models build during execute are cleared here.
-		// Also data handled in load/saveInternals will be erased here.
 	}
 
 	/*
@@ -584,13 +581,6 @@ public class PdbConnectorNodeModel extends NodeModel {
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
 
-		// TODO load internal data.
-		// Everything handed to output ports is loaded automatically (data
-		// returned by the execute method, models loaded in loadModelContent,
-		// and user settings set through loadSettingsFrom - is all taken care
-		// of). Load here only the other internals that need to be restored
-		// (e.g. data used by the views).
-
 	}
 
 	/*
@@ -603,14 +593,6 @@ public class PdbConnectorNodeModel extends NodeModel {
 	protected void saveInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
-
-		// TODO save internal models.
-		// Everything written to output ports is saved automatically (data
-		// returned by the execute method, models saved in the saveModelContent,
-		// and user settings saved through saveSettingsTo - is all taken care
-		// of). Save here only the other internals that need to be preserved
-		// (e.g. data used by the views).
-
 	}
 
 	/**

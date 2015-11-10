@@ -56,8 +56,8 @@
       <node
             category-path="/community/vernalis/misc"
             expert-flag="false"
-            factory-class="com.vernalis.nodes.misc.randomnos.RandomNumbersNodeFactory"
-            id="RandomNumbersNodeFactory">
+            factory-class="com.vernalis.nodes.misc.randomnos.RandomNumbers2NodeFactory"
+            id="RandomNumbers2NodeFactory">
       </node>
       <node
             category-path="/community/vernalis/misc"
@@ -130,6 +130,13 @@
             deprecated="true"
             factory-class="com.vernalis.flowcontrol.nodes.fv.endcase.FlowVarEndCaseNodeFactory"
             id="FlowVarEndCaseNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/misc"
+            deprecated="true"
+            expert-flag="false"
+            factory-class="com.vernalis.nodes.misc.randomnos.RandomNumbersNodeFactory"
+            id="RandomNumbersNodeFactory">
       </node>
    </extension>
    <extension

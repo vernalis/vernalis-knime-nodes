@@ -68,60 +68,47 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	static final String CFG_QUERY_TYPE = "Query_Type";
 	static final String CFG_SORT_ORDER = "Sort_Order";
 
-	private final SettingsModelString m_Title = new SettingsModelString(
-			CFG_TITLE, null);
-	private final SettingsModelString m_Authors = new SettingsModelString(
-			CFG_AUTHORS, null);
-	private final SettingsModelString m_Affiliation = new SettingsModelString(
-			CFG_AFFILIATION, null);
-	private final SettingsModelString m_From = new SettingsModelString(
-			CFG_YEAR_FROM, null);
-	private final SettingsModelString m_To = new SettingsModelString(
-			CFG_YEAR_TO, null);
-	private final SettingsModelString m_Journals = new SettingsModelString(
-			CFG_JOURNALS, null);
-	private final SettingsModelString m_MeSH = new SettingsModelString(
-			CFG_MESH, null);
-	private final SettingsModelString m_Gnl = new SettingsModelString(
-			CFG_GNL_QUERY, null);
-	private final SettingsModelString m_QueryType = new SettingsModelString(
-			CFG_QUERY_TYPE, "Core");
-	private final SettingsModelString m_SortOrder = new SettingsModelString(
-			CFG_SORT_ORDER, "Date");
+	private final SettingsModelString m_Title = new SettingsModelString(CFG_TITLE, null);
+	private final SettingsModelString m_Authors = new SettingsModelString(CFG_AUTHORS, null);
+	private final SettingsModelString m_Affiliation = new SettingsModelString(CFG_AFFILIATION,
+			null);
+	private final SettingsModelString m_From = new SettingsModelString(CFG_YEAR_FROM, null);
+	private final SettingsModelString m_To = new SettingsModelString(CFG_YEAR_TO, null);
+	private final SettingsModelString m_Journals = new SettingsModelString(CFG_JOURNALS, null);
+	private final SettingsModelString m_MeSH = new SettingsModelString(CFG_MESH, null);
+	private final SettingsModelString m_Gnl = new SettingsModelString(CFG_GNL_QUERY, null);
+	private final SettingsModelString m_QueryType = new SettingsModelString(CFG_QUERY_TYPE, "Core");
+	private final SettingsModelString m_SortOrder = new SettingsModelString(CFG_SORT_ORDER, "Date");
 
 	// Data table Spec
-	private static final DataTableSpec spec = new DataTableSpec(
-			createDataColumnSpec());
+	private static final DataTableSpec spec = new DataTableSpec(createDataColumnSpec());
 
 	// Data container for results
 	private BufferedDataContainer m_dc;
 
 	// Row counter
-	private int m_currentRowID;
+	private long m_currentRowID;
 
 	// page counter
 	private int m_pageCount;
 
 	// hit count
-	private int hitCount;
+	private long hitCount;
 
 	/**
 	 * Constructor for the node model.
 	 */
 	protected EuroPmcAdvancedSearchNodeModel() {
-
-		// TODO: Specify the amount of input and output ports needed.
-		// TODO: Add a flow variable output port for the query, hit count
-		super(new PortType[] {}, new PortType[] { BufferedDataTable.TYPE,
-				FlowVariablePortObject.TYPE });
+		super(new PortType[] {},
+				new PortType[] { BufferedDataTable.TYPE, FlowVariablePortObject.TYPE });
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData,
-			final ExecutionContext exec) throws Exception {
+	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
+			throws Exception {
 
 		// Now create a data container for the new output table
 		m_dc = exec.createDataContainer(spec);
@@ -130,33 +117,29 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 
 		// Build the query string
 		boolean sortDate = m_SortOrder.getStringValue().equals("Date");
-		String queryText = EpmcHelpers.buildQueryString(
-				m_Title.getStringValue(), m_Authors.getStringValue(),
-				m_Affiliation.getStringValue(), m_From.getStringValue(),
-				m_To.getStringValue(), m_Journals.getStringValue(),
-				m_MeSH.getStringValue(), m_Gnl.getStringValue(), sortDate);
+		String queryText = EpmcHelpers.buildQueryString(m_Title.getStringValue(),
+				m_Authors.getStringValue(), m_Affiliation.getStringValue(), m_From.getStringValue(),
+				m_To.getStringValue(), m_Journals.getStringValue(), m_MeSH.getStringValue(),
+				m_Gnl.getStringValue(), sortDate);
 
 		// Inform the user of progress...
 		logger.info("Query string used: " + queryText);
 		// Now we need to run the initial query and add the results from this
 		// to the buffered dc
-		String xmlResult = EpmcHelpers.askEpmc(EpmcHelpers.buildQueryURL(
-				queryText, m_QueryType.getStringValue(), m_pageCount));
-		hitCount = Integer.parseInt(EpmcHelpers.getStringFromXmlField(
-				xmlResult, "hitCount"));
+		String xmlResult = EpmcHelpers.askEpmc(
+				EpmcHelpers.buildQueryURL(queryText, m_QueryType.getStringValue(), m_pageCount));
+		hitCount = Long.parseLong(EpmcHelpers.getStringFromXmlField(xmlResult, "hitCount"));
 
 		if (hitCount > 0) {
 			List<DataCell> results = new ArrayList<DataCell>();
-			results = EpmcHelpers.getRecordsFromXml(xmlResult, "result",
-					"result");
+			results = EpmcHelpers.getRecordsFromXml(xmlResult, "result", "result");
 			addResultsToDc(m_dc, results, exec);
 
 			// Now we need to loop through the remaining pages
 			while (m_currentRowID < hitCount) {
-				xmlResult = EpmcHelpers.askEpmc(EpmcHelpers.buildQueryURL(
-						queryText, m_QueryType.getStringValue(), m_pageCount));
-				results = EpmcHelpers.getRecordsFromXml(xmlResult, "result",
-						"result");
+				xmlResult = EpmcHelpers.askEpmc(EpmcHelpers.buildQueryURL(queryText,
+						m_QueryType.getStringValue(), m_pageCount));
+				results = EpmcHelpers.getRecordsFromXml(xmlResult, "result", "result");
 				addResultsToDc(m_dc, results, exec);
 			}
 		}
@@ -166,32 +149,28 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 		// specifically associate
 		// with the fv port, but we need to create this for the return object
 		final FlowVariablePortObject flowVars = FlowVariablePortObject.INSTANCE;
-		pushFlowVariableInt("hitCount", hitCount);
+		pushFlowVariableInt("hitCount", (int) hitCount);
 		pushFlowVariableInt("pagecount", --m_pageCount);
 		pushFlowVariableString("queryString", queryText);
-		pushFlowVariableString(
-				"queryURL",
-				EpmcHelpers.buildQueryURL(queryText,
-						m_QueryType.getStringValue(), 1).toString());
+		pushFlowVariableString("queryURL",
+				EpmcHelpers.buildQueryURL(queryText, m_QueryType.getStringValue(), 1).toString());
 		pushFlowVariableString("resultType", m_QueryType.getStringValue());
 		pushFlowVariableString("queryFromEPMCXml",
 				EpmcHelpers.getStringFromXmlField(xmlResult, "query"));
 		return new PortObject[] { m_dc.getTable(), flowVars };
 	}
 
-	private void addResultsToDc(BufferedDataContainer m_dc2,
-			List<DataCell> results, final ExecutionContext exec)
-			throws CanceledExecutionException {
+	private void addResultsToDc(BufferedDataContainer m_dc2, List<DataCell> results,
+			final ExecutionContext exec) throws CanceledExecutionException {
 		// Update the status text
-		exec.setProgress(m_pageCount + " page(s) fetched..." + m_currentRowID
-				+ " hits of " + hitCount + " added to output");
+		exec.setProgress(m_pageCount + " page(s) fetched..." + m_currentRowID + " hits of "
+				+ hitCount + " added to output");
 		exec.checkCanceled();
 
 		// And now add the results
 		Iterator<DataCell> itr = results.iterator();
 		while (itr.hasNext()) {
-			m_dc.addRowToTable(new DefaultRow("Row " + m_currentRowID, itr
-					.next()));
+			m_dc.addRowToTable(new DefaultRow("Row " + m_currentRowID, itr.next()));
 			m_currentRowID++;
 		}
 
@@ -204,7 +183,6 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO: generated method stub
 	}
 
 	/**
@@ -229,7 +207,6 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		// TODO: generated method stub
 		m_Affiliation.saveSettingsTo(settings);
 		m_Authors.saveSettingsTo(settings);
 		m_From.saveSettingsTo(settings);
@@ -248,7 +225,6 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		// TODO: generated method stub
 		m_Affiliation.loadSettingsFrom(settings);
 		m_Authors.loadSettingsFrom(settings);
 		m_From.loadSettingsFrom(settings);
@@ -265,9 +241,7 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
-		// TODO: generated method stub
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 		m_Affiliation.validateSettings(settings);
 		m_Authors.validateSettings(settings);
 		m_From.validateSettings(settings);
@@ -284,27 +258,22 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		// TODO: generated method stub
+	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		// TODO: generated method stub
+	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 	}
 
 	private static DataColumnSpec[] createDataColumnSpec() {
 		// Only have a single XML Column to hold the results at the moment
 		DataColumnSpec[] dcs = new DataColumnSpec[1];
-		dcs[0] = new DataColumnSpecCreator("Results", XMLCell.TYPE)
-				.createSpec();
+		dcs[0] = new DataColumnSpecCreator("Results", XMLCell.TYPE).createSpec();
 		return dcs;
 	}
 }
