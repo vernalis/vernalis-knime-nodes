@@ -18,7 +18,9 @@
  */
 package com.vernalis.knime.mmp;
 
-import org.eclipse.core.runtime.Plugin;
+import org.RDKit.ROMol;
+import org.RDKit.RWMol;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -31,13 +33,17 @@ import org.osgi.framework.BundleContext;
  * want to move/rename this file, make sure to change the plugin.xml file in the
  * project root directory accordingly.
  * 
- * @author S. Roughley
+ * @author s.roughley {@literal <knime@vernalis.com>}
  */
-public class MatchedPairsMultipleCutsNodePlugin extends Plugin {
+public class MatchedPairsMultipleCutsNodePlugin extends AbstractUIPlugin {
 	// The shared instance.
 	private static MatchedPairsMultipleCutsNodePlugin plugin;
+	public static final String PLUGIN_ID = "com.vernalis.knime.internal.mmp";
 
-	
+	/**
+	 * A ROMol Query molecule to match an attachment point
+	 */
+	public static ROMol AP_QUERY_MOL;
 
 	/**
 	 * The constructor.
@@ -58,7 +64,8 @@ public class MatchedPairsMultipleCutsNodePlugin extends Plugin {
 	@Override
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
-
+		plugin = this;
+		AP_QUERY_MOL = RWMol.MolFromSmarts("[#0]");
 	}
 
 	/**
@@ -73,6 +80,7 @@ public class MatchedPairsMultipleCutsNodePlugin extends Plugin {
 	public void stop(final BundleContext context) throws Exception {
 		super.stop(context);
 		plugin = null;
+		AP_QUERY_MOL.delete();
 	}
 
 	/**

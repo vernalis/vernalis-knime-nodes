@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.chem.mmp;singleton:=true
-Bundle-Version: 1.4.1.qualifier
+Bundle-Version: 1.5.0.qualifier
 Bundle-ClassPath: matchedpairsmultiplecuts.jar
 Bundle-Activator: com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -13,7 +13,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.knime.chem.base,
  org.knime.chem.types,
  org.rdkit.knime.types,
- com.vernalis.knime
+ com.vernalis.knime.core;bundle-version="1.5.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: com.vernalis.knime.mmp,

@@ -29,7 +29,7 @@ import org.rdkit.knime.types.RDKitMolCellFactory;
  * Abstract container class for the list of acceptable input formats for MMP
  * nodes
  * 
- * @author Stephen Roughley<s.roughley@vernalis.com>
+ * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
 public abstract class MolFormats {
@@ -68,7 +68,7 @@ public abstract class MolFormats {
 	}
 
 	/**
-	 * Check whether the column type is compatable with any of the acceptable
+	 * Check whether the column type is compatible with any of the acceptable
 	 * RDKit formats
 	 * 
 	 * @param colType

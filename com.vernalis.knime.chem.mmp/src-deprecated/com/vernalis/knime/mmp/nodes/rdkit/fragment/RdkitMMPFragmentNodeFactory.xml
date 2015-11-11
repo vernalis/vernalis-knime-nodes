@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<knimeNode icon="./MMPs.png" type="Manipulator" xmlns="http://knime.org/node/v2.8"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<knimeNode icon="./MMPFrag.png" type="Manipulator" deprecated="true"
+	xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
-	<name>Matched Molecular Pairs (RDKit)</name>
+	<name>MMP Molecule Fragment</name>
 
 	<shortDescription>
         This node implements the Hussain and Rea algorithm for Matched Molecular Pair finding.
@@ -10,13 +10,18 @@
 
 	<fullDescription>
 		<intro>
-			<p>This node implements the Hussain and Rea algorithm for finding
-				Matched Molecular Pairs in a dataset (See Ref. 1). The user can
-				specify the
+			<p>This node implements the Hussain and Rea algorithm (Ref 1) for
+				finding
+				Matched Molecular Pairs in a dataset. The user can specify
+				the
 				number
-				of cuts to be made (1 - 10), and whether Hydrogens
-				should be
+				of cuts to be made (1 - 10), and whether Hydrogens should
+				be
 				added.
+			</p>
+			<p>The node implements the molecule fragmentation part of the
+				process, enabling the fragmented molecule key-value pairs to be
+				stored in a database for later recall
 			</p>
 			<p>
 				A variety of fragmentation options are included:
@@ -72,10 +77,10 @@
 			<p>Optionally, when only a single cut is made, or connectivity
 				tracking is enabled, context-fingerprints can be generated (one for
 				each attachment point). The fingerprints generated are RDKit Morgan
-				fingerprints, rooted at the attachment point(s) of the unchanging
-				portion
+				fingerprints, rooted at the attachment point(s) of the fragment key
 			</p>
 			<p>The algorithm is implemented using the RDKit toolkit.</p>
+
 			<p>
 				This node was developed by
 				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
@@ -85,8 +90,9 @@
 					knime@vernalis.com
 				</a>
 			</p>
+
 			<p>
-				1.J. Hussain and C Rea, "
+				1. J. Hussain and C Rea, "
 				<i>Computationally efficient algorithm to identify matched molecular pairs (MMPs) in large datasets</i>
 				",
 				<i>J. Chem. Inf. Model.</i>
@@ -157,23 +163,12 @@
 			</option>
 		</tab>
 		<tab name="Output Settings">
-			<option name="Show unchanging portion">A SMILES cell will be included showing the 'key'
-				resulting in the fragmentation pattern
-			</option>
 			<option name="Show number of changing atoms">The number of heavy atoms (not including 'A', the
 				attachment point) will be included for Left and Right fragments
 			</option>
 			<option name="Show ratio of constant / changing heavy atoms">The ratio of constant / changing heavy atoms (not
 				including 'A', the attachment point) will be included for Left and
 				Right fragments
-			</option>
-			<option name="Show reverse-direction transforms">The transformations will be duplicated in the
-				'reverse' direction, e.g. A-->B and B-->A
-			</option>
-			<option name="Include Reactions SMARTS">In addition to the SMIRKS representation of the
-				transformation, the transform is shown in an rSMARTS representation
-				with atom mappings. Using this option without the 'Track
-				Connectivity' option selected will produce nonsense rSMARTS!
 			</option>
 		</tab>
 		<tab name="Attachment Point Fingerprints">
@@ -184,22 +179,20 @@
 			<option name="Fingerprint Length">The number of bits in the fingerprints</option>
 			<option name="Morgan Radius">The radius of the Morgan fingerprint</option>
 			<option name="Use Bond Types">Should the bond types be included in the
-				fingerprint generation
-			</option>
+				fingerprint generation</option>
 			<option name="Use chirality">Should chirality be included in the fingerprint
-				generation
-			</option>
+				generation</option>
 		</tab>
 	</fullDescription>
 
 	<ports>
-		<inPort index="0" name="Molecules">Molecules for fragmenting to find
-			matched pairs
+		<inPort index="0" name="Molecules">Molecules for fragmenting
 		</inPort>
-		<outPort index="0" name="MMP transforms">Matched pair transformations
+		<outPort index="0" name="Fragments">Key-value fragmentation pairs
 		</outPort>
 		<outPort name="Failed Input Rows" index="1">Input rows for which
-			the molecule could not be parsed in RDKit
+			the
+			molecule could not be parsed in RDKit
 		</outPort>
 	</ports>
 
