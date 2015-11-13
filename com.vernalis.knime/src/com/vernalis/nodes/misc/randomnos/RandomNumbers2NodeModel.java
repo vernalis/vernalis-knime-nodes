@@ -74,7 +74,7 @@ public class RandomNumbers2NodeModel extends NodeModel {
 	private final SettingsModelDoubleRange m_Range = new SettingsModelDoubleRange(
 			CFG_MIN_MAX, 0.0, 100000.0);
 
-	private final SettingsModelIntegerBounded m_n = new SettingsModelIntegerBounded(
+	private final SettingsModelLongBounded m_n = new SettingsModelLongBounded(
 			CFG_N, 100, 1, Integer.MAX_VALUE);
 
 	private final SettingsModelBoolean m_isUnique = new SettingsModelBoolean(
@@ -108,21 +108,21 @@ public class RandomNumbers2NodeModel extends NodeModel {
 				RandomNumbers.addUniqueInts(
 						(int) Math.floor(m_Range.getMinRange()),
 						(int) Math.floor(m_Range.getMaxRange()),
-						m_n.getIntValue(), m_dc, exec);
+						m_n.getLongValue(), m_dc, exec);
 			} else {
 				RandomNumbers.addInts(
 						(int) Math.floor(m_Range.getMinRange()),
 						(int) Math.floor(m_Range.getMaxRange()),
-						m_n.getIntValue(), m_dc, exec);
+						m_n.getLongValue(), m_dc, exec);
 			}
 		} else {
 			// Actually get the values
 				if (m_isUnique.getBooleanValue()) {
 				RandomNumbers.addUniqueDoubles(m_Range.getMinRange(),
-						m_Range.getMaxRange(), m_n.getIntValue(), m_dc,exec);
+						m_Range.getMaxRange(), m_n.getLongValue(), m_dc,exec);
 			} else {
 				RandomNumbers.addDoubles(m_Range.getMinRange(),
-						m_Range.getMaxRange(), m_n.getIntValue(), m_dc, exec);
+						m_Range.getMaxRange(), m_n.getLongValue(), m_dc, exec);
 			}
 
 		}
@@ -150,11 +150,11 @@ public class RandomNumbers2NodeModel extends NodeModel {
 		if (m_ColumnName == null) {
 			throw new InvalidSettingsException("No column name enteres");
 		}
-		if (m_n.getIntValue() <= 0 || m_n == null) {
+		if (m_n.getLongValue() <= 0 || m_n == null) {
 			throw new InvalidSettingsException(
 					"Need to enter a valid number of values");
 		}
-		if (m_n.getIntValue() > Integer.MAX_VALUE) {
+		if (m_n.getLongValue() > Integer.MAX_VALUE) {
 			throw new InvalidSettingsException("Too many values required");
 		}
 		if (m_Range == null) {

@@ -36,6 +36,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelDoubleRange;
+import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelLongBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
@@ -73,8 +74,8 @@ public class RandomNumbersNodeModel extends NodeModel {
 	private final SettingsModelDoubleRange m_Range = new SettingsModelDoubleRange(
 			CFG_MIN_MAX, 0.0, 100000.0);
 
-	private final SettingsModelLongBounded m_n = new SettingsModelLongBounded(
-			CFG_N, 100, 1, Long.MAX_VALUE);
+	private final SettingsModelIntegerBounded m_n = new SettingsModelIntegerBounded(
+			CFG_N, 100, 1, Integer.MAX_VALUE);
 
 	private final SettingsModelBoolean m_isUnique = new SettingsModelBoolean(
 			CFG_UNIQUE, true);
@@ -107,21 +108,21 @@ public class RandomNumbersNodeModel extends NodeModel {
 				RandomNumbers.addUniqueInts(
 						(int) Math.floor(m_Range.getMinRange()),
 						(int) Math.floor(m_Range.getMaxRange()),
-						m_n.getLongValue(), m_dc, exec);
+						m_n.getIntValue(), m_dc, exec);
 			} else {
 				RandomNumbers.addInts(
 						(int) Math.floor(m_Range.getMinRange()),
 						(int) Math.floor(m_Range.getMaxRange()),
-						m_n.getLongValue(), m_dc, exec);
+						m_n.getIntValue(), m_dc, exec);
 			}
 		} else {
 			// Actually get the values
 				if (m_isUnique.getBooleanValue()) {
 				RandomNumbers.addUniqueDoubles(m_Range.getMinRange(),
-						m_Range.getMaxRange(), m_n.getLongValue(), m_dc,exec);
+						m_Range.getMaxRange(), m_n.getIntValue(), m_dc,exec);
 			} else {
 				RandomNumbers.addDoubles(m_Range.getMinRange(),
-						m_Range.getMaxRange(), m_n.getLongValue(), m_dc, exec);
+						m_Range.getMaxRange(), m_n.getIntValue(), m_dc, exec);
 			}
 
 		}
@@ -149,11 +150,11 @@ public class RandomNumbersNodeModel extends NodeModel {
 		if (m_ColumnName == null) {
 			throw new InvalidSettingsException("No column name enteres");
 		}
-		if (m_n.getLongValue() <= 0 || m_n == null) {
+		if (m_n.getIntValue() <= 0 || m_n == null) {
 			throw new InvalidSettingsException(
 					"Need to enter a valid number of values");
 		}
-		if (m_n.getLongValue() > Long.MAX_VALUE) {
+		if (m_n.getIntValue() > Long.MAX_VALUE) {
 			throw new InvalidSettingsException("Too many values required");
 		}
 		if (m_Range == null) {

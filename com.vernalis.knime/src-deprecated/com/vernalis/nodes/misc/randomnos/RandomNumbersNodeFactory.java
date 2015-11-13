@@ -25,14 +25,14 @@ import org.knime.core.node.NodeView;
  * <code>NodeFactory</code> for the "RandomNumbers" Node.
  */
 public class RandomNumbersNodeFactory 
-        extends NodeFactory<RandomNumbers2NodeModel> {
+        extends NodeFactory<RandomNumbersNodeModel> {
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public RandomNumbers2NodeModel createNodeModel() {
-        return new RandomNumbers2NodeModel();
+    public RandomNumbersNodeModel createNodeModel() {
+        return new RandomNumbersNodeModel();
     }
 
     /**
@@ -47,8 +47,8 @@ public class RandomNumbersNodeFactory
      * {@inheritDoc}
      */
     @Override
-    public NodeView<RandomNumbers2NodeModel> createNodeView(final int viewIndex,
-            final RandomNumbers2NodeModel nodeModel) {
+    public NodeView<RandomNumbersNodeModel> createNodeView(final int viewIndex,
+            final RandomNumbersNodeModel nodeModel) {
         return null;
     }
 
@@ -65,7 +65,7 @@ public class RandomNumbersNodeFactory
      */
     @Override
     public NodeDialogPane createNodeDialogPane() {
-        return new RandomNumbers2NodeDialog();
+        return new RandomNumbersNodeDialog();
     }
 
 }
