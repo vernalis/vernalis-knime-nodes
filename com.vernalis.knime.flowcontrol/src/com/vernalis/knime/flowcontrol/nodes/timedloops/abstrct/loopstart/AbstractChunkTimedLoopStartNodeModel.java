@@ -45,8 +45,7 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.TimedNodeType;
  * @author S.Roughley <s.roughley@vernalis.com>
  * 
  */
-public class AbstractChunkTimedLoopStartNodeModel extends
-		AbstractTimedLoopStartNodeModel {
+public class AbstractChunkTimedLoopStartNodeModel extends AbstractTimedLoopStartNodeModel {
 
 	/** The number of rows to be processed in each iteration. */
 	protected SettingsModelIntegerBounded m_chunkSize;
@@ -61,8 +60,7 @@ public class AbstractChunkTimedLoopStartNodeModel extends
 	public AbstractChunkTimedLoopStartNodeModel(TimedNodeType nodeType) {
 		super(1, 1, nodeType);
 		m_chunkSize = createChunkSizeModel();
-		m_logger = NodeLogger
-				.getLogger(AbstractChunkTimedLoopStartNodeModel.class);
+		m_logger = NodeLogger.getLogger(AbstractChunkTimedLoopStartNodeModel.class);
 	}
 
 	/**
@@ -76,22 +74,18 @@ public class AbstractChunkTimedLoopStartNodeModel extends
 	@Override
 	public BufferedDataTable getUnprocessedRows(ExecutionContext exec)
 			throws CanceledExecutionException {
-		BufferedDataContainer cont = exec.createDataContainer(m_table
-				.getDataTableSpec());
+		BufferedDataContainer cont = exec.createDataContainer(m_table.getDataTableSpec());
 		exec.setMessage("Retrieving unprocessed rows...");
-		int rowsToRetrieve = m_table.getRowCount()
-				- (m_chunkSize.getIntValue() * (m_iteration));
-		int rowcnt = 0;
+		long rowsToRetrieve = m_table.size() - (m_chunkSize.getIntValue() * (m_iteration));
+		long rowcnt = 0;
 		while (m_iterator.hasNext()) {
 			exec.setProgress((double) rowcnt / rowsToRetrieve,
-					"Retrieving unprocessed row " + ++rowcnt + " of "
-							+ rowsToRetrieve);
+					"Retrieving unprocessed row " + ++rowcnt + " of " + rowsToRetrieve);
 			exec.checkCanceled();
 			cont.addRowToTable(m_iterator.next());
 		}
 		cont.close();
-		m_logger.info("Loop execution completed at "
-				+ DateFunctions.getCurrentDate().toString());
+		m_logger.info("Loop execution completed at " + DateFunctions.getCurrentDate().toString());
 		return cont.getTable();
 	}
 
@@ -106,7 +100,7 @@ public class AbstractChunkTimedLoopStartNodeModel extends
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
 			final ExecutionContext exec) throws Exception {
 		BufferedDataTable table = inData[0];
-		int rowCount = table.getRowCount();
+		long rowCount = table.size();
 		int rowsPerChunk = m_chunkSize.getIntValue();
 		int totalChunkCount = (int) Math.ceil(rowCount / (double) rowsPerChunk);
 
@@ -119,8 +113,7 @@ public class AbstractChunkTimedLoopStartNodeModel extends
 			pushFlowVariableString("endTime", m_endTime.toString());
 			m_logger.info("Loop execution will terminate after " + m_endTime);
 			if (isNowAfter(m_endTime)) {
-				throw new Exception(
-						"No rows executed as end time has already passed");
+				throw new Exception("No rows executed as end time has already passed");
 			}
 		} else {
 			// Just some assertions for second iteration and beyond
@@ -129,8 +122,7 @@ public class AbstractChunkTimedLoopStartNodeModel extends
 		}
 
 		// Now generate the chunked output table
-		BufferedDataContainer container = exec.createDataContainer(table
-				.getSpec());
+		BufferedDataContainer container = exec.createDataContainer(table.getSpec());
 		for (int i = 0; i < rowsPerChunk && m_iterator.hasNext(); i++) {
 			container.addRowToTable(m_iterator.next());
 		}
@@ -138,8 +130,7 @@ public class AbstractChunkTimedLoopStartNodeModel extends
 
 		// Update the loop counters
 		pushFlowVariableInt("currentIteration", m_iteration++);
-		pushFlowVariableInt("maxIterations", totalChunkCount
-				+ m_ZerothIteration.getIntValue());
+		pushFlowVariableInt("maxIterations", totalChunkCount + m_ZerothIteration.getIntValue());
 		return new BufferedDataTable[] { container.getTable() };
 	}
 
@@ -156,8 +147,7 @@ public class AbstractChunkTimedLoopStartNodeModel extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
 		super.validateSettings(settings);
 		m_chunkSize.validateSettings(settings);
 	}

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.knime.bio.types.PdbCell;
+import org.knime.bio.types.PdbCellFactory;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -57,8 +58,7 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 
 	// the logger instance
 	@SuppressWarnings("unused")
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(RCSBmultiDownloadNodeModel.class);
+	private static final NodeLogger logger = NodeLogger.getLogger(RCSBmultiDownloadNodeModel.class);
 
 	// Settings Keys
 	static final String CFG_PDB_COLUMN_NAME = "PDB_column_name";
@@ -68,23 +68,18 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 	static final String CFG_PDBML = "PDBML";
 	static final String CFG_FASTA = "FASTA";
 
-	private final SettingsModelString m_PDBcolumnName = new SettingsModelString(
-			CFG_PDB_COLUMN_NAME, null);
+	private final SettingsModelString m_PDBcolumnName = new SettingsModelString(CFG_PDB_COLUMN_NAME,
+			null);
 
-	private final SettingsModelBoolean m_PDB = new SettingsModelBoolean(
-			CFG_PDB, true);
+	private final SettingsModelBoolean m_PDB = new SettingsModelBoolean(CFG_PDB, true);
 
-	private final SettingsModelBoolean m_CIF = new SettingsModelBoolean(
-			CFG_CIF, false);
+	private final SettingsModelBoolean m_CIF = new SettingsModelBoolean(CFG_CIF, false);
 
-	private final SettingsModelBoolean m_SF = new SettingsModelBoolean(CFG_SF,
-			false);
+	private final SettingsModelBoolean m_SF = new SettingsModelBoolean(CFG_SF, false);
 
-	private final SettingsModelBoolean m_PDBML = new SettingsModelBoolean(
-			CFG_PDBML, false);
+	private final SettingsModelBoolean m_PDBML = new SettingsModelBoolean(CFG_PDBML, false);
 
-	private final SettingsModelBoolean m_FASTA = new SettingsModelBoolean(
-			CFG_FASTA, false);
+	private final SettingsModelBoolean m_FASTA = new SettingsModelBoolean(CFG_FASTA, false);
 
 	/**
 	 * Constructor for the node model.
@@ -102,16 +97,14 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 			final ExecutionContext exec) throws Exception {
 
 		ColumnRearranger c = createRearranger(inData[0].getDataTableSpec());
-		BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c,
-				exec);
+		BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c, exec);
 		return new BufferedDataTable[] { out };
 	}
 
 	private ColumnRearranger createRearranger(DataTableSpec in) {
 		// Actually download the files and build the output
 		// The column index of the selected column
-		final int colIndexPDBID = in.findColumnIndex(m_PDBcolumnName
-				.getStringValue());
+		final int colIndexPDBID = in.findColumnIndex(m_PDBcolumnName.getStringValue());
 
 		// Count the new columns to add
 		int i = 0;
@@ -129,38 +122,34 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 		if (m_PDB.getBooleanValue()) {
 			// The PDB cell type will be used if it is available - dynamically
 			// checked here
-			newColSpec[i] = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(in, "PDB"), PdbCell.TYPE)
-					.createSpec();
+			newColSpec[i] = new DataColumnSpecCreator(DataTableSpec.getUniqueColumnName(in, "PDB"),
+					PdbCell.TYPE).createSpec();
 			i++;
 		}
 		if (m_CIF.getBooleanValue()) {
-			newColSpec[i] = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(in, "CIF"),
+			newColSpec[i] = new DataColumnSpecCreator(DataTableSpec.getUniqueColumnName(in, "CIF"),
 					StringCell.TYPE).createSpec();
 			i++;
 		}
 		if (m_SF.getBooleanValue()) {
 			newColSpec[i] = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(in, "Structure Factor"),
-					StringCell.TYPE).createSpec();
+					DataTableSpec.getUniqueColumnName(in, "Structure Factor"), StringCell.TYPE)
+							.createSpec();
 			i++;
 		}
 		if (m_PDBML.getBooleanValue()) {
 			newColSpec[i] = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(in, "PDBML"),
-					XMLCell.TYPE).createSpec();
+					DataTableSpec.getUniqueColumnName(in, "PDBML"), XMLCell.TYPE).createSpec();
 			i++;
 		}
 		if (m_FASTA.getBooleanValue()) {
 			newColSpec[i] = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(in, "FASTA"),
-					StringCell.TYPE).createSpec();
+					DataTableSpec.getUniqueColumnName(in, "FASTA"), StringCell.TYPE).createSpec();
 			i++;
 		}
 
 		ColumnRearranger rearranger = new ColumnRearranger(in);
-		rearranger.append(new AbstractCellFactory(newColSpec) {
+		rearranger.append(new AbstractCellFactory(true, newColSpec) {
 			@Override
 			public DataCell[] getCells(final DataRow row) {
 				DataCell[] result = new DataCell[NewCols];
@@ -173,32 +162,32 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 				int i = 0;
 				String r;
 				if (m_PDB.getBooleanValue()) {
-					r = PDBHelperFunctions.readUrltoString(PDBHelperFunctions
-							.createRCSBUrl(pdbid, "PDB", true));
+					r = PDBHelperFunctions
+							.readUrltoString(PDBHelperFunctions.createRCSBUrl(pdbid, "PDB", true));
 					if (r != null) {
-						result[i] = new PdbCell(r);
+						result[i] = PdbCellFactory.create(r);
 					}
 					i++;
 				}
 				if (m_CIF.getBooleanValue()) {
-					r = PDBHelperFunctions.readUrltoString(PDBHelperFunctions
-							.createRCSBUrl(pdbid, "cif", true));
+					r = PDBHelperFunctions
+							.readUrltoString(PDBHelperFunctions.createRCSBUrl(pdbid, "cif", true));
 					if (r != null) {
 						result[i] = new StringCell(r);
 					}
 					i++;
 				}
 				if (m_SF.getBooleanValue()) {
-					r = PDBHelperFunctions.readUrltoString(PDBHelperFunctions
-							.createRCSBUrl(pdbid, "sf", true));
+					r = PDBHelperFunctions
+							.readUrltoString(PDBHelperFunctions.createRCSBUrl(pdbid, "sf", true));
 					if (r != null) {
 						result[i] = new StringCell(r);
 					}
 					i++;
 				}
 				if (m_PDBML.getBooleanValue()) {
-					r = PDBHelperFunctions.readUrltoString(PDBHelperFunctions
-							.createRCSBUrl(pdbid, "PDBML", true));
+					r = PDBHelperFunctions.readUrltoString(
+							PDBHelperFunctions.createRCSBUrl(pdbid, "PDBML", true));
 					if (r != null) {
 						try {
 							result[i] = XMLCellFactory.create(r);
@@ -209,8 +198,8 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 					i++;
 				}
 				if (m_FASTA.getBooleanValue()) {
-					r = PDBHelperFunctions.readUrltoString(PDBHelperFunctions
-							.createRCSBUrl(pdbid, "FASTA"));
+					r = PDBHelperFunctions
+							.readUrltoString(PDBHelperFunctions.createRCSBUrl(pdbid, "FASTA"));
 					if (r != null) {
 						result[i] = new StringCell(r);
 					}
@@ -228,7 +217,7 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO: generated method stub
+
 	}
 
 	/**
@@ -246,8 +235,7 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 				if (cs.getType().isCompatible(StringValue.class)) {
 					if (colIndex != -1) {
 						setWarningMessage("No PDB ID column selected");
-						throw new InvalidSettingsException(
-								"No PDB ID column selected.");
+						throw new InvalidSettingsException("No PDB ID column selected.");
 					}
 					colIndex = i;
 				}
@@ -258,35 +246,29 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 				setWarningMessage("No PDB column selected");
 				throw new InvalidSettingsException("No PDB column selected.");
 			}
-			m_PDBcolumnName.setStringValue(inSpecs[0].getColumnSpec(colIndex)
-					.getName());
+			m_PDBcolumnName.setStringValue(inSpecs[0].getColumnSpec(colIndex).getName());
 			setWarningMessage("Column '" + m_PDBcolumnName.getStringValue()
 					+ "' auto selected for PDB ID column");
 		} else {
-			colIndex = inSpecs[0].findColumnIndex(m_PDBcolumnName
-					.getStringValue());
+			colIndex = inSpecs[0].findColumnIndex(m_PDBcolumnName.getStringValue());
 			if (colIndex < 0) {
-				setWarningMessage("No such column: "
-						+ m_PDBcolumnName.getStringValue());
-				throw new InvalidSettingsException("No such column: "
-						+ m_PDBcolumnName.getStringValue());
+				setWarningMessage("No such column: " + m_PDBcolumnName.getStringValue());
+				throw new InvalidSettingsException(
+						"No such column: " + m_PDBcolumnName.getStringValue());
 			}
 
 			DataColumnSpec colSpec = inSpecs[0].getColumnSpec(colIndex);
 			if (!colSpec.getType().isCompatible(StringValue.class)) {
-				setWarningMessage("Column \"" + m_PDBcolumnName
-						+ "\" does not contain string values");
-				throw new InvalidSettingsException("Column \""
-						+ m_PDBcolumnName
-						+ "\" does not contain string values: "
-						+ colSpec.getType().toString());
+				setWarningMessage(
+						"Column \"" + m_PDBcolumnName + "\" does not contain string values");
+				throw new InvalidSettingsException("Column \"" + m_PDBcolumnName
+						+ "\" does not contain string values: " + colSpec.getType().toString());
 			}
 		}
 		// Finally we need to find at least one property otherwise we are
 		// wasting a node!
-		if (!(m_PDB.getBooleanValue() || m_CIF.getBooleanValue()
-				|| m_FASTA.getBooleanValue() || m_PDBML.getBooleanValue() || m_SF
-					.getBooleanValue())) {
+		if (!(m_PDB.getBooleanValue() || m_CIF.getBooleanValue() || m_FASTA.getBooleanValue()
+				|| m_PDBML.getBooleanValue() || m_SF.getBooleanValue())) {
 			setWarningMessage("At least one property must be selected");
 			throw new InvalidSettingsException("No properties selected");
 		}
@@ -329,8 +311,7 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 
 		m_CIF.validateSettings(settings);
 		m_FASTA.validateSettings(settings);
@@ -344,20 +325,16 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		// TODO: generated method stub
+	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		// TODO: generated method stub
+	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 	}
 
 }

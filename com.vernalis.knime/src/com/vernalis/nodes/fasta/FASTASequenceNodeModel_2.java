@@ -55,8 +55,7 @@ import com.vernalis.helpers.FASTAHelperFunctions_2;
  */
 public class FASTASequenceNodeModel_2 extends NodeModel {
 	// the logger instance
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(FASTASequenceNodeModel_2.class);
+	private static final NodeLogger logger = NodeLogger.getLogger(FASTASequenceNodeModel_2.class);
 
 	// Settings models
 	static final String CFG_FASTA_COL_NAME = "FASTA_Column";
@@ -66,24 +65,21 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 	static final String CFG_SEQUENCE = "Extract_Sequence";
 
 	// Name of the column of FASTA sequences
-	private final SettingsModelString m_FASTAcolName = new SettingsModelString(
-			CFG_FASTA_COL_NAME, null);
+	private final SettingsModelString m_FASTAcolName = new SettingsModelString(CFG_FASTA_COL_NAME,
+			null);
 
 	// Extract the Header Row? (The chain and sequence are always extracted!)
-	private final SettingsModelBoolean m_HEADER = new SettingsModelBoolean(
-			CFG_HEADER, false);
+	private final SettingsModelBoolean m_HEADER = new SettingsModelBoolean(CFG_HEADER, false);
 
 	// Define the FASTA type
-	private final SettingsModelString m_FASTAType = new SettingsModelString(
-			CFG_FASTA_TYPE, null);
+	private final SettingsModelString m_FASTAType = new SettingsModelString(CFG_FASTA_TYPE, null);
 
 	// Overwrite the FASTA column
-	private final SettingsModelBoolean m_Overwrite = new SettingsModelBoolean(
-			CFG_OVERWRITE, false);
+	private final SettingsModelBoolean m_Overwrite = new SettingsModelBoolean(CFG_OVERWRITE, false);
 
 	// Extract the actual sequence
-	private final SettingsModelBoolean m_ExtractSequence = new SettingsModelBoolean(
-			CFG_SEQUENCE, true);
+	private final SettingsModelBoolean m_ExtractSequence = new SettingsModelBoolean(CFG_SEQUENCE,
+			true);
 
 	/**
 	 * Constructor for the node model.
@@ -110,75 +106,70 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 		// Create the new output table spec and a Buffered Data Container for it
 		final DataTableSpec newSpec = createTableSpec(table.getSpec(),
 				m_FASTAcolName.getStringValue(), removeFastaCol,
-				FASTAHelperFunctions_2.ColumnNames(
-						m_FASTAType.getStringValue(), addHeader,
+				FASTAHelperFunctions_2.ColumnNames(m_FASTAType.getStringValue(), addHeader,
 						m_ExtractSequence.getBooleanValue()));
 		final BufferedDataContainer dc = exec.createDataContainer(newSpec);
 
 		// Handle Empty Tables
-		if (table.getRowCount() == 0) {
+		if (table.size() == 0) {
 			dc.close();
 			return new BufferedDataTable[] { dc.getTable() };
 		}
 
-		final int colIdx = table.getSpec().findColumnIndex(
-				m_FASTAcolName.getStringValue());
-		final int totalRowCount = table.getRowCount();
+		final int colIdx = table.getSpec().findColumnIndex(m_FASTAcolName.getStringValue());
+		final long totalRowCount = table.size();
 		final double progressPerRow = 1.0 / totalRowCount;
-		int rowCounter = 0;
+		long rowCounter = 0;
 
 		// count of new columns
-		int newColCnt = FASTAHelperFunctions_2.ColumnNames(
-				m_FASTAType.getStringValue(), addHeader,
+		int newColCnt = FASTAHelperFunctions_2.ColumnNames(m_FASTAType.getStringValue(), addHeader,
 				m_ExtractSequence.getBooleanValue()).size();
 
 		// Now loop through the rows of the table
 		for (final DataRow row : table) {
 			rowCounter++;
 			exec.checkCanceled();
-			exec.setProgress(rowCounter * progressPerRow, "Processing row "
-					+ rowCounter + " of " + totalRowCount);
+			exec.setProgress(rowCounter * progressPerRow,
+					"Processing row " + rowCounter + " of " + totalRowCount);
 
 			DataCell c = row.getCell(colIdx);
 
 			// Firstly, deal with the possibility of an empty FASTA sell
 			if (c.isMissing()) {
-				final DefaultRow newRow = createClone(row.getKey(), row,
-						colIdx, removeFastaCol, new DataCell[newColCnt]);
+				final DefaultRow newRow = createClone(row.getKey(), row, colIdx, removeFastaCol,
+						new DataCell[newColCnt]);
 				dc.addRowToTable(newRow);
 				continue;
 			}
 
-			String[] FASTAs = FASTAHelperFunctions_2
-					.getFASTAs(((StringValue) c).getStringValue());
+			String[] FASTAs = FASTAHelperFunctions_2.getFASTAs(((StringValue) c).getStringValue());
 			// Now deal with the possibility that the FASTA cell couldnt be
 			// parsed properly
 			// TODO: WHAT IS THE CORRECT WAY OF DEALING WITH THIS SITUATION -
 			// HERE WE CARRY ON REGARDLESS
 			if (FASTAs.length == 0 || FASTAs == null) {
-				final DefaultRow newRow = createClone(row.getKey(), row,
-						colIdx, removeFastaCol, new DataCell[newColCnt]);
+				final DefaultRow newRow = createClone(row.getKey(), row, colIdx, removeFastaCol,
+						new DataCell[newColCnt]);
 				dc.addRowToTable(newRow);
 				continue;
 			}
-			int counter = 1;
 
 			// Now we loop through the individual sequences in the FASTA column
 			// in each
+			long counter = 1;
 			for (String FASTA : FASTAs) {
 				// Sort out new row keys, based on existing
 				final RowKey oldKey = row.getKey();
-				final RowKey newKey = new RowKey(oldKey.getString() + "_"
-						+ counter++);
+				final RowKey newKey = new RowKey(oldKey.getString() + "_" + counter++);
 
 				// Extract the properties to be added
 
-				DataCell[] newCells = FASTAHelperFunctions_2.ColumnValues(
-						FASTA, m_FASTAType.getStringValue(), addHeader,
+				DataCell[] newCells = FASTAHelperFunctions_2.ColumnValues(FASTA,
+						m_FASTAType.getStringValue(), addHeader,
 						m_ExtractSequence.getBooleanValue());
 
-				final DefaultRow newRow = createClone(newKey, row, colIdx,
-						removeFastaCol, newCells);
+				final DefaultRow newRow = createClone(newKey, row, colIdx, removeFastaCol,
+						newCells);
 				dc.addRowToTable(newRow);
 			}
 		}
@@ -186,9 +177,8 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 		return new BufferedDataTable[] { dc.getTable() };
 	}
 
-	private DefaultRow createClone(final RowKey newKey, final DataRow row,
-			final int FastaColId, final boolean removeFastaCol,
-			final DataCell[] newCells) {
+	private DefaultRow createClone(final RowKey newKey, final DataRow row, final int FastaColId,
+			final boolean removeFastaCol, final DataCell[] newCells) {
 		// Create a clone of the existing row adding the new columns to the end
 		// Calculate number of cells
 		int cellCount = row.getNumCells();
@@ -210,9 +200,10 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 
 		// now add the new cells
 		for (int i = 0, length = newCells.length; i < length; i++) {
-			newRowCells[cellIdx++] = (newCells[i] == null) ? DataType
-					.getMissingCell() : newCells[i];
+			newRowCells[cellIdx++] = (newCells[i] == null) ? DataType.getMissingCell()
+					: newCells[i];
 		}
+
 		return new DefaultRow(newKey, newRowCells);
 	}
 
@@ -221,7 +212,6 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO: generated method stub
 	}
 
 	/**
@@ -242,8 +232,7 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 				if (cs.getType().isCompatible(StringValue.class)) {
 					if (colIndex != -1) {
 						setWarningMessage("No FASTA column selected");
-						throw new InvalidSettingsException(
-								"No FASTA column selected.");
+						throw new InvalidSettingsException("No FASTA column selected.");
 					}
 					colIndex = i;
 				}
@@ -254,34 +243,30 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 				setWarningMessage("No FASTA column selected");
 				throw new InvalidSettingsException("No FASTA column selected.");
 			}
-			m_FASTAcolName.setStringValue(inSpecs[0].getColumnSpec(colIndex)
-					.getName());
+			m_FASTAcolName.setStringValue(inSpecs[0].getColumnSpec(colIndex).getName());
+			logger.info("Column '" + m_FASTAcolName.getStringValue()
+					+ "' auto selected for FASTA column");
 			setWarningMessage("Column '" + m_FASTAcolName.getStringValue()
 					+ "' auto selected for FASTA column");
 		} else {
-			colIndex = inSpecs[0].findColumnIndex(m_FASTAcolName
-					.getStringValue());
+			colIndex = inSpecs[0].findColumnIndex(m_FASTAcolName.getStringValue());
 			if (colIndex < 0) {
-				setWarningMessage("No such column: "
-						+ m_FASTAcolName.getStringValue());
-				throw new InvalidSettingsException("No such column: "
-						+ m_FASTAcolName.getStringValue());
+				setWarningMessage("No such column: " + m_FASTAcolName.getStringValue());
+				throw new InvalidSettingsException(
+						"No such column: " + m_FASTAcolName.getStringValue());
 			}
 
 			DataColumnSpec colSpec = inSpecs[0].getColumnSpec(colIndex);
 			if (!colSpec.getType().isCompatible(StringValue.class)) {
-				setWarningMessage("Column \"" + m_FASTAcolName
-						+ "\" does not contain string values");
-				throw new InvalidSettingsException("Column \""
-						+ CFG_FASTA_COL_NAME
-						+ "\" does not contain string values: "
-						+ colSpec.getType().toString());
+				setWarningMessage(
+						"Column \"" + m_FASTAcolName + "\" does not contain string values");
+				throw new InvalidSettingsException("Column \"" + CFG_FASTA_COL_NAME
+						+ "\" does not contain string values: " + colSpec.getType().toString());
 			}
 		}
 
-		Set<String> newColNames = FASTAHelperFunctions_2.ColumnNames(
-				m_FASTAType.getStringValue(), m_HEADER.getBooleanValue(),
-				m_ExtractSequence.getBooleanValue());
+		Set<String> newColNames = FASTAHelperFunctions_2.ColumnNames(m_FASTAType.getStringValue(),
+				m_HEADER.getBooleanValue(), m_ExtractSequence.getBooleanValue());
 
 		// Ensure at least one column will be added to the output
 		if (newColNames.size() < 1) {
@@ -289,9 +274,8 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 			throw new InvalidSettingsException("No new columns created!");
 		}
 
-		final DataTableSpec resultSpec = createTableSpec(spec,
-				m_FASTAcolName.getStringValue(), m_Overwrite.getBooleanValue(),
-				newColNames);
+		final DataTableSpec resultSpec = createTableSpec(spec, m_FASTAcolName.getStringValue(),
+				m_Overwrite.getBooleanValue(), newColNames);
 		return new DataTableSpec[] { resultSpec };
 	}
 
@@ -308,10 +292,9 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 	 * @throws InvalidSettinsException
 	 *             if an excettion occurs
 	 */
-	private static DataTableSpec createTableSpec(final DataTableSpec spec,
-			final String colName, final boolean removeFastaCol,
-			final Collection<String> NewColumnNames)
-			throws InvalidSettingsException {
+	private static DataTableSpec createTableSpec(final DataTableSpec spec, final String colName,
+			final boolean removeFastaCol, final Collection<String> NewColumnNames)
+					throws InvalidSettingsException {
 		/*
 		 * Method to create a new table spec, optionally retaining the FASTA
 		 * column and adding optionally a extra columns along with Chain and
@@ -319,8 +302,7 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 		 */
 		final int index = spec.findColumnIndex(colName);
 		if (index < 0) {
-			throw new InvalidSettingsException("Invalid column name: "
-					+ colName);
+			throw new InvalidSettingsException("Invalid column name: " + colName);
 		}
 		final DataColumnSpec colSpec = spec.getColumnSpec(index);
 
@@ -348,8 +330,7 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 			specs.add(specCreator.createSpec());
 		}
 
-		final DataTableSpec resultSpec = new DataTableSpec(
-				specs.toArray(new DataColumnSpec[0]));
+		final DataTableSpec resultSpec = new DataTableSpec(specs.toArray(new DataColumnSpec[0]));
 		return resultSpec;
 	}
 
@@ -384,8 +365,7 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 
 		m_FASTAcolName.validateSettings(settings);
 		m_Overwrite.validateSettings(settings);
@@ -398,20 +378,16 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		// TODO: generated method stub
+	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		// TODO: generated method stub
+	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 	}
 
 }

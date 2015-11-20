@@ -35,7 +35,8 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.knime.base.node.io.tablecreator.prop.SmilesTypeHelper;
+import org.knime.chem.types.SmilesCell;
+import org.knime.chem.types.SmilesCellFactory;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
 import org.knime.core.data.date.DateAndTimeCell;
@@ -182,8 +183,7 @@ public class ModelHelperFunctions {
 		case DATE:
 			return DateAndTimeCell.TYPE;
 		case SMILES:
-			return SmilesTypeHelper.INSTANCE.isSmilesAvailable() ? SmilesTypeHelper.INSTANCE
-					.getSmilesType() : StringCell.TYPE;
+			return SmilesCell.TYPE;
 		case PNG_URL:
 			return StringCell.TYPE;
 		default:
@@ -267,8 +267,7 @@ public class ModelHelperFunctions {
 					}
 				}
 			case SMILES:
-				return SmilesTypeHelper.INSTANCE.isSmilesAvailable() ? SmilesTypeHelper.INSTANCE
-						.newInstance(fieldValue) : new StringCell(fieldValue);
+				return SmilesCellFactory.create(fieldValue);
 			case PNG_URL:
 				// Concatenate the field value between url prefix and suffix to
 				// generate

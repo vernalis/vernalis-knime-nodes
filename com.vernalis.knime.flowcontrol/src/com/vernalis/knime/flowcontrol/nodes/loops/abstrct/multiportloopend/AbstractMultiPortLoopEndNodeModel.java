@@ -143,7 +143,7 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements
 		for (int i = 0; i < m_NumPorts; i++) {
 			if (inData[i] != null) {
 				if (m_settings.ignoreEmptyTables(i)
-						&& ((BufferedDataTable) inData[i]).getRowCount() < 1) {
+						&& ((BufferedDataTable) inData[i]).size() < 1) {
 					if (m_emptyTable[i] == null) {
 						m_emptyTable[i] = (BufferedDataTable) inData[i];
 					}
@@ -153,7 +153,7 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements
 				}
 
 				if (!m_settings.ignoreEmptyTables(i)
-						|| ((BufferedDataTable) inData[i]).getRowCount() > 0) {
+						|| ((BufferedDataTable) inData[i]).size() > 0) {
 					if (!(createOutputTableSpec(inData[i]))
 							.equalStructure(m_resultContainer[i].getTableSpec())) {
 						// The output table does not match the existing spec

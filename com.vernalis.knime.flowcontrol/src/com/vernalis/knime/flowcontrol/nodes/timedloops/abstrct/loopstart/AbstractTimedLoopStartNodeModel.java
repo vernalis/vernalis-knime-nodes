@@ -324,7 +324,7 @@ public abstract class AbstractTimedLoopStartNodeModel extends NodeModel
 	/**
 	 * {@inheritDoc}
 	 */
-	public int getIteration() {
+	public long getIteration() {
 		return m_iteration;
 	}
 

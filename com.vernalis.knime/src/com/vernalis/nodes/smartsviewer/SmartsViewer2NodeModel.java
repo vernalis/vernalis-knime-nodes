@@ -191,6 +191,7 @@ public class SmartsViewer2NodeModel extends NodeModel {
 				.createSpec();
 
 		// utility object that performs the calculation
+		//NB Not parallelized as I dont now what that will do to the server!
 		SingleCellFactory factory = new SingleCellFactory(newColSpec) {
 			@Override
 			public DataCell getCell(final DataRow row) {
@@ -221,7 +222,6 @@ public class SmartsViewer2NodeModel extends NodeModel {
 								+ m_maxRetries.getIntValue() + " remaining...");
 						triesLeft--;
 						pause(m_retryDelay.getIntValue());
-
 						// TODO: Figure how to implement checkCanceled
 						// exec.checkCanceled();
 					}

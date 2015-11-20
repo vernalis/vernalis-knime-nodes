@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.knime.bio.types.PdbCell;
+import org.knime.bio.types.PdbCellFactory;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -51,8 +52,7 @@ import com.vernalis.helpers.FileHelpers;
  */
 public class LocalPDBLoadNodeModel2 extends NodeModel {
 	// the logger instance
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(LocalPDBLoadNodeModel2.class);
+	private static final NodeLogger logger = NodeLogger.getLogger(LocalPDBLoadNodeModel2.class);
 
 	/**
 	 * the settings key which is used to retrieve and store the settings (from
@@ -87,10 +87,8 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
 		logger.debug("LocalPBDLoad executing");
 
 		// the data table spec of the single output table,
-		ColumnRearranger c = createColumnRearranger(inData[0]
-				.getDataTableSpec());
-		BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c,
-				exec);
+		ColumnRearranger c = createColumnRearranger(inData[0].getDataTableSpec());
+		BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c, exec);
 		return new BufferedDataTable[] { out };
 	}
 
@@ -98,17 +96,15 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
 		ColumnRearranger c = new ColumnRearranger(in);
 
 		// The column index of the selected column
-		final int colIndex = in.findColumnIndex(m_PathColumnName
-				.getStringValue());
+		final int colIndex = in.findColumnIndex(m_PathColumnName.getStringValue());
 
 		// column spec of the appended column
 		DataColumnSpec newColSpec = new DataColumnSpecCreator(
-				DataTableSpec.getUniqueColumnName(in,
-						m_FilecolumnName.getStringValue()), PdbCell.TYPE)
-				.createSpec();
+				DataTableSpec.getUniqueColumnName(in, m_FilecolumnName.getStringValue()),
+				PdbCell.TYPE).createSpec();
 
 		// utility object that performs the calculation
-		SingleCellFactory factory = new SingleCellFactory(newColSpec) {
+		SingleCellFactory factory = new SingleCellFactory(true, newColSpec) {
 			@Override
 			public DataCell getCell(final DataRow row) {
 				DataCell pathcell = row.getCell(colIndex);
@@ -118,8 +114,7 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
 				}
 				// Here we actually do the meat of the work and fetch file
 
-				String urlToRetrieve = ((StringValue) pathcell)
-						.getStringValue();
+				String urlToRetrieve = ((StringValue) pathcell).getStringValue();
 				// Now, if it is a Location, convert to a URL
 				urlToRetrieve = FileHelpers.forceURL(urlToRetrieve);
 
@@ -128,7 +123,7 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
 						|| urlToRetrieve.toLowerCase().endsWith(".pdb.gz")) {
 					String r = FileHelpers.readURLToString(urlToRetrieve);
 					if (!(r == null || "".equals(r))) {
-						return new PdbCell(r);
+						return PdbCellFactory.create(r);
 					}
 				}
 				return DataType.getMissingCell();
@@ -143,7 +138,6 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO: generated method stub
 	}
 
 	/**
@@ -159,8 +153,7 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
 			for (DataColumnSpec cs : inSpecs[0]) {
 				if (cs.getType().isCompatible(StringValue.class)) {
 					if (colIndex != -1) {
-						throw new InvalidSettingsException(
-								"No column selected.");
+						throw new InvalidSettingsException("No column selected.");
 					}
 					colIndex = i;
 				}
@@ -170,31 +163,24 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
 			if (colIndex == -1) {
 				throw new InvalidSettingsException("No column selected.");
 			}
-			m_PathColumnName.setStringValue(inSpecs[0].getColumnSpec(colIndex)
-					.getName());
-			setWarningMessage("Column '" + m_PathColumnName.getStringValue()
-					+ "' auto selected");
+			m_PathColumnName.setStringValue(inSpecs[0].getColumnSpec(colIndex).getName());
+			setWarningMessage("Column '" + m_PathColumnName.getStringValue() + "' auto selected");
 		} else {
-			colIndex = inSpecs[0].findColumnIndex(m_PathColumnName
-					.getStringValue());
+			colIndex = inSpecs[0].findColumnIndex(m_PathColumnName.getStringValue());
 			if (colIndex < 0) {
-				throw new InvalidSettingsException("No such column: "
-						+ m_PathColumnName.getStringValue());
+				throw new InvalidSettingsException(
+						"No such column: " + m_PathColumnName.getStringValue());
 			}
 
 			DataColumnSpec colSpec = inSpecs[0].getColumnSpec(colIndex);
 			if (!colSpec.getType().isCompatible(StringValue.class)) {
-				throw new InvalidSettingsException("Column \""
-						+ m_PathColumnName
-						+ "\" does not contain string values: "
-						+ colSpec.getType().toString());
+				throw new InvalidSettingsException("Column \"" + m_PathColumnName
+						+ "\" does not contain string values: " + colSpec.getType().toString());
 			}
 		}
-		if (m_PathColumnName.getStringValue().equals("")
-				|| m_PathColumnName == null) {
+		if (m_PathColumnName.getStringValue().equals("") || m_PathColumnName == null) {
 			setWarningMessage("Path column name cannot be empty");
-			throw new InvalidSettingsException(
-					"Path column name cannot be empty");
+			throw new InvalidSettingsException("Path column name cannot be empty");
 		}
 		// everything seems to fine
 		ColumnRearranger c = createColumnRearranger(inSpecs[0]);
@@ -231,8 +217,7 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 
 		// e.g. if the count is in a certain range (which is ensured by the
 		// SettingsModel).
@@ -247,20 +232,16 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		// TODO: generated method stub
+	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		// TODO: generated method stub
+	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 	}
 
 }

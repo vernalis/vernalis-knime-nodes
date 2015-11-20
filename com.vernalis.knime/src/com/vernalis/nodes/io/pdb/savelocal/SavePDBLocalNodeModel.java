@@ -40,6 +40,7 @@ import org.knime.core.data.StringValue;
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.container.SingleCellFactory;
 import org.knime.core.data.def.BooleanCell;
+import org.knime.core.data.def.BooleanCell.BooleanCellFactory;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 
 import com.vernalis.helpers.PDBHelperFunctions;
@@ -50,8 +51,7 @@ import com.vernalis.helpers.PDBHelperFunctions;
  */
 public class SavePDBLocalNodeModel extends NodeModel {
 	// the logger instance
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(SavePDBLocalNodeModel.class);
+	private static final NodeLogger logger = NodeLogger.getLogger(SavePDBLocalNodeModel.class);
 
 	/**
 	 * the settings key which is used to retrieve and store the settings (from
@@ -64,8 +64,8 @@ public class SavePDBLocalNodeModel extends NodeModel {
 	static final String CFG_SUCCESS_COLUMN_NAME = "SUCCESS_column_name";
 	static final String CFG_OVERWRITE = "Overwrite_flag";
 
-	private final SettingsModelString m_PDBcolumnName = new SettingsModelString(
-			CFG_PDB_COLUMN_NAME, null);
+	private final SettingsModelString m_PDBcolumnName = new SettingsModelString(CFG_PDB_COLUMN_NAME,
+			null);
 
 	private final SettingsModelString m_PathcolumnName = new SettingsModelString(
 			CFG_PATH_COLUMN_NAME, null);
@@ -73,8 +73,7 @@ public class SavePDBLocalNodeModel extends NodeModel {
 	private final SettingsModelString m_SuccesscolumnName = new SettingsModelString(
 			CFG_SUCCESS_COLUMN_NAME, "Success");
 
-	private final SettingsModelBoolean m_Overwrite = new SettingsModelBoolean(
-			CFG_OVERWRITE, true);
+	private final SettingsModelBoolean m_Overwrite = new SettingsModelBoolean(CFG_OVERWRITE, true);
 
 	/**
 	 * Constructor for the node model.
@@ -94,10 +93,8 @@ public class SavePDBLocalNodeModel extends NodeModel {
 		logger.info("SavePDBLocal Node executing...");
 
 		// the data table spec of the single output table,
-		ColumnRearranger c = createColumnRearranger(inData[0]
-				.getDataTableSpec());
-		BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c,
-				exec);
+		ColumnRearranger c = createColumnRearranger(inData[0].getDataTableSpec());
+		BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c, exec);
 		return new BufferedDataTable[] { out };
 	}
 
@@ -105,18 +102,15 @@ public class SavePDBLocalNodeModel extends NodeModel {
 		ColumnRearranger c = new ColumnRearranger(in);
 
 		// The column index of the selected columns
-		final int colIndexPDB = in.findColumnIndex(m_PDBcolumnName
-				.getStringValue());
-		final int colIndexPath = in.findColumnIndex(m_PathcolumnName
-				.getStringValue());
+		final int colIndexPDB = in.findColumnIndex(m_PDBcolumnName.getStringValue());
+		final int colIndexPath = in.findColumnIndex(m_PathcolumnName.getStringValue());
 
 		// column spec of the appended column
-		DataColumnSpec newColSpec = new DataColumnSpecCreator(
-				m_SuccesscolumnName.getStringValue(), BooleanCell.TYPE)
-				.createSpec();
+		DataColumnSpec newColSpec = new DataColumnSpecCreator(m_SuccesscolumnName.getStringValue(),
+				BooleanCell.TYPE).createSpec();
 
 		// utility object that performs the calculation
-		SingleCellFactory factory = new SingleCellFactory(newColSpec) {
+		SingleCellFactory factory = new SingleCellFactory(true, newColSpec) {
 			@Override
 			public DataCell getCell(DataRow row) {
 				DataCell pdbcell = row.getCell(colIndexPDB);
@@ -146,9 +140,8 @@ public class SavePDBLocalNodeModel extends NodeModel {
 				}
 				// Now we actually write the file..
 				String pdbtext = ((StringValue) pdbcell).getStringValue();
-				return (PDBHelperFunctions.saveStringToPath(pdbtext,
-						pathToFile, m_Overwrite.getBooleanValue())) ? BooleanCell.TRUE
-						: BooleanCell.FALSE;
+				return BooleanCellFactory.create(PDBHelperFunctions.saveStringToPath(pdbtext,
+						pathToFile, m_Overwrite.getBooleanValue()));
 			}
 		};
 		c.append(factory);
@@ -160,9 +153,6 @@ public class SavePDBLocalNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void reset() {
-		// TODO Code executed on reset.
-		// Models build during execute are cleared here.
-		// Also data handled in load/saveInternals will be erased here.
 	}
 
 	/**
@@ -186,8 +176,7 @@ public class SavePDBLocalNodeModel extends NodeModel {
 				if (cs.getType().isCompatible(StringValue.class)) {
 					if (colIndex != -1) {
 						setWarningMessage("No PDB cell column selected");
-						throw new InvalidSettingsException(
-								"No PDB cell column selected.");
+						throw new InvalidSettingsException("No PDB cell column selected.");
 					}
 					colIndex = i;
 				}
@@ -196,31 +185,25 @@ public class SavePDBLocalNodeModel extends NodeModel {
 
 			if (colIndex == -1) {
 				setWarningMessage("No PDB cell column selected");
-				throw new InvalidSettingsException(
-						"No PDB cell column selected.");
+				throw new InvalidSettingsException("No PDB cell column selected.");
 			}
-			m_PDBcolumnName.setStringValue(inSpecs[0].getColumnSpec(colIndex)
-					.getName());
+			m_PDBcolumnName.setStringValue(inSpecs[0].getColumnSpec(colIndex).getName());
 			setWarningMessage("Column '" + m_PDBcolumnName.getStringValue()
 					+ "' auto selected for PDB column");
 		} else {
-			colIndex = inSpecs[0].findColumnIndex(m_PDBcolumnName
-					.getStringValue());
+			colIndex = inSpecs[0].findColumnIndex(m_PDBcolumnName.getStringValue());
 			if (colIndex < 0) {
-				setWarningMessage("No such column: "
-						+ m_PDBcolumnName.getStringValue());
-				throw new InvalidSettingsException("No such column: "
-						+ m_PDBcolumnName.getStringValue());
+				setWarningMessage("No such column: " + m_PDBcolumnName.getStringValue());
+				throw new InvalidSettingsException(
+						"No such column: " + m_PDBcolumnName.getStringValue());
 			}
 
 			DataColumnSpec colSpec = inSpecs[0].getColumnSpec(colIndex);
 			if (!colSpec.getType().isCompatible(StringValue.class)) {
-				setWarningMessage("Column \"" + m_PDBcolumnName
-						+ "\" does not contain string values");
-				throw new InvalidSettingsException("Column \""
-						+ m_PDBcolumnName
-						+ "\" does not contain string values: "
-						+ colSpec.getType().toString());
+				setWarningMessage(
+						"Column \"" + m_PDBcolumnName + "\" does not contain string values");
+				throw new InvalidSettingsException("Column \"" + m_PDBcolumnName
+						+ "\" does not contain string values: " + colSpec.getType().toString());
 			}
 		}
 
@@ -233,8 +216,7 @@ public class SavePDBLocalNodeModel extends NodeModel {
 				if (cs.getType().isCompatible(StringValue.class)) {
 					if (colIndex != -1) {
 						setWarningMessage("No PDB cell column selected.");
-						throw new InvalidSettingsException(
-								"No PDB cell column selected.");
+						throw new InvalidSettingsException("No PDB cell column selected.");
 					}
 					colIndex = i;
 				}
@@ -242,39 +224,31 @@ public class SavePDBLocalNodeModel extends NodeModel {
 			}
 
 			if (colIndex == -1) {
-				throw new InvalidSettingsException(
-						"No PDB cell column selected.");
+				throw new InvalidSettingsException("No PDB cell column selected.");
 			}
-			m_PathcolumnName.setStringValue(inSpecs[0].getColumnSpec(colIndex)
-					.getName());
+			m_PathcolumnName.setStringValue(inSpecs[0].getColumnSpec(colIndex).getName());
 			setWarningMessage("Column '" + m_PathcolumnName.getStringValue()
 					+ "' auto selected for PDB column");
 		} else {
-			colIndex = inSpecs[0].findColumnIndex(m_PathcolumnName
-					.getStringValue());
+			colIndex = inSpecs[0].findColumnIndex(m_PathcolumnName.getStringValue());
 			if (colIndex < 0) {
-				setWarningMessage("No such column: "
-						+ m_PathcolumnName.getStringValue());
-				throw new InvalidSettingsException("No such column: "
-						+ m_PathcolumnName.getStringValue());
+				setWarningMessage("No such column: " + m_PathcolumnName.getStringValue());
+				throw new InvalidSettingsException(
+						"No such column: " + m_PathcolumnName.getStringValue());
 			}
 
 			DataColumnSpec colSpec = inSpecs[0].getColumnSpec(colIndex);
 			if (!colSpec.getType().isCompatible(StringValue.class)) {
-				setWarningMessage("Column \"" + m_PathcolumnName
-						+ "\" does not contain string values");
-				throw new InvalidSettingsException("Column \""
-						+ m_PathcolumnName
-						+ "\" does not contain string values: "
-						+ colSpec.getType().toString());
+				setWarningMessage(
+						"Column \"" + m_PathcolumnName + "\" does not contain string values");
+				throw new InvalidSettingsException("Column \"" + m_PathcolumnName
+						+ "\" does not contain string values: " + colSpec.getType().toString());
 			}
 		}
 
-		if (m_SuccesscolumnName.getStringValue().equals("")
-				|| m_SuccesscolumnName == null) {
+		if (m_SuccesscolumnName.getStringValue().equals("") || m_SuccesscolumnName == null) {
 			setWarningMessage("Success column name cannot be empty");
-			throw new InvalidSettingsException(
-					"Success column name cannot be empty");
+			throw new InvalidSettingsException("Success column name cannot be empty");
 		}
 
 		// everything seems to fine
@@ -313,8 +287,7 @@ public class SavePDBLocalNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 
 		m_PDBcolumnName.validateSettings(settings);
 		m_PathcolumnName.validateSettings(settings);
@@ -327,34 +300,16 @@ public class SavePDBLocalNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-
-		// TODO load internal data.
-		// Everything handed to output ports is loaded automatically (data
-		// returned by the execute method, models loaded in loadModelContent,
-		// and user settings set through loadSettingsFrom - is all taken care
-		// of). Load here only the other internals that need to be restored
-		// (e.g. data used by the views).
-
+	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-
-		// TODO save internal models.
-		// Everything written to output ports is saved automatically (data
-		// returned by the execute method, models saved in the saveModelContent,
-		// and user settings saved through saveSettingsTo - is all taken care
-		// of). Save here only the other internals that need to be preserved
-		// (e.g. data used by the views).
-
+	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 	}
 
 }

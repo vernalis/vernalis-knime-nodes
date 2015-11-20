@@ -47,7 +47,7 @@ import com.vernalis.knime.flowcontrol.FlowControlHelpers;
 import com.vernalis.knime.flowcontrol.nodes.loops.abstrct.multiportloopend.AbstractMultiPortLoopEndSettings;
 import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.loopstart.AbstractTimedLoopStartNodeModel;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * This is the model implementation of AbstractMultiPortLoopEnd. Loop end node
  * to handle optional input ports n
@@ -159,7 +159,7 @@ public class AbstractMultiPortTimedLoopEndNodeModel extends NodeModel implements
 		for (int i = 0; i < m_NumPorts; i++) {
 			if (inData[i] != null) {
 				if (m_settings.ignoreEmptyTables(i)
-						&& ((BufferedDataTable) inData[i]).getRowCount() < 1) {
+						&& ((BufferedDataTable) inData[i]).size() < 1) {
 					if (m_emptyTable[i] == null) {
 						m_emptyTable[i] = (BufferedDataTable) inData[i];
 					}
@@ -169,7 +169,7 @@ public class AbstractMultiPortTimedLoopEndNodeModel extends NodeModel implements
 				}
 
 				if (!m_settings.ignoreEmptyTables(i)
-						|| ((BufferedDataTable) inData[i]).getRowCount() > 0) {
+						|| ((BufferedDataTable) inData[i]).size() > 0) {
 					if (!(createOutputTableSpec(inData[i]))
 							.equalStructure(m_resultContainer[i].getTableSpec())) {
 						// The output table does not match the existing spec
@@ -228,7 +228,7 @@ public class AbstractMultiPortTimedLoopEndNodeModel extends NodeModel implements
 			// And add the iteration as a flow variable - the iteration counter
 			// will be one higher!
 			pushFlowVariableInt("Last Iteration",
-					(loopStartModel.getIteration() - 1));
+					(int) (loopStartModel.getIteration() - 1));
 			pushFlowVariableString("End Time", loopStartModel.getEndTime()
 					.toString());
 
