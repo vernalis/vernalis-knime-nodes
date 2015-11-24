@@ -60,17 +60,17 @@
  <node
        deprecated="true"
        factory-class="com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeFactory"
-       id="FlowVarFvvalIfSwitchNodeFactory">
+       id="Frag2PairNodeFactory">
  </node>
  <node
        deprecated="true"
        factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment.RdkitMMPFragmentNodeFactory"
-       id="FlowVarFvvalIfSwitchNodeFactory">
+       id="RdkitMMPFragmentNodeFactory">
  </node>
  <node
        deprecated="true"
        factory-class="com.vernalis.knime.mmp.nodes.rdkit.multicut.RdkitMatchedPairsNodeFactory"
-       id="FlowVarFvvalIfSwitchNodeFactory">
+       id="RdkitMatchedPairsNodeFactory">
  </node>
 </extension>
 

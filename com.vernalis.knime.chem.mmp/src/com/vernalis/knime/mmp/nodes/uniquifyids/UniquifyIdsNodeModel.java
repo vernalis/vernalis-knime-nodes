@@ -53,7 +53,7 @@ public class UniquifyIdsNodeModel extends NodeModel {
 	private final SettingsModelString m_IDColName = UniquifyIdsNodeDialog
 			.createIDModel();
 
-	Map<String, Integer> IDsMap;
+	Map<String, Long> IDsMap;
 
 	/** The NodeLogger Instance */
 	static final NodeLogger m_logger = NodeLogger
@@ -108,7 +108,7 @@ public class UniquifyIdsNodeModel extends NodeModel {
 						}
 						String ID = ((StringValue) IDCell).getStringValue();
 						if (!IDsMap.containsKey(ID)) {
-							IDsMap.put(ID, 0);
+							IDsMap.put(ID, 0L);
 							return IDCell;
 						}
 						// Duplicate ID
@@ -130,12 +130,12 @@ public class UniquifyIdsNodeModel extends NodeModel {
 	 */
 	private String uniquifyID(String ID) {
 		if (IDsMap.containsKey(ID)) {
-			int subindex = IDsMap.get(ID);
+			long subindex = IDsMap.get(ID);
 			String retVal = uniquifyID(ID + "_" + (subindex++));
 			IDsMap.put(ID, subindex);
 			return retVal;
 		}
-		IDsMap.put(ID, 0);
+		IDsMap.put(ID, 0L);
 		return ID;
 	}
 

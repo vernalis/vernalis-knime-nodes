@@ -411,7 +411,7 @@ public class ParallelRdkitMMPFragment3NodeModel extends NodeModel {
 		DataTableSpec spec = table.getSpec();
 		final int molIdx = spec.findColumnIndex(m_molColName.getStringValue());
 		final int idIdx = spec.findColumnIndex(m_idColName.getStringValue());
-		final int numRows = table.getRowCount();
+		final long numRows = table.size();
 		// A table for the processed output
 		final BufferedDataContainer dc_0 = exec.createDataContainer(m_spec_0);
 		// And a table for unprocessed rows
@@ -512,9 +512,9 @@ public class ParallelRdkitMMPFragment3NodeModel extends NodeModel {
 			protected void processFinished(ComputationTask task)
 					throws ExecutionException, CancellationException,
 					InterruptedException {
-				int r = (int) task.getIndex();
+				long r = task.getIndex();
 				String inKey = task.getInput().getKey().getString();
-				int subIdx = 0;
+				long subIdx = 0;
 				MultiTableParallelResult result = task.get();
 
 				try {
@@ -543,7 +543,7 @@ public class ParallelRdkitMMPFragment3NodeModel extends NodeModel {
 					}
 				}
 
-				m_SWIGGC.cleanupMarkedObjects(r + 1);
+				m_SWIGGC.cleanupMarkedObjects((int) (r + 1));
 				exec.setProgress((r + 1.0) / numRows, "Processed row "
 						+ (r + 1) + " of " + numRows);
 
