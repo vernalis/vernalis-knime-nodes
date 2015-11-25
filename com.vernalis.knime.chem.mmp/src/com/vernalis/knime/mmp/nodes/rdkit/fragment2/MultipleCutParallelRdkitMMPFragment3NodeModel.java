@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -815,7 +816,7 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 		Collection<BondIdentifier> cuttableBonds;
 		// Generate the combinations of upto numCuts bonds. NB we start at 2 as
 		// 1 is handled separately
-		Set<Set<BondIdentifier>> bondCombos = new HashSet<Set<BondIdentifier>>();
+		Set<Set<BondIdentifier>> bondCombos = new LinkedHashSet<Set<BondIdentifier>>();
 		for (int i = 2; i <= numCuts; i++) {
 			cuttableBonds = RDKitFragmentationUtils.identifyAllCuttableBonds(roMol, bondMatch, i);
 			Set<Set<BondIdentifier>> newBondCombos = CombinationFinder

@@ -16,6 +16,8 @@ package com.vernalis.knime.mmp;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.RDKit.ROMol;
 import org.RDKit.RWMol;
@@ -75,11 +77,29 @@ public class FragmentValue2 implements Comparable<FragmentValue2> {
 	 * @param ignoreIDsForComparisons
 	 *            {@code true} if IDs should be ignored when comparing objects
 	 */
-	public FragmentValue2(String smiles, String ID,
-			boolean ignoreIDsForComparisons) {
+	public FragmentValue2(String smiles, String ID, boolean ignoreIDsForComparisons) {
 		this.SMILES = smiles;
 		this.ID = ID;
 		this.ignoreIDsForComparisons = ignoreIDsForComparisons;
+//		canonicalizeBondOnlyValue();
+	}
+
+	/**
+	 * We always want *-* to canonicalize with the highest index first
+	 */
+	private void canonicalizeBondOnlyValue() {
+		if (SMILES.matches("\\[\\d+\\*\\](-)?\\[\\d+\\*\\]")) {
+			// Bond
+			Pattern p = Pattern.compile("\\[([0-9]+)\\*\\]");
+			Matcher m = p.matcher(SMILES);
+			m.find();
+			int firstIdx = Integer.parseInt(m.group(1));
+			m.find();
+			int secondIdx = Integer.parseInt(m.group(1));
+			if (secondIdx > firstIdx) {
+				SMILES = "[" + secondIdx + "*][" + firstIdx + "*]";
+			}
+		}
 	}
 
 	/**
@@ -143,8 +163,7 @@ public class FragmentValue2 implements Comparable<FragmentValue2> {
 	 * @deprecated The track cut connectivity option is deprecated
 	 */
 	@Deprecated
-	public DataCell getSMILESCell(boolean removeExplicitHs,
-			boolean trackConnectivity) {
+	public DataCell getSMILESCell(boolean removeExplicitHs, boolean trackConnectivity) {
 		return new SmilesCell(getSMILES(removeExplicitHs, trackConnectivity));
 	}
 
@@ -249,8 +268,7 @@ public class FragmentValue2 implements Comparable<FragmentValue2> {
 				cnt++;
 		}
 		// Now correct for [H]
-		cnt -= (SMILES.indexOf("[H]") >= 0) ? SMILES.split("\\[H\\]").length - 1
-				: 0;
+		cnt -= (SMILES.indexOf("[H]") >= 0) ? SMILES.split("\\[H\\]").length - 1 : 0;
 		// And correct for attachment points
 		cnt -= countAttachmentPoints();
 		return cnt;
@@ -265,13 +283,12 @@ public class FragmentValue2 implements Comparable<FragmentValue2> {
 	 *            The {@link FragmentKey2} argument for the mapping
 	 */
 	public void setAttachmentPointIndices(FragmentKey2 key) {
-		HashMap<Integer, Integer> apLookup = key
-				.getAttachmentPointIndexLookup();
+		HashMap<Integer, Integer> apLookup = key.getAttachmentPointIndexLookup();
 		for (Entry<Integer, Integer> ent : apLookup.entrySet()) {
-			SMILES = SMILES.replace("[" + ent.getValue() + "*]",
-					"[" + ent.getKey() + "*]");
+			SMILES = SMILES.replace("[" + ent.getValue() + "*]", "[" + ent.getKey() + "*]");
 		}
-		canonicalize();
+		canonicalizeBondOnlyValue();
+		// canonicalize();
 	}
 
 	/**

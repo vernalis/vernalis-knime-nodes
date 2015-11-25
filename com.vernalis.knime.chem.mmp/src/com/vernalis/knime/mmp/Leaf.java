@@ -69,13 +69,11 @@ public class Leaf implements Comparable<Leaf> {
 	 * @throws IllegalArgumentException
 	 *             If no or >1 attachment points are found
 	 */
-	public Leaf(String smiles, boolean removeHs)
-			throws IllegalArgumentException {
+	public Leaf(String smiles, boolean removeHs) throws IllegalArgumentException {
 		Pattern p = Pattern.compile("\\[([0-9]+)\\*\\]");
 		Matcher m = p.matcher(smiles);
 		if (!m.find()) {
-			throw new IllegalArgumentException(
-					"No Attachment Point found in SMILES String");
+			throw new IllegalArgumentException("No Attachment Point found in SMILES String");
 		}
 		originalIndex = Integer.parseInt(m.group(1));
 		if (m.find()) {
@@ -85,13 +83,11 @@ public class Leaf implements Comparable<Leaf> {
 
 		RWMol mol;
 		if (!removeHs) {
-			mol = RWMol.MolFromSmiles(
-					smiles.replaceAll("\\[[0-9]+\\*\\]", "[*]"), 0, false);
+			mol = RWMol.MolFromSmiles(smiles.replaceAll("\\[[0-9]+\\*\\]", "[*]"), 0, false);
 			// mol.sanitizeMol();
 			mol.findSSSR();
 		} else {
-			mol = RWMol.MolFromSmiles(smiles.replaceAll("\\[[0-9]+\\*\\]",
-					"[*]"));
+			mol = RWMol.MolFromSmiles(smiles.replaceAll("\\[[0-9]+\\*\\]", "[*]"));
 		}
 		canonicalSmiles = mol.MolToSmiles(true);
 		mol.delete();
@@ -116,8 +112,7 @@ public class Leaf implements Comparable<Leaf> {
 	 *             if idx<0
 	 * 
 	 */
-	public String getIndexedCanonicalSmiles(int idx)
-			throws IllegalArgumentException {
+	public String getIndexedCanonicalSmiles(int idx) throws IllegalArgumentException {
 		if (idx < 0) {
 			throw new IllegalArgumentException("Index must be >= 0");
 		}
@@ -148,8 +143,8 @@ public class Leaf implements Comparable<Leaf> {
 	 *         {@link ExplicitBitVect}
 	 * @see #getMorganFingerprintCell(int, int, boolean, boolean)
 	 */
-	public ExplicitBitVect getMorganFingerprint(int radius, int numBits,
-			boolean useChirality, boolean useBondTypes) {
+	public ExplicitBitVect getMorganFingerprint(int radius, int numBits, boolean useChirality,
+			boolean useBondTypes) {
 
 		RWMol mol = RWMol.MolFromSmiles(canonicalSmiles, 0, false);
 		UInt_Vect apIdx = new UInt_Vect();
@@ -163,13 +158,12 @@ public class Leaf implements Comparable<Leaf> {
 			matches = mol.getSubstructMatch(MatchedPairsMultipleCutsNodePlugin.AP_QUERY_MOL);
 			pair = matches.get(0);
 			apIdx.add(pair.getSecond());
-			retVal = RDKFuncs.getMorganFingerprintAsBitVect(mol, radius,
-					numBits, null, apIdx, useChirality, useBondTypes);
+			retVal = RDKFuncs.getMorganFingerprintAsBitVect(mol, radius, numBits, null, apIdx,
+					useChirality, useBondTypes);
 		} catch (Exception e) {
 			retVal = null;
-			NodeLogger.getLogger("Key Leaf Generation Fingerprinter").info(
-					"Unable to generate fingerprint for Leaf "
-							+ canonicalSmiles);
+			NodeLogger.getLogger("Key Leaf Generation Fingerprinter")
+					.info("Unable to generate fingerprint for Leaf " + canonicalSmiles);
 		} finally {
 			mol.delete();
 			apIdx.delete();
@@ -200,10 +194,9 @@ public class Leaf implements Comparable<Leaf> {
 	 * @return The RDKit binary Morgan Fingerprint as a KNIME DenseBitVector
 	 *         Cell
 	 */
-	public DataCell getMorganFingerprintCell(int radius, int numBits,
-			boolean useChirality, boolean useBondTypes) {
-		ExplicitBitVect ebv = getMorganFingerprint(radius, numBits,
-				useChirality, useBondTypes);
+	public DataCell getMorganFingerprintCell(int radius, int numBits, boolean useChirality,
+			boolean useBondTypes) {
+		ExplicitBitVect ebv = getMorganFingerprint(radius, numBits, useChirality, useBondTypes);
 		if (ebv == null) {
 			return DataType.getMissingCell();
 		}
@@ -223,7 +216,11 @@ public class Leaf implements Comparable<Leaf> {
 	 */
 	@Override
 	public int compareTo(Leaf o) {
-		return this.canonicalSmiles.compareTo(o.canonicalSmiles);
+		int smiComp = this.canonicalSmiles.compareTo(o.canonicalSmiles);
+		if (smiComp != 0) {
+			return smiComp;
+		}
+		return Integer.compare(this.originalIndex, o.originalIndex);
 	}
 
 	/*
@@ -235,8 +232,7 @@ public class Leaf implements Comparable<Leaf> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((canonicalSmiles == null) ? 0 : canonicalSmiles.hashCode());
+		result = prime * result + ((canonicalSmiles == null) ? 0 : canonicalSmiles.hashCode());
 		return result;
 	}
 
@@ -259,6 +255,9 @@ public class Leaf implements Comparable<Leaf> {
 				return false;
 		} else if (!canonicalSmiles.equals(other.canonicalSmiles))
 			return false;
+//		if(originalIndex!=other.originalIndex){
+//			return false;
+//		}
 		return true;
 	}
 

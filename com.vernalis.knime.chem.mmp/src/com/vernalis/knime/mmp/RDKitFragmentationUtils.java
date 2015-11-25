@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
@@ -264,7 +265,7 @@ public class RDKitFragmentationUtils {
 	public static Set<BondIdentifier> identifyAllMatchingBonds(ROMol inMol,
 			ROMol bondMatch) {
 		SWIGObjectGarbageCollector swigGC = new SWIGObjectGarbageCollector();
-		HashSet<BondIdentifier> retVal = new HashSet<>();
+		HashSet<BondIdentifier> retVal = new LinkedHashSet<>();
 		Match_Vect_Vect bondMatches = swigGC.markForCleanup(inMol
 				.getSubstructMatches(bondMatch));
 		for (int i = 0; i < bondMatches.size(); i++) {
@@ -308,7 +309,7 @@ public class RDKitFragmentationUtils {
 
 		if (numCuts <= 2) {
 			// Any matching bond or pair of bonds is cuttable!
-			return new HashSet<BondIdentifier>(bonds);
+			return new LinkedHashSet<BondIdentifier>(bonds);
 		}
 
 		SWIGObjectGarbageCollector swigGC = new SWIGObjectGarbageCollector();
@@ -344,7 +345,7 @@ public class RDKitFragmentationUtils {
 			}
 			swigGC.cleanupMarkedObjects();
 		}
-		return new HashSet<BondIdentifier>(bonds);
+		return new LinkedHashSet<BondIdentifier>(bonds);
 	}
 
 	/**
