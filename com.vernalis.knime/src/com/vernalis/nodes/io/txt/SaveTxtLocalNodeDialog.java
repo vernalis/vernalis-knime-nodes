@@ -42,6 +42,7 @@ public class SaveTxtLocalNodeDialog extends DefaultNodeSettingsPane {
 	 * New pane for configuring the SavePDBLocal node. TODO: Ideally we would
 	 * deal with the possibility that the input column is a PDB Celltype
 	 */
+	@SuppressWarnings("unchecked")
 	protected SaveTxtLocalNodeDialog() {
 		super();
 		createNewGroup("File Column");

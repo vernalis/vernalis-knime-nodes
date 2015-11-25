@@ -21,8 +21,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import org.knime.chem.types.SmartsValue;
-import org.knime.chem.types.SmilesValue;
-import org.knime.core.data.StringValue;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentButton;
@@ -48,13 +46,13 @@ public class SmartsViewer2NodeDialog extends DefaultNodeSettingsPane {
 	/**
 	 * New pane for configuring the SmartsViewer node.
 	 */
+	@SuppressWarnings("unchecked")
 	protected SmartsViewer2NodeDialog() {
 		super();
 		createNewGroup("Select SMARTS Column");
 		addDialogComponent(new DialogComponentColumnNameSelection(
 				new SettingsModelString(SmartsViewer2NodeModel.CFG_SMARTS, null),
-				"Select a column containing the SMARTS Strings:", 0, true,
-				SmartsValue.class));
+				"Select a column containing the SMARTS Strings:", 0, true, SmartsValue.class));
 		closeCurrentGroup();
 
 		createNewGroup("Renderer Settings");
@@ -65,32 +63,26 @@ public class SmartsViewer2NodeDialog extends DefaultNodeSettingsPane {
 		// {"png","svg"}));
 
 		addDialogComponent(new DialogComponentButtonGroup(
-				new SettingsModelString(SmartsViewer2NodeModel.CFG_LEGEND,
-						"both"), "Select legend type", false, new String[] {
-						"Both", "None", "Static", "Dynamic" }, new String[] {
-						"both", "none", "static", "dynamic" }));
+				new SettingsModelString(SmartsViewer2NodeModel.CFG_LEGEND, "both"),
+				"Select legend type", false, new String[] { "Both", "None", "Static", "Dynamic" },
+				new String[] { "both", "none", "static", "dynamic" }));
 
 		addDialogComponent(new DialogComponentButtonGroup(
-				new SettingsModelString(SmartsViewer2NodeModel.CFG_VIS_MODUS,
-						"1"), "Select Visualition modus", false, new String[] {
-						"Complete", "Element Symbols" }, new String[] { "1",
-						"2" }));
+				new SettingsModelString(SmartsViewer2NodeModel.CFG_VIS_MODUS, "1"),
+				"Select Visualition modus", false, new String[] { "Complete", "Element Symbols" },
+				new String[] { "1", "2" }));
 
 		closeCurrentGroup();
 
 		createNewTab("Communication Error Settings");
 		// Create some advanced settings dialog components
-		m1 = new SettingsModelIntegerBounded(
-				SmartsViewer2NodeModel.CFG_NUM_RETRIES, 10, 0, 20);
-		n1 = new DialogComponentNumber(m1,
-				"Number of retries to contact server:", 1);
+		m1 = new SettingsModelIntegerBounded(SmartsViewer2NodeModel.CFG_NUM_RETRIES, 10, 0, 20);
+		n1 = new DialogComponentNumber(m1, "Number of retries to contact server:", 1);
 
-		m2 = new SettingsModelIntegerBounded(SmartsViewer2NodeModel.CFG_DELAY,
-				1, 1, 600);
+		m2 = new SettingsModelIntegerBounded(SmartsViewer2NodeModel.CFG_DELAY, 1, 1, 600);
 		n2 = new DialogComponentNumber(m2, "Delay between attempts (secs):", 5);
 
-		m_bool = new SettingsModelBoolean(
-				SmartsViewer2NodeModel.CFG_IGNORE_ERR, true);
+		m_bool = new SettingsModelBoolean(SmartsViewer2NodeModel.CFG_IGNORE_ERR, true);
 		bool = new DialogComponentBoolean(m_bool, "Ignore server errors?");
 
 		// Add them...
@@ -101,8 +93,7 @@ public class SmartsViewer2NodeDialog extends DefaultNodeSettingsPane {
 		// Now we add a restore settings button, which runs the 'doTestQuery' on
 		// clicking
 		setHorizontalPlacement(true);
-		DialogComponentButton restoreButton = new DialogComponentButton(
-				"Restore Defaults");
+		DialogComponentButton restoreButton = new DialogComponentButton("Restore Defaults");
 		restoreButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {

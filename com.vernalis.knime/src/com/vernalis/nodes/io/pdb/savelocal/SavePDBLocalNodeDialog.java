@@ -35,6 +35,7 @@ public class SavePDBLocalNodeDialog extends DefaultNodeSettingsPane {
 	/**
 	 * New pane for configuring the SavePDBLocal node.
 	 */
+	@SuppressWarnings("unchecked")
 	protected SavePDBLocalNodeDialog() {
 		super();
 		createNewGroup("PDB Column");

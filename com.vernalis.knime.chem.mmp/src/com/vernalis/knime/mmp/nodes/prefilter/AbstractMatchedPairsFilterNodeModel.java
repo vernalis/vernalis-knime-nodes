@@ -161,7 +161,7 @@ public class AbstractMatchedPairsFilterNodeModel extends NodeModel {
 		BufferedDataTable table = inData[0];
 		DataTableSpec spec = table.getSpec();
 		final int molIdx = spec.findColumnIndex(m_molColName.getStringValue());
-		final long numRows = table.getRowCount();
+		final long numRows = table.size();
 		// A table for the passed rows
 		final BufferedDataContainer dc_pass = exec.createDataContainer(spec);
 		// And optionally a table for the failed rows
@@ -203,7 +203,7 @@ public class AbstractMatchedPairsFilterNodeModel extends NodeModel {
 		final boolean allow2Cuts = (numCuts == 2) ? m_allowTwoCutsToBondValue
 				.getBooleanValue() : false;
 
-		int rowCnt = 0;
+		long rowCnt = 0;
 		final AtomicLong keptRowCnt = new AtomicLong(0);
 
 
@@ -212,7 +212,7 @@ public class AbstractMatchedPairsFilterNodeModel extends NodeModel {
 
 			@Override
 			protected Boolean compute(DataRow in, long index) throws Exception {
-				return processRow(in, molIdx, m_SWIGGC, (int) index + 1,
+				return processRow(in, molIdx, m_SWIGGC, index + 1,
 						m_Logger, addHs, bondMatch, numCuts, allow2Cuts,
 						m_verboseLogging);
 			}
@@ -261,7 +261,7 @@ public class AbstractMatchedPairsFilterNodeModel extends NodeModel {
 	}
 
 	protected static boolean processRow(DataRow row, int molIdx,
-			SWIGObjectGarbageCollector swigGC, int gcLevel, NodeLogger logger,
+			SWIGObjectGarbageCollector swigGC, long l, NodeLogger logger,
 			boolean addHs, ROMol bondMatch, int numCuts, boolean allow2Cuts,
 			boolean verboseLogging) {
 		DataCell molCell = row.getCell(molIdx);
@@ -273,7 +273,7 @@ public class AbstractMatchedPairsFilterNodeModel extends NodeModel {
 		ROMol roMol;
 		try {
 			roMol = swigGC.markForCleanup(
-					getROMolFromCell(row.getCell(molIdx)), gcLevel);
+					getROMolFromCell(row.getCell(molIdx)), (int)l);
 		} catch (RowExecutionException e) {
 			// Log the failed row
 			if (verboseLogging) {
@@ -292,7 +292,7 @@ public class AbstractMatchedPairsFilterNodeModel extends NodeModel {
 		}
 
 		if (addHs) {
-			roMol = swigGC.markForCleanup(roMol.addHs(false, false), gcLevel);
+			roMol = swigGC.markForCleanup(roMol.addHs(false, false),(int) l);
 		}
 
 		return RDKitFragmentationUtils.canCutNTimes(roMol, bondMatch, numCuts,

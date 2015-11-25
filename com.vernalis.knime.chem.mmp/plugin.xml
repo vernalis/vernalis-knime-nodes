@@ -35,27 +35,39 @@
  </node>
  <node
        category-path="/community/vernalis/mmp"
-       expert-flag="false"
        factory-class="com.vernalis.knime.mmp.nodes.loop.CutTypeLoopStartNodeFactory"
        id="CutTypeLoopStartNodeFactory">
  </node>
  <node
        category-path="/community/vernalis/mmp/frag"
-       expert-flag="false"
        factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeFactory"
        id="MultipleCutParallelRdkitMMPFragment3NodeFactory">
  </node>
  <node
        category-path="/community/vernalis/mmp/frag"
-       expert-flag="false"
        factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment2.ParallelRdkitMMPFragment3NodeFactory"
        id="ParallelRdkitMMPFragment3NodeFactory">
  </node>
  <node
        category-path="/community/vernalis/mmp/"
-       expert-flag="false"
        factory-class="com.vernalis.knime.mmp.nodes.uniquifyids.UniquifyIdsNodeFactory"
        id="UniquifyIdsNodeFactory">
+ </node>
+
+ <node
+       deprecated="true"
+       factory-class="com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeFactory"
+       id="Frag2PairNodeFactory">
+ </node>
+ <node
+       deprecated="true"
+       factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment.RdkitMMPFragmentNodeFactory"
+       id="RdkitMMPFragmentNodeFactory">
+ </node>
+ <node
+       deprecated="true"
+       factory-class="com.vernalis.knime.mmp.nodes.rdkit.multicut.RdkitMatchedPairsNodeFactory"
+       id="RdkitMatchedPairsNodeFactory">
  </node>
 </extension>
 

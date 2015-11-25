@@ -102,11 +102,13 @@ public class MulticomponentSmilesFragmentParser implements
 		// finally, set the indices and canonicalise
 		value.setAttachmentPointIndices(key);
 		numCuts = key.getNumComponents();
-		// Dont track connectivity for the canonicalisation to avoid an issue
-		// with duplicate leaves in the key
+		// track connectivity for the canonicalisation to avoid an issue
+		// with duplicate leaves in the key (No longer case as ROMolFragmentFactory fixes this
 
-		canonicalisedSMILES = key.getKeyAsString(false, false) + "."
-				+ value.getCanonicalIndexNaiveSMILES();
+		canonicalisedSMILES = key.getKeyAsString(false, true) + "."
+				+ value.getSMILES(false, true); //.getCanonicalIndexNaiveSMILES();
+//		System.out.println("INPUT SMILES:\t\t"+smiles);
+//		System.out.println("CANON SMILES:\t\t"+canonicalisedSMILES);
 	}
 
 	/**

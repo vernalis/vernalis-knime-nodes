@@ -33,6 +33,7 @@ public class RCSBmultiDownloadNodeDialog extends DefaultNodeSettingsPane {
 	/**
 	 * New pane for configuring the RCSBmultiDownload node.
 	 */
+	@SuppressWarnings("unchecked")
 	protected RCSBmultiDownloadNodeDialog() {
 		super();
 		createNewGroup("PDB ID Column");

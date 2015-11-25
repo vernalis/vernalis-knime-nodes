@@ -36,6 +36,7 @@ public class FASTASequenceNodeDialog_2 extends DefaultNodeSettingsPane {
 	/**
 	 * New pane for configuring the FASTASequence node.
 	 */
+	@SuppressWarnings("unchecked")
 	protected FASTASequenceNodeDialog_2() {
 		createNewGroup("FASTA Sequence Column");
 		// Group to deal with the column

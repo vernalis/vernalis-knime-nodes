@@ -62,48 +62,49 @@ public class ReportOptionsDialog extends JPanel {
 	/**
 	 * Instantiates a new report options dialog.
 	 *
-	 * @param config the configuration
+	 * @param config
+	 *            the configuration
 	 */
 	public ReportOptionsDialog(PdbConnectorConfig config) {
 		super();
-		super.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
+		super.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		m_defaultReport = config.getDefaultStandardReport();
 		m_customReport = config.getCustomStandardReport();
-		
-		//Create Select Report dropdown
+
+		// Create Select Report dropdown
 		m_comboBox = new JComboBox();
 		boolean isFirst = true;
 		for (StandardCategory stdCat : config.getStandardCategories()) {
 			if (!isFirst) {
-				m_comboBox.addItem("--------------------");//category divider
+				m_comboBox.addItem("--------------------");// category divider
 			}
 			m_comboBox.addItem(stdCat);
 			for (StandardReport stdRep : stdCat.getStandardReports()) {
 				m_comboBox.addItem(stdRep);
 			}
-			isFirst=false;
+			isFirst = false;
 		}
-		//custom renderer to display the category and report labels,
-		//and to disable the category and divider entries.
-		final ListCellRenderer r = m_comboBox.getRenderer();//default renderer
+		// custom renderer to display the category and report labels,
+		// and to disable the category and divider entries.
+		final ListCellRenderer r = m_comboBox.getRenderer();// default renderer
 		m_comboBox.setRenderer(new ListCellRenderer() {
 			@Override
-			public Component getListCellRendererComponent(JList list, Object value,
-					int index, boolean isSelected, boolean cellHasFocus) {
+			public Component getListCellRendererComponent(JList list, Object value, int index,
+					boolean isSelected, boolean cellHasFocus) {
 				Component c;
-				if (value instanceof StandardCategory) {//disable the category list items
-					String label = ((StandardCategory)value).getLabel();
-					c = r.getListCellRendererComponent(list,label,index,false,false);
+				if (value instanceof StandardCategory) {// disable the category
+														// list items
+					String label = ((StandardCategory) value).getLabel();
+					c = r.getListCellRendererComponent(list, label, index, false, false);
 					c.setEnabled(false);
-				}
-				else if (value instanceof StandardReport) {
-					String label = ((StandardReport)value).getLabel();
-					c = r.getListCellRendererComponent(list,label,index,isSelected,cellHasFocus);
+				} else if (value instanceof StandardReport) {
+					String label = ((StandardReport) value).getLabel();
+					c = r.getListCellRendererComponent(list, label, index, isSelected,
+							cellHasFocus);
 					c.setEnabled(true);
-				}
-				else {//divider (String)
-					c = r.getListCellRendererComponent(list,value,index,false,false);
-					c.setEnabled(false);					
+				} else {// divider (String)
+					c = r.getListCellRendererComponent(list, value, index, false, false);
+					c.setEnabled(false);
 				}
 				return c;
 			}
@@ -111,10 +112,10 @@ public class ReportOptionsDialog extends JPanel {
 		m_comboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JComboBox cb = (JComboBox)e.getSource();
+				JComboBox cb = (JComboBox) e.getSource();
 				Object item = cb.getSelectedItem();
 				if (item instanceof StandardReport) {
-					StandardReport stdReport = (StandardReport)item;
+					StandardReport stdReport = (StandardReport) item;
 					for (ReportCategoryDialog dlg : m_reportDlgs) {
 						dlg.applyStandardReport(stdReport);
 					}
@@ -123,12 +124,12 @@ public class ReportOptionsDialog extends JPanel {
 				}
 			}
 		});
-		
-		//Create Select All and Clear All buttons
-		m_selectAllButton = createButton("Select All",true);
-		m_clearAllButton = createButton("Clear All",false);
 
-		//Create button bar
+		// Create Select All and Clear All buttons
+		m_selectAllButton = createButton("Select All", true);
+		m_clearAllButton = createButton("Clear All", false);
+
+		// Create button bar
 		JPanel buttonBar = new JPanel();
 		buttonBar.setLayout(new FlowLayout(FlowLayout.LEFT));
 		buttonBar.add(new JLabel("Select report"));
@@ -137,7 +138,7 @@ public class ReportOptionsDialog extends JPanel {
 		buttonBar.add(m_clearAllButton);
 		super.add(buttonBar);
 
-		//Add the report field dialogs for each report category
+		// Add the report field dialogs for each report category
 		List<ReportCategory> categories = config.getReportCategories();
 		for (ReportCategory category : categories) {
 			if (!category.isHidden()) {
@@ -147,15 +148,18 @@ public class ReportOptionsDialog extends JPanel {
 			}
 		}
 	}
-	
+
 	/**
 	 * Loads dialog settings.
 	 *
-	 * @param settings the settings
-	 * @param specs the specs
+	 * @param settings
+	 *            the settings
+	 * @param specs
+	 *            the specs
 	 * @throws NotConfigurableException
 	 */
-	public final void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs) throws NotConfigurableException {
+	public final void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
+			throws NotConfigurableException {
 		assert settings != null;
 		assert specs != null;
 		for (ReportCategoryDialog reportDialog : m_reportDlgs) {
@@ -163,8 +167,7 @@ public class ReportOptionsDialog extends JPanel {
 		}
 		try {
 			updateComponent(settings.getString(PdbConnectorNodeModel.STD_REPORT_KEY));
-		}
-		catch (InvalidSettingsException e) {
+		} catch (InvalidSettingsException e) {
 			logger.warn("Error loading string for key " + PdbConnectorNodeModel.STD_REPORT_KEY);
 			updateComponent(null);
 		}
@@ -173,28 +176,32 @@ public class ReportOptionsDialog extends JPanel {
 	/**
 	 * Saves dialog settings.
 	 *
-	 * @param settings the settings
+	 * @param settings
+	 *            the settings
 	 * @throws InvalidSettingsException
 	 */
-	public final void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {    	
+	public final void saveSettingsTo(final NodeSettingsWO settings)
+			throws InvalidSettingsException {
 		for (ReportCategoryDialog reportDialog : m_reportDlgs) {
 			reportDialog.saveSettingsTo(settings);
 		}
-		//Save the standard report ID
+		// Save the standard report ID
 		Object o = m_comboBox.getSelectedItem();
 		if (o instanceof StandardReport) {
-			settings.addString(PdbConnectorNodeModel.STD_REPORT_KEY, ((StandardReport)o).getId());
+			settings.addString(PdbConnectorNodeModel.STD_REPORT_KEY, ((StandardReport) o).getId());
 		}
-		//Save the default report ID if the selected item is not a standard report (could be a divider or category heading)
+		// Save the default report ID if the selected item is not a standard
+		// report (could be a divider or category heading)
 		else if (m_defaultReport != null) {
 			settings.addString(PdbConnectorNodeModel.STD_REPORT_KEY, m_defaultReport.getId());
 		}
 	}
-	
+
 	/**
 	 * Sets the selected standard report.
 	 *
-	 * @param reportId the report id to set
+	 * @param reportId
+	 *            the report id to set
 	 * @return true, if successful
 	 */
 	private boolean setSelectedReport(String reportId) {
@@ -203,7 +210,7 @@ public class ReportOptionsDialog extends JPanel {
 			for (int i = 0, length = m_comboBox.getItemCount(); (i < length) && !retVal; i++) {
 				Object item = m_comboBox.getItemAt(i);
 				if (item instanceof StandardReport) {
-					final StandardReport report = (StandardReport)item;
+					final StandardReport report = (StandardReport) item;
 					if (report.getId().equals(reportId)) {
 						m_comboBox.setSelectedItem(report);
 						retVal = true;
@@ -213,13 +220,14 @@ public class ReportOptionsDialog extends JPanel {
 		}
 		return retVal;
 	}
-	
+
 	/**
 	 * Updates the report combobox selection with the given standard report.
 	 *
 	 * If the report id is invalid, resets selection to the default report.
 	 * 
-	 * @param reportId the report id to set
+	 * @param reportId
+	 *            the report id to set
 	 * @return true, if successful
 	 */
 	private boolean updateComponent(String reportId) {
@@ -231,21 +239,23 @@ public class ReportOptionsDialog extends JPanel {
 		}
 		return retVal;
 	}
-	
+
 	/**
 	 * Creates button to select all or clear all fields.
 	 *
-	 * On mouse click, the report fields are all selected or cleared and
-	 * the custom report is set.
+	 * On mouse click, the report fields are all selected or cleared and the
+	 * custom report is set.
 	 * 
-	 * @param label the button label
-	 * @param isSelected the selection state to apply
+	 * @param label
+	 *            the button label
+	 * @param isSelected
+	 *            the selection state to apply
 	 * @return the button
 	 */
 	private JButton createButton(final String label, final boolean isSelected) {
 		JButton retVal = new JButton(label);
-		//Use MouseListener instead of ActionListener
-		//so button will respond to clicks even when disabled.
+		// Use MouseListener instead of ActionListener
+		// so button will respond to clicks even when disabled.
 		retVal.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(final MouseEvent arg0) {
@@ -253,20 +263,24 @@ public class ReportOptionsDialog extends JPanel {
 				for (ReportCategoryDialog dlg : m_reportDlgs) {
 					dlg.selectFields(isSelected);
 					dlg.updateCheckBox();
-				}					
+				}
 			}
+
 			@Override
 			public void mouseEntered(final MouseEvent arg0) {
 			}
+
 			@Override
 			public void mouseExited(final MouseEvent arg0) {
 			}
+
 			@Override
 			public void mousePressed(final MouseEvent arg0) {
 			}
+
 			@Override
 			public void mouseReleased(final MouseEvent arg0) {
-			}			
+			}
 		});
 		return retVal;
 	}

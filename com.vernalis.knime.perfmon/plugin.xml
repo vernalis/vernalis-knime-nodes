@@ -35,22 +35,19 @@
       <node
             after="TimingStartNodeFactory"
             category-path="/community/vernalis/testing/benchmarking"
-            expert-flag="false"
             factory-class="com.vernalis.knime.perfmon.nodes.timing.start.PerfMonTiming2PortStartNodeFactory"
             id="PerfMonTiming2PortStartNodeFactory">
       </node>
       <node
             after="PerfMonTiming2PortStartNodeFactory"
             category-path="/community/vernalis/testing/benchmarking"
-            expert-flag="false"
             factory-class="com.vernalis.knime.perfmon.nodes.timing.start.PerfMonTiming3PortStartNodeFactory"
             id="PerfMonTiming3PortStartNodeFactory">
       </node>
       <node
             after="PerfMonTimingEnd2PortNodeFactory"
             category-path="/community/vernalis/testing/benchmarking"
-            expert-flag="false"
-            factory-class="com.vernalis.knime.perfmon.nodes.timing.end.PerfMonTimingEnd3PortNodeFactory"
+           factory-class="com.vernalis.knime.perfmon.nodes.timing.end.PerfMonTimingEnd3PortNodeFactory"
             id="PerfMonTimingEnd3PortNodeFactory">
       </node>
    </extension>
