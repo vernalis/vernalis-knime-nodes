@@ -45,8 +45,6 @@ import org.RDKit.RDKFuncs;
 import org.RDKit.ROMol;
 import org.RDKit.ROMol_Vect;
 import org.RDKit.RWMol;
-import org.RDKit.SWIGTYPE_p_std__ostream;
-import org.RDKit.SanitizeFlags;
 import org.RDKit.UInt_Vect;
 import org.knime.core.node.NodeLogger;
 
@@ -487,7 +485,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		applyAPIsotopicLabels(key, localGcWave);
 		applyAPIsotopicLabels(value, localGcWave);
 
-		String retVal = key.MolToSmiles(true) + "."+ value.MolToSmiles(true);
+		String retVal = key.MolToSmiles(true) + "." + value.MolToSmiles(true);
 		gc.cleanupMarkedObjects(localGcWave);
 
 		return new MulticomponentSmilesFragmentParser(retVal + ".[501*][500*]");
@@ -1038,10 +1036,10 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	private void canonicaliseDuplicateKeyComponents(RWMol value, int localGcWave,
 			RWMol... keyComponents) {
 
-//		System.out.println("Value:\t" + value.MolToSmiles(true));
-//		listAPs(value, localGcWave);
-//		System.out.println("Keys:");
-		
+		// System.out.println("Value:\t" + value.MolToSmiles(true));
+		// listAPs(value, localGcWave);
+		// System.out.println("Keys:");
+
 		if (keyComponents.length == 1) {
 			ROMol_Vect comps = gc.markForCleanup(
 					RDKFuncs.getMolFrags(keyComponents[0], true, null, null, false), localGcWave);
@@ -1076,9 +1074,10 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		}
 
 		if (hasDuplicateComponent) {
-//			System.out.print(value.getAtomWithIdx(0).getAtomicNum()+"\t");
+			// System.out.print(value.getAtomWithIdx(0).getAtomicNum()+"\t");
 			canonicalizeAtomOrder(value);
-//			System.out.println(value.getAtomWithIdx(0).getAtomicNum() + " (post-canonicalisation)");
+			// System.out.println(value.getAtomWithIdx(0).getAtomicNum() + "
+			// (post-canonicalisation)");
 
 			for (Entry<String, List<RWMol>> ent : comps.entrySet()) {
 				if (ent.getValue().size() > 1) {
@@ -1107,7 +1106,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 						// Change the index on the value
 						gc.markForCleanup(value.getAtomWithIdx(ent1.getKey()), localGcWave)
 								.setProp(AP_ISOTOPIC_LABEL, "" + nextIndex);
-//						listAPs(value, localGcWave);
+						// listAPs(value, localGcWave);
 						// And on the key component
 						gc.markForCleanup(ent1.getValue()
 								.getAtomWithIdx(findIndexOfLabelledAtom(ent1.getValue(),
@@ -1126,17 +1125,18 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	}
 
 	/**
-	 * Function to return the canonical SMILES of an input {@link RWMol} object, and
-	 * to reorder the atoms of that object to the canonical order present in the
-	 * SMILES
+	 * Function to return the canonical SMILES of an input {@link RWMol} object,
+	 * and to reorder the atoms of that object to the canonical order present in
+	 * the SMILES
 	 * 
-	 * @param value The molecule to canonicalise
+	 * @param value
+	 *            The molecule to canonicalise
 	 * @return The canonical SMILES
 	 */
 	private String canonicalizeAtomOrder(RWMol value) {
 		String smi = value.MolToSmiles(true);
 		String newIdxs = value.getProp("_smilesAtomOutputOrder");
-//		System.out.println(smi + "\t::\t" + newIdxs);
+		// System.out.println(smi + "\t::\t" + newIdxs);
 		newIdxs = newIdxs.replace("[", "").replace("]", "");
 		UInt_Vect newIdxVect = new UInt_Vect();
 		for (String idx : newIdxs.split(",")) {
@@ -1153,6 +1153,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 
 	}
 
+	@SuppressWarnings("unused")
 	private void listAPs(RWMol value, int localGcWave) {
 		for (int atIdx = 0; atIdx < value.getNumAtoms(); atIdx++) {
 			Atom at = gc.markForCleanup(value.getAtomWithIdx(atIdx), localGcWave);
@@ -1210,7 +1211,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 
 	private String getCanonicalValueSMILES(RWMol value, int localGcWave) {
 		String smi = value.MolToSmiles(true);
-//		System.out.print(smi + "\t-->\t");
+		// System.out.print(smi + "\t-->\t");
 		RWMol querymol = RWMol.MolFromSmarts(smi);
 		Match_Vect mVect = value.getSubstructMatch(querymol, true);
 
@@ -1233,7 +1234,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		}
 		querymol.delete();
 		mVect.delete();
-//		System.out.println(smi);
+		// System.out.println(smi);
 		return smi;
 	}
 	// protected static int countInversions(List<Long> list) {
