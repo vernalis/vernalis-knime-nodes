@@ -31,6 +31,7 @@ public class LocalPDBLoadNodeDialog2 extends DefaultNodeSettingsPane {
 	/**
 	 * New pane for configuring the LocalPDBLoad node.
 	 */
+	@SuppressWarnings("unchecked")
 	protected LocalPDBLoadNodeDialog2() {
 		super();
 		createNewGroup("PDB Paths");

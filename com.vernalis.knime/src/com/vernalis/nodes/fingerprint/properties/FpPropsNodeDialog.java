@@ -38,6 +38,7 @@ public class FpPropsNodeDialog extends DefaultNodeSettingsPane {
 	/**
 	 * New pane for configuring the SparseToDense node.
 	 */
+	@SuppressWarnings("unchecked")
 	protected FpPropsNodeDialog() {
 		addDialogComponent(new DialogComponentColumnNameSelection(
 				new SettingsModelString(FpPropsNodeModel.CFG_FPCOL, null),

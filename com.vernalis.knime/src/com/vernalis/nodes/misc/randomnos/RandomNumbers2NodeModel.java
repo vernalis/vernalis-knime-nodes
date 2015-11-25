@@ -19,6 +19,7 @@ package com.vernalis.nodes.misc.randomnos;
 
 import java.io.File;
 import java.io.IOException;
+
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
@@ -36,7 +37,6 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelDoubleRange;
-import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelLongBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 

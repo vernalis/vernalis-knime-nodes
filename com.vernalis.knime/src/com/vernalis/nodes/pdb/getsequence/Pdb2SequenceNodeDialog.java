@@ -24,57 +24,55 @@ import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelectio
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
-
 /**
- * <code>NodeDialog</code> for the "Pdb2Sequence" Node.
- * Node to extract sequence(s) from PDB Cell column * n
+ * <code>NodeDialog</code> for the "Pdb2Sequence" Node. Node to extract
+ * sequence(s) from PDB Cell column n
  *
  * This node dialog derives from {@link DefaultNodeSettingsPane} which allows
- * creation of a simple dialog with standard components. If you need a more 
- * complex dialog please derive directly from 
+ * creation of a simple dialog with standard components. If you need a more
+ * complex dialog please derive directly from
  * {@link org.knime.core.node.NodeDialogPane}.
  * 
  * @author SDR
  */
 public class Pdb2SequenceNodeDialog extends DefaultNodeSettingsPane {
 
-    /**
-     * New pane for configuring the Pdb2Sequence node.
-     */
-    protected Pdb2SequenceNodeDialog() {
-    	createNewGroup("PDB Column");
-    	addDialogComponent (new DialogComponentColumnNameSelection(
-    			new SettingsModelString(Pdb2SequenceNodeModel.CFG_PDB_COL_NAME,null),
-    			"Select a column containing the PDB Cells:", 0, true, PdbValue.class));
-    	addDialogComponent(new DialogComponentBoolean(
-    			new SettingsModelBoolean(Pdb2SequenceNodeModel.CFG_PDB_DEL, false), 
-    			"Remove PDB Column"));
-    	closeCurrentGroup();
-    	
-    	createNewGroup("SEQRES-Derived Sequence(s)");
-    	addDialogComponent (new DialogComponentBoolean(
-    			new SettingsModelBoolean(Pdb2SequenceNodeModel.CFG_SEQRES3, false),
-    			"'Raw' 3-letter sequence(s) from SEQRES records"));
-    	addDialogComponent (new DialogComponentBoolean(
-    			new SettingsModelBoolean(Pdb2SequenceNodeModel.CFG_SEQRES1, true),
-    			"'Sanitized' 1-letter sequence(s) from SEQRES records"));
-    	closeCurrentGroup();
-    	
-    	createNewGroup("Co-ordinate Block-Derived Sequence(s)");
-    	addDialogComponent (new DialogComponentBoolean(
-    			new SettingsModelBoolean(Pdb2SequenceNodeModel.CFG_COORDS3, false),
-    			"'Raw' 3-letter sequence(s) from Co-ordinate records"));
-    	addDialogComponent (new DialogComponentBoolean(
-    			new SettingsModelBoolean(Pdb2SequenceNodeModel.CFG_COORDS1, true),
-    			"'Sanitized' 1-letter sequence(s) from Co-ordinate records"));
-    	addDialogComponent (new DialogComponentBoolean(
-    			new SettingsModelBoolean(Pdb2SequenceNodeModel.CFG_INC_HETATM, false),
-    			"Include HETATM Co-ordinate records in sequence(s)"));
+	/**
+	 * New pane for configuring the Pdb2Sequence node.
+	 */
+	@SuppressWarnings("unchecked")
+	protected Pdb2SequenceNodeDialog() {
+		createNewGroup("PDB Column");
+		addDialogComponent(new DialogComponentColumnNameSelection(
+				new SettingsModelString(Pdb2SequenceNodeModel.CFG_PDB_COL_NAME, null),
+				"Select a column containing the PDB Cells:", 0, true, PdbValue.class));
+		addDialogComponent(new DialogComponentBoolean(
+				new SettingsModelBoolean(Pdb2SequenceNodeModel.CFG_PDB_DEL, false),
+				"Remove PDB Column"));
+		closeCurrentGroup();
 
-    	
-    	closeCurrentGroup();
-    	
-    }
-    
+		createNewGroup("SEQRES-Derived Sequence(s)");
+		addDialogComponent(new DialogComponentBoolean(
+				new SettingsModelBoolean(Pdb2SequenceNodeModel.CFG_SEQRES3, false),
+				"'Raw' 3-letter sequence(s) from SEQRES records"));
+		addDialogComponent(new DialogComponentBoolean(
+				new SettingsModelBoolean(Pdb2SequenceNodeModel.CFG_SEQRES1, true),
+				"'Sanitized' 1-letter sequence(s) from SEQRES records"));
+		closeCurrentGroup();
+
+		createNewGroup("Co-ordinate Block-Derived Sequence(s)");
+		addDialogComponent(new DialogComponentBoolean(
+				new SettingsModelBoolean(Pdb2SequenceNodeModel.CFG_COORDS3, false),
+				"'Raw' 3-letter sequence(s) from Co-ordinate records"));
+		addDialogComponent(new DialogComponentBoolean(
+				new SettingsModelBoolean(Pdb2SequenceNodeModel.CFG_COORDS1, true),
+				"'Sanitized' 1-letter sequence(s) from Co-ordinate records"));
+		addDialogComponent(new DialogComponentBoolean(
+				new SettingsModelBoolean(Pdb2SequenceNodeModel.CFG_INC_HETATM, false),
+				"Include HETATM Co-ordinate records in sequence(s)"));
+
+		closeCurrentGroup();
+
+	}
+
 }
-
