@@ -19,6 +19,7 @@ package com.vernalis.knime.mmp.fragmentors;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -39,7 +40,6 @@ import org.RDKit.Bond.BondType;
 import org.RDKit.BondIterator;
 import org.RDKit.Bond_Vect;
 import org.RDKit.Int_Vect;
-import org.RDKit.Match_Vect;
 import org.RDKit.MolSanitizeException;
 import org.RDKit.RDKFuncs;
 import org.RDKit.ROMol;
@@ -315,7 +315,8 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		applyAPIsotopicLabels(key, localGcWave);
 		applyAPIsotopicLabels(value, localGcWave);
 
-		String retVal = key.MolToSmiles(true) + "." + getCanonicalValueSMILES(value, localGcWave);
+		String retVal = key.MolToSmiles(true) + "." + value.MolToSmiles(true);// getCanonicalValueSMILES(value,
+																				// localGcWave);
 		gc.cleanupMarkedObjects(localGcWave);
 
 		return new MulticomponentSmilesFragmentParser(retVal);
@@ -658,9 +659,9 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 
 		for (int i = 0; i < frags.length; i++) {
 			assignCreatedDblBondGeometry(frags[i], localGcWave);
-			if (i < frags.length - 1) {
-				applyAPIsotopicLabels(frags[i], localGcWave);
-			}
+			// if (i < frags.length - 1) {
+			applyAPIsotopicLabels(frags[i], localGcWave);
+			// }
 		}
 
 		// Finally put it all together...
@@ -669,7 +670,9 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 			sb.append(".");
 			sb.append(frags[i].MolToSmiles(true));
 		}
-		sb.append(".").append(getCanonicalValueSMILES(frags[frags.length - 1], localGcWave));
+		// sb.append(".").append(getCanonicalValueSMILES(frags[frags.length -
+		// 1], localGcWave));
+		sb.append(".").append(frags[frags.length - 1].MolToSmiles(true));
 		gc.cleanupMarkedObjects(localGcWave);
 		return new MulticomponentSmilesFragmentParser(sb.toString());
 	}
@@ -851,9 +854,10 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		canonicaliseDuplicateKeyComponents(value, localGcWave, key);
 
 		applyAPIsotopicLabels(key, localGcWave);
-		// applyAPIsotopicLabels(value, localGcWave);
+		applyAPIsotopicLabels(value, localGcWave);
 
-		String retVal = key.MolToSmiles(true) + "." + getCanonicalValueSMILES(value, localGcWave);// value.MolToSmiles(true);
+		String retVal = key.MolToSmiles(true) + "."
+				+ /* getCanonicalValueSMILES(value, localGcWave);// */ value.MolToSmiles(true);
 		gc.cleanupMarkedObjects(localGcWave);
 
 		// RDKit output multicomponents as ':' separated
@@ -955,13 +959,16 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 			return;
 		}
 
+		// System.out.println(component.MolToSmiles(true));
+
 		// Now loop through the bonds
 		for (BondIterator iter = gc.markForCleanup(component.beginBonds(), localGcWave); iter
 				.ne(gc.markForCleanup(component.endBonds(), localGcWave)); gc
 						.markForCleanup(iter.next(), localGcWave)) {
 
 			Bond bd = gc.markForCleanup(iter.getBond(), localGcWave);
-
+			// System.out.println(bd.getBondType() + "\t" +
+			// bd.hasProp(UNSPECIFIED_DOUBLE_BOND));
 			if (bd.getBondType() == BondType.DOUBLE && !bd.hasProp(UNSPECIFIED_DOUBLE_BOND)) {
 				// We only worry about double bonds
 
@@ -996,6 +1003,8 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 			}
 
 		}
+
+		// System.out.println(component.MolToSmiles(true));
 
 	}
 
@@ -1033,6 +1042,19 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		}
 	}
 
+	/**
+	 * This re-sorts any duplicate key AP indices such that they are in order of
+	 * appearence in the canonicalised 'value'
+	 * 
+	 * @param value
+	 *            The 'value' of the fragmentation
+	 * @param localGcWave
+	 *            The gc wave id to use
+	 * @param keyComponents
+	 *            The key components. If only 1 is supplied, then it is checked
+	 *            for multiple components, and the method called recursively
+	 *            after splitting
+	 */
 	private void canonicaliseDuplicateKeyComponents(RWMol value, int localGcWave,
 			RWMol... keyComponents) {
 
@@ -1059,6 +1081,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 					keyComponents[0].insertMol(comp);
 				}
 			}
+			return;
 		}
 
 		boolean hasDuplicateComponent = false;
@@ -1096,7 +1119,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 
 					// Sort the available indices
 					List<Integer> availableIndices2 = new ArrayList<>(availableIndices);
-					java.util.Collections.sort(availableIndices2);
+					Collections.sort(availableIndices2);
 
 					// Now we need to rejig the indices on the actual molecule
 					// objects
@@ -1144,6 +1167,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 				newIdxVect.add(Integer.parseInt(idx.trim()));
 			}
 		}
+		value.sanitizeMol();
 		ROMol tmp = RDKFuncs.renumberAtoms(value, newIdxVect);
 		value.clear();
 		value.insertMol(tmp);
@@ -1209,34 +1233,36 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 
 	// }
 
-	private String getCanonicalValueSMILES(RWMol value, int localGcWave) {
-		String smi = value.MolToSmiles(true);
-		// System.out.print(smi + "\t-->\t");
-		RWMol querymol = RWMol.MolFromSmarts(smi);
-		Match_Vect mVect = value.getSubstructMatch(querymol, true);
+	// private String getCanonicalValueSMILES(RWMol value, int localGcWave) {
+	// String smi = value.MolToSmiles(true);
+	// // System.out.print(smi + "\t-->\t");
+	// RWMol querymol = RWMol.MolFromSmarts(smi);
+	// Match_Vect mVect = value.getSubstructMatch(querymol, true);
+	//
+	// // A lookup between the canonical and non-canonical forms. The 'key' is
+	// // the index of the ap in the canonical form, and the value is the
+	// // isotopic label to apply
+	// Map<Integer, Integer> matchLookup = new TreeMap<>();
+	// for (int i = 0; i < mVect.size(); i++) {
+	// Atom at1 =
+	// gc.markForCleanup(value.getAtomWithIdx(mVect.get(i).getFirst()),
+	// localGcWave);
+	// if (at1.getAtomicNum() == 0) {
+	// matchLookup.put(mVect.get(i).getSecond(),
+	// Integer.parseInt(at1.getProp(AP_ISOTOPIC_LABEL).trim()));
+	// }
+	// }
+	//
+	// // Now we put the labels into the smi
+	// for (int isoLabel : matchLookup.values()) {
+	// smi = smi.replaceFirst("\\[\\*\\]", "[" + isoLabel + "*]");
+	// }
+	// querymol.delete();
+	// mVect.delete();
+	// // System.out.println(smi);
+	// return smi;
+	// }
 
-		// A lookup between the canonical and non-canonical forms. The 'key' is
-		// the index of the ap in the canonical form, and the value is the
-		// isotopic label to apply
-		Map<Integer, Integer> matchLookup = new TreeMap<>();
-		for (int i = 0; i < mVect.size(); i++) {
-			Atom at1 = gc.markForCleanup(value.getAtomWithIdx(mVect.get(i).getFirst()),
-					localGcWave);
-			if (at1.getAtomicNum() == 0) {
-				matchLookup.put(mVect.get(i).getSecond(),
-						Integer.parseInt(at1.getProp(AP_ISOTOPIC_LABEL).trim()));
-			}
-		}
-
-		// Now we put the labels into the smi
-		for (int isoLabel : matchLookup.values()) {
-			smi = smi.replaceFirst("\\[\\*\\]", "[" + isoLabel + "*]");
-		}
-		querymol.delete();
-		mVect.delete();
-		// System.out.println(smi);
-		return smi;
-	}
 	// protected static int countInversions(List<Long> list) {
 	// List<Long> toSort = new ArrayList<>(list);
 	// List<Long> sorted = new ArrayList<>(list);

@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import org.knime.chem.types.SmilesCell;
+import org.knime.chem.types.SmilesCellFactory;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.def.DoubleCell;
 
@@ -82,8 +83,7 @@ public class FragmentKey2 implements Comparable<FragmentKey2> {
 	 */
 	public void addSMILESComponent(String smiles) {
 		if (smiles == null) {
-			throw new IllegalArgumentException(
-					"A non-null string must be supplied");
+			throw new IllegalArgumentException("A non-null string must be supplied");
 		}
 		if (smiles.indexOf(".") < 0) {
 			m_keyComponents.add(new Leaf(smiles));
@@ -149,8 +149,7 @@ public class FragmentKey2 implements Comparable<FragmentKey2> {
 	 *            during Smiles fragmentation parsing
 	 * @return
 	 */
-	public String getKeyAsString(boolean removeExplicitHs,
-			boolean trackCutConnectivity) {
+	public String getKeyAsString(boolean removeExplicitHs, boolean trackCutConnectivity) {
 		// Firstly, we sort in descending order
 		Collections.sort(m_keyComponents, Collections.reverseOrder());
 
@@ -163,9 +162,8 @@ public class FragmentKey2 implements Comparable<FragmentKey2> {
 			} else {
 				isFirst = false;
 			}
-			String smi = trackCutConnectivity ? leaf
-					.getIndexedCanonicalSmiles(idx++) : leaf
-					.getCanonicalSmiles();
+			String smi = trackCutConnectivity ? leaf.getIndexedCanonicalSmiles(idx++)
+					: leaf.getCanonicalSmiles();
 			sb.append(smi);
 		}
 		String smi = sb.toString();
@@ -193,10 +191,9 @@ public class FragmentKey2 implements Comparable<FragmentKey2> {
 	 * @deprecated Track cut connectivity option is no longer used
 	 */
 	@Deprecated
-	public DataCell getKeyAsDataCell(boolean removeExplicitHs,
-			boolean trackCutConnectivity) {
-		return new SmilesCell(this.getKeyAsString(removeExplicitHs,
-				trackCutConnectivity));
+	public DataCell getKeyAsDataCell(boolean removeExplicitHs, boolean trackCutConnectivity) {
+		return SmilesCellFactory
+				.create(this.getKeyAsString(removeExplicitHs, trackCutConnectivity));
 	}
 
 	/**
@@ -246,8 +243,7 @@ public class FragmentKey2 implements Comparable<FragmentKey2> {
 				cnt++;
 		}
 		// Now correct for [H]
-		cnt -= (SMILES.indexOf("[H]") >= 0) ? SMILES.split("\\[H\\]").length - 1
-				: 0;
+		cnt -= (SMILES.indexOf("[H]") >= 0) ? SMILES.split("\\[H\\]").length - 1 : 0;
 		// And correct for attachment points
 		cnt -= countAttachmentPoints(SMILES);
 		return cnt;
@@ -259,8 +255,7 @@ public class FragmentKey2 implements Comparable<FragmentKey2> {
 	 * heavy atoms
 	 */
 	public double getConstantToVaryingAtomRatio(FragmentValue2 value) {
-		return (double) this.calcHAC()
-				/ (double) value.getNumberChangingAtoms();
+		return (double) this.calcHAC() / (double) value.getNumberChangingAtoms();
 	}
 
 	/**
@@ -309,8 +304,7 @@ public class FragmentKey2 implements Comparable<FragmentKey2> {
 
 	@Override
 	public int compareTo(FragmentKey2 that) {
-		return this.getKeyAsString(false, true).compareTo(
-				that.getKeyAsString(false, true));
+		return this.getKeyAsString(false, true).compareTo(that.getKeyAsString(false, true));
 	}
 
 	/*
@@ -322,10 +316,8 @@ public class FragmentKey2 implements Comparable<FragmentKey2> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime
-				* result
-				+ ((m_keyComponents == null) ? 0 : (this.getKeyAsString(false,
-						true)).hashCode());
+		result = prime * result
+				+ ((m_keyComponents == null) ? 0 : (this.getKeyAsString(false, true)).hashCode());
 		return result;
 	}
 
@@ -346,8 +338,7 @@ public class FragmentKey2 implements Comparable<FragmentKey2> {
 		if (m_keyComponents == null) {
 			if (other.m_keyComponents != null)
 				return false;
-		} else if (!this.getKeyAsString(false, true).equals(
-				other.getKeyAsString(false, true)))
+		} else if (!this.getKeyAsString(false, true).equals(other.getKeyAsString(false, true)))
 			// We compare the actual ordered strings, as the internal order does
 			// not matter
 			return false;

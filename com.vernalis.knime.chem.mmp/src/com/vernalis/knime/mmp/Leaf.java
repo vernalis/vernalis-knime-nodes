@@ -81,14 +81,16 @@ public class Leaf implements Comparable<Leaf> {
 					"More than one attachment point found in SMILES String");
 		}
 
-		RWMol mol;
-		if (!removeHs) {
-			mol = RWMol.MolFromSmiles(smiles.replaceAll("\\[[0-9]+\\*\\]", "[*]"), 0, false);
-			// mol.sanitizeMol();
-			mol.findSSSR();
-		} else {
-			mol = RWMol.MolFromSmiles(smiles.replaceAll("\\[[0-9]+\\*\\]", "[*]"));
+		if (removeHs) {
+			smiles = RDKitFragmentationUtils.removeHydrogens(smiles);
 		}
+		if (smiles.matches("^\\[[0-9]*?\\*[H]?\\]$")) {
+			smiles = smiles.replaceAll("^\\[([0-9]*?)\\*.*", "[$1*][H]");
+		}
+
+		RWMol mol = RWMol.MolFromSmiles(smiles.replaceAll("\\[[0-9]+\\*\\]", "[*]"), 0, false);
+		// mol.sanitizeMol();
+		mol.findSSSR();
 		canonicalSmiles = mol.MolToSmiles(true);
 		mol.delete();
 	}
@@ -255,9 +257,9 @@ public class Leaf implements Comparable<Leaf> {
 				return false;
 		} else if (!canonicalSmiles.equals(other.canonicalSmiles))
 			return false;
-//		if(originalIndex!=other.originalIndex){
-//			return false;
-//		}
+		// if(originalIndex!=other.originalIndex){
+		// return false;
+		// }
 		return true;
 	}
 

@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 import org.RDKit.ROMol;
 import org.RDKit.RWMol;
-import org.knime.chem.types.SmilesCell;
+import org.knime.chem.types.SmilesCellFactory;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
 import org.knime.core.data.def.IntCell;
@@ -81,7 +81,7 @@ public class FragmentValue2 implements Comparable<FragmentValue2> {
 		this.SMILES = smiles;
 		this.ID = ID;
 		this.ignoreIDsForComparisons = ignoreIDsForComparisons;
-//		canonicalizeBondOnlyValue();
+		// canonicalizeBondOnlyValue();
 	}
 
 	/**
@@ -164,7 +164,7 @@ public class FragmentValue2 implements Comparable<FragmentValue2> {
 	 */
 	@Deprecated
 	public DataCell getSMILESCell(boolean removeExplicitHs, boolean trackConnectivity) {
-		return new SmilesCell(getSMILES(removeExplicitHs, trackConnectivity));
+		return SmilesCellFactory.create(getSMILES(removeExplicitHs, trackConnectivity));
 	}
 
 	/**
