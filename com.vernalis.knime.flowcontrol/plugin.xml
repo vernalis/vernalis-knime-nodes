@@ -16,10 +16,20 @@
    <extension point="org.knime.workbench.repository.nodes">
       <node category-path="/community/vernalis/flowcontrol/fvflowcontrol" factory-class="com.vernalis.knime.flowcontrol.nodes.fv.ifswitch.FVarFVIfSwitchNodeFactory" id="FVarFVIfSwitchNodeFactory">
       </node>
-      <node after="FlowVarEndIfNodeFactory" category-path="/community/vernalis/flowcontrol/fvflowcontrol" factory-class="com.vernalis.knime.flowcontrol.nodes.fv.caseselect.FVarFVCaseSelectNodeFactory" id="FVarFVCaseSelectNodeFactory">
+      <node
+            after="FlowVarEndIfNodeFactory"
+            category-path="/community/vernalis/flowcontrol/fvflowcontrol"
+            deprecated="true"
+            factory-class="com.vernalis.knime.flowcontrol.nodes.fv.caseselect.FVarFVCaseSelectNodeFactory"
+            id="FVarFVCaseSelectNodeFactory">
       </node>
    <node after="FlowVarFvvalIfSwitchNodeFactory" category-path="/community/vernalis/flowcontrol/fvflowcontrol" factory-class="com.vernalis.knime.flowcontrol.nodes.fv.endif.FlowVarEndIfNodeFactory" id="FlowVarEndIfNodeFactory"/>
-   <node after="FVarFVCaseSelectNodeFactory" category-path="/community/vernalis/flowcontrol/fvflowcontrol" factory-class="com.vernalis.knime.flowcontrol.nodes.fv.endcase.FlowVarEndCaseNodeFactory" id="FlowVarEndCaseNodeFactory">
+   <node
+         after="FVarFVCaseSelectNodeFactory"
+         category-path="/community/vernalis/flowcontrol/fvflowcontrol"
+         deprecated="true"
+         factory-class="com.vernalis.knime.flowcontrol.nodes.fv.endcase.FlowVarEndCaseNodeFactory"
+         id="FlowVarEndCaseNodeFactory">
    </node>
    <node after="FVarFVIfSwitchNodeFactory" category-path="/community/vernalis/flowcontrol/fvflowcontrol" factory-class="com.vernalis.knime.flowcontrol.nodes.fv.varvalifswitch.FlowVarFvvalIfSwitchNodeFactory" id="FlowVarFvvalIfSwitchNodeFactory">
    </node>
@@ -69,9 +79,17 @@
 </node>
 <node category-path="/community/vernalis/flowcontrol/loops/timed" factory-class="com.vernalis.knime.flowcontrol.nodes.timedloops.tbltovartotime.LoopStartTableRowToVarLoopToTimeNodeFactory" id="LoopStartTableRowToVarLoopToTimeNodeFactory"/>
 <node category-path="/community/vernalis/flowcontrol/loops/timed" factory-class="com.vernalis.knime.flowcontrol.nodes.timedloops.tbltovarfortime.LoopStartTableRowToVarLoopForTimeNodeFactory" id="LoopStartTableRowToVarLoopForTimeNodeFactory"/>
-<node category-path="/community/vernalis/flowcontrol/delay" factory-class="com.vernalis.knime.flowcontrol.nodes.wait.totime.WaitToTimeNodeFactory" id="WaitToTimeNodeFactory">
+<node
+      category-path="/community/vernalis/flowcontrol/delay"
+      deprecated="true"
+      factory-class="com.vernalis.knime.flowcontrol.nodes.wait.totime.WaitToTimeNodeFactory"
+      id="WaitToTimeNodeFactory">
 </node>
-<node category-path="/community/vernalis/flowcontrol/delay" factory-class="com.vernalis.knime.flowcontrol.nodes.wait.fortime.WaitForTimeNodeFactory" id="WaitForTimeNodeFactory">
+<node
+      category-path="/community/vernalis/flowcontrol/delay"
+      deprecated="true"
+      factory-class="com.vernalis.knime.flowcontrol.nodes.wait.fortime.WaitForTimeNodeFactory"
+      id="WaitForTimeNodeFactory">
 </node>
 <node category-path="/community/vernalis/io" factory-class="com.vernalis.knime.flowvar.nodes.io.write.WriteVariablesNodeFactory" id="WriteVariablesNodeFactory"/>
 <node category-path="/community/vernalis/io" factory-class="com.vernalis.knime.flowvar.nodes.io.read.ReadVariablesNodeFactory" id="ReadVariablesNodeFactory"/>
