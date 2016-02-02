@@ -46,6 +46,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 import com.vernalis.helpers.PDBHelperFunctions;
+import com.vernalis.helpers.PdbDownloadException;
 
 /**
  * This is the model implementation of RCSBmultiDownload. Node to allow download
@@ -118,7 +119,7 @@ public class RCSBsDownloadNodeModel extends NodeModel {
 	}
 
 	private void addRow(final String pdbid, final ExecutionContext exec)
-			throws CanceledExecutionException {
+			throws CanceledExecutionException, PdbDownloadException {
 		/*
 		 * Utility function to add a row to the output table
 		 */

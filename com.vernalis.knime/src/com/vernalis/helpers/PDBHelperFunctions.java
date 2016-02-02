@@ -23,9 +23,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.zip.GZIPInputStream;
+
+import org.knime.core.node.NodeLogger;
 
 /**
  * Utility class providing helper functions for downloading and processing PDB
@@ -37,6 +40,8 @@ import java.util.zip.GZIPInputStream;
  * 
  */
 public class PDBHelperFunctions {
+
+	public static final int MAX_DOWNLOAD_ATTEMPTS = 5;
 
 	/**
 	 * Checks whether the container folder for a full path to a file exists
@@ -83,15 +88,13 @@ public class PDBHelperFunctions {
 	 *            If True, an existing file will be overwritten
 	 * @return True if the file was successfully written
 	 */
-	public static boolean saveStringToPath(String PDBString, String PathToFile,
-			Boolean Overwrite) {
+	public static boolean saveStringToPath(String PDBString, String PathToFile, Boolean Overwrite) {
 
 		File f = new File(PathToFile);
 		Boolean r = false;
 		if (Overwrite || !f.exists()) {
 			try {
-				BufferedWriter output = new BufferedWriter(new FileWriter(
-						PathToFile));
+				BufferedWriter output = new BufferedWriter(new FileWriter(PathToFile));
 				// FileWriter always assumes default encoding is OK!
 				output.write(PDBString);
 				output.close();
@@ -116,9 +119,8 @@ public class PDBHelperFunctions {
 	 */
 	public static boolean isPath(String PathToFile) {
 
-		return (PathToFile.matches("\\\\\\\\[A-Za-z0-9]*.*\\\\.+[^\\\\]") || PathToFile
-				.matches("[A-Za-z]:\\\\.+[^\\\\]"))
-				&& !PathToFile.matches(".*null.*");
+		return (PathToFile.matches("\\\\\\\\[A-Za-z0-9]*.*\\\\.+[^\\\\]")
+				|| PathToFile.matches("[A-Za-z]:\\\\.+[^\\\\]")) && !PathToFile.matches(".*null.*");
 	}
 
 	/**
@@ -151,8 +153,7 @@ public class PDBHelperFunctions {
 	public static Integer getNumModels(String pdbtext) {
 
 		try {
-			return new Integer(
-					pdbtext.split("NUMMDL ")[1].split("\\n")[0].trim());
+			return new Integer(pdbtext.split("NUMMDL ")[1].split("\\n")[0].trim());
 		} catch (Exception e) {
 			return (pdbtext.split("ATOM   |HETATM ").length > 1) ? 1 : null;
 		}
@@ -186,9 +187,8 @@ public class PDBHelperFunctions {
 	public static Double getRFree(String pdbtext) {
 
 		try {
-			return new Double(
-					pdbtext.split("REMARK   3   FREE R VALUE                     :")[1]
-							.split("\\n")[0].trim());
+			return new Double(pdbtext.split("REMARK   3   FREE R VALUE                     :")[1]
+					.split("\\n")[0].trim());
 		} catch (Exception e) {
 			return null;
 		}
@@ -263,14 +263,14 @@ public class PDBHelperFunctions {
 	public static String getMultiLineText(String pdbtext, String RecordName,
 			Boolean keepLineBreaks) {
 		/*
-
+		
 		 */
 		String[] r = pdbtext.split("\\n");
 		String s = "";
 		String jc = (keepLineBreaks) ? "\n" : " ";
 		for (int i = 0; i < r.length; i++) {
-			s = (r[i].matches(RecordName + ".+")) ? s
-					+ r[i].substring(10, r[i].length()).trim() + jc : s;
+			s = (r[i].matches(RecordName + ".+"))
+					? s + r[i].substring(10, r[i].length()).trim() + jc : s;
 		}
 		s = (keepLineBreaks) ? s : s.replace("  ", " ");
 		s = s.trim();
@@ -315,8 +315,7 @@ public class PDBHelperFunctions {
 			URL += ".cif";
 		} else if ("structurefactor".equals(temp) || "sf".equals(temp)) {
 			URL += "-sf.cif";
-		} else if ("pdbml".equals(temp) || "pdbml/xml".equals(temp)
-				|| "xml".equals(temp)) {
+		} else if ("pdbml".equals(temp) || "pdbml/xml".equals(temp) || "xml".equals(temp)) {
 			URL += ".xml";
 		}
 		return (gz) ? URL + ".gz" : URL;
@@ -363,8 +362,10 @@ public class PDBHelperFunctions {
 	 *            The url of the file to fetch
 	 * @return A String containing the (decompressed if appropriate) file
 	 *         contents
+	 * @throws PdbDownloadException
+	 *             If unable to download
 	 */
-	public static String readUrltoString(String urlToRetrieve) {
+	public static String readUrltoString(String urlToRetrieve) throws PdbDownloadException {
 
 		if (urlToRetrieve == null) {
 			return null;
@@ -372,52 +373,58 @@ public class PDBHelperFunctions {
 
 		Boolean gz = urlToRetrieve.toLowerCase().endsWith(".gz");
 
-		try {
-			// Form a URL connection
-			URL url = new URL(urlToRetrieve);
-			URLConnection uc = url.openConnection();
-			InputStream is = uc.getInputStream();
+		for (int i = 0; i < MAX_DOWNLOAD_ATTEMPTS; i++) {
+			try {
+				// Form a URL connection
+				URL url = new URL(urlToRetrieve);
+				URLConnection uc = url.openConnection();
+				InputStream is = uc.getInputStream();
 
-			// deflate, if necesarily
-			if (gz) {
-				is = new GZIPInputStream(is);
-			}
-
-			// Now detect encoding associated with the URL
-			String contentType = uc.getContentType();
-
-			// Default type is UTF-8
-			String encoding = "UTF-8";
-			if (contentType != null) {
-				int chsIndex = contentType.indexOf("charset=");
-				if (chsIndex != -1) {
-					encoding = contentType.split("charset=")[1];
-					if (encoding.indexOf(';') != -1) {
-						encoding = encoding.split(";")[0];
-					}
-					encoding = encoding.trim();
+				// deflate, if necesarily
+				if (gz) {
+					is = new GZIPInputStream(is);
 				}
-			}
 
-			// Now set up a buffered reader to
-			BufferedReader in = new BufferedReader(new InputStreamReader(is,
-					encoding));
-			StringBuilder output = new StringBuilder();
-			String str;
-			boolean first = true;
-			while ((str = in.readLine()) != null) {
-				if (!first)
-					output.append("\n");
-				first = false;
-				output.append(str);
+				// Now detect encoding associated with the URL
+				String contentType = uc.getContentType();
+
+				// Default type is UTF-8
+				String encoding = "UTF-8";
+				if (contentType != null) {
+					int chsIndex = contentType.indexOf("charset=");
+					if (chsIndex != -1) {
+						encoding = contentType.split("charset=")[1];
+						if (encoding.indexOf(';') != -1) {
+							encoding = encoding.split(";")[0];
+						}
+						encoding = encoding.trim();
+					}
+				}
+
+				// Now set up a buffered reader to
+				BufferedReader in = new BufferedReader(new InputStreamReader(is, encoding));
+				StringBuilder output = new StringBuilder();
+				String str;
+				boolean first = true;
+				while ((str = in.readLine()) != null) {
+					if (!first)
+						output.append("\n");
+					first = false;
+					output.append(str);
+				}
+				in.close();
+				str = output.toString();
+				return ("".equals(str)) ? null : str;
+			} catch (ConnectException e) {
+				NodeLogger.getLogger("PDB Downloader").info("Connection failed; "
+						+ (MAX_DOWNLOAD_ATTEMPTS - i - 1) + " attempts remaining...");
+			} catch (Exception e) {
+				throw new PdbDownloadException("Problem downloading pdb file: " + e.getMessage(),
+						e);
 			}
-			in.close();
-			str = output.toString();
-			return ("".equals(str)) ? null : str;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
 		}
-	}
 
+		throw new PdbDownloadException(
+				"Unable to download file after " + MAX_DOWNLOAD_ATTEMPTS + " tries");
+	}
 }

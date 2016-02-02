@@ -35,7 +35,6 @@ import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.xml.XMLCell;
 import org.knime.core.data.xml.XMLCellFactory;
-
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -49,6 +48,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 import com.vernalis.helpers.PDBHelperFunctions;
+import com.vernalis.helpers.PdbDownloadException;
 
 /**
  * This is the model implementation of RCSBmultiDownload. Node to allow download
@@ -161,49 +161,53 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 				String pdbid = ((StringValue) c).getStringValue();
 				int i = 0;
 				String r;
-				if (m_PDB.getBooleanValue()) {
-					r = PDBHelperFunctions
-							.readUrltoString(PDBHelperFunctions.createRCSBUrl(pdbid, "PDB", true));
-					if (r != null) {
-						result[i] = PdbCellFactory.create(r);
+				try {
+					if (m_PDB.getBooleanValue()) {
+						r = PDBHelperFunctions.readUrltoString(
+								PDBHelperFunctions.createRCSBUrl(pdbid, "PDB", true));
+						if (r != null) {
+							result[i] = PdbCellFactory.create(r);
+						}
+						i++;
 					}
-					i++;
-				}
-				if (m_CIF.getBooleanValue()) {
-					r = PDBHelperFunctions
-							.readUrltoString(PDBHelperFunctions.createRCSBUrl(pdbid, "cif", true));
-					if (r != null) {
-						result[i] = new StringCell(r);
-					}
-					i++;
-				}
-				if (m_SF.getBooleanValue()) {
-					r = PDBHelperFunctions
-							.readUrltoString(PDBHelperFunctions.createRCSBUrl(pdbid, "sf", true));
-					if (r != null) {
-						result[i] = new StringCell(r);
-					}
-					i++;
-				}
-				if (m_PDBML.getBooleanValue()) {
-					r = PDBHelperFunctions.readUrltoString(
-							PDBHelperFunctions.createRCSBUrl(pdbid, "PDBML", true));
-					if (r != null) {
-						try {
-							result[i] = XMLCellFactory.create(r);
-						} catch (Exception e) {
+					if (m_CIF.getBooleanValue()) {
+						r = PDBHelperFunctions.readUrltoString(
+								PDBHelperFunctions.createRCSBUrl(pdbid, "cif", true));
+						if (r != null) {
 							result[i] = new StringCell(r);
 						}
+						i++;
 					}
-					i++;
-				}
-				if (m_FASTA.getBooleanValue()) {
-					r = PDBHelperFunctions
-							.readUrltoString(PDBHelperFunctions.createRCSBUrl(pdbid, "FASTA"));
-					if (r != null) {
-						result[i] = new StringCell(r);
+					if (m_SF.getBooleanValue()) {
+						r = PDBHelperFunctions.readUrltoString(
+								PDBHelperFunctions.createRCSBUrl(pdbid, "sf", true));
+						if (r != null) {
+							result[i] = new StringCell(r);
+						}
+						i++;
 					}
-					i++;
+					if (m_PDBML.getBooleanValue()) {
+						r = PDBHelperFunctions.readUrltoString(
+								PDBHelperFunctions.createRCSBUrl(pdbid, "PDBML", true));
+						if (r != null) {
+							try {
+								result[i] = XMLCellFactory.create(r);
+							} catch (Exception e) {
+								result[i] = new StringCell(r);
+							}
+						}
+						i++;
+					}
+					if (m_FASTA.getBooleanValue()) {
+						r = PDBHelperFunctions
+								.readUrltoString(PDBHelperFunctions.createRCSBUrl(pdbid, "FASTA"));
+						if (r != null) {
+							result[i] = new StringCell(r);
+						}
+						i++;
+					}
+				} catch (PdbDownloadException e) {
+					throw new IllegalArgumentException(e);
 				}
 				return result;
 			}
