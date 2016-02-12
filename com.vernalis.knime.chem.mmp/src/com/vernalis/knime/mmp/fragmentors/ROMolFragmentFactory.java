@@ -84,6 +84,10 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	private static final String UNSPECIFIED_DOUBLE_BOND = "UNSPECIFIED_DOUBLE_BOND";
 
 	/**
+	 * Property name to flag incoming assigned stereo double bonds
+	 */
+	private static final String SPECIFIED_DOUBLE_BOND = "SPECIFIED_DOUBLE_BOND";
+	/**
 	 * Property name to hold isotopic label for attachment point until needed
 	 */
 	private static final String AP_ISOTOPIC_LABEL = "AP_ISOTOPIC_LABEL";
@@ -100,15 +104,20 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 
 	private boolean verboseLogging;
 
+	private boolean removeHs;
+
 	/**
 	 * Constructor
 	 * 
 	 * @param mol
 	 *            The molecule to be fragmented
+	 * @param removeHs
+	 *            Should explicit H atoms be removed after fragmentation?
 	 * @param verboseLogging
 	 *            Should the logger be used
 	 */
-	public ROMolFragmentFactory(ROMol mol, boolean verboseLogging) {
+	public ROMolFragmentFactory(ROMol mol, boolean removeHs, boolean verboseLogging) {
+		this.removeHs = removeHs;
 		this.mol = gc.markForCleanup(new ROMol(mol), 1);
 		this.verboseLogging = verboseLogging;
 		isChiral = false;
@@ -158,6 +167,8 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 				}
 				if (!isStereo) {
 					bd.setProp(UNSPECIFIED_DOUBLE_BOND, "1");
+				} else {
+					bd.setProp(SPECIFIED_DOUBLE_BOND, "1");
 				}
 			}
 		}
@@ -208,8 +219,8 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	 */
 	@Override
 	public MulticomponentSmilesFragmentParser fragmentMolecule(BondIdentifier bond,
-			boolean treatProchiralAsChiral)
-					throws MoleculeFragmentationException, IllegalArgumentException {
+			boolean treatProchiralAsChiral) throws MoleculeFragmentationException,
+					IllegalArgumentException, UnenumeratedStereochemistryException {
 		if (bond == null) {
 			throw new IllegalArgumentException("A bond must be supplied");
 		}
@@ -310,8 +321,11 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 			assignAPChirality(key, localGcWave);
 		}
 		assignCreatedDblBondGeometry(key, localGcWave);
+		// System.out.println(value.MolToSmiles(true));
 		assignCreatedDblBondGeometry(value, localGcWave);
+		// System.out.println(value.MolToSmiles(true));
 		canonicaliseDuplicateKeyComponents(value, localGcWave, key);
+		// System.out.println(value.MolToSmiles(true));
 		applyAPIsotopicLabels(key, localGcWave);
 		applyAPIsotopicLabels(value, localGcWave);
 
@@ -319,7 +333,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 																				// localGcWave);
 		gc.cleanupMarkedObjects(localGcWave);
 
-		return new MulticomponentSmilesFragmentParser(retVal);
+		return new MulticomponentSmilesFragmentParser(retVal, removeHs);
 	}
 
 	/*
@@ -330,8 +344,8 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	 */
 	@Override
 	public MulticomponentSmilesFragmentParser fragmentMolecule(Set<BondIdentifier> bonds,
-			boolean treatProchiralAsChiral)
-					throws IllegalArgumentException, MoleculeFragmentationException {
+			boolean treatProchiralAsChiral) throws IllegalArgumentException,
+					MoleculeFragmentationException, UnenumeratedStereochemistryException {
 
 		if (bonds == null || bonds.size() == 0) {
 			throw new IllegalArgumentException("At least one bond must be supplied");
@@ -379,8 +393,8 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	 */
 	@Override
 	public MulticomponentSmilesFragmentParser fragmentMoleculeWithBondInsertion(BondIdentifier bond,
-			boolean treatProchiralAsChiral)
-					throws IllegalArgumentException, MoleculeFragmentationException {
+			boolean treatProchiralAsChiral) throws IllegalArgumentException,
+					MoleculeFragmentationException, UnenumeratedStereochemistryException {
 		if (bond == null) {
 			throw new IllegalArgumentException("A bond must be supplied");
 		}
@@ -489,15 +503,18 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		String retVal = key.MolToSmiles(true) + "." + value.MolToSmiles(true);
 		gc.cleanupMarkedObjects(localGcWave);
 
-		return new MulticomponentSmilesFragmentParser(retVal + ".[501*][500*]");
+		return new MulticomponentSmilesFragmentParser(retVal + ".[501*][500*]", removeHs);
 	}
 
 	/**
 	 * Private method to perform fragmentation when attachment point atoms will
 	 * collide (i.e. geminal break)
+	 * 
+	 * @throws UnenumeratedStereochemistryException
 	 */
 	private MulticomponentSmilesFragmentParser fragmentLong(Set<BondIdentifier> bonds,
-			boolean treatProchiralAsChiral) throws MoleculeFragmentationException {
+			boolean treatProchiralAsChiral)
+					throws MoleculeFragmentationException, UnenumeratedStereochemistryException {
 
 		int localGcWave = gcWave.getAndIncrement();
 		RWMol tmp = gc.markForCleanup(new RWMol(mol), localGcWave);
@@ -674,15 +691,18 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		// 1], localGcWave));
 		sb.append(".").append(frags[frags.length - 1].MolToSmiles(true));
 		gc.cleanupMarkedObjects(localGcWave);
-		return new MulticomponentSmilesFragmentParser(sb.toString());
+		return new MulticomponentSmilesFragmentParser(sb.toString(), removeHs);
 	}
 
 	/**
 	 * Private method to perform fragmentation when attachment point atoms will
 	 * not collide
+	 * 
+	 * @throws UnenumeratedStereochemistryException
 	 */
 	private MulticomponentSmilesFragmentParser fragmentShort(Set<BondIdentifier> bonds,
-			boolean treatProchiralAsChiral) throws MoleculeFragmentationException {
+			boolean treatProchiralAsChiral)
+					throws MoleculeFragmentationException, UnenumeratedStereochemistryException {
 		int localGcWave = gcWave.getAndIncrement();
 		RWMol tmp = gc.markForCleanup(new RWMol(mol), localGcWave);
 
@@ -861,7 +881,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		gc.cleanupMarkedObjects(localGcWave);
 
 		// RDKit output multicomponents as ':' separated
-		return new MulticomponentSmilesFragmentParser(retVal.replace(":", "."));
+		return new MulticomponentSmilesFragmentParser(retVal.replace(":", "."), removeHs);
 	}
 
 	// /**
@@ -940,6 +960,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	 *            The gc wave index
 	 */
 	private void assignCreatedDblBondGeometry(RWMol component, int localGcWave) {
+		// System.out.println("Starting... " + component.MolToSmiles(true));
 		try {
 			component.sanitizeMol();
 			// This adds a list of stereoatoms to previously unassigned double
@@ -959,7 +980,9 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 			return;
 		}
 
-		// System.out.println(component.MolToSmiles(true));
+		// System.out.println(
+		// "After sanitizing and finding stereobonds... " +
+		// component.MolToSmiles(true));
 
 		// Now loop through the bonds
 		for (BondIterator iter = gc.markForCleanup(component.beginBonds(), localGcWave); iter
@@ -967,45 +990,99 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 						.markForCleanup(iter.next(), localGcWave)) {
 
 			Bond bd = gc.markForCleanup(iter.getBond(), localGcWave);
-			// System.out.println(bd.getBondType() + "\t" +
-			// bd.hasProp(UNSPECIFIED_DOUBLE_BOND));
-			if (bd.getBondType() == BondType.DOUBLE && !bd.hasProp(UNSPECIFIED_DOUBLE_BOND)) {
-				// We only worry about double bonds
+
+			if (bd.getBondType() == BondType.DOUBLE && !bd.hasProp(UNSPECIFIED_DOUBLE_BOND)
+					&& !bd.hasProp(SPECIFIED_DOUBLE_BOND)) {
+				// We only worry about double bonds which were not assigned or
+				// known unassigned and
+				// could be, and are not now assigned
 
 				Int_Vect stereoAtoms = gc.markForCleanup(bd.getStereoAtoms(), localGcWave);
 				if (stereoAtoms.size() > 0) {
 					// And only if they have stereo atoms listed
-
 					// Now we need to find the adjacent bonds from the double
-					// bond termini to the listed stereoatoms
+					// bond termini to the listed stereoatoms. We also need the
+					// atoms at the other end for later...
 					Bond beginStereoBond = null;
 					Bond endStereoBond = null;
+					Atom beginStereoAtom = null;
+					Atom endStereoAtom = null;
 					for (int i = 0; i < stereoAtoms.size(); i++) {
 						if (beginStereoBond == null) {
 							beginStereoBond = gc.markForCleanup(component.getBondBetweenAtoms(
 									bd.getBeginAtomIdx(), stereoAtoms.get(i)), localGcWave);
+							beginStereoAtom = gc.markForCleanup(
+									component.getAtomWithIdx(stereoAtoms.get(i)), localGcWave);
 						}
 						if (endStereoBond == null) {
 							endStereoBond = gc.markForCleanup(component.getBondBetweenAtoms(
 									bd.getEndAtomIdx(), stereoAtoms.get(i)), localGcWave);
+							endStereoAtom = gc.markForCleanup(
+									component.getAtomWithIdx(stereoAtoms.get(i)), localGcWave);
 						}
 					}
 
-					// And now we need to assign them arbitrarily and
-					// consistently if they are not already assigned
-					if (beginStereoBond.getBondDir() == BondDir.NONE) {
+					// Check if either end has an existing assignment
+					boolean partialAssignment = beginStereoBond.getBondDir() != BondDir.NONE
+							|| endStereoBond.getBondDir() != BondDir.NONE;
+
+					// We mark those bonds from partially assigned double bonds
+					// as DATIVE, and parse to all up/down options later (See
+					// RDKitFragmentationUtils#enumerateDativeMaskedDoubleBondIsomers)
+					// Finally, we need to check a corner case for partial
+					// assignment, whereby one end has stereochemistry, by
+					// virtue of being
+					// indicated for an adjacent double bond, but
+					// when broken, now is not sent to the output.
+					// e.g. C/C=C/C=C(C)C --> C/C=C/* */C=C(*)C *C
+					// The second fragmentation component dbl bond is partially
+					// specified from the diene parent but is lost as it is
+					// unmatched
+					// and so becomes *C=C(>*)C here
+					// We need to check that each stereoatom with a specified
+					// bond still has a dbl bond attached to it
+
+					if (partialAssignment) {
+						// One end of the double bond has stereochemistry, but
+						// it may or may not be output...
+						if (beginStereoBond.getBondDir() == BondDir.NONE) {
+							// Not set, need to DATIVE to enumerate
+							// possibilities
+							beginStereoBond.setBondType(BondType.DATIVE);
+						} else if (!beginStereoAtom.atomHasConjugatedBond()) {
+							// It is set, but as a result of no longer attached
+							// double bond, not this double bond
+							// Will not be output into SMILES and therefore set
+							// to DATIVE to Enumerate later
+							beginStereoBond.setBondType(BondType.DATIVE);
+						}
+						if (endStereoBond.getBondDir() == BondDir.NONE) {
+							// Not set, need to enumerate possibilities
+							endStereoBond.setBondType(BondType.DATIVE);
+						} else if (!endStereoAtom.atomHasConjugatedBond()) {
+							// It is set, but as a result of no longer attached
+							// double bond, not this double bond
+							// Will not be output into SMILES and therefore set
+							// to DATIVE to Enumerate later
+							endStereoBond.setBondType(BondType.DATIVE);
+						}
+					} else {
+						// No assigned stereobonds for this NEW stereo dbl bond
+						// Set both arbitrarily and consistently to UPRIGHT as
+						// another BondComination will
 						beginStereoBond.setBondDir(BondDir.ENDUPRIGHT);
-					}
-					if (endStereoBond.getBondDir() == BondDir.NONE) {
 						endStereoBond.setBondDir(BondDir.ENDUPRIGHT);
 					}
+
 				}
 			}
 
 		}
 
-		// System.out.println(component.MolToSmiles(true));
-
+		// System.out.println(
+		// "And after application of datives and steroes... " +
+		// component.MolToSmiles(true));
+		// System.out.println("=====================");
 	}
 
 	/**

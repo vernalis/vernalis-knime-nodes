@@ -50,10 +50,13 @@ public interface MoleculeFragmentationFactory {
 	 *             If unable to correctly fragment
 	 * @throws IllegalArgumentException
 	 *             If the bond is {@code null}
+	 * @throws UnenumeratedStereochemistryException
+	 *             If the SMILES conains dative bonds (>) to indicate
+	 *             stereobonds to enumerate
 	 */
-	public abstract MulticomponentSmilesFragmentParser fragmentMolecule(
-			BondIdentifier bond, boolean treatProchiralAsChiral)
-			throws MoleculeFragmentationException, IllegalArgumentException;
+	public abstract MulticomponentSmilesFragmentParser fragmentMolecule(BondIdentifier bond,
+			boolean treatProchiralAsChiral) throws MoleculeFragmentationException,
+					IllegalArgumentException, UnenumeratedStereochemistryException;
 
 	/**
 	 * The main method for fragmentations. This method delegates single bond
@@ -74,10 +77,11 @@ public interface MoleculeFragmentationFactory {
 	 *             If unable to correctly fragment
 	 * @throws IllegalArgumentException
 	 *             if no bonds are supplied
+	 * @throws UnenumeratedStereochemistryException
 	 */
-	public abstract MulticomponentSmilesFragmentParser fragmentMolecule(
-			Set<BondIdentifier> bonds, boolean treatProchiralAsChiral)
-			throws IllegalArgumentException, MoleculeFragmentationException;
+	public abstract MulticomponentSmilesFragmentParser fragmentMolecule(Set<BondIdentifier> bonds,
+			boolean treatProchiralAsChiral) throws IllegalArgumentException,
+					MoleculeFragmentationException, UnenumeratedStereochemistryException;
 
 	/**
 	 * This is the method to fragment a molecule by breaking a single bond
@@ -98,10 +102,11 @@ public interface MoleculeFragmentationFactory {
 	 *             If unable to correctly fragment
 	 * @throws IllegalArgumentException
 	 *             If the bond is {@code null}
+	 * @throws UnenumeratedStereochemistryException
 	 */
 	public abstract MulticomponentSmilesFragmentParser fragmentMoleculeWithBondInsertion(
-			BondIdentifier bond, boolean treatProchiralAsChiral)
-			throws IllegalArgumentException, MoleculeFragmentationException;
+			BondIdentifier bond, boolean treatProchiralAsChiral) throws IllegalArgumentException,
+					MoleculeFragmentationException, UnenumeratedStereochemistryException;
 
 	/**
 	 * Set the verboseLogging parameter which should influence logging output

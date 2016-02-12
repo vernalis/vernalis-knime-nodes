@@ -108,6 +108,7 @@ import com.vernalis.knime.mmp.RowExecutionException;
 import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationException;
 import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationFactory;
 import com.vernalis.knime.mmp.fragmentors.ROMolFragmentFactory;
+import com.vernalis.knime.mmp.fragmentors.UnenumeratedStereochemistryException;
 import com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage;
 import com.vernalis.knime.parallel.MultiTableParallelResult;
 import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
@@ -708,6 +709,22 @@ public class ParallelRdkitMMPFragment3NodeModel extends NodeModel {
 			return retVal;
 		}
 
+		// Multicomponent molecules make no sense... (and duplicate salts crash
+		// the duplicate key resolver!)
+		// Checking the SMILES for a '.' is simpler that garbage collecting the
+		// ROMol_Vect from RDKFunc#getComponents()
+
+		if (roMol.MolToSmiles().contains(".")) {
+			retVal.addRowToTable(
+					(addFailReasons)
+							? new AppendedColumnRow(row,
+									new StringCell(
+											"Multi-component structures cannot be fragmented"))
+							: row,
+					1);
+			return retVal;
+		}
+
 		if (addHs) {
 			roMol = swigGC.markForCleanup(roMol.addHs(false, false), (int) index);
 		}
@@ -737,7 +754,8 @@ public class ParallelRdkitMMPFragment3NodeModel extends NodeModel {
 			return retVal;
 		}
 
-		MoleculeFragmentationFactory fragFactory = new ROMolFragmentFactory(roMol, verboseLogging);
+		MoleculeFragmentationFactory fragFactory = new ROMolFragmentFactory(roMol, stripHsAtEnd,
+				verboseLogging);
 		// Deal with the special case of 2 cuts, and allowing *-* as a value
 		if (numCuts == 2 && allowTwoCutsToBondValue) {
 			fragmentations.addAll(doDoubleCutToSingleBond(fragFactory, cuttableBonds,
@@ -894,9 +912,11 @@ public class ParallelRdkitMMPFragment3NodeModel extends NodeModel {
 		for (Set<BondIdentifier> bondSet : bondCombos) {
 			exec.checkCanceled();
 
-			MulticomponentSmilesFragmentParser smiParser;
+			MulticomponentSmilesFragmentParser smiParser = null;
 			try {
 				smiParser = fragFactory.fragmentMolecule(bondSet, prochiralAsChiral);
+				// Collect the fragmentation
+				retVal.add(smiParser);
 			} catch (MoleculeFragmentationException e) {
 				if (verboseLogging) {
 					logger.info("Discarding Fragmentation: " + e.getMessage() == null ? ""
@@ -904,13 +924,25 @@ public class ParallelRdkitMMPFragment3NodeModel extends NodeModel {
 				}
 				// Goto next fragmentation
 				continue;
+			} catch (UnenumeratedStereochemistryException e) {
+				// Some stereochemistry that could not be applied by the
+				// Fragmentation Factory
+				try {
+					// NB the method handles the n=1 case reversal
+					retVal.addAll(
+							RDKitFragmentationUtils.enumerateDativeMaskedDoubleBondIsomers(e));
+				} catch (MoleculeFragmentationException e1) {
+					if (verboseLogging) {
+						logger.info("Discarding Fragmentation: " + e.getMessage() == null ? ""
+								: e.getMessage());
+					}
+					// Goto next fragmentation
+					continue;
+				}
 			}
 
-			// Collect the fragmentation
-			retVal.add(smiParser);
-
 			// Deal with the numCuts=1 special case
-			if (smiParser.getNumCuts() == 1) {
+			if (smiParser != null && smiParser.getNumCuts() == 1) {
 				try {
 					smiParser = smiParser.getReverse();
 					retVal.add(smiParser);
@@ -920,6 +952,9 @@ public class ParallelRdkitMMPFragment3NodeModel extends NodeModel {
 					}
 					// Goto next fragmentation
 					continue;
+				} catch (UnenumeratedStereochemistryException e) {
+					// Should never get here...
+					logger.warn("Unexpected problem: " + e.getMessage());
 				}
 
 			}
@@ -955,10 +990,11 @@ public class ParallelRdkitMMPFragment3NodeModel extends NodeModel {
 		Set<MulticomponentSmilesFragmentParser> retVal = new TreeSet<>();
 		for (BondIdentifier bond : bonds) {
 			exec.checkCanceled();
-
-			MulticomponentSmilesFragmentParser smiParser;
+			MulticomponentSmilesFragmentParser smiParser = null;
 			try {
 				smiParser = fragFactory.fragmentMoleculeWithBondInsertion(bond, prochiralAsChiral);
+				// Collect the fragmentation
+				retVal.add(smiParser);
 			} catch (MoleculeFragmentationException e) {
 				if (verboseLogging) {
 					logger.info("Discarding Fragmentation: " + e.getMessage() == null ? ""
@@ -966,24 +1002,21 @@ public class ParallelRdkitMMPFragment3NodeModel extends NodeModel {
 				}
 				// Goto next fragmentation
 				continue;
-			}
-
-			// Collect the fragmentation
-			retVal.add(smiParser);
-
-			// Deal with the numCuts=1 special case
-			if (smiParser.getNumCuts() == 1) {
+			} catch (UnenumeratedStereochemistryException e) {
+				// Some stereochemistry that could not be applied by the
+				// Fragmentation Factory
 				try {
-					smiParser = smiParser.getReverse();
-					retVal.add(smiParser);
-				} catch (MoleculeFragmentationException e) {
+					// NB the method handles the n=1 case reversal
+					retVal.addAll(
+							RDKitFragmentationUtils.enumerateDativeMaskedDoubleBondIsomers(e));
+				} catch (MoleculeFragmentationException e1) {
 					if (verboseLogging) {
-						logger.info("Discarding Fragmentation: " + e.getMessage());
+						logger.info("Discarding Fragmentation: " + e.getMessage() == null ? ""
+								: e.getMessage());
 					}
 					// Goto next fragmentation
 					continue;
 				}
-
 			}
 		}
 		return retVal;

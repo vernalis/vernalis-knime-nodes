@@ -53,6 +53,7 @@ public class Leaf implements Comparable<Leaf> {
 	 * @throws IllegalArgumentException
 	 *             If no or >1 attachment points are found
 	 */
+	@Deprecated
 	public Leaf(String smiles) throws IllegalArgumentException {
 		this(smiles, true);
 	}
@@ -80,14 +81,14 @@ public class Leaf implements Comparable<Leaf> {
 			throw new IllegalArgumentException(
 					"More than one attachment point found in SMILES String");
 		}
-
+		// System.out.print(smiles + "\t--->\t");
 		if (removeHs) {
 			smiles = RDKitFragmentationUtils.removeHydrogens(smiles);
 		}
 		if (smiles.matches("^\\[[0-9]*?\\*[H]?\\]$")) {
 			smiles = smiles.replaceAll("^\\[([0-9]*?)\\*.*", "[$1*][H]");
 		}
-
+		// System.out.println(smiles);
 		RWMol mol = RWMol.MolFromSmiles(smiles.replaceAll("\\[[0-9]+\\*\\]", "[*]"), 0, false);
 		// mol.sanitizeMol();
 		mol.findSSSR();

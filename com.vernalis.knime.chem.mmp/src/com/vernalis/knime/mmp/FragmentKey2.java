@@ -35,12 +35,19 @@ import org.knime.core.data.def.DoubleCell;
  */
 public class FragmentKey2 implements Comparable<FragmentKey2> {
 	protected ArrayList<Leaf> m_keyComponents;
+	protected boolean m_removeHs;
 
 	/**
-	 * Constructor - initialises an empty key
+	 * Constructor - initialises an empty key, H's removed by default;
 	 */
+	@Deprecated
 	public FragmentKey2() {
+		this(true);
+	}
+
+	public FragmentKey2(boolean removeHs) {
 		m_keyComponents = new ArrayList<>();
+		m_removeHs = removeHs;
 	}
 
 	/**
@@ -49,29 +56,36 @@ public class FragmentKey2 implements Comparable<FragmentKey2> {
 	 * @param existingKey
 	 *            The existing object
 	 */
+	@Deprecated
 	public FragmentKey2(FragmentKey2 existingKey) {
 		this.m_keyComponents = new ArrayList<>(existingKey.m_keyComponents);
+		this.m_removeHs = existingKey.m_removeHs;
 	}
 
 	/**
 	 * Constructor initialising from a SMILES string, with one or more
-	 * components
+	 * components. H's are removed
 	 * 
 	 * @param keyAsString
 	 *            The key as a SMILES string
 	 */
 	public FragmentKey2(String keyAsString) {
+		this(keyAsString, true);
+	}
+
+	public FragmentKey2(String keyAsString, boolean removeHs) {
 		if (keyAsString == null) {
 			m_keyComponents = new ArrayList<>();
 		} else if (keyAsString.indexOf(".") < 0) {
 			m_keyComponents = new ArrayList<>();
-			m_keyComponents.add(new Leaf(keyAsString));
+			m_keyComponents.add(new Leaf(keyAsString, removeHs));
 		} else {
 			m_keyComponents = new ArrayList<>();
 			for (String smi : keyAsString.split("\\.")) {
-				m_keyComponents.add(new Leaf(smi));
+				m_keyComponents.add(new Leaf(smi, removeHs));
 			}
 		}
+		m_removeHs = removeHs;
 	}
 
 	/**
@@ -86,10 +100,10 @@ public class FragmentKey2 implements Comparable<FragmentKey2> {
 			throw new IllegalArgumentException("A non-null string must be supplied");
 		}
 		if (smiles.indexOf(".") < 0) {
-			m_keyComponents.add(new Leaf(smiles));
+			m_keyComponents.add(new Leaf(smiles, m_removeHs));
 		} else {
 			for (String smi : smiles.split("\\.")) {
-				m_keyComponents.add(new Leaf(smi));
+				m_keyComponents.add(new Leaf(smi, m_removeHs));
 			}
 		}
 	}

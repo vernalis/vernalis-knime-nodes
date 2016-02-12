@@ -18,6 +18,7 @@
 package com.vernalis.knime.mmp;
 
 import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationException;
+import com.vernalis.knime.mmp.fragmentors.UnenumeratedStereochemistryException;
 
 /**
  * <p>
@@ -35,13 +36,14 @@ import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationException;
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
-public class MulticomponentSmilesFragmentParser implements
-		Comparable<MulticomponentSmilesFragmentParser> {
+public class MulticomponentSmilesFragmentParser
+		implements Comparable<MulticomponentSmilesFragmentParser> {
 	private final FragmentKey2 key;
 	private FragmentValue2 value = null;
 	private final String smiles; // The input smiles
 	private final int numCuts;
 	private final String canonicalisedSMILES;
+	private final boolean removeHs;
 
 	/**
 	 * Constructor. The supplied SMILES string is parsed to a fragment value and
@@ -53,9 +55,21 @@ public class MulticomponentSmilesFragmentParser implements
 	 *            The SMILES string to parse
 	 * @throws MoleculeFragmentationException
 	 *             Thrown if the SMILES is not a valid fragmentation
+	 * @throws UnenumeratedStereochemistryException
+	 *             If the SMILES contains a dative bond ('{@code >}') which
+	 *             needs to be enumerated to {@code /} and {@code \}
 	 */
-	public MulticomponentSmilesFragmentParser(String smiles)
-			throws MoleculeFragmentationException {
+	public MulticomponentSmilesFragmentParser(String smiles, boolean removeHs)
+			throws MoleculeFragmentationException, UnenumeratedStereochemistryException {
+
+		if (smiles.indexOf(">") >= 0 || smiles.indexOf("<") >= 0) {
+			// Unenumerated double bond geometries to parse
+			throw new UnenumeratedStereochemistryException(
+					"Need to enumerate double bond isomer combos first...", smiles, removeHs);
+		}
+
+		this.removeHs = removeHs;
+
 		String[] comps = smiles.split("\\.");
 		if (comps.length < 2) {
 			throw new MoleculeFragmentationException(
@@ -64,15 +78,14 @@ public class MulticomponentSmilesFragmentParser implements
 
 		this.smiles = smiles;
 
-		key = new FragmentKey2();
+		key = new FragmentKey2(removeHs);
 
 		// Deal with the 1 cut special case first
 		if (comps.length == 2) {
-			key.addLeaf(new Leaf(comps[0]));
+			key.addLeaf(new Leaf(comps[0], removeHs));
 			if ((" " + comps[1] + " ").split("\\*").length != 2) {
 				throw new MoleculeFragmentationException(
-						"Wrong number of attachment points on FragmentValue: '"
-								+ comps[1] + "'");
+						"Wrong number of attachment points on FragmentValue: '" + comps[1] + "'");
 			}
 			value = new FragmentValue2(comps[1]);
 		} else {
@@ -80,19 +93,18 @@ public class MulticomponentSmilesFragmentParser implements
 			// Now loop through
 			for (String comp : comps) {
 				try {
-					key.addLeaf(new Leaf(comp));
+					key.addLeaf(new Leaf(comp, removeHs));
 				} catch (IllegalArgumentException e) {
 					// Not a key
 					if (value != null) {
 						// We can only have 1 value,
-						throw new MoleculeFragmentationException(
-								"Can only have one fragment key");
+						throw new MoleculeFragmentationException("Can only have one fragment key");
 					} else {
 						if ((" " + comp + " ").split("\\*").length != comps.length) {
 							// and it must have n attachment points
 							throw new MoleculeFragmentationException(
-									"Wrong number of attachment points on FragmentValue '"
-											+ comp + "'");
+									"Wrong number of attachment points on FragmentValue '" + comp
+											+ "'");
 						}
 						value = new FragmentValue2(comp);
 					}
@@ -103,12 +115,12 @@ public class MulticomponentSmilesFragmentParser implements
 		value.setAttachmentPointIndices(key);
 		numCuts = key.getNumComponents();
 		// track connectivity for the canonicalisation to avoid an issue
-		// with duplicate leaves in the key (No longer case as ROMolFragmentFactory fixes this
+		// with duplicate leaves in the key (No longer case as
+		// ROMolFragmentFactory fixes this
 
-		canonicalisedSMILES = key.getKeyAsString(false, true) + "."
-				+ value.getSMILES(false, true); //.getCanonicalIndexNaiveSMILES();
-//		System.out.println("INPUT SMILES:\t\t"+smiles);
-//		System.out.println("CANON SMILES:\t\t"+canonicalisedSMILES);
+		canonicalisedSMILES = key.getKeyAsString(false, true) + "." + value.getSMILES(false, true); // .getCanonicalIndexNaiveSMILES();
+		// System.out.println("INPUT SMILES:\t\t"+smiles);
+		// System.out.println("CANON SMILES:\t\t"+canonicalisedSMILES);
 	}
 
 	/**
@@ -145,12 +157,13 @@ public class MulticomponentSmilesFragmentParser implements
 	 * @return {@code null} if not a single cut, or the reverse key/value pair
 	 * @throws MoleculeFragmentationException
 	 *             If the reversal cannot be processed
+	 * @throws UnenumeratedStereochemistryException
 	 */
 	public MulticomponentSmilesFragmentParser getReverse()
-			throws MoleculeFragmentationException {
+			throws MoleculeFragmentationException, UnenumeratedStereochemistryException {
 		if (key.getNumComponents() == 1 && value != null) {
 			return new MulticomponentSmilesFragmentParser(
-					smiles.split("\\.")[1] + "." + smiles.split("\\.")[0]);
+					smiles.split("\\.")[1] + "." + smiles.split("\\.")[0], removeHs);
 		}
 		return null;
 	}
@@ -182,10 +195,8 @@ public class MulticomponentSmilesFragmentParser implements
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime
-				* result
-				+ ((canonicalisedSMILES == null) ? 0 : canonicalisedSMILES
-						.hashCode());
+		result = prime * result
+				+ ((canonicalisedSMILES == null) ? 0 : canonicalisedSMILES.hashCode());
 		return result;
 	}
 

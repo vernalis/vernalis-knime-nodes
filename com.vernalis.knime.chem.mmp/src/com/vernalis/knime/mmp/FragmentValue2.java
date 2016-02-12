@@ -287,8 +287,8 @@ public class FragmentValue2 implements Comparable<FragmentValue2> {
 		for (Entry<Integer, Integer> ent : apLookup.entrySet()) {
 			SMILES = SMILES.replace("[" + ent.getValue() + "*]", "[" + ent.getKey() + "*]");
 		}
-		canonicalizeBondOnlyValue();
-		// canonicalize();
+		// canonicalizeBondOnlyValue();
+		canonicalize();
 	}
 
 	/**
@@ -296,9 +296,13 @@ public class FragmentValue2 implements Comparable<FragmentValue2> {
 	 * {@link ROMol} object.
 	 */
 	public void canonicalize() {
-		ROMol mol = RWMol.MolFromSmiles(SMILES, 0, false);
-		SMILES = mol.MolToSmiles(true);
-		mol.delete();
+		if (SMILES.matches("\\[\\d+\\*\\](-)?\\[\\d+\\*\\]")) {
+			canonicalizeBondOnlyValue();
+		} else {
+			ROMol mol = RWMol.MolFromSmiles(SMILES, 0, false);
+			SMILES = mol.MolToSmiles(true);
+			mol.delete();
+		}
 	}
 
 	/**

@@ -60,7 +60,6 @@ import org.RDKit.RWMol;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.knime.base.data.append.column.AppendedColumnRow;
 import org.knime.chem.types.MolValue;
 import org.knime.chem.types.SdfValue;
 import org.knime.chem.types.SmilesCell;
@@ -74,6 +73,7 @@ import org.knime.core.data.DataTableSpecCreator;
 import org.knime.core.data.DataType;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.StringValue;
+import org.knime.core.data.append.AppendedColumnRow;
 import org.knime.core.data.container.DataContainerException;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
@@ -109,6 +109,7 @@ import com.vernalis.knime.mmp.RowExecutionException;
 import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationException;
 import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationFactory;
 import com.vernalis.knime.mmp.fragmentors.ROMolFragmentFactory;
+import com.vernalis.knime.mmp.fragmentors.UnenumeratedStereochemistryException;
 import com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage;
 import com.vernalis.knime.parallel.MultiTableParallelResult;
 import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
@@ -708,6 +709,22 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 			return retVal;
 		}
 
+		// Multicomponent molecules make no sense... (and duplicate salts crash
+		// the duplicate key resolver!)
+		// Checking the SMILES for a '.' is simpler that garbage collecting the
+		// ROMol_Vect from RDKFunc#getComponents()
+
+		if (roMol.MolToSmiles().contains(".")) {
+			retVal.addRowToTable(
+					(addFailReasons)
+							? new AppendedColumnRow(row,
+									new StringCell(
+											"Multi-component structures cannot be fragmented"))
+							: row,
+					1);
+			return retVal;
+		}
+
 		/*
 		 * Do the fragmentation and apply filters, adding rows as we go...
 		 */
@@ -727,16 +744,16 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 		if (addHs) {
 			ROMol roMol2 = swigGC.markForCleanup(new ROMol(roMol), (int) index);
 			roMol2 = swigGC.markForCleanup(roMol2.addHs(false, false), (int) index);
-			fragFactory = new ROMolFragmentFactory(roMol2, verboseLogging);
+			fragFactory = new ROMolFragmentFactory(roMol2, stripHsAtEnd, verboseLogging);
 			fragmentations.addAll(breakMoleculeAlongBonds(fragFactory,
 					RDKitFragmentationUtils.identifyAllMatchingBonds(roMol2, bondMatch),
 					prochiralAsChiral, exec, logger, verboseLogging));
 
 			// Now return the fragFactory to the main unhydrogenated molecule:
-			fragFactory = new ROMolFragmentFactory(roMol, verboseLogging);
+			fragFactory = new ROMolFragmentFactory(roMol, stripHsAtEnd, verboseLogging);
 		} else {
 			// Otherwise we just cut along every bond
-			fragFactory = new ROMolFragmentFactory(roMol, verboseLogging);
+			fragFactory = new ROMolFragmentFactory(roMol, stripHsAtEnd, verboseLogging);
 			fragmentations.addAll(breakMoleculeAlongBonds(fragFactory, cuttableBonds,
 					prochiralAsChiral, exec, logger, verboseLogging));
 		}
@@ -880,9 +897,11 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 		for (Set<BondIdentifier> bondSet : bondCombos) {
 			exec.checkCanceled();
 
-			MulticomponentSmilesFragmentParser smiParser;
+			MulticomponentSmilesFragmentParser smiParser = null;
 			try {
 				smiParser = fragFactory.fragmentMolecule(bondSet, prochiralAsChiral);
+				// Collect the fragmentation
+				retVal.add(smiParser);
 			} catch (MoleculeFragmentationException e) {
 				if (verboseLogging) {
 					logger.info("Discarding Fragmentation: " + e.getMessage() == null ? ""
@@ -890,13 +909,25 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 				}
 				// Goto next fragmentation
 				continue;
+			} catch (UnenumeratedStereochemistryException e) {
+				// Some stereochemistry that could not be applied by the
+				// Fragmentation Factory
+				try {
+					// NB the method handles the n=1 case reversal
+					retVal.addAll(
+							RDKitFragmentationUtils.enumerateDativeMaskedDoubleBondIsomers(e));
+				} catch (MoleculeFragmentationException e1) {
+					if (verboseLogging) {
+						logger.info("Discarding Fragmentation: " + e.getMessage() == null ? ""
+								: e.getMessage());
+					}
+					// Goto next fragmentation
+					continue;
+				}
 			}
 
-			// Collect the fragmentation
-			retVal.add(smiParser);
-
 			// Deal with the numCuts=1 special case
-			if (smiParser.getNumCuts() == 1) {
+			if (smiParser != null && smiParser.getNumCuts() == 1) {
 				try {
 					smiParser = smiParser.getReverse();
 					retVal.add(smiParser);
@@ -906,6 +937,9 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 					}
 					// Goto next fragmentation
 					continue;
+				} catch (UnenumeratedStereochemistryException e) {
+					// Should never get here...
+					logger.warn("Unexpected problem: " + e.getMessage());
 				}
 
 			}
@@ -943,9 +977,11 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 		for (BondIdentifier bond : bonds) {
 			exec.checkCanceled();
 
-			MulticomponentSmilesFragmentParser smiParser;
+			MulticomponentSmilesFragmentParser smiParser = null;
 			try {
 				smiParser = fragFactory.fragmentMolecule(bond, prochiralAsChiral);
+				// Collect the fragmentation
+				retVal.add(smiParser);
 			} catch (MoleculeFragmentationException e) {
 				if (verboseLogging) {
 					logger.info("Discarding Fragmentation: " + e.getMessage() == null ? ""
@@ -953,13 +989,25 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 				}
 				// Goto next fragmentation
 				continue;
+			} catch (UnenumeratedStereochemistryException e) {
+				// Some stereochemistry that could not be applied by the
+				// Fragmentation Factory
+				try {
+					// NB the method handles the n=1 case reversal
+					retVal.addAll(
+							RDKitFragmentationUtils.enumerateDativeMaskedDoubleBondIsomers(e));
+				} catch (MoleculeFragmentationException e1) {
+					if (verboseLogging) {
+						logger.info("Discarding Fragmentation: " + e.getMessage() == null ? ""
+								: e.getMessage());
+					}
+					// Goto next fragmentation
+					continue;
+				}
 			}
 
-			// Collect the fragmentation
-			retVal.add(smiParser);
-
 			// Deal with the numCuts=1 special case
-			if (smiParser.getNumCuts() == 1) {
+			if (smiParser != null && smiParser.getNumCuts() == 1) {
 				try {
 					smiParser = smiParser.getReverse();
 					retVal.add(smiParser);
@@ -969,8 +1017,10 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 					}
 					// Goto next fragmentation
 					continue;
+				} catch (UnenumeratedStereochemistryException e) {
+					// Should never get here...
+					logger.warn("Unexpected problem: " + e.getMessage());
 				}
-
 			}
 		}
 		return retVal;
@@ -1009,9 +1059,10 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 		// Break each bond in turn
 		for (BondIdentifier bond : cuttableBonds) {
 			exec.checkCanceled();
-			MulticomponentSmilesFragmentParser smiParser;
+			MulticomponentSmilesFragmentParser smiParser = null;
 			try {
 				smiParser = fragFactory.fragmentMoleculeWithBondInsertion(bond, prochiralAsChiral);
+				fragmentations.add(smiParser);
 			} catch (MoleculeFragmentationException e) {
 				if (verboseLogging) {
 					logger.info("Discarding Fragmentation: " + e.getMessage() == null
@@ -1019,9 +1070,22 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 				}
 				// Goto next fragmentation
 				continue;
+			} catch (UnenumeratedStereochemistryException e) {
+				// Some stereochemistry that could not be applied by the
+				// Fragmentation Factory
+				try {
+					// NB the method handles the n=1 case reversal
+					fragmentations.addAll(
+							RDKitFragmentationUtils.enumerateDativeMaskedDoubleBondIsomers(e));
+				} catch (MoleculeFragmentationException e1) {
+					if (verboseLogging) {
+						logger.info("Discarding Fragmentation: " + e.getMessage() == null ? ""
+								: e.getMessage());
+					}
+					// Goto next fragmentation
+					continue;
+				}
 			}
-
-			fragmentations.add(smiParser);
 		}
 		return fragmentations;
 	}

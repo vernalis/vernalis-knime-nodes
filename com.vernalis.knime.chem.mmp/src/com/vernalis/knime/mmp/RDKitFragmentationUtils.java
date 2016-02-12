@@ -42,6 +42,8 @@ import org.knime.chem.types.SmilesCellFactory;
 import org.knime.core.data.DataCell;
 import org.knime.core.node.NodeModel;
 
+import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationException;
+import com.vernalis.knime.mmp.fragmentors.UnenumeratedStereochemistryException;
 import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
 
 /**
@@ -965,6 +967,12 @@ public class RDKitFragmentationUtils {
 				.replaceAll("@\\]([\\d]*)\\(\\[H\\]\\)", "@H]$1");
 		// smi = smi.replace("@][H]", "@H]").replace("@]([H])", "@H]");
 		smiles = smiles.replace("[H]", "").replace("()", "");
+		// Handle 'inside' double bond geom corner case, e.g.
+		// CC(\[H])=C/N, which otherwise becomes CC/=C/N
+		smiles = smiles.replaceAll(
+				"(\\[\\d*[A-Za-z]{1,2}H?\\+*\\-*\\d*\\]|C|c|B|b|O|o|N|n|P|p|S|s|F|Cl|Br|I|Na)\\((\\\\|/)\\)\\=",
+				"$2$1=");
+		// Handle where a double bond geometry was set to [H] not as above
 		smiles = smiles.replace("(/)", "\\").replace("(\\)", "/");
 		return smiles;
 	}
@@ -1174,4 +1182,42 @@ public class RDKitFragmentationUtils {
 		return retVal;
 	}
 
+	public static Set<MulticomponentSmilesFragmentParser> enumerateDativeMaskedDoubleBondIsomers(
+			UnenumeratedStereochemistryException e) throws MoleculeFragmentationException {
+		String[] isomers = new String[] { "/", "\\\\" };
+		// Need to makesure dont produce cis/trans pairings multiple times via
+		// e.g. //,\\ (happens by turning canonicalisation of the FragmentValue
+		// back on)
+		Set<MulticomponentSmilesFragmentParser> retVal = new LinkedHashSet<>();
+		Set<String> currentIteration = new LinkedHashSet<>();
+		currentIteration.add(e.getSmiles());
+		while (currentIteration.size() > 0) {
+			Set<String> nextIteration = new LinkedHashSet<>();
+			for (String smi : currentIteration) {
+				for (String geom : isomers) {
+
+					String newSmi = smi.replaceFirst("(<|>)", geom);
+					if (newSmi.contains(">") || newSmi.contains("<")) {
+						nextIteration.add(newSmi);
+					} else {
+						// All dative bonds replaced
+						try {
+							MulticomponentSmilesFragmentParser r = new MulticomponentSmilesFragmentParser(
+									newSmi, e.getRemoveHs());
+							retVal.add(r);
+							if (r.getNumCuts() == 1) {
+								retVal.add(r.getReverse());
+							}
+						} catch (UnenumeratedStereochemistryException e1) {
+							// We should never be able to get here!
+							throw new MoleculeFragmentationException(e1.getMessage());
+						}
+					}
+				}
+			}
+			currentIteration.clear();
+			currentIteration.addAll(nextIteration);
+		}
+		return retVal;
+	}
 }
