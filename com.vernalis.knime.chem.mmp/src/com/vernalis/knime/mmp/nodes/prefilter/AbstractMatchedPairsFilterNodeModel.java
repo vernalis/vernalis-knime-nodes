@@ -282,6 +282,7 @@ public class AbstractMatchedPairsFilterNodeModel extends NodeModel {
 		// ROMol_Vect from RDKFunc#getComponents()
 
 		if (roMol.MolToSmiles().contains(".")) {
+
 			return false;
 		}
 
