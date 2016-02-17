@@ -85,24 +85,6 @@ public class FragmentValue2 implements Comparable<FragmentValue2> {
 	}
 
 	/**
-	 * We always want *-* to canonicalize with the highest index first
-	 */
-	private void canonicalizeBondOnlyValue() {
-		if (SMILES.matches("\\[\\d+\\*\\](-)?\\[\\d+\\*\\]")) {
-			// Bond
-			Pattern p = Pattern.compile("\\[([0-9]+)\\*\\]");
-			Matcher m = p.matcher(SMILES);
-			m.find();
-			int firstIdx = Integer.parseInt(m.group(1));
-			m.find();
-			int secondIdx = Integer.parseInt(m.group(1));
-			if (secondIdx > firstIdx) {
-				SMILES = "[" + secondIdx + "*][" + firstIdx + "*]";
-			}
-		}
-	}
-
-	/**
 	 * Get the SMILES
 	 * 
 	 * @param removeExplicitHs
@@ -151,6 +133,7 @@ public class FragmentValue2 implements Comparable<FragmentValue2> {
 	public String getCanonicalIndexNaiveSMILES() {
 		String smi = getSMILES(false, false);
 		RWMol rwMol = RWMol.MolFromSmiles(smi, 0, false);
+		rwMol.sanitizeMol();
 		smi = rwMol.MolToSmiles(true);
 		rwMol.delete();
 		return smi;
@@ -298,10 +281,31 @@ public class FragmentValue2 implements Comparable<FragmentValue2> {
 	public void canonicalize() {
 		if (SMILES.matches("\\[\\d+\\*\\](-)?\\[\\d+\\*\\]")) {
 			canonicalizeBondOnlyValue();
+		} else if (SMILES.matches("^\\[[0-9]*?\\*[H]?\\]$")) {
+			SMILES = SMILES.replaceAll("^\\[([0-9]*?)\\*.*", "[$1*][H]");
 		} else {
-			ROMol mol = RWMol.MolFromSmiles(SMILES, 0, false);
+			RWMol mol = RWMol.MolFromSmiles(SMILES, 0, false);
+			mol.sanitizeMol();
 			SMILES = mol.MolToSmiles(true);
 			mol.delete();
+		}
+	}
+
+	/**
+	 * We always want *-* to canonicalize with the highest index first
+	 */
+	private void canonicalizeBondOnlyValue() {
+		if (SMILES.matches("\\[\\d+\\*\\](-)?\\[\\d+\\*\\]")) {
+			// Bond
+			Pattern p = Pattern.compile("\\[([0-9]+)\\*\\]");
+			Matcher m = p.matcher(SMILES);
+			m.find();
+			int firstIdx = Integer.parseInt(m.group(1));
+			m.find();
+			int secondIdx = Integer.parseInt(m.group(1));
+			if (secondIdx > firstIdx) {
+				SMILES = "[" + secondIdx + "*][" + firstIdx + "*]";
+			}
 		}
 	}
 

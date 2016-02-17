@@ -264,7 +264,11 @@ public class RDKitFragmentationUtils {
 		Match_Vect_Vect bondMatches = swigGC.markForCleanup(inMol.getSubstructMatches(bondMatch));
 		for (int i = 0; i < bondMatches.size(); i++) {
 			Match_Vect bond = swigGC.markForCleanup(bondMatches.get(i));
-			retVal.add(new BondIdentifier(bond, inMol));
+			int startId = swigGC.markForCleanup(bond.get(0)).getSecond();
+			int endId = swigGC.markForCleanup(bond.get(1)).getSecond();
+			int bondIdx = (int) swigGC.markForCleanup(inMol.getBondBetweenAtoms(startId, endId))
+					.getIdx();
+			retVal.add(new BondIdentifier(startId, endId, bondIdx));
 		}
 		swigGC.cleanupMarkedObjects();
 		return retVal;
@@ -916,7 +920,7 @@ public class RDKitFragmentationUtils {
 	 *            The maximum number of changing atoms ({@code null} if no
 	 *            filter)
 	 * @param minCnstToVarAtmRatio
-	 *            The minimum ration of constant to changing atoms ({@code null}
+	 *            The minimum ratio of constant to changing atoms ({@code null}
 	 *            if not filter)
 	 * @return {@code true} if all specified filters are passed
 	 */
@@ -963,9 +967,17 @@ public class RDKitFragmentationUtils {
 		// NB Tried to do with a backreference to '(' before [H] but
 		// couldnt
 		// get it working
+		// System.out.print(smiles + "\t--->\t");
 		smiles = smiles.replaceAll("@\\]([\\d]*)\\[H\\]", "@H]$1")
 				.replaceAll("@\\]([\\d]*)\\(\\[H\\]\\)", "@H]$1");
-		// smi = smi.replace("@][H]", "@H]").replace("@]([H])", "@H]");
+				// smi = smi.replace("@][H]", "@H]").replace("@]([H])", "@H]");
+
+		// Now [nH]/[pH]/[asH]
+		// NB we have to do with/without optional () around bracket separately
+		// otherwise a mismatched pair can be broken...
+		smiles = smiles.replaceAll("\\[H\\]\\[?(\\d*(n|p|as).*?)\\]", "[$1H]")
+				.replaceAll("(n|p|as)([%\\d]*)\\(\\[H\\]\\)", "[$1H]$2")
+				.replaceAll("(n|p|as)([%\\d]*)\\[H\\]", "[$1H]$2");
 		smiles = smiles.replace("[H]", "").replace("()", "");
 		// Handle 'inside' double bond geom corner case, e.g.
 		// CC(\[H])=C/N, which otherwise becomes CC/=C/N
@@ -974,6 +986,11 @@ public class RDKitFragmentationUtils {
 				"$2$1=");
 		// Handle where a double bond geometry was set to [H] not as above
 		smiles = smiles.replace("(/)", "\\").replace("(\\)", "/");
+		if (smiles.matches("^\\[[0-9]*?\\*[H]?\\]$")) {
+			smiles = smiles.replaceAll("^\\[([0-9]*?)\\*.*", "[$1*][H]");
+		}
+
+		// System.out.println(smiles);
 		return smiles;
 	}
 

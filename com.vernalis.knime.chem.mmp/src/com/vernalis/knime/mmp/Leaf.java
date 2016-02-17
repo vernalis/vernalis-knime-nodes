@@ -90,8 +90,8 @@ public class Leaf implements Comparable<Leaf> {
 		}
 		// System.out.println(smiles);
 		RWMol mol = RWMol.MolFromSmiles(smiles.replaceAll("\\[[0-9]+\\*\\]", "[*]"), 0, false);
-		// mol.sanitizeMol();
-		mol.findSSSR();
+		mol.sanitizeMol();
+		// mol.findSSSR();
 		canonicalSmiles = mol.MolToSmiles(true);
 		mol.delete();
 	}

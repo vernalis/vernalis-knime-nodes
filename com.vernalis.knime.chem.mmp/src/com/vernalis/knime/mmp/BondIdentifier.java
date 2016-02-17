@@ -34,8 +34,7 @@ import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
-public class BondIdentifier implements Comparable<BondIdentifier>,
-		Iterable<Integer> {
+public class BondIdentifier implements Comparable<BondIdentifier>, Iterable<Integer> {
 	private final int StartIdx, EndIdx;
 	private final long bondIdx;
 	private final ISWIGObjectGarbageCollector m_SWIG_GC = new SWIGObjectGarbageCollector();
@@ -51,11 +50,11 @@ public class BondIdentifier implements Comparable<BondIdentifier>,
 	 * @param mol
 	 *            The {@link ROMol} molecule object
 	 */
+	@Deprecated
 	public BondIdentifier(Match_Vect match, ROMol mol) {
 		StartIdx = match.get(0).getSecond();
 		EndIdx = match.get(1).getSecond();
-		bondIdx = m_SWIG_GC.markForCleanup(
-				mol.getBondBetweenAtoms(StartIdx, EndIdx)).getIdx();
+		bondIdx = m_SWIG_GC.markForCleanup(mol.getBondBetweenAtoms(StartIdx, EndIdx)).getIdx();
 		m_SWIG_GC.cleanupMarkedObjects();
 	}
 
@@ -110,8 +109,7 @@ public class BondIdentifier implements Comparable<BondIdentifier>,
 	 * @return The current bond index
 	 */
 	public long getBondIdx(ROMol mol) {
-		long retVal = m_SWIG_GC.markForCleanup(
-				mol.getBondBetweenAtoms(StartIdx, EndIdx)).getIdx();
+		long retVal = m_SWIG_GC.markForCleanup(mol.getBondBetweenAtoms(StartIdx, EndIdx)).getIdx();
 		m_SWIG_GC.cleanupMarkedObjects();
 		return retVal;
 	}

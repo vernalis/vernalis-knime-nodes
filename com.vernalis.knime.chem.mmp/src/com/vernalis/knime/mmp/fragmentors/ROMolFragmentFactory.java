@@ -50,6 +50,7 @@ import org.knime.core.node.NodeLogger;
 
 import com.vernalis.knime.mmp.BondIdentifier;
 import com.vernalis.knime.mmp.MulticomponentSmilesFragmentParser;
+import com.vernalis.knime.mmp.RDKitFragmentationUtils;
 import com.vernalis.knime.swiggc.ISWIGObjectGarbageCollector;
 import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
 
@@ -94,7 +95,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 
 	private final ROMol mol;
 
-	private boolean isChiral, hasUndefinedChirality;
+	private boolean isChiral, hasUndefinedChirality, hasNonflaggedDoubleBonds;
 
 	private final ISWIGObjectGarbageCollector gc = new SWIGObjectGarbageCollector();
 
@@ -107,6 +108,20 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	private boolean removeHs;
 
 	/**
+	 * The maximum number of Changing HAs ({@code null} if not filter- not used
+	 * for 1 cut
+	 */
+	private Integer maxNumberChangingHAs;
+
+	/**
+	 * The minimum ratio of constant to changing atoms ({@code null} if not
+	 * filter) - not used for 1 cut
+	 */
+	private Double minCnstToVarAtmRatio;
+
+	private int HAC;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param mol
@@ -116,11 +131,16 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	 * @param verboseLogging
 	 *            Should the logger be used
 	 */
-	public ROMolFragmentFactory(ROMol mol, boolean removeHs, boolean verboseLogging) {
+	public ROMolFragmentFactory(ROMol mol, boolean removeHs, boolean verboseLogging,
+			Integer maxNumberChangingHAs, Double minCnstToVarAtmRatio) {
 		this.removeHs = removeHs;
 		this.mol = gc.markForCleanup(new ROMol(mol), 1);
 		this.verboseLogging = verboseLogging;
+		this.maxNumberChangingHAs = maxNumberChangingHAs;
+		this.minCnstToVarAtmRatio = minCnstToVarAtmRatio;
+		this.HAC = (int) mol.getNumHeavyAtoms();
 		isChiral = false;
+		hasUndefinedChirality = false;
 		hasUndefinedChirality = false;
 		markUnassignedPossibleDoubleBonds();
 		markUnassignedPossibleChiralCentres();
@@ -131,31 +151,25 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	 * flagged with the property {@value #UNSPECIFIED_DOUBLE_BOND}
 	 */
 	protected void markUnassignedPossibleDoubleBonds() {
+
 		RDKFuncs.findPotentialStereoBonds(this.mol, false);
 		// Now loop through the bonds
 		for (BondIterator iter = gc.markForCleanup(this.mol.beginBonds(), 1); iter
 				.ne(gc.markForCleanup(this.mol.endBonds(), 1)); gc.markForCleanup(iter.next(), 1)) {
 
 			Bond bd = gc.markForCleanup(iter.getBond(), 1);
-
-			if (bd.getBondType() == BondType.DOUBLE
-					&& gc.markForCleanup(bd.getStereoAtoms(), 1).size() > 0) {
-				// We only worry about double bonds which could be stereo
-				boolean isStereo = false;
-				// Check that it *could* be a stereobond - we only
-				// care about those that could be but arent
-				if (bd.getBondDir() != BondDir.EITHERDOUBLE) {
-					Bond_Vect bv = gc
-							.markForCleanup(gc.markForCleanup(bd.getBeginAtom(), 1).getBonds(), 1);
-					for (int i = 0; i < bv.size(); i++) {
-						if (gc.markForCleanup(bv.get(i), 1).getBondDir() != BondDir.NONE && gc
-								.markForCleanup(bv.get(i), 1).getBondDir() != BondDir.UNKNOWN) {
-							isStereo = true;
-							break;
-						}
-					}
-					if (!isStereo) {
-						bv = gc.markForCleanup(gc.markForCleanup(bd.getEndAtom(), 1).getBonds(), 1);
+			// System.out.println(bd.getBondType() + "\t::\t" + bd.getBondDir()
+			// + "\t::\t"
+			// + bd.getStereoAtoms().size());
+			if (bd.getBondType() == BondType.DOUBLE) {
+				if (gc.markForCleanup(bd.getStereoAtoms(), 1).size() > 0) {
+					// We only worry about double bonds which could be stereo
+					boolean isStereo = false;
+					// Check that it *could* be a stereobond - we only
+					// care about those that could be but arent
+					if (bd.getBondDir() != BondDir.EITHERDOUBLE) {
+						Bond_Vect bv = gc.markForCleanup(
+								gc.markForCleanup(bd.getBeginAtom(), 1).getBonds(), 1);
 						for (int i = 0; i < bv.size(); i++) {
 							if (gc.markForCleanup(bv.get(i), 1).getBondDir() != BondDir.NONE && gc
 									.markForCleanup(bv.get(i), 1).getBondDir() != BondDir.UNKNOWN) {
@@ -163,12 +177,60 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 								break;
 							}
 						}
+						if (!isStereo) {
+							bv = gc.markForCleanup(gc.markForCleanup(bd.getEndAtom(), 1).getBonds(),
+									1);
+							for (int i = 0; i < bv.size(); i++) {
+								if (gc.markForCleanup(bv.get(i), 1).getBondDir() != BondDir.NONE
+										&& gc.markForCleanup(bv.get(i), 1)
+												.getBondDir() != BondDir.UNKNOWN) {
+									isStereo = true;
+									break;
+								}
+							}
+						}
+					}
+					if (!isStereo) {
+						bd.setProp(UNSPECIFIED_DOUBLE_BOND, "1");
+					} else {
+						bd.setProp(SPECIFIED_DOUBLE_BOND, "1");
+					}
+				} else {
+					// In some cases, e.g. the exocyclic ring = in
+					// Br/C(=N\N=c1/nn[nH][nH]1)c1ccncc1 CHEMBL1410841
+					// bd#getStereoAtoms() does not percieve any as it treats
+					// the tetrazole as symmetrical
+					// In this case, we need to check that both ends of the bond
+					// dont actually have stereomarkers
+					boolean startHasFlag = false;
+					boolean endHasFlag = false;
+					Bond_Vect bv = gc
+							.markForCleanup(gc.markForCleanup(bd.getBeginAtom(), 1).getBonds(), 1);
+					for (int i = 0; i < bv.size() && !startHasFlag; i++) {
+						if ((gc.markForCleanup(bv.get(i), 1).getBondType() == BondType.SINGLE || gc
+								.markForCleanup(bv.get(i), 1).getBondType() == BondType.AROMATIC)
+								&& (gc.markForCleanup(bv.get(i), 1).getBondDir() != BondDir.NONE
+										&& gc.markForCleanup(bv.get(i), 1)
+												.getBondDir() != BondDir.UNKNOWN)) {
+							startHasFlag = true;
+						}
+					}
+					bv = gc.markForCleanup(gc.markForCleanup(bd.getEndAtom(), 1).getBonds());
+					for (int i = 0; i < bv.size() && !endHasFlag; i++) {
+						if ((gc.markForCleanup(bv.get(i), 1).getBondType() == BondType.SINGLE || gc
+								.markForCleanup(bv.get(i), 1).getBondType() == BondType.AROMATIC)
+								&& (gc.markForCleanup(bv.get(i), 1).getBondDir() != BondDir.NONE
+										&& gc.markForCleanup(bv.get(i), 1)
+												.getBondDir() != BondDir.UNKNOWN)) {
+							endHasFlag = true;
+						}
+					}
+					if (startHasFlag && endHasFlag) {
+						bd.setProp(SPECIFIED_DOUBLE_BOND, "1");
 					}
 				}
-				if (!isStereo) {
-					bd.setProp(UNSPECIFIED_DOUBLE_BOND, "1");
-				} else {
-					bd.setProp(SPECIFIED_DOUBLE_BOND, "1");
+				if (!bd.hasProp(UNSPECIFIED_DOUBLE_BOND) && !bd.hasProp(SPECIFIED_DOUBLE_BOND)) {
+					hasNonflaggedDoubleBonds = true;
 				}
 			}
 		}
@@ -237,6 +299,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		}
 
 		// Firstly, we break the bond
+		// TODO: Does the Native ROMol object #delete() the bond on removal?
 		tmp.removeBond(bond.getStartIdx(), bond.getEndIdx());
 
 		// Now start at the first index of the first bond, and list all the atom
@@ -329,59 +392,17 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		applyAPIsotopicLabels(key, localGcWave);
 		applyAPIsotopicLabels(value, localGcWave);
 
-		String retVal = key.MolToSmiles(true) + "." + value.MolToSmiles(true);// getCanonicalValueSMILES(value,
-																				// localGcWave);
+		String retVal = removeHs
+				? (RDKitFragmentationUtils.removeHydrogens(key.MolToSmiles(true)) + "."
+						+ RDKitFragmentationUtils.removeHydrogens(value.MolToSmiles(true)))
+				: (key.MolToSmiles(true) + "." + value.MolToSmiles(true));// getCanonicalValueSMILES(value,
+		// localGcWave);
+		if (removeHs) {
+			retVal = RDKitFragmentationUtils.removeHydrogens(retVal);
+		}
 		gc.cleanupMarkedObjects(localGcWave);
 
 		return new MulticomponentSmilesFragmentParser(retVal, removeHs);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.vernalis.knime.internal.mmp.MoleculeFragmentationFactory#
-	 * fragmentMolecule (java.util.Set)
-	 */
-	@Override
-	public MulticomponentSmilesFragmentParser fragmentMolecule(Set<BondIdentifier> bonds,
-			boolean treatProchiralAsChiral) throws IllegalArgumentException,
-					MoleculeFragmentationException, UnenumeratedStereochemistryException {
-
-		if (bonds == null || bonds.size() == 0) {
-			throw new IllegalArgumentException("At least one bond must be supplied");
-		}
-
-		if (bonds.size() == 1) {
-			return fragmentMolecule(bonds.iterator().next(), treatProchiralAsChiral);
-		}
-
-		// check which fragmentation route is required
-		List<BondIdentifier> orderedBonds = new ArrayList<>(bonds);
-		boolean useMultipleFragmentMols = false;
-		for (int i = 0; i < bonds.size() - 1; i++) {
-			for (int j = i + 1; j < bonds.size(); j++) {
-				if (orderedBonds.get(i).hasSharedAtomWith(orderedBonds.get(j))) {
-					useMultipleFragmentMols = true;
-					break;
-				}
-			}
-			if (useMultipleFragmentMols) {
-				break;
-			}
-		}
-
-		// Now assign the temporary indices
-		int index = 500;
-		for (BondIdentifier bond : bonds) {
-			bond.setFragmentationIndex(index++);
-		}
-
-		// Now do the relevant flavour of fragmentation
-		if (useMultipleFragmentMols) {
-			return fragmentLong(bonds, treatProchiralAsChiral);
-		} else {
-			return fragmentShort(bonds, treatProchiralAsChiral);
-		}
 	}
 
 	/*
@@ -399,7 +420,27 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 			throw new IllegalArgumentException("A bond must be supplied");
 		}
 
-		// Single bond is much simpler!
+		// Pre-apply the filters...
+		// NB As valueHAC=0, the minCnstToVarAtmRatio can never be breached!
+		int valueHAC = 0;
+		if (maxNumberChangingHAs != null && valueHAC > maxNumberChangingHAs) {
+			// There is a Maximum number of changing atoms filter, and it is
+			// violated
+			throw new MoleculeFragmentationException("Maximum number of Changing HAs threshold ("
+					+ maxNumberChangingHAs + " breached (" + valueHAC + ")");
+		}
+
+		// int keyHAC = HAC - valueHAC;
+		// if (minCnstToVarAtmRatio != null && (1.0 * keyHAC / valueHAC) <
+		// minCnstToVarAtmRatio) {
+		// // There is a Minumum const/varying atom ratio filter, and it is
+		// // violated
+		// throw new MoleculeFragmentationException("Minimum Constant / Changing
+		// HAs threshold ("
+		// + minCnstToVarAtmRatio + " breached (" + keyHAC + "/" + valueHAC +
+		// ")");
+		// }
+
 		int localGcWave = gcWave.getAndIncrement();
 		RWMol tmp = gc.markForCleanup(new RWMol(mol), localGcWave);
 
@@ -506,6 +547,54 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		return new MulticomponentSmilesFragmentParser(retVal + ".[501*][500*]", removeHs);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.vernalis.knime.internal.mmp.MoleculeFragmentationFactory#
+	 * fragmentMolecule (java.util.Set)
+	 */
+	@Override
+	public MulticomponentSmilesFragmentParser fragmentMolecule(Set<BondIdentifier> bonds,
+			boolean treatProchiralAsChiral) throws IllegalArgumentException,
+					MoleculeFragmentationException, UnenumeratedStereochemistryException {
+
+		if (bonds == null || bonds.size() == 0) {
+			throw new IllegalArgumentException("At least one bond must be supplied");
+		}
+
+		if (bonds.size() == 1) {
+			return fragmentMolecule(bonds.iterator().next(), treatProchiralAsChiral);
+		}
+
+		// check which fragmentation route is required
+		List<BondIdentifier> orderedBonds = new ArrayList<>(bonds);
+		boolean useMultipleFragmentMols = false;
+		for (int i = 0; i < bonds.size() - 1; i++) {
+			for (int j = i + 1; j < bonds.size(); j++) {
+				if (orderedBonds.get(i).hasSharedAtomWith(orderedBonds.get(j))) {
+					useMultipleFragmentMols = true;
+					break;
+				}
+			}
+			if (useMultipleFragmentMols) {
+				break;
+			}
+		}
+
+		// Now assign the temporary indices
+		int index = 500;
+		for (BondIdentifier bond : bonds) {
+			bond.setFragmentationIndex(index++);
+		}
+
+		// Now do the relevant flavour of fragmentation
+		if (useMultipleFragmentMols) {
+			return fragmentLong(bonds, treatProchiralAsChiral);
+		} else {
+			return fragmentShort(bonds, treatProchiralAsChiral);
+		}
+	}
+
 	/**
 	 * Private method to perform fragmentation when attachment point atoms will
 	 * collide (i.e. geminal break)
@@ -519,7 +608,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		int localGcWave = gcWave.getAndIncrement();
 		RWMol tmp = gc.markForCleanup(new RWMol(mol), localGcWave);
 
-		// A list of the atom indices used in bond breads
+		// A list of the atom indices used in bond breaks
 		Set<Long> APLookup = new HashSet<>();
 		// Firstly, we break all the marked bonds
 		for (BondIdentifier bond : bonds) {
@@ -536,11 +625,14 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		List<List<Long>> leafIdxs = new ArrayList<>();
 		Set<Long> foundAPs = new HashSet<>();
 
+		int valueHAC = 0;
+		int keyHAC = 0;
 		for (BondIdentifier bond : bonds) {
 			// Now start at the first index of the first bond, and list all the
 			// atoms
 			// IDs visited and count the APs
 			for (long bondEndIndex : bond) {
+				int HAC = 0;
 				if (!foundAPs.contains(bondEndIndex)) {
 					int apCount = 0;
 					List<Long> visitedAtomIDs = new ArrayList<>();
@@ -551,6 +643,9 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 						for (Long atIdx : atomLayer) {
 							visitedAtomIDs.add(atIdx);
 							Atom at0 = gc.markForCleanup(tmp.getAtomWithIdx(atIdx), localGcWave);
+							if (at0.getAtomicNum() > 1) {
+								HAC++;
+							}
 							if (APLookup.contains(atIdx)) {
 								for (BondIdentifier bond2 : bonds) {
 									// Make sure we count all APs to the atom
@@ -579,17 +674,38 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 					if (apCount == 1) {
 						if (bonds.size() == 1 && coreIdxs == null) {
 							coreIdxs = new ArrayList<>(visitedAtomIDs);
+							valueHAC = HAC;
 						} else {
 							leafIdxs.add(new ArrayList<>(visitedAtomIDs));
+							keyHAC += HAC;
 						}
 					} else if (apCount == bonds.size() && coreIdxs == null) {
 						coreIdxs = new ArrayList<>(visitedAtomIDs);
+						valueHAC = HAC;
 					} else {
 						gc.cleanupMarkedObjects(localGcWave);
 						throw new MoleculeFragmentationException();
 					}
 				}
 			}
+		}
+		// System.out.println(tmp.MolToSmiles(true));
+		// System.out.println("Key: " + keyHAC + "\tValue: " + valueHAC);
+
+		if (maxNumberChangingHAs != null && valueHAC > maxNumberChangingHAs) {
+			// There is a Maximum number of changing atoms filter, and it is
+			// violated
+			gc.cleanupMarkedObjects(localGcWave);
+			throw new MoleculeFragmentationException("Maximum number of Changing HAs threshold ("
+					+ maxNumberChangingHAs + " breached (" + valueHAC + ")");
+		}
+
+		if (minCnstToVarAtmRatio != null && (1.0 * keyHAC / valueHAC) < minCnstToVarAtmRatio) {
+			// There is a Minumum const/varying atom ratio filter, and it is
+			// violated
+			gc.cleanupMarkedObjects(localGcWave);
+			throw new MoleculeFragmentationException("Minimum Constant / Changing HAs threshold ("
+					+ minCnstToVarAtmRatio + " breached (" + keyHAC + "/" + valueHAC + ")");
 		}
 
 		// A final check...
@@ -720,6 +836,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		// Now start at the first index of the first bond, and list all the atom
 		// IDs visited and count the APs
 		int apCount = 0;
+		int valueHAC = 0;
 		List<Long> visitedAtomIDs = new ArrayList<>();
 		Set<Long> atomLayer = new HashSet<>();
 		atomLayer.add((long) bonds.iterator().next().getStartIdx());
@@ -728,6 +845,9 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 			for (Long atIdx : atomLayer) {
 				visitedAtomIDs.add(atIdx);
 				Atom at0 = gc.markForCleanup(tmp.getAtomWithIdx(atIdx), localGcWave);
+				if (at0.getAtomicNum() > 1) {
+					valueHAC++;
+				}
 				if (APLookup.containsKey(atIdx)) {
 					apCount++;
 				}
@@ -755,6 +875,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 			// We were on a leaf (or n=1, which is degenerate) and need to try
 			// again
 			apCount = 0;
+			valueHAC = 0;
 			visitedAtomIDs = new ArrayList<>();
 			atomLayer = new HashSet<>();
 			atomLayer.add((long) bonds.iterator().next().getEndIdx());
@@ -763,6 +884,9 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 				for (Long atIdx : atomLayer) {
 					visitedAtomIDs.add(atIdx);
 					Atom at0 = gc.markForCleanup(tmp.getAtomWithIdx(atIdx), localGcWave);
+					if (at0.getAtomicNum() > 1) {
+						valueHAC++;
+					}
 					if (APLookup.containsKey(atIdx)) {
 						apCount++;
 					}
@@ -785,6 +909,26 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		if (apCount != 1 && apCount != bonds.size()) {
 			gc.cleanupMarkedObjects(localGcWave);
 			throw new MoleculeFragmentationException();
+		}
+
+		// System.out.println(tmp.MolToSmiles(true));
+		// System.out.println("Key: " + keyHAC + "\tValue: " + valueHAC);
+
+		if (maxNumberChangingHAs != null && valueHAC > maxNumberChangingHAs) {
+			// There is a Maximum number of changing atoms filter, and it is
+			// violated
+			gc.cleanupMarkedObjects(localGcWave);
+			throw new MoleculeFragmentationException("Maximum number of Changing HAs threshold ("
+					+ maxNumberChangingHAs + " breached (" + valueHAC + ")");
+		}
+
+		int keyHAC = HAC - valueHAC;
+		if (minCnstToVarAtmRatio != null && (1.0 * keyHAC / valueHAC) < minCnstToVarAtmRatio) {
+			// There is a Minumum const/varying atom ratio filter, and it is
+			// violated
+			gc.cleanupMarkedObjects(localGcWave);
+			throw new MoleculeFragmentationException("Minimum Constant / Changing HAs threshold ("
+					+ minCnstToVarAtmRatio + " breached (" + keyHAC + "/" + valueHAC + ")");
 		}
 
 		// Now, visitedAtomIDs contains a list of the atoms in the 'value' or
@@ -961,6 +1105,11 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	 */
 	private void assignCreatedDblBondGeometry(RWMol component, int localGcWave) {
 		// System.out.println("Starting... " + component.MolToSmiles(true));
+		if (!hasNonflaggedDoubleBonds || !component.MolToSmiles(true).contains("=")) {
+			// Nothing to do with this component..
+			return;
+		}
+
 		try {
 			component.sanitizeMol();
 			// This adds a list of stereoatoms to previously unassigned double
@@ -1108,8 +1257,9 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	 *            The GC Wave for garbage collection
 	 */
 	private void applyAPIsotopicLabels(RWMol component, int localGcWave) {
-		for (AtomIterator iter = gc.markForCleanup(component.beginAtoms(), 1); iter.ne(
-				gc.markForCleanup(component.endAtoms(), 1)); gc.markForCleanup(iter.next(), 1)) {
+		for (AtomIterator iter = gc.markForCleanup(component.beginAtoms(), localGcWave); iter
+				.ne(gc.markForCleanup(component.endAtoms(), localGcWave)); gc
+						.markForCleanup(iter.next(), localGcWave)) {
 			Atom at = gc.markForCleanup(iter.getAtom(), localGcWave);
 
 			if (at.getAtomicNum() == 0 && at.hasProp(AP_ISOTOPIC_LABEL)) {
@@ -1267,8 +1417,9 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 
 	private long findIndexOfLabelledAtom(RWMol component, int apIndex, int localGcWave) {
 		long retVal = -1; // -1 -> Not fount
-		for (AtomIterator iter = gc.markForCleanup(component.beginAtoms(), 1); iter.ne(
-				gc.markForCleanup(component.endAtoms(), 1)); gc.markForCleanup(iter.next(), 1)) {
+		for (AtomIterator iter = gc.markForCleanup(component.beginAtoms(), localGcWave); iter
+				.ne(gc.markForCleanup(component.endAtoms(), localGcWave)); gc
+						.markForCleanup(iter.next(), localGcWave)) {
 			Atom at = gc.markForCleanup(iter.getAtom(), localGcWave);
 
 			if (at.getAtomicNum() == 0 && at.hasProp(AP_ISOTOPIC_LABEL)) {
@@ -1284,8 +1435,9 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 
 	private int getAPIndex(RWMol component, int localGcWave) {
 		int retVal = -1;
-		for (AtomIterator iter = gc.markForCleanup(component.beginAtoms(), 1); iter.ne(
-				gc.markForCleanup(component.endAtoms(), 1)); gc.markForCleanup(iter.next(), 1)) {
+		for (AtomIterator iter = gc.markForCleanup(component.beginAtoms(), localGcWave); iter
+				.ne(gc.markForCleanup(component.endAtoms(), localGcWave)); gc
+						.markForCleanup(iter.next(), localGcWave)) {
 			Atom at = gc.markForCleanup(iter.getAtom(), localGcWave);
 
 			if (at.getAtomicNum() == 0 && at.hasProp(AP_ISOTOPIC_LABEL)) {

@@ -458,13 +458,12 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 					return fragmentRow(in, index + 1, numCols, molIdx,
 							m_addFailReasons.getBooleanValue(), bondMatch, numCuts,
 							m_prochiralAsChiral.getBooleanValue(), addHs, stripHsAtEnd,
-							numCuts == 2 && m_allowTwoCutsToBondValue.getBooleanValue(),
-							maxNumVarAtm, minCnstToVarAtmRatio, idIdx,
-							m_outputNumChgHAs.getBooleanValue(), m_outputHARatio.getBooleanValue(),
-							m_apFingerprints.getBooleanValue(), m_morganRadius.getIntValue(),
-							m_fpLength.getIntValue(), m_useChirality.getBooleanValue(),
-							m_useBondTypes.getBooleanValue(), m_SWIGGC, exec, m_Logger,
-							verboseLogging);
+							m_allowTwoCutsToBondValue.getBooleanValue(), maxNumVarAtm,
+							minCnstToVarAtmRatio, idIdx, m_outputNumChgHAs.getBooleanValue(),
+							m_outputHARatio.getBooleanValue(), m_apFingerprints.getBooleanValue(),
+							m_morganRadius.getIntValue(), m_fpLength.getIntValue(),
+							m_useChirality.getBooleanValue(), m_useBondTypes.getBooleanValue(),
+							m_SWIGGC, exec, m_Logger, verboseLogging);
 				} catch (CanceledExecutionException e) {
 					throw new CancellationException();
 				}
@@ -500,11 +499,11 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 						throw new InterruptedException("Exception encountered during execution: "
 								+ e.getClass().getSimpleName() + " '" + e.getMessage() + "'");
 					}
+				} finally {
+					m_SWIGGC.cleanupMarkedObjects((int) (r + 1));
+					exec.setProgress((r + 1.0) / numRows,
+							"Processed row " + (r + 1) + " of " + numRows);
 				}
-
-				m_SWIGGC.cleanupMarkedObjects((int) (r + 1));
-				exec.setProgress((r + 1.0) / numRows,
-						"Processed row " + (r + 1) + " of " + numRows);
 
 				try {
 					exec.checkCanceled();
@@ -518,6 +517,8 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 		try {
 			processor.run(table);
 		} catch (InterruptedException e) {
+			// Quarantine to give time for all threads to cancel
+			m_SWIGGC.quarantineAndCleanupMarkedObjects();
 			CanceledExecutionException cee = new CanceledExecutionException(e.getMessage());
 			cee.initCause(e);
 			throw cee;
@@ -527,8 +528,12 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 				cause = e;
 			}
 			if (cause instanceof RuntimeException) {
+				// Quarantine to give time for all threads to cancel
+				m_SWIGGC.quarantineAndCleanupMarkedObjects();
 				throw (RuntimeException) cause;
 			}
+			// Quarantine to give time for all threads to cancel
+			m_SWIGGC.quarantineAndCleanupMarkedObjects();
 			throw new RuntimeException(cause);
 		}
 
@@ -744,16 +749,20 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 		if (addHs) {
 			ROMol roMol2 = swigGC.markForCleanup(new ROMol(roMol), (int) index);
 			roMol2 = swigGC.markForCleanup(roMol2.addHs(false, false), (int) index);
-			fragFactory = new ROMolFragmentFactory(roMol2, stripHsAtEnd, verboseLogging);
+			fragFactory = new ROMolFragmentFactory(roMol2, stripHsAtEnd, verboseLogging,
+					maxNumVarAtm, minCnstToVarAtmRatio);
 			fragmentations.addAll(breakMoleculeAlongBonds(fragFactory,
 					RDKitFragmentationUtils.identifyAllMatchingBonds(roMol2, bondMatch),
 					prochiralAsChiral, exec, logger, verboseLogging));
 
-			// Now return the fragFactory to the main unhydrogenated molecule:
-			fragFactory = new ROMolFragmentFactory(roMol, stripHsAtEnd, verboseLogging);
+			// Now return the fragFactory to the main unhydrogenated molecule -
+			// and in which case we dont strip Hs
+			fragFactory = new ROMolFragmentFactory(roMol, false, verboseLogging, maxNumVarAtm,
+					minCnstToVarAtmRatio);
 		} else {
 			// Otherwise we just cut along every bond
-			fragFactory = new ROMolFragmentFactory(roMol, stripHsAtEnd, verboseLogging);
+			fragFactory = new ROMolFragmentFactory(roMol, false, verboseLogging, maxNumVarAtm,
+					minCnstToVarAtmRatio);
 			fragmentations.addAll(breakMoleculeAlongBonds(fragFactory, cuttableBonds,
 					prochiralAsChiral, exec, logger, verboseLogging));
 		}
@@ -788,8 +797,8 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 		// Now add the fragmentations to output rows:
 		boolean addedFragmentations = false;
 		for (MulticomponentSmilesFragmentParser smiParser : fragmentations) {
-			if (RDKitFragmentationUtils.filterFragment(smiParser.getKey(), smiParser.getValue(),
-					maxNumVarAtm, minCnstToVarAtmRatio)) {
+			if (smiParser.getNumCuts() > 1 || RDKitFragmentationUtils.filterFragment(
+					smiParser.getKey(), smiParser.getValue(), maxNumVarAtm, minCnstToVarAtmRatio)) {
 				addedFragmentations = true;
 				addRowToTable(retVal, stripHsAtEnd, idCell, smiParser, numCols, outputNumChgHAs,
 						outputHARatio, addFingerprints, morganRadius, fpLength, useChirality,
@@ -892,11 +901,17 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 			MoleculeFragmentationFactory fragFactory, Set<Set<BondIdentifier>> bondCombos,
 			boolean prochiralAsChiral, ExecutionContext exec, NodeLogger logger,
 			boolean verboseLogging) throws CanceledExecutionException {
-
+		int count = 0;
 		Set<MulticomponentSmilesFragmentParser> retVal = new TreeSet<>();
 		for (Set<BondIdentifier> bondSet : bondCombos) {
 			exec.checkCanceled();
-
+			count++;
+			if (verboseLogging) {
+				if (count % 50 == 0) {
+					logger.info("Fragmenting molecule: " + count + " of " + bondCombos.size()
+							+ " fragmentations tried");
+				}
+			}
 			MulticomponentSmilesFragmentParser smiParser = null;
 			try {
 				smiParser = fragFactory.fragmentMolecule(bondSet, prochiralAsChiral);
@@ -1074,7 +1089,6 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 				// Some stereochemistry that could not be applied by the
 				// Fragmentation Factory
 				try {
-					// NB the method handles the n=1 case reversal
 					fragmentations.addAll(
 							RDKitFragmentationUtils.enumerateDativeMaskedDoubleBondIsomers(e));
 				} catch (MoleculeFragmentationException e1) {
@@ -1133,8 +1147,10 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel extends NodeModel {
 		int colIdx = 0;
 		cells[colIdx++] = idCell;
 		FragmentKey2 key = smiParser.getKey();
-		cells[colIdx++] = key.getKeyAsDataCell(stripHsAtEnd);
-		cells[colIdx++] = smiParser.getValue().getSMILESCell(stripHsAtEnd);
+		// The fragmentation factory should already have removed H's so we dont
+		// repeat the effort here!
+		cells[colIdx++] = key.getKeyAsDataCell(false);
+		cells[colIdx++] = smiParser.getValue().getSMILESCell(false);
 		if (outputNumChgHAs) {
 			cells[colIdx++] = smiParser.getValue().getNumberChangingAtomsCell();
 		}

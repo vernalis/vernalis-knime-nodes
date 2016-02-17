@@ -500,11 +500,11 @@ public class ParallelRdkitMMPFragment3NodeModel extends NodeModel {
 						throw new InterruptedException("Exception encountered during execution: "
 								+ e.getClass().getSimpleName() + " '" + e.getMessage() + "'");
 					}
+				} finally {
+					m_SWIGGC.cleanupMarkedObjects((int) (r + 1));
+					exec.setProgress((r + 1.0) / numRows,
+							"Processed row " + (r + 1) + " of " + numRows);
 				}
-
-				m_SWIGGC.cleanupMarkedObjects((int) (r + 1));
-				exec.setProgress((r + 1.0) / numRows,
-						"Processed row " + (r + 1) + " of " + numRows);
 
 				try {
 					exec.checkCanceled();
@@ -518,6 +518,8 @@ public class ParallelRdkitMMPFragment3NodeModel extends NodeModel {
 		try {
 			processor.run(table);
 		} catch (InterruptedException e) {
+			// Quarantine to give time for all threads to cancel
+			m_SWIGGC.quarantineAndCleanupMarkedObjects();
 			CanceledExecutionException cee = new CanceledExecutionException(e.getMessage());
 			cee.initCause(e);
 			throw cee;
@@ -527,8 +529,12 @@ public class ParallelRdkitMMPFragment3NodeModel extends NodeModel {
 				cause = e;
 			}
 			if (cause instanceof RuntimeException) {
+				// Quarantine to give time for all threads to cancel
+				m_SWIGGC.quarantineAndCleanupMarkedObjects();
 				throw (RuntimeException) cause;
 			}
+			// Quarantine to give time for all threads to cancel
+			m_SWIGGC.quarantineAndCleanupMarkedObjects();
 			throw new RuntimeException(cause);
 		}
 
@@ -755,7 +761,7 @@ public class ParallelRdkitMMPFragment3NodeModel extends NodeModel {
 		}
 
 		MoleculeFragmentationFactory fragFactory = new ROMolFragmentFactory(roMol, stripHsAtEnd,
-				verboseLogging);
+				verboseLogging, maxNumVarAtm, minCnstToVarAtmRatio);
 		// Deal with the special case of 2 cuts, and allowing *-* as a value
 		if (numCuts == 2 && allowTwoCutsToBondValue) {
 			fragmentations.addAll(doDoubleCutToSingleBond(fragFactory, cuttableBonds,
@@ -1065,8 +1071,10 @@ public class ParallelRdkitMMPFragment3NodeModel extends NodeModel {
 		int colIdx = 0;
 		cells[colIdx++] = idCell;
 		FragmentKey2 key = smiParser.getKey();
-		cells[colIdx++] = key.getKeyAsDataCell(stripHsAtEnd);
-		cells[colIdx++] = smiParser.getValue().getSMILESCell(stripHsAtEnd);
+		// The fragmentation factory should already have removed H's so we dont
+		// repeat the effort here!
+		cells[colIdx++] = key.getKeyAsDataCell(false);
+		cells[colIdx++] = smiParser.getValue().getSMILESCell(false);
 		if (outputNumChgHAs) {
 			cells[colIdx++] = smiParser.getValue().getNumberChangingAtomsCell();
 		}
