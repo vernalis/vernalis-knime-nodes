@@ -68,8 +68,7 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 	 * @param initialCapacity
 	 * @param loadFactor
 	 */
-	public SWIGObjectGarbageCollector(final int initialCapacity,
-			final float loadFactor) {
+	public SWIGObjectGarbageCollector(final int initialCapacity, final float loadFactor) {
 		super(initialCapacity, loadFactor);
 	}
 
@@ -128,8 +127,8 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 	 * @return The same object that was passed in. Null, if null was passed in.
 	 */
 	@Override
-	public synchronized <T extends Object> T markForCleanup(final T object,
-			final int wave, final boolean bRemoveFromOtherWave) {
+	public synchronized <T extends Object> T markForCleanup(final T object, final int wave,
+			final boolean bRemoveFromOtherWave) {
 		if (object != null) {
 
 			// Remove object from any other list, if desired (cost performance!)
@@ -203,8 +202,7 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 	 * @return The same object that was passed in. Null, if null was passed in.
 	 */
 	@Override
-	public synchronized <T extends Object> T markForCleanup(final T object,
-			final int wave) {
+	public synchronized <T extends Object> T markForCleanup(final T object, final int wave) {
 		return markForCleanup(object, wave, false);
 	}
 
@@ -346,21 +344,19 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 			LOGGER.error(
 					"An object had been registered for cleanup (delete() call), "
 							+ "which does not provide a delete() method."
-							+ (clazz == null ? "" : " It's of class "
-									+ clazz.getName() + "."),
+							+ (clazz == null ? "" : " It's of class " + clazz.getName() + "."),
 					excNoSuchMethod.getCause());
 		} catch (final SecurityException excSecurity) {
 			LOGGER.error(
 					"An object had been registered for cleanup (delete() call), "
 							+ "which is not accessible for security reasons."
-							+ (clazz == null ? "" : " It's of class "
-									+ clazz.getName() + "."),
+							+ (clazz == null ? "" : " It's of class " + clazz.getName() + "."),
 					excSecurity.getCause());
 		} catch (final Exception exc) {
 			LOGGER.error(
 					"Cleaning up a registered object (via delete() call) failed."
-							+ (clazz == null ? "" : " It's of class "
-									+ clazz.getName() + "."), exc.getCause());
+							+ (clazz == null ? "" : " It's of class " + clazz.getName() + "."),
+					exc.getCause());
 		}
 	}
 
@@ -374,10 +370,8 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 	 *            The delay before actual cleaning in ms
 	 */
 	@Override
-	public synchronized void quarantineAndCleanupMarkedObjects(
-			long delayMilliSec) {
-		final SWIGObjectGarbageCollector quarantineObjects = new SWIGObjectGarbageCollector(
-				this);
+	public synchronized void quarantineAndCleanupMarkedObjects(long delayMilliSec) {
+		final SWIGObjectGarbageCollector quarantineObjects = new SWIGObjectGarbageCollector(this);
 		clear();
 
 		if (!quarantineObjects.isEmpty()) {
@@ -395,8 +389,7 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 			};
 
 			// Schedule the cleanup task for later
-			final Timer timer = new Timer(
-					"Quarantine SWIG-based Object Cleanup", false);
+			final Timer timer = new Timer("Quarantine SWIG-based Object Cleanup", false);
 			timer.schedule(futureCleanupTask, delayMilliSec);
 		}
 	}
@@ -439,12 +432,20 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 	}
 
 	protected void decReferenceCount(Object obj) {
-		if (!refCount.containsKey(obj)) {
-			refCount.put(obj, 0);
-		} else {
+		// if (!refCount.containsKey(obj)) {
+		// refCount.put(obj, 0);
+		// } else {
+		// int count = refCount.get(obj);
+		// count--;
+		// refCount.put(obj, count);
+		// }
+		if (refCount.containsKey(obj)) {
 			int count = refCount.get(obj);
 			count--;
 			refCount.put(obj, count);
+			if (count == 0) {
+				refCount.remove(obj);
+			}
 		}
 	}
 }
