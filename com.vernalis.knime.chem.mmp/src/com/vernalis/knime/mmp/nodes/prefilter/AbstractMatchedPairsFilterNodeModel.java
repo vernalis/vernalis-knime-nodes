@@ -271,6 +271,11 @@ public class AbstractMatchedPairsFilterNodeModel extends NodeModel {
 		}
 
 		if (roMol == null || "".equals(roMol.MolToSmiles(true))) {
+			// Log the failed row
+			if (verboseLogging) {
+				logger.info("No molecule found (Row: " + row.getKey().getString() + ")");
+			}
+
 			// Deal with when we cannot get an ROMol object - e.g. for 'No
 			// Structure' Mol files
 			// And add it to the second output
@@ -282,7 +287,10 @@ public class AbstractMatchedPairsFilterNodeModel extends NodeModel {
 		// ROMol_Vect from RDKFunc#getComponents()
 
 		if (roMol.MolToSmiles().contains(".")) {
-
+			// Log the failed row
+			if (verboseLogging) {
+				logger.info("Multicomponent molecule (Row: " + row.getKey().getString() + ")");
+			}
 			return false;
 		}
 
