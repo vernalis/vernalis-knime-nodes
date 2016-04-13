@@ -967,7 +967,7 @@ public class RDKitFragmentationUtils {
 		// NB Tried to do with a backreference to '(' before [H] but
 		// couldnt
 		// get it working
-		// System.out.print(smiles + "\t--->\t");
+		System.out.print(smiles + "\t--->\t");
 		smiles = smiles.replaceAll("@\\]([\\d]*)\\[H\\]", "@H]$1")
 				.replaceAll("@\\]([\\d]*)\\(\\[H\\]\\)", "@H]$1");
 				// smi = smi.replace("@][H]", "@H]").replace("@]([H])", "@H]");
@@ -989,8 +989,9 @@ public class RDKitFragmentationUtils {
 		if (smiles.matches("^\\[[0-9]*?\\*[H]?\\]$")) {
 			smiles = smiles.replaceAll("^\\[([0-9]*?)\\*.*", "[$1*][H]");
 		}
+		smiles = smiles.replaceAll("=N(\\\\|/)(\\(|\\))", "=N$2");
+		System.out.println(smiles);
 
-		// System.out.println(smiles);
 		return smiles;
 	}
 

@@ -397,9 +397,9 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 						+ RDKitFragmentationUtils.removeHydrogens(value.MolToSmiles(true)))
 				: (key.MolToSmiles(true) + "." + value.MolToSmiles(true));// getCanonicalValueSMILES(value,
 		// localGcWave);
-		if (removeHs) {
-			retVal = RDKitFragmentationUtils.removeHydrogens(retVal);
-		}
+		// if (removeHs) {
+		// retVal = RDKitFragmentationUtils.removeHydrogens(retVal);
+		// }
 		gc.cleanupMarkedObjects(localGcWave);
 
 		return new MulticomponentSmilesFragmentParser(retVal, removeHs);
@@ -429,17 +429,6 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 			throw new MoleculeFragmentationException("Maximum number of Changing HAs threshold ("
 					+ maxNumberChangingHAs + " breached (" + valueHAC + ")");
 		}
-
-		// int keyHAC = HAC - valueHAC;
-		// if (minCnstToVarAtmRatio != null && (1.0 * keyHAC / valueHAC) <
-		// minCnstToVarAtmRatio) {
-		// // There is a Minumum const/varying atom ratio filter, and it is
-		// // violated
-		// throw new MoleculeFragmentationException("Minimum Constant / Changing
-		// HAs threshold ("
-		// + minCnstToVarAtmRatio + " breached (" + keyHAC + "/" + valueHAC +
-		// ")");
-		// }
 
 		int localGcWave = gcWave.getAndIncrement();
 		RWMol tmp = gc.markForCleanup(new RWMol(mol), localGcWave);

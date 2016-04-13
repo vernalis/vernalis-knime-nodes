@@ -37,7 +37,8 @@ public interface MoleculeFragmentationFactory {
 	/**
 	 * This is the method to fragment a molecule by breaking a single bond. This
 	 * method is called by {@link #fragmentMolecule(Set)} if the set only
-	 * contains 1 bond
+	 * contains 1 bond. NB This method cannot perform filtering by HAC due to
+	 * the need to consider reverse direction fragmentation too
 	 * 
 	 * @param bond
 	 *            The bond to be broken

@@ -40,11 +40,9 @@ import com.vernalis.knime.mmp.MolFormats;
  * 
  */
 public class RdkitMMPFragment3NodeDialog extends DefaultNodeSettingsPane {
-	SettingsModelBoolean m_hasChangingAtoms, m_hasHARatioFilter, m_AddHs,
-			m_stripHsAtEnd, m_apFingerprints, m_fpUseBondTypes,
-			m_fpUseChirality, m_allowTwoCutsToBondValue;
-	SettingsModelIntegerBounded m_maxChangingAtoms, m_NumCuts, m_morganRadius,
-			m_fpLength;
+	SettingsModelBoolean m_hasChangingAtoms, m_hasHARatioFilter, m_AddHs, m_stripHsAtEnd,
+			m_apFingerprints, m_fpUseBondTypes, m_fpUseChirality, m_allowTwoCutsToBondValue;
+	SettingsModelIntegerBounded m_maxChangingAtoms, m_NumCuts, m_morganRadius, m_fpLength;
 	SettingsModelDoubleBounded m_minHARatioFilter;
 	SettingsModelString m_fragmentationType, m_customRSMARTS;
 
@@ -55,13 +53,11 @@ public class RdkitMMPFragment3NodeDialog extends DefaultNodeSettingsPane {
 	@SuppressWarnings("unchecked")
 	public RdkitMMPFragment3NodeDialog() {
 
-		addDialogComponent(new DialogComponentColumnNameSelection(
-				createMolColumnSettingsModel(), "Select Molecule column", 0,
-				MolFormats.m_RDKitmolFormats.toArray(new Class[0])));
+		addDialogComponent(new DialogComponentColumnNameSelection(createMolColumnSettingsModel(),
+				"Select Molecule column", 0, MolFormats.m_RDKitmolFormats.toArray(new Class[0])));
 
-		addDialogComponent(new DialogComponentColumnNameSelection(
-				createIDColumnSettingsModel(), "Select Molecule IDs column", 0,
-				StringValue.class));
+		addDialogComponent(new DialogComponentColumnNameSelection(createIDColumnSettingsModel(),
+				"Select Molecule IDs column", 0, StringValue.class));
 
 		m_fragmentationType = createSMIRKSModel();
 		m_customRSMARTS = createCustomSMARTSModel();
@@ -69,20 +65,18 @@ public class RdkitMMPFragment3NodeDialog extends DefaultNodeSettingsPane {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				m_customRSMARTS.setEnabled(FragmentationTypes
-						.valueOf(m_fragmentationType.getStringValue()) == FragmentationTypes.USER_DEFINED);
+				m_customRSMARTS.setEnabled(FragmentationTypes.valueOf(
+						m_fragmentationType.getStringValue()) == FragmentationTypes.USER_DEFINED);
 			}
 		});
 
-		m_customRSMARTS
-				.setEnabled(FragmentationTypes.valueOf(m_fragmentationType
-						.getStringValue()) == FragmentationTypes.USER_DEFINED);
+		m_customRSMARTS.setEnabled(FragmentationTypes
+				.valueOf(m_fragmentationType.getStringValue()) == FragmentationTypes.USER_DEFINED);
 
 		createNewGroup("Select the fragmentation type");
-		addDialogComponent(new DialogComponentButtonGroup(m_fragmentationType,
-				null, true, FragmentationTypes.values()));
-		addDialogComponent(new DialogComponentString(m_customRSMARTS,
-				"User rSMARTS:"));
+		addDialogComponent(new DialogComponentButtonGroup(m_fragmentationType, null, true,
+				FragmentationTypes.values()));
+		addDialogComponent(new DialogComponentString(m_customRSMARTS, "User rSMARTS:"));
 		closeCurrentGroup();
 
 		m_NumCuts = createCutsModel();
@@ -98,15 +92,13 @@ public class RdkitMMPFragment3NodeDialog extends DefaultNodeSettingsPane {
 
 		m_allowTwoCutsToBondValue.setEnabled(m_NumCuts.getIntValue() == 2);
 
-		addDialogComponent(new DialogComponentNumber(m_NumCuts,
-				"Number of cuts", 1));
-		addDialogComponent(new DialogComponentBoolean(
-				m_allowTwoCutsToBondValue,
+		addDialogComponent(new DialogComponentNumber(m_NumCuts, "Number of cuts", 1));
+		addDialogComponent(new DialogComponentBoolean(m_allowTwoCutsToBondValue,
 				"Allow 2 cuts along single bond giving a single bond as 'value'?"));
 
 		/*
+		 * ***************************** * The ADVANCED SETTINGS TAB *
 		 * *****************************
-		 * * The ADVANCED SETTINGS TAB * *****************************
 		 */
 		createNewTab("Advanced Settings");
 		createNewGroup("Chirality");
@@ -127,8 +119,8 @@ public class RdkitMMPFragment3NodeDialog extends DefaultNodeSettingsPane {
 		});
 		addDialogComponent(new DialogComponentBoolean(m_AddHs,
 				"Add H's prior to fragmentation (Recommended for n=1)"));
-		addDialogComponent(new DialogComponentBoolean(m_stripHsAtEnd,
-				"Remove Explicit H's from output"));
+		addDialogComponent(
+				new DialogComponentBoolean(m_stripHsAtEnd, "Remove Explicit H's from output"));
 		closeCurrentGroup();
 		createNewGroup("Variable Heavy Atom filter");
 		m_hasChangingAtoms = createHasMaxChangingAtomsModel();
@@ -164,20 +156,17 @@ public class RdkitMMPFragment3NodeDialog extends DefaultNodeSettingsPane {
 				"Minimum ratio of changing to unchanging heavy atoms", 0.1));
 
 		/*
+		 * *************************** * The OUTPUT SETTINGS tab *
 		 * ***************************
-		 * * The OUTPUT SETTINGS tab * ***************************
 		 */
 		createNewTab("Output Settings");
 
-		addDialogComponent(new DialogComponentBoolean(
-				createOutputChangingHACountsModel(),
+		addDialogComponent(new DialogComponentBoolean(createOutputChangingHACountsModel(),
 				"Show number of changing atoms"));
-		addDialogComponent(new DialogComponentBoolean(
-				createOutputHARatiosModel(),
+		addDialogComponent(new DialogComponentBoolean(createOutputHARatiosModel(),
 				"Show ratio of constant / changing heavy atoms"));
 
-		addDialogComponent(new DialogComponentBoolean(
-				createAddFailReasonModel(),
+		addDialogComponent(new DialogComponentBoolean(createAddFailReasonModel(),
 				"Add failure reasons to 2nd output table"));
 
 		/*
@@ -197,16 +186,12 @@ public class RdkitMMPFragment3NodeDialog extends DefaultNodeSettingsPane {
 			}
 		});
 		updateFingerprintEnabled();
-		addDialogComponent(new DialogComponentBoolean(m_apFingerprints,
-				"Add Attachment Point Fingerprints"));
-		addDialogComponent(new DialogComponentNumber(m_fpLength,
-				"Fingerprint Length", 128));
-		addDialogComponent(new DialogComponentNumber(m_morganRadius,
-				"Morgan Radius", 1));
-		addDialogComponent(new DialogComponentBoolean(m_fpUseBondTypes,
-				"Use Bond Types"));
-		addDialogComponent(new DialogComponentBoolean(m_fpUseChirality,
-				"Use chirality"));
+		addDialogComponent(
+				new DialogComponentBoolean(m_apFingerprints, "Add Attachment Point Fingerprints"));
+		addDialogComponent(new DialogComponentNumber(m_fpLength, "Fingerprint Length", 128));
+		addDialogComponent(new DialogComponentNumber(m_morganRadius, "Morgan Radius", 1));
+		addDialogComponent(new DialogComponentBoolean(m_fpUseBondTypes, "Use Bond Types"));
+		addDialogComponent(new DialogComponentBoolean(m_fpUseChirality, "Use chirality"));
 	}
 
 	/**
@@ -221,14 +206,13 @@ public class RdkitMMPFragment3NodeDialog extends DefaultNodeSettingsPane {
 	 * Update fingerprints settings
 	 */
 	protected void updateFingerprintEnabled() {
-		m_fpUseBondTypes.setEnabled(m_apFingerprints.isEnabled()
-				&& m_apFingerprints.getBooleanValue());
-		m_fpLength.setEnabled(m_apFingerprints.isEnabled()
-				&& m_apFingerprints.getBooleanValue());
-		m_fpUseChirality.setEnabled(m_apFingerprints.isEnabled()
-				&& m_apFingerprints.getBooleanValue());
-		m_morganRadius.setEnabled(m_apFingerprints.isEnabled()
-				&& m_apFingerprints.getBooleanValue());
+		m_fpUseBondTypes
+				.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
+		m_fpLength.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
+		m_fpUseChirality
+				.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
+		m_morganRadius
+				.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
 	}
 
 	/**
@@ -244,8 +228,7 @@ public class RdkitMMPFragment3NodeDialog extends DefaultNodeSettingsPane {
 	protected void updateNumCuts() {
 		// We can only add Hs in the RDKit node if numCuts = 1
 		m_AddHs.setEnabled(m_NumCuts.getIntValue() == 1);
-		m_stripHsAtEnd.setEnabled(m_NumCuts.getIntValue() == 1
-				&& m_AddHs.getBooleanValue());
+		m_stripHsAtEnd.setEnabled(m_NumCuts.getIntValue() == 1 && m_AddHs.getBooleanValue());
 		m_allowTwoCutsToBondValue.setEnabled(m_NumCuts.getIntValue() == 2);
 	}
 
@@ -253,8 +236,7 @@ public class RdkitMMPFragment3NodeDialog extends DefaultNodeSettingsPane {
 	 * Update strip H's settings
 	 */
 	protected void updateStripHs() {
-		m_stripHsAtEnd.setEnabled(m_NumCuts.getIntValue() == 1
-				&& m_AddHs.getBooleanValue());
+		m_stripHsAtEnd.setEnabled(m_NumCuts.getIntValue() == 1 && m_AddHs.getBooleanValue());
 	}
 
 	/**
@@ -295,28 +277,25 @@ public class RdkitMMPFragment3NodeDialog extends DefaultNodeSettingsPane {
 
 	/** Create Settings Model for Morgan FP Length */
 	public static SettingsModelIntegerBounded createFpLengthModel() {
-		return new SettingsModelIntegerBounded("FP Length",
-				(int) MMPConstants.DEFAULT_FP_LENGTH,
+		return new SettingsModelIntegerBounded("FP Length", (int) MMPConstants.DEFAULT_FP_LENGTH,
 				MMPConstants.MINIMUM_FINGERPRINT_LENGTH, Integer.MAX_VALUE);
 	}
 
 	/** Create Settings Model for Morgan FP Radius */
 	public static SettingsModelIntegerBounded createMorganRadiusModel() {
 		return new SettingsModelIntegerBounded("FP Morgan Radius",
-				(int) MMPConstants.DEFAULT_FP_RADIUS,
-				MMPConstants.MINIMUM_MORGAN_RADIUS, Integer.MAX_VALUE);
+				(int) MMPConstants.DEFAULT_FP_RADIUS, MMPConstants.MINIMUM_MORGAN_RADIUS,
+				Integer.MAX_VALUE);
 	}
 
 	/** Create Settings Model for use of chirality in FP generation */
 	public static SettingsModelBoolean createFpUseChiralityModel() {
-		return new SettingsModelBoolean("FP Use Chirality",
-				MMPConstants.DEFAULT_USE_CHIRALITY);
+		return new SettingsModelBoolean("FP Use Chirality", MMPConstants.DEFAULT_USE_CHIRALITY);
 	}
 
 	/** Create Settings Model for use of bond types in FP generation */
 	public static SettingsModelBoolean createFpUseBondTypesModel() {
-		return new SettingsModelBoolean("FP Use Bond Types",
-				MMPConstants.DEFAULT_USE_BOND_TYPES);
+		return new SettingsModelBoolean("FP Use Bond Types", MMPConstants.DEFAULT_USE_BOND_TYPES);
 	}
 
 	/** Create Settings Model for use of Attachment Point Fingerprints */
@@ -361,8 +340,7 @@ public class RdkitMMPFragment3NodeDialog extends DefaultNodeSettingsPane {
 	 * atoms
 	 */
 	public static SettingsModelDoubleBounded createRatioModel() {
-		return new SettingsModelDoubleBounded(
-				"Max ratio of unchanging to changing heavy atoms",
+		return new SettingsModelDoubleBounded("Max ratio of unchanging to changing heavy atoms",
 				MMPConstants.DEFAULT_MAX_HA_RATIO, 0.0001, Double.MAX_VALUE);
 	}
 
@@ -400,10 +378,8 @@ public class RdkitMMPFragment3NodeDialog extends DefaultNodeSettingsPane {
 	 * Create the settings model for the number of cuts
 	 */
 	public static SettingsModelIntegerBounded createCutsModel() {
-		return new SettingsModelIntegerBounded("Number of cuts",
-				MMPConstants.DEFAULT_NUM_CUTS,
-				MMPConstants.MINIMUM_NUMBER_OF_CUTS,
-				MMPConstants.MAXIMUM_NUMBER_OF_CUTS);
+		return new SettingsModelIntegerBounded("Number of cuts", MMPConstants.DEFAULT_NUM_CUTS,
+				MMPConstants.MINIMUM_NUMBER_OF_CUTS, MMPConstants.MAXIMUM_NUMBER_OF_CUTS);
 	}
 
 	/** Create the settings model for the option to add hydrogens */
@@ -437,8 +413,7 @@ public class RdkitMMPFragment3NodeDialog extends DefaultNodeSettingsPane {
 
 	/** Create the SM for outputting the HAC ratios */
 	public static SettingsModelBoolean createOutputHARatiosModel() {
-		return new SettingsModelBoolean(
-				"Output changing / unchanging HA ratios",
+		return new SettingsModelBoolean("Output changing / unchanging HA ratios",
 				MMPConstants.DEFAULT_OUTPUT_CHANGING_UNCHANGING_HAC_RATIOS);
 	}
 }
