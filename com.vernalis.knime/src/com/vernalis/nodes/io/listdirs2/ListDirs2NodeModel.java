@@ -45,6 +45,7 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.util.pathresolve.ResolverUtil;
 
 /**
  * This is the model implementation of ListDirs.
@@ -52,8 +53,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 public class ListDirs2NodeModel extends NodeModel {
 
 	// the logger instance
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(ListDirs2NodeModel.class);
+	private static final NodeLogger logger = NodeLogger.getLogger(ListDirs2NodeModel.class);
 
 	/**
 	 * the settings key which is used to retrieve and store the settings (from
@@ -68,23 +68,20 @@ public class ListDirs2NodeModel extends NodeModel {
 	static final String CFG_IS_VIS = "Include_Visibility";
 	static final String CFG_LAST_MOD = "Include_LastModified";
 
-	private final SettingsModelString m_Path = new SettingsModelString(
-			CFG_PATH, null);
+	private final SettingsModelString m_Path = new SettingsModelString(CFG_PATH, null);
 
-	private final SettingsModelBoolean m_subDirs = new SettingsModelBoolean(
-			CFG_SUB_DIRS, false);
+	private final SettingsModelBoolean m_subDirs = new SettingsModelBoolean(CFG_SUB_DIRS, false);
 
-	private final SettingsModelBoolean m_ctgDirPath = new SettingsModelBoolean(
-			CFG_INCL_CTG_PATH, true);
+	private final SettingsModelBoolean m_ctgDirPath = new SettingsModelBoolean(CFG_INCL_CTG_PATH,
+			true);
 
-	private final SettingsModelBoolean m_folderName = new SettingsModelBoolean(
-			CFG_FOLDER_NAME, true);
+	private final SettingsModelBoolean m_folderName = new SettingsModelBoolean(CFG_FOLDER_NAME,
+			true);
 
-	private final SettingsModelBoolean m_isVisible = new SettingsModelBoolean(
-			CFG_IS_VIS, true);
+	private final SettingsModelBoolean m_isVisible = new SettingsModelBoolean(CFG_IS_VIS, true);
 
-	private final SettingsModelBoolean m_lastModified = new SettingsModelBoolean(
-			CFG_LAST_MOD, true);
+	private final SettingsModelBoolean m_lastModified = new SettingsModelBoolean(CFG_LAST_MOD,
+			true);
 
 	private BufferedDataContainer m_dc;
 
@@ -127,15 +124,19 @@ public class ListDirs2NodeModel extends NodeModel {
 				try {
 					if (folder.startsWith("file:")) {
 						folder = folder.substring(5);
+						location = new File((new URI(folder)).getPath());
+					} else if (folder.startsWith("knime:")) {
+						URI uri = new URI(folder);
+						location = ResolverUtil.resolveURItoLocalFile(uri);
 					}
-					location = new File((new URI(folder)).getPath());
 				} catch (Exception e) {
-					throw new InvalidSettingsException("\"" + folder
-							+ "\" does not exist or is not a directory");
+					throw new InvalidSettingsException(
+							"\"" + folder + "\" does not exist or is not a directory");
 				}
 				if (!location.isDirectory()) {
-					throw new InvalidSettingsException("\"" + folder
-							+ "\" does not exist or is not a directory");
+					System.out.println(location.getAbsolutePath());
+					throw new InvalidSettingsException(
+							"\"" + folder + "\" does not exist or is not a directory");
 				}
 			}
 			addLocation(location, exec);
@@ -152,8 +153,7 @@ public class ListDirs2NodeModel extends NodeModel {
 
 		// List the folders - recursively if we are doing subfolders too
 		m_analysed_files++;
-		exec.setProgress(m_analysed_files
-				+ " file(s) and folder(s) analysed..." + m_currentRowID
+		exec.setProgress(m_analysed_files + " file(s) and folder(s) analysed..." + m_currentRowID
 				+ " added to output");
 		exec.checkCanceled();
 
@@ -167,11 +167,9 @@ public class ListDirs2NodeModel extends NodeModel {
 							DataCell[] row = new DataCell[spec.getNumColumns()];
 							Arrays.fill(row, DataType.getMissingCell());
 							int colIndex = 0;
+							row[colIndex++] = new StringCell(loc.getAbsolutePath());
 							row[colIndex++] = new StringCell(
-									loc.getAbsolutePath());
-							row[colIndex++] = new StringCell(loc
-									.getAbsoluteFile().toURI().toURL()
-									.toString());
+									loc.getAbsoluteFile().toURI().toURL().toString());
 
 							if (m_folderName.getBooleanValue()) {
 								row[colIndex++] = new StringCell(loc.getName());
@@ -180,11 +178,9 @@ public class ListDirs2NodeModel extends NodeModel {
 							if (m_ctgDirPath.getBooleanValue()) {
 								File parent = loc.getParentFile();
 								if (parent != null) {
+									row[colIndex++] = new StringCell(parent.getAbsolutePath());
 									row[colIndex++] = new StringCell(
-											parent.getAbsolutePath());
-									row[colIndex++] = new StringCell(parent
-											.getAbsoluteFile().toURI().toURL()
-											.toString());
+											parent.getAbsoluteFile().toURI().toURL().toString());
 								}
 							}
 
@@ -196,12 +192,10 @@ public class ListDirs2NodeModel extends NodeModel {
 							}
 
 							if (m_lastModified.getBooleanValue()) {
-								row[colIndex++] = longTimeToDateAndTimeCell(loc
-										.lastModified());
+								row[colIndex++] = longTimeToDateAndTimeCell(loc.lastModified());
 							}
 
-							m_dc.addRowToTable(new DefaultRow("Row "
-									+ m_currentRowID, row));
+							m_dc.addRowToTable(new DefaultRow("Row " + m_currentRowID, row));
 							m_currentRowID++;
 
 						} catch (MalformedURLException e) {
@@ -240,30 +234,25 @@ public class ListDirs2NodeModel extends NodeModel {
 		// Counting through them all again
 		ArrayList<DataColumnSpec> dcs = new ArrayList<DataColumnSpec>();
 
-		dcs.add(new DataColumnSpecCreator("Location", StringCell.TYPE)
-				.createSpec());
+		dcs.add(new DataColumnSpecCreator("Location", StringCell.TYPE).createSpec());
 		dcs.add(new DataColumnSpecCreator("URL", StringCell.TYPE).createSpec());
 
 		if (m_folderName.getBooleanValue()) {
-			dcs.add(new DataColumnSpecCreator("Folder Name", StringCell.TYPE)
-					.createSpec());
+			dcs.add(new DataColumnSpecCreator("Folder Name", StringCell.TYPE).createSpec());
 		}
 
 		if (m_ctgDirPath.getBooleanValue()) {
-			dcs.add(new DataColumnSpecCreator("Parent Location",
-					StringCell.TYPE).createSpec());
-			dcs.add(new DataColumnSpecCreator("Parent URL", StringCell.TYPE)
-					.createSpec());
+			dcs.add(new DataColumnSpecCreator("Parent Location", StringCell.TYPE).createSpec());
+			dcs.add(new DataColumnSpecCreator("Parent URL", StringCell.TYPE).createSpec());
 		}
 
 		if (m_isVisible.getBooleanValue()) {
-			dcs.add(new DataColumnSpecCreator("Is Visible?", BooleanCell.TYPE)
-					.createSpec());
+			dcs.add(new DataColumnSpecCreator("Is Visible?", BooleanCell.TYPE).createSpec());
 		}
 
 		if (m_lastModified.getBooleanValue()) {
-			dcs.add(new DataColumnSpecCreator("Last Modified Date",
-					DateAndTimeCell.TYPE).createSpec());
+			dcs.add(new DataColumnSpecCreator("Last Modified Date", DateAndTimeCell.TYPE)
+					.createSpec());
 		}
 
 		return dcs.toArray(new DataColumnSpec[0]);
@@ -342,8 +331,7 @@ public class ListDirs2NodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 
 		m_Path.validateSettings(settings);
 		m_subDirs.validateSettings(settings);
@@ -354,18 +342,16 @@ public class ListDirs2NodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 	}
 
 }
