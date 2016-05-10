@@ -36,71 +36,83 @@ public class RestClient {
 	/**
 	 * Gets the result of a GET operation as a single string.
 	 *
-	 * @param url the url
+	 * @param url
+	 *            the url
 	 * @return the result
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public static String getResult(URL url) throws IOException {
-		HttpURLConnection conn = (HttpURLConnection)url.openConnection();     
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
 			throw new IOException(conn.getResponseMessage());
 		}
 		StringBuffer retVal = new StringBuffer();
-		BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF8"));
+		BufferedReader rd = new BufferedReader(
+				new InputStreamReader(conn.getInputStream(), "UTF8"));
 		String line;
 		while ((line = rd.readLine()) != null) {
 			retVal.append(line);
-		}      
+		}
 		rd.close();
 		conn.disconnect();
 		return retVal.toString();
 	}
-	
+
 	/**
-	 * Gets the result of a GET operation as a list of strings (one per line of output).
+	 * Gets the result of a GET operation as a list of strings (one per line of
+	 * output).
 	 *
-	 * @param url the url
+	 * @param url
+	 *            the url
 	 * @return the result list
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public static List<String> getResultList(URL url) throws IOException {
-		HttpURLConnection conn = (HttpURLConnection)url.openConnection();     
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
 			throw new IOException(conn.getResponseMessage());
 		}
 		List<String> retVal = new ArrayList<String>();
-		BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF8"));
+		BufferedReader rd = new BufferedReader(
+				new InputStreamReader(conn.getInputStream(), "UTF8"));
 		String line;
 		while ((line = rd.readLine()) != null) {
 			retVal.add(line);
-		}      
+		}
 		rd.close();
 		conn.disconnect();
 		return retVal;
 	}
-	
+
 	/**
 	 * Gets the result of a GET operation as an InputStream.
 	 *
-	 * @param url the url
+	 * @param url
+	 *            the url
 	 * @return the result stream
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public static InputStream getResultStream(URL url) throws IOException {
-		HttpURLConnection conn = (HttpURLConnection)url.openConnection();     
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
 			throw new IOException(conn.getResponseMessage());
 		}
 		return conn.getInputStream();
 	}
-	
+
 	/**
 	 * Gets the result of a POST operation as an InputStream.
 	 *
-	 * @param url the url
-	 * @param data the data to post
+	 * @param url
+	 *            the url
+	 * @param data
+	 *            the data to post
 	 * @return the input stream
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public static InputStream doPOST(URL url, String data) throws IOException {
 		// Send data
@@ -111,6 +123,5 @@ public class RestClient {
 		wr.flush();
 		return conn.getInputStream();
 	}
-
 
 }

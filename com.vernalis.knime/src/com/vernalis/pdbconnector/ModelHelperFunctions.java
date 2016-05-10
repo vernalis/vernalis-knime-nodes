@@ -295,11 +295,17 @@ public class ModelHelperFunctions {
 		while ((line = rd.readLine()) != null) {
 			// if (line.length() <= 4) { // skip the query id string
 			// Changed 10-05-2016 following changes to PDB service response
+			if ("null".equals(line)) {
+				rd.close();
+				throw new IOException(
+						"PDB RESTful Query Webservice returned response 'null' - please try again later");
+			}
 			if (line.matches("[A-Za-z0-9]{4}:[\\d]*")) {
 				retVal.add(line.split(":")[0]);
 			} else if (line.matches("[A-Za-z0-9]{4}")) {
 				retVal.add(line);
 			}
+
 		}
 		rd.close();
 		return retVal;
