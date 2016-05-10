@@ -61,16 +61,13 @@ import com.vernalis.pdbconnector.config.ReportField;
  */
 public class ModelHelperFunctions {
 	/** DateFormat for yyyy-MM-dd. */
-	private static final DateFormat ymdFormat = new SimpleDateFormat(
-			Properties.YMD_FORMAT);
+	private static final DateFormat ymdFormat = new SimpleDateFormat(Properties.YMD_FORMAT);
 
 	/** DateFormat for yyyy-MM. */
-	private static final DateFormat ymFormat = new SimpleDateFormat(
-			Properties.YM_FORMAT);
+	private static final DateFormat ymFormat = new SimpleDateFormat(Properties.YM_FORMAT);
 
 	/** DateFormat for yyyy. */
-	private static final DateFormat yearFormat = new SimpleDateFormat(
-			Properties.YEAR_FORMAT);
+	private static final DateFormat yearFormat = new SimpleDateFormat(Properties.YEAR_FORMAT);
 
 	/** UTC Calendar. */
 	private static final Calendar cal = DateAndTimeCell.getUTCCalendar();
@@ -99,8 +96,8 @@ public class ModelHelperFunctions {
 		// outer query string is combined with similarity query (conjunction is
 		// always AND).
 		return ModelHelperFunctions.getXmlQuery(
-				ModelHelperFunctions.getXmlQuery("", queryModels, conjunction),
-				simModels, Properties.CONJUNCTION_AND);
+				ModelHelperFunctions.getXmlQuery("", queryModels, conjunction), simModels,
+				Properties.CONJUNCTION_AND);
 	}
 
 	/**
@@ -208,8 +205,8 @@ public class ModelHelperFunctions {
 	 * @throws Exception
 	 *             if field value is invalid
 	 */
-	public static DataCell getDataCell(final ReportField field,
-			final String fieldValue, final String urlSuffix) throws Exception {
+	public static DataCell getDataCell(final ReportField field, final String fieldValue,
+			final String urlSuffix) throws Exception {
 		if ((field == null) || (fieldValue == null) || fieldValue.isEmpty()
 				|| fieldValue.equalsIgnoreCase("null")) {// check for missing
 															// data
@@ -222,46 +219,45 @@ public class ModelHelperFunctions {
 				try {
 					return new IntCell(Integer.parseInt(fieldValue));
 				} catch (NumberFormatException e) {
-					PdbConnectorNodeModel.logger.warn("Invalid integer value ("
-							+ fieldValue + ") in field: " + field.getColName());
+					PdbConnectorNodeModel.logger.warn("Invalid integer value (" + fieldValue
+							+ ") in field: " + field.getColName());
 					return DataType.getMissingCell();
 				}
 			case DOUBLE:
 				try {
 					return new DoubleCell(Double.parseDouble(fieldValue));
 				} catch (NumberFormatException e) {
-					PdbConnectorNodeModel.logger.warn("Invalid double value ("
-							+ fieldValue + ") in field: " + field.getColName());
+					PdbConnectorNodeModel.logger.warn("Invalid double value (" + fieldValue
+							+ ") in field: " + field.getColName());
 					return DataType.getMissingCell();
 				}
 			case DATE:
 				try {
 					cal.setTime(ymdFormat.parse(fieldValue));
-					return new DateAndTimeCell(cal.get(Calendar.YEAR),
-							cal.get(Calendar.MONTH),
+					return new DateAndTimeCell(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
 							cal.get(Calendar.DAY_OF_MONTH));
 				} catch (ParseException e) {
-					PdbConnectorNodeModel.logger.debug("Trying simpler "
-							+ Properties.YM_FORMAT + " format in field: "
-							+ field.getColName());
+					PdbConnectorNodeModel.logger.debug("Trying simpler " + Properties.YM_FORMAT
+							+ " format in field: " + field.getColName());
 					try {// try year-month format
 						cal.setTime(ymFormat.parse(fieldValue));
-						return new DateAndTimeCell(cal.get(Calendar.YEAR),
-								cal.get(Calendar.MONTH), 1);// force to first
-															// day of month
+						return new DateAndTimeCell(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
+								1);// force to first
+									// day of month
 					} catch (ParseException e2) {
-						PdbConnectorNodeModel.logger.debug("Trying simpler "
-								+ Properties.YEAR_FORMAT + " format in field: "
-								+ field.getColName());
+						PdbConnectorNodeModel.logger
+								.debug("Trying simpler " + Properties.YEAR_FORMAT
+										+ " format in field: " + field.getColName());
 						try {// try year-only format
 							cal.setTime(yearFormat.parse(fieldValue));
-							return new DateAndTimeCell(cal.get(Calendar.YEAR),
-									1, 1);// force to first of January
+							return new DateAndTimeCell(cal.get(Calendar.YEAR), 1, 1);// force
+																						// to
+																						// first
+																						// of
+																						// January
 						} catch (ParseException e3) {
-							PdbConnectorNodeModel.logger
-									.warn("Invalid date value (" + fieldValue
-											+ ") in field: "
-											+ field.getColName());
+							PdbConnectorNodeModel.logger.warn("Invalid date value (" + fieldValue
+									+ ") in field: " + field.getColName());
 							return DataType.getMissingCell();
 						}
 					}
@@ -272,11 +268,10 @@ public class ModelHelperFunctions {
 				// Concatenate the field value between url prefix and suffix to
 				// generate
 				// the full image URL
-				return new StringCell(Properties.LIGAND_IMG_LOCATION
-						+ fieldValue + urlSuffix);
+				return new StringCell(Properties.LIGAND_IMG_LOCATION + fieldValue + urlSuffix);
 			default:
-				throw new IOException("Invalid data type at field="
-						+ field.getColName() + ": value=" + fieldValue);
+				throw new IOException("Invalid data type at field=" + field.getColName()
+						+ ": value=" + fieldValue);
 			}
 		}
 	}
@@ -298,7 +293,11 @@ public class ModelHelperFunctions {
 		BufferedReader rd = new BufferedReader(new InputStreamReader(in));
 		String line;
 		while ((line = rd.readLine()) != null) {
-			if (line.length() <= 4) { // skip the query id string
+			// if (line.length() <= 4) { // skip the query id string
+			// Changed 10-05-2016 following changes to PDB service response
+			if (line.matches("[A-Za-z0-9]{4}:[\\d]*")) {
+				retVal.add(line.split(":")[0]);
+			} else if (line.matches("[A-Za-z0-9]{4}")) {
 				retVal.add(line);
 			}
 		}
@@ -329,9 +328,8 @@ public class ModelHelperFunctions {
 	 * @see ModelHelperFunctions#getCustomReportXml2(List, List)
 	 */
 	@Deprecated
-	public static List<List<String>> getCustomReportCsv(
-			final List<String> pdbIds, final List<ReportField> selected)
-			throws Exception {
+	public static List<List<String>> getCustomReportCsv(final List<String> pdbIds,
+			final List<ReportField> selected) throws Exception {
 		List<List<String>> retVal = new ArrayList<List<String>>();
 		StringBuffer buf = new StringBuffer(Properties.REPORT_LOCATION);
 		buf.append(ModelHelperFunctions.getPdbIdUrl(pdbIds));
@@ -345,12 +343,10 @@ public class ModelHelperFunctions {
 
 		// Tokenizer settings for report (records separated by <br />)
 		TokenizerSettings settings = new TokenizerSettings();
-		settings.addDelimiterPattern(Properties.REPORT_CSV_LINE_DELIM, true,
-				false, false);
+		settings.addDelimiterPattern(Properties.REPORT_CSV_LINE_DELIM, true, false, false);
 		// Tokenizer settings for each record (field values separated by ,)
 		TokenizerSettings recordSettings = new TokenizerSettings();
-		recordSettings.addDelimiterPattern(Properties.REPORT_CSV_RECORD_DELIM,
-				false, false, false);
+		recordSettings.addDelimiterPattern(Properties.REPORT_CSV_RECORD_DELIM, false, false, false);
 		recordSettings.addQuotePattern(Properties.REPORT_CSV_OPEN_QUOTE,
 				Properties.REPORT_CSV_CLOSE_QUOTE);
 
@@ -361,8 +357,7 @@ public class ModelHelperFunctions {
 		while ((record = tokenizer.nextToken()) != null) {
 			if (!isFirst) {// skip header row
 				List<String> recordVals = new ArrayList<String>();
-				Tokenizer recordTokenizer = new Tokenizer(new StringReader(
-						record));
+				Tokenizer recordTokenizer = new Tokenizer(new StringReader(record));
 				recordTokenizer.setSettings(recordSettings);
 				String fieldValue;
 				while ((fieldValue = recordTokenizer.nextToken()) != null) {
@@ -403,9 +398,8 @@ public class ModelHelperFunctions {
 	 * @see ModelHelperFunctions#getCustomReportXml2(List, List)
 	 */
 	@Deprecated
-	public static List<List<String>> getCustomReportXml(
-			final List<String> pdbIds, final List<ReportField> selected)
-			throws Exception {
+	public static List<List<String>> getCustomReportXml(final List<String> pdbIds,
+			final List<ReportField> selected) throws Exception {
 		List<List<String>> retVal = new ArrayList<List<String>>();
 		StringBuffer buf = new StringBuffer(Properties.REPORT_LOCATION);
 		buf.append(ModelHelperFunctions.getPdbIdUrl(pdbIds));
@@ -426,17 +420,14 @@ public class ModelHelperFunctions {
 		Document doc = db.parse(source);
 		Element root = doc.getDocumentElement();
 		if (root == null) {
-			throw new IOException("Null " + Properties.REPORT_XML_ROOT
-					+ " node");
+			throw new IOException("Null " + Properties.REPORT_XML_ROOT + " node");
 		} else if (Properties.REPORT_XML_ROOT != root.getNodeName()) {
-			throw new IOException("Invalid " + Properties.REPORT_XML_ROOT
-					+ " root (" + root.getNodeName() + ")");
+			throw new IOException(
+					"Invalid " + Properties.REPORT_XML_ROOT + " root (" + root.getNodeName() + ")");
 		} else {
-			NodeList records = root
-					.getElementsByTagName(Properties.REPORT_XML_RECORD);
+			NodeList records = root.getElementsByTagName(Properties.REPORT_XML_RECORD);
 			int numRecords = records.getLength();
-			PdbConnectorNodeModel.logger.debug("xml report has " + numRecords
-					+ " records");
+			PdbConnectorNodeModel.logger.debug("xml report has " + numRecords + " records");
 			for (int i = 0; i < numRecords; ++i) {
 				Element record = (Element) records.item(i);
 				NodeList fields = record.getElementsByTagName("*");
@@ -487,12 +478,10 @@ public class ModelHelperFunctions {
 	 * @see {@link #getCustomReportXml2}
 	 */
 	public static List<List<String>> postCustomReportXml2(List<String> pdbIds,
-			List<ReportField> selected, ReportField primaryOnly)
-			throws Exception {
+			List<ReportField> selected, ReportField primaryOnly) throws Exception {
 
 		// Sort out the data to POST to the service
-		StringBuffer buf = new StringBuffer(
-				ModelHelperFunctions.getPdbIdUrl(pdbIds));
+		StringBuffer buf = new StringBuffer(ModelHelperFunctions.getPdbIdUrl(pdbIds));
 		buf.append(ModelHelperFunctions.getReportColumnsUrl(selected));
 		buf.append(Properties.REPORT_XML_URL);
 		if (primaryOnly != null) {
@@ -551,9 +540,8 @@ public class ModelHelperFunctions {
 	 *             the exception
 	 * @see {@link #postCustomReportXml2}
 	 */
-	public static List<List<String>> getCustomReportXml2(
-			final List<String> pdbIds, final List<ReportField> selected,
-			final ReportField primaryOnly) throws Exception {
+	public static List<List<String>> getCustomReportXml2(final List<String> pdbIds,
+			final List<ReportField> selected, final ReportField primaryOnly) throws Exception {
 		StringBuffer buf = new StringBuffer(Properties.REPORT_LOCATION);
 		buf.append(ModelHelperFunctions.getPdbIdUrl(pdbIds));
 		buf.append(ModelHelperFunctions.getReportColumnsUrl(selected));
@@ -581,8 +569,7 @@ public class ModelHelperFunctions {
 	 * @return The parsed report rows
 	 * @throws IOException
 	 */
-	private static List<List<String>> manuallyParseXML(List<String> report)
-			throws IOException {
+	private static List<List<String>> manuallyParseXML(List<String> report) throws IOException {
 		List<List<String>> retVal = new ArrayList<List<String>>();
 		// Manual parsing of xml (we assume one element per line)
 		final String DATASET_START = "<" + Properties.REPORT_XML_ROOT + ">";
@@ -619,12 +606,10 @@ public class ModelHelperFunctions {
 					String value = line.substring(i2 + 1, i3);
 					currentRecord.add(value);
 				} else {
-					throw new IOException(
-							"getCustomReportXml2: Unexpected line " + line);
+					throw new IOException("getCustomReportXml2: Unexpected line " + line);
 				}
 			} else {
-				throw new IOException("getCustomReportXml2: Unexpected line "
-						+ line);
+				throw new IOException("getCustomReportXml2: Unexpected line " + line);
 			}
 		}
 		return retVal;
