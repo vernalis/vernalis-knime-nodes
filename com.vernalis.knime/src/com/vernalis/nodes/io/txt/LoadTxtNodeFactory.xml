@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<knimeNode icon="./Disk2knime.png" type="Manipulator"
+	xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
+	<name>Load text-based files</name>
+
+	<shortDescription>
+		Node to Load text-based files to a column in the
+		table
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>Loads text-based files into a new table column from a column of
+				URLs or full filepaths. Each file is added in its entirety
+				to a
+				single
+				multi-line String cell in a new column added to the output
+				table. The
+				column can then be re-typed
+				(e.g. to mol, mol2, PDB etc.)
+				as required.
+			</p>
+			<p>
+				File encoding is attempted as follows when the '
+				<i>Guess</i>
+				' option is selected:
+				<ol>
+					<li>Firstly, the URL connection to the supplied
+						file is inspected
+						for encoding information.
+					</li>
+					<li>
+						If none is available, then the first 4 bytes of the file are
+						inspected for any
+						<a href="http://en.wikipedia.org/wiki/Byte_order_mark">BOM</a>
+						present, and if so, the following are recognised:
+						<br />
+						&#8226; UTF-8
+						<br />
+						&#8226; UTF-16 (Big- and Little Endian)
+						<br />
+						&#8226; UTF-32 (Big- and Little Endian)
+						<br />
+					</li>
+					<li>
+						Finally, the default (UTF-8) is assumed. As UTF-8 is not
+						required
+						to provide a BOM, this is a reasonable guess in
+						<i>most</i>
+						cases.
+					</li>
+				</ol>
+				A console
+				<i>INFO</i>
+				entry is added for each file format detected, and a
+				<i>WARN</i>
+				entry added when the default is used because none could be
+				detected.
+
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+		</intro>
+
+
+		<option name="Select filepath column">Select the column containing the paths or URLs to
+			the files
+		</option>
+		<option name="Select file encoding">Select the required file encoding method. The
+			default 'Guess' option performs as described above. Choosing other
+			options may result in nonsense being returned
+		</option>
+		<option name="Txt Column name">Enter a name for the column containing the loaded
+			files
+		</option>
+
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="In-Port 0">Input table containing the filepath or
+			URL column
+		</inPort>
+
+		<outPort index="0" name="Out-Port 0">Output table with the loaded files
+			added
+		</outPort>
+	</ports>
+</knimeNode>
