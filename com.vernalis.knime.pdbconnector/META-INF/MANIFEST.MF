@@ -12,6 +12,5 @@ Require-Bundle: org.knime.workbench.core;bundle-version="[3.0.0,4.0.0)",
  com.vernalis.knime.core;bundle-version="1.6.5"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: com.vernalis.rest
 
 

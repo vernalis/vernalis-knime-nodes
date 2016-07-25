@@ -57,6 +57,17 @@
       factory-class="com.vernalis.pdbconnector.nodes.combinequery.CombineQueryNodeFactory"
       id="CombineQueryNodeFactory">
 </node>
+      <node
+            category-path="/community/vernalis/rcsb"
+           factory-class="com.vernalis.rcsb.io.nodes.source.RCSBsDownloadNodeFactory"
+            id="RCSBsDownloadNodeFactory">
+      </node>
+      <node
+            after="RCSBsDownloadNodeFactory"
+            category-path="/community/vernalis/rcsb"
+            factory-class="com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownloadNodeFactory"
+            id="RCSBmultiDownloadNodeFactory">
+      </node>
 </extension>
    <extension point="org.knime.workbench.repository.categories">
       <category description="Vernalis Nodes for RCSB query and reporting" icon="icons/RCSB_PDB.png" level-id="rcsb" name="RCSB PDB Tools" path="/community/vernalis/">
