@@ -26,9 +26,13 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
+import org.knime.core.data.StringValue;
+import org.knime.core.data.container.ColumnRearranger;
+import org.knime.core.data.container.SingleCellFactory;
+import org.knime.core.data.def.BooleanCell;
+import org.knime.core.data.def.BooleanCell.BooleanCellFactory;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
@@ -36,14 +40,10 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
-import org.knime.core.data.StringValue;
-import org.knime.core.data.container.ColumnRearranger;
-import org.knime.core.data.container.SingleCellFactory;
-import org.knime.core.data.def.BooleanCell;
-import org.knime.core.data.def.BooleanCell.BooleanCellFactory;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
+import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
-import com.vernalis.helpers.PDBHelperFunctions;
+import com.vernalis.io.FileHelpers;
 
 /**
  * This is the model implementation of SavePDBLocal. Node to save a PDB cell
@@ -130,9 +130,9 @@ public class SavePDBLocalNodeModel extends NodeModel {
 				// 1. Check if the directory exist and create it if not
 
 				String pathToFile = ((StringValue) pathcell).getStringValue();
-				if (!(PDBHelperFunctions.checkContainerFolderExists(pathToFile))) {
+				if (!(FileHelpers.checkContainerFolderExists(pathToFile))) {
 					// If the folder doesnt exist we need to make it exist
-					if (!(PDBHelperFunctions.createContainerFolder(pathToFile))) {
+					if (!(FileHelpers.createContainerFolder(pathToFile))) {
 						// Folder doesnt exist and for unknown reason we fail to
 						// make it
 						return BooleanCell.FALSE;
@@ -140,8 +140,8 @@ public class SavePDBLocalNodeModel extends NodeModel {
 				}
 				// Now we actually write the file..
 				String pdbtext = ((StringValue) pdbcell).getStringValue();
-				return BooleanCellFactory.create(PDBHelperFunctions.saveStringToPath(pdbtext,
-						pathToFile, m_Overwrite.getBooleanValue()));
+				return BooleanCellFactory.create(FileHelpers.saveStringToPath(pdbtext, pathToFile,
+						m_Overwrite.getBooleanValue()));
 			}
 		};
 		c.append(factory);

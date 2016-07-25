@@ -41,7 +41,8 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
-import com.vernalis.helpers.FileHelpers;
+import com.vernalis.io.FileEncodingWithGuess;
+import com.vernalis.io.FileHelpers;
 
 /**
  * This is the model implementation of LoadTxt. Node to Load txt files to a

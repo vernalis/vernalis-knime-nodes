@@ -4,11 +4,6 @@
    <extension
          point="org.knime.workbench.repository.nodes">
       <node
-            category-path="/community/vernalis/rcsb"
-            factory-class="com.vernalis.pdbconnector.PdbConnectorNodeFactory"
-            id="PdbConnectorNodeFactory">
-      </node>
-      <node
             category-path="/community/vernalis/local.pdb"
             factory-class="com.vernalis.nodes.io.pdb.loadlocal.LocalPDBLoadNodeFactory2"
             id="LocalPDBLoadNodeFactory2">
@@ -18,17 +13,6 @@
             category-path="/community/vernalis/local.pdb"
             factory-class="com.vernalis.nodes.io.pdb.savelocal.SavePDBLocalNodeFactory"
             id="SavePDBLocalNodeFactory">
-      </node>
-      <node
-            category-path="/community/vernalis/rcsb"
-           factory-class="com.vernalis.nodes.io.rcsb.source.RCSBsDownloadNodeFactory"
-            id="RCSBsDownloadNodeFactory">
-      </node>
-      <node
-            after="RCSBsDownloadNodeFactory"
-            category-path="/community/vernalis/rcsb"
-            factory-class="com.vernalis.nodes.io.rcsb.manip.RCSBmultiDownloadNodeFactory"
-            id="RCSBmultiDownloadNodeFactory">
       </node>
       <node
             category-path="/community/vernalis/sequence"
@@ -82,12 +66,6 @@
             id="FpPropsNodeFactory">
       </node>
       <node
-            after="PdbConnectorNodeFactory"
-            category-path="/community/vernalis/rcsb"
-            factory-class="com.vernalis.pdbconnector.PdbConnectorXmlQueryNodeFactory"
-            id="PdbConnectorXmlQueryNodeFactory">
-      </node>
-      <node
             deprecated="true"
             factory-class="com.vernalis.flowcontrol.nodes.fv.caseselect.FVarFVCaseSelectNodeFactory"
             id="FVarFVCaseSelectNodeFactory">
@@ -95,7 +73,7 @@
       <node
             deprecated="true"
             factory-class="com.vernalis.nodes.smartsviewer.SmartsViewerNodeFactory"
-            id="com.vernalis.knime.node6">
+            id="SmartsViewerNodeFactory">
       </node>
       <node
             deprecated="true"
@@ -126,13 +104,6 @@
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
-      <category
-            description="Vernalis Nodes for RCSB query and reporting"
-            icon="icons/RCSB_PDB.png"
-            level-id="rcsb"
-            name="RCSB PDB Tools"
-            path="/community/vernalis/">
-      </category>
       <category
             after="local.pdb"
             description="Vernalis nodes for Sequence manipulation tools"

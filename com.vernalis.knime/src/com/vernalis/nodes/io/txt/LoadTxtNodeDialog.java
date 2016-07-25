@@ -24,6 +24,8 @@ import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelectio
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
+import com.vernalis.io.FileEncodingWithGuess;
+
 /**
  * <code>NodeDialog</code> for the "LoadAEVs" Node. Node to Load text files to a
  * column in the table

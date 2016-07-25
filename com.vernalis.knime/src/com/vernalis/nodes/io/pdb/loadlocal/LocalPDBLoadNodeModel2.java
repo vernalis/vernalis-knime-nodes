@@ -42,9 +42,8 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
-import com.vernalis.helpers.FileHelpers;
-import com.vernalis.helpers.PDBHelperFunctions;
-import com.vernalis.helpers.PdbDownloadException;
+import com.vernalis.io.FileDownloadException;
+import com.vernalis.io.FileHelpers;
 
 /**
  * This is the model implementation of LocalPDBLoad. Load a local copy of a PDB
@@ -125,8 +124,8 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
 						|| urlToRetrieve.toLowerCase().endsWith(".pdb.gz")) {
 					String r;
 					try {
-						r = PDBHelperFunctions.readUrltoString(urlToRetrieve);
-					} catch (PdbDownloadException e) {
+						r = FileHelpers.readURLToString(urlToRetrieve);
+					} catch (FileDownloadException e) {
 						logger.warn("Unable to download file "
 								+ ((StringValue) pathcell).getStringValue() + "; Skipping row...",
 								e);
