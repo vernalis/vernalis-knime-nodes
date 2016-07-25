@@ -2,7 +2,7 @@
 <feature
       id="com.vernalis.knime.feature"
       label="Vernalis KNIME Nodes"
-      version="1.6.5.qualifier"
+      version="1.7.0.qualifier"
       provider-name="Vernalis"
       plugin="com.vernalis.knime.core">
 
@@ -13,9 +13,9 @@ KNIME.
    </description>
 
    <copyright>
-      The PDB Connector KNIME Node is Copyright (C) 2012, Vernalis
+      The original, deprecated PDB Connector KNIME Node is Copyright (C) 2012, Vernalis
 (R&amp;amp;D) Ltd and Enspiral Discovery Limited
-All other nodes are Copyright (C) 2013-2015 Vernalis (R&amp;amp;D) Ltd
+All other nodes are Copyright (C) 2013-2016 Vernalis (R&amp;amp;D) Ltd
 The KNIME Nodes are free software: you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation, either version 3 of
@@ -737,6 +737,12 @@ Public License instead of this License.  But first, please read
 
    <plugin
          id="com.vernalis.knime.chem.pmi"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.vernalis.knime.pdbconnector"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
