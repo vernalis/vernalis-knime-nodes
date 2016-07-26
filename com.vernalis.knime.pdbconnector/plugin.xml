@@ -73,4 +73,10 @@
       <category description="Vernalis Nodes for RCSB query and reporting" icon="icons/RCSB_PDB.png" level-id="rcsb" name="RCSB PDB Tools" path="/community/vernalis/">
       </category>
    </extension>
+   <extension
+         point="org.knime.core.NodeFactoryClassMapper">
+      <NodeFactoryClassMapper
+            classMapper="com.vernalis.rcsb.io.helpers.RCSBIONodeFactoryClassMapper">
+      </NodeFactoryClassMapper>
+   </extension>
 </plugin>
