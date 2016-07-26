@@ -64,9 +64,11 @@ public class AbstractXMLAdvancedQueryNodeView<T extends AbstractXMLQueryProvider
 	@Override
 	protected void modelChanged() {
 		T model = getNodeModel();
-		String xml = XMLFormatter.indentXML(model.getXMLQuery()).replace("\t", "    ");
-		txtPane.setText(xml);
-
+		String xmlQuery = model.getXMLQuery();
+		if (xmlQuery != null && !xmlQuery.isEmpty()) {
+			String xml = XMLFormatter.indentXML(xmlQuery).replace("\t", "    ");
+			txtPane.setText(xml);
+		}
 	}
 
 }

@@ -65,14 +65,16 @@ public abstract class XMLQueryRenderer {
 		query = query.replaceAll(Properties.LEVEL_START + "\\d+" + Properties.LEVEL_END, "");
 		query = query.replaceAll(Properties.CONJUNCTION_AND, "\n\nAND\n\n");
 		query = query.replaceAll(Properties.CONJUNCTION_OR, "\n\nOR\n\n");
-
+		query = query.replaceAll("(?s)<orgPdbQuery>.*?<queryType>", "<orgPdbQuery><queryType>");
 		while (query.indexOf("<orgPdbQuery>") >= 0) {
 			String type = query.replaceAll("(?s).*?<queryType>(.*?)</queryType>.*", "$1");
-
+			boolean typeFound = false;
 			for (QueryOption qOpt : allOptions) {
 				if (qOpt.getQueryString().indexOf(type) >= 0) {
 					// We have the correct option - now build a regex
+					typeFound = true;
 					String regex = qOpt.getQueryString();
+
 					List<QueryParam> qParams = qOpt.getParams();
 					// Now deal with query parameters with sub-queries
 
@@ -201,6 +203,11 @@ public abstract class XMLQueryRenderer {
 					query = query.replaceFirst(regex, replacement.toString());
 					break;
 				}
+			}
+			if (!typeFound) {
+				query = query.replaceAll(
+						"(?s)(.*?)<orgPdbQuery>.*?<queryType>.*?</queryType>.*?</orgPdbQuery>(.*)",
+						"$1\nWARNING: Unknown query type '" + type + "'\n$2");
 			}
 		}
 		query = query.trim();
