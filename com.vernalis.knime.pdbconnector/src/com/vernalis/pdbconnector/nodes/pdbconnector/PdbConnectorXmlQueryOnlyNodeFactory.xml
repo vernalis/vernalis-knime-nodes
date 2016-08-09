@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) 2016, Vernalis (R&D) Ltd, based on earlier PDB Connector work.
+  
+  Copyright (c) 2012, 2014 Vernalis (R&D) Ltd and Enspiral Discovery Limited
+  
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+    This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./pdb_xml.png" type="Source">
+	<name>PDB Connector Query Only (XML Query)</name>
+
+	<shortDescription>
+		Source node to connect to RCSB PDB RESTful Web
+		Services for advanced search
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				The
+				<i>PDB Connector Query Only (XML Query)</i>
+				node provides connections to the RESTful Web Service for searching
+				the Protein Data Bank.
+			</p>
+			<p>
+				The query is entered as a single
+				XML string
+				in this node (For a user-friendly query builder version,
+				see the
+				original
+				<i>PDB Connector</i>
+				node). This query can be copied
+				and pasted from the "Query Details"
+				link on a PDB query results page at
+				the
+				<a href="http://www.rcsb.org">RCSB PDB</a>
+				.
+				The XML Query is made available as a flow variable (
+				<i>xmlQuery</i>
+				) after node execution. Worked examples of using the node
+				using these
+				methods are provided
+				<a
+					href="http://tech.knime.org/book/examples-of-using-the-pdb-connector-xml-query-node">here</a>
+				.
+			</p>
+
+			<p>
+				The
+				<i>PDB Connector Query Only (XML Query String)</i>
+				node was developed by
+				<a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>
+				, based on the original
+				<i>PDB Connector</i>
+				node developed by
+				<a href="http://www.enspiral-discovery.com/">Enspiral Discovery</a>
+				in collaboration with
+				<a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+		</intro>
+
+		<tab name="Query Options">
+			<option name="Clear Query">Clear all query options. If a flow variable has
+				been set for the XML Query, this will also be un-set
+			</option>
+			<option name="Test Query">Test the current query, with display of result
+				count. If a flow variable has been
+				specified for the xml query, it's
+				value will be used in the test. (NB This
+				behaviour is different from
+				that in the PDB Connector node,
+				where the 'Test' button uses the
+				query configured in the dialog, without
+				reference to flow variable
+				settings.). This button also lays out the XML clearly in the XML
+				Query String box
+			</option>
+			<option name="Messages">Messages relating to the Test Query button are
+				displayed in this area
+			</option>
+			<option name="XML Query string">The PDB XML advanced query text should be entered
+				here. See above for details
+			</option>
+		</tab>
+
+
+
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Flow Variables (Optional)">Optional flow variable connection, which
+			could contain the XML query in a flow variable
+		</inPort>
+		<outPort index="0" name="PDB IDs">One-column table of PDB IDs that match
+			query
+		</outPort>
+	</ports>
+	
+	<views>
+		<view name="XML Query" index="0">A view of the combined XML Query
+		</view>
+		<view name="Logical Query" index="1">A 'logical' view of the combined Query
+		</view>
+	</views>
+</knimeNode>

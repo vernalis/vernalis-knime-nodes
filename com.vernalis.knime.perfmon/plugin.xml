@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <!-- This is an example for providing an own category 
+      <extension
+         point="org.knime.workbench.repository.categories">
+      <category
+            description="Category containing my nodes"
+            icon="icons/default.png"
+            level-id="myNodes"
+            name="My nodes"
+            path="/"/>
+   </extension>
+   -->
+   
+   <extension
+         point="org.knime.workbench.repository.nodes">
+      <node
+            category-path="/community/vernalis/testing/benchmarking"
+            factory-class="com.vernalis.knime.perfmon.nodes.timing.start.PerfMonTimingStartNodeFactory"
+            id="TimingStartNodeFactory"/>
+      <node
+            after="PerfMonTiming3PortStartNodeFactory"
+            category-path="/community/vernalis/testing/benchmarking"
+            factory-class="com.vernalis.knime.perfmon.nodes.timing.end.PerfMonTimingEndNodeFactory"
+            id="TimingEndNodeFactory">
+      </node>
+      <node
+            after="TimingEndNodeFactory"
+            category-path="/community/vernalis/testing/benchmarking"
+            factory-class="com.vernalis.knime.perfmon.nodes.timing.end.PerfMonTimingEnd2PortNodeFactory"
+            id="PerfMonTimingEnd2PortNodeFactory">
+      </node>
+      <node
+            after="TimingStartNodeFactory"
+            category-path="/community/vernalis/testing/benchmarking"
+            factory-class="com.vernalis.knime.perfmon.nodes.timing.start.PerfMonTiming2PortStartNodeFactory"
+            id="PerfMonTiming2PortStartNodeFactory">
+      </node>
+      <node
+            after="PerfMonTiming2PortStartNodeFactory"
+            category-path="/community/vernalis/testing/benchmarking"
+            factory-class="com.vernalis.knime.perfmon.nodes.timing.start.PerfMonTiming3PortStartNodeFactory"
+            id="PerfMonTiming3PortStartNodeFactory">
+      </node>
+      <node
+            after="PerfMonTimingEnd2PortNodeFactory"
+            category-path="/community/vernalis/testing/benchmarking"
+           factory-class="com.vernalis.knime.perfmon.nodes.timing.end.PerfMonTimingEnd3PortNodeFactory"
+            id="PerfMonTimingEnd3PortNodeFactory">
+      </node>
+   </extension>
+   <extension
+         point="org.knime.workbench.repository.categories">
+      <category
+            icon="icons/Tools_cat.png"
+            level-id="testing"
+            name="Testing"
+            path="/community/vernalis">
+      </category>
+      <category
+            icon="icons/Benchmarking_Category.png"
+            level-id="benchmarking"
+            name="Benchmarking"
+            path="/community/vernalis/testing">
+      </category>
+   </extension>
+   
+</plugin>
