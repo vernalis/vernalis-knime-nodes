@@ -12,9 +12,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  *******************************************************************************/
-/**
- * 
- */
 package com.vernalis.knime.mmp.nodes.rdkit.fragment2;
 
 import java.util.Collection;
@@ -33,11 +30,11 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 
+import com.vernalis.exceptions.RowExecutionException;
 import com.vernalis.knime.mmp.BondIdentifier;
 import com.vernalis.knime.mmp.CombinationFinder;
 import com.vernalis.knime.mmp.MulticomponentSmilesFragmentParser;
 import com.vernalis.knime.mmp.RDKitFragmentationUtils;
-import com.vernalis.knime.mmp.RowExecutionException;
 import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationFactory;
 import com.vernalis.knime.mmp.fragmentors.ROMolFragmentFactory;
 import com.vernalis.knime.parallel.MultiTableParallelResult;

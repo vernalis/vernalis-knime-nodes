@@ -12,9 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses>
  *******************************************************************************/
-/**
- * 
- */
 package com.vernalis.knime.mmp.nodes.rdkit.fragment2;
 
 import static com.vernalis.knime.mmp.MolFormats.isColTypeRDKitCompatible;
@@ -93,6 +90,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.util.MultiThreadWorker;
 import org.rdkit.knime.types.RDKitMolValue;
 
+import com.vernalis.exceptions.RowExecutionException;
 import com.vernalis.knime.mmp.BondIdentifier;
 import com.vernalis.knime.mmp.FragmentKey2;
 import com.vernalis.knime.mmp.FragmentationTypes;
@@ -100,7 +98,6 @@ import com.vernalis.knime.mmp.Leaf;
 import com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin;
 import com.vernalis.knime.mmp.MulticomponentSmilesFragmentParser;
 import com.vernalis.knime.mmp.RDKitFragmentationUtils;
-import com.vernalis.knime.mmp.RowExecutionException;
 import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationException;
 import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationFactory;
 import com.vernalis.knime.mmp.fragmentors.UnenumeratedStereochemistryException;

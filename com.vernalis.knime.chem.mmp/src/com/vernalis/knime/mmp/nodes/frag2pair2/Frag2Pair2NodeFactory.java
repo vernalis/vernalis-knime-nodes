@@ -12,9 +12,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  *******************************************************************************/
-/**
- * 
- */
 package com.vernalis.knime.mmp.nodes.frag2pair2;
 
 import org.knime.core.node.NodeDialogPane;

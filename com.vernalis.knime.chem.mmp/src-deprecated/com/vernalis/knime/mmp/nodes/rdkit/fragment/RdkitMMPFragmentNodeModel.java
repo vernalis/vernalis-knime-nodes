@@ -12,9 +12,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  *******************************************************************************/
-/**
- * 
- */
 package com.vernalis.knime.mmp.nodes.rdkit.fragment;
 
 import static com.vernalis.knime.mmp.RDKitFragment.doRDKitFragmentation;
@@ -43,10 +40,10 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 
+import com.vernalis.exceptions.RowExecutionException;
 import com.vernalis.knime.mmp.FragmentKey;
 import com.vernalis.knime.mmp.FragmentValue;
 import com.vernalis.knime.mmp.FragmentationTypes;
-import com.vernalis.knime.mmp.RowExecutionException;
 import com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeModel;
 
 /**
@@ -55,8 +52,7 @@ import com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMulti
  * @author "Stephen Roughley  <s.roughley@vernalis.com>"
  * 
  */
-public class RdkitMMPFragmentNodeModel extends
-		AbstractRdkitMatchedPairsMultipleCutsNodeModel {
+public class RdkitMMPFragmentNodeModel extends AbstractRdkitMatchedPairsMultipleCutsNodeModel {
 
 	/**
 	 * Constructor
@@ -70,8 +66,8 @@ public class RdkitMMPFragmentNodeModel extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected BufferedDataTable[] execute(BufferedDataTable[] inData,
-			ExecutionContext exec) throws Exception {
+	protected BufferedDataTable[] execute(BufferedDataTable[] inData, ExecutionContext exec)
+			throws Exception {
 
 		// Do some setting up
 		BufferedDataTable table = inData[0];
@@ -92,10 +88,9 @@ public class RdkitMMPFragmentNodeModel extends
 		}
 
 		// Sort out the reaction
-		String fragSMIRKS = FragmentationTypes.valueOf(
-				m_fragSMIRKS.getStringValue()).getSMARTS();
-		if ((fragSMIRKS == null || "".equals(fragSMIRKS))
-				&& FragmentationTypes.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED) {
+		String fragSMIRKS = FragmentationTypes.valueOf(m_fragSMIRKS.getStringValue()).getSMARTS();
+		if ((fragSMIRKS == null || "".equals(fragSMIRKS)) && FragmentationTypes
+				.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED) {
 			fragSMIRKS = m_customSmarts.getStringValue();
 		}
 
@@ -105,17 +100,16 @@ public class RdkitMMPFragmentNodeModel extends
 		boolean addHs = (numCuts == 1) ? m_AddHs.getBooleanValue() : false;
 
 		// These two can both be null
-		Integer maxNumVarAtm = (m_hasChangingAtoms.getBooleanValue()) ? m_maxChangingAtoms
-				.getIntValue() : null;
-		Double minCnstToVarAtmRatio = (m_hasHARatioFilter.getBooleanValue()) ? m_minHARatioFilter
-				.getDoubleValue() : null;
+		Integer maxNumVarAtm = (m_hasChangingAtoms.getBooleanValue())
+				? m_maxChangingAtoms.getIntValue() : null;
+		Double minCnstToVarAtmRatio = (m_hasHARatioFilter.getBooleanValue())
+				? m_minHARatioFilter.getDoubleValue() : null;
 
 		boolean trackCutConnectivity = m_trackCutConnectivity.isEnabled()
 				&& m_trackCutConnectivity.getBooleanValue();
 
 		m_Logger.info("Starting fragmentation");
-		m_Logger.info("Fragmentation SMIRKS: " + fragSMIRKS + " (" + numCuts
-				+ " cuts)");
+		m_Logger.info("Fragmentation SMIRKS: " + fragSMIRKS + " (" + numCuts + " cuts)");
 		if (addHs) {
 			m_Logger.info("Adding Hydrogens before fragmentation");
 		}
@@ -129,9 +123,8 @@ public class RdkitMMPFragmentNodeModel extends
 			DataCell molCell = row.getCell(molIdx);
 			if (molCell.isMissing()) {
 				// Deal with missing mols
-				dc_1.addRowToTable((m_addFailReasons.getBooleanValue()) ? new AppendedColumnRow(
-						row, new StringCell("Missing value in Molecule Column"))
-						: row);
+				dc_1.addRowToTable((m_addFailReasons.getBooleanValue()) ? new AppendedColumnRow(row,
+						new StringCell("Missing value in Molecule Column")) : row);
 				continue;
 			}
 
@@ -141,11 +134,11 @@ public class RdkitMMPFragmentNodeModel extends
 				roMol = getROMolFromCell(row.getCell(molIdx));
 			} catch (RowExecutionException e) {
 				// Log the failed row
-				m_Logger.info("Error parsing molecule (Row: "
-						+ row.getKey().getString() + ") " + e.getMessage());
+				m_Logger.info("Error parsing molecule (Row: " + row.getKey().getString() + ") "
+						+ e.getMessage());
 				// And add it to the second output
-				dc_1.addRowToTable((m_addFailReasons.getBooleanValue()) ? new AppendedColumnRow(
-						row, new StringCell(e.getMessage())) : row);
+				dc_1.addRowToTable((m_addFailReasons.getBooleanValue())
+						? new AppendedColumnRow(row, new StringCell(e.getMessage())) : row);
 				continue;
 			}
 
@@ -153,9 +146,8 @@ public class RdkitMMPFragmentNodeModel extends
 				// Deal with when we cannot get an ROMol object - e.g. for 'No
 				// Structure' Mol files
 				// And add it to the second output
-				dc_1.addRowToTable((m_addFailReasons.getBooleanValue()) ? new AppendedColumnRow(
-						row, new StringCell("'No Structure' input molecule"))
-						: row);
+				dc_1.addRowToTable((m_addFailReasons.getBooleanValue()) ? new AppendedColumnRow(row,
+						new StringCell("'No Structure' input molecule")) : row);
 				continue;
 			}
 
@@ -164,20 +156,17 @@ public class RdkitMMPFragmentNodeModel extends
 			}
 
 			// Do the fragmentation
-			HashMap<FragmentKey, TreeSet<FragmentValue>> newFrags = doRDKitFragmentation(
-					roMol, molID, numCuts, fragSMIRKS, trackCutConnectivity,
-					exec);
+			HashMap<FragmentKey, TreeSet<FragmentValue>> newFrags = doRDKitFragmentation(roMol,
+					molID, numCuts, fragSMIRKS, trackCutConnectivity, exec);
 
 			// Clean up the new fragments (apply max change etc settings -
-			newFrags = filterFragments(newFrags, maxNumVarAtm,
-					minCnstToVarAtmRatio);
+			newFrags = filterFragments(newFrags, maxNumVarAtm, minCnstToVarAtmRatio);
 
 			// Now, add the new fragments to the table
-			for (Entry<FragmentKey, TreeSet<FragmentValue>> ent : newFrags
-					.entrySet()) {
+			for (Entry<FragmentKey, TreeSet<FragmentValue>> ent : newFrags.entrySet()) {
 
-				DataCell keySmiles = ent.getKey().getKeyAsDataCell(
-						m_stripHsAtEnd.getBooleanValue());
+				DataCell keySmiles = ent.getKey()
+						.getKeyAsDataCell(m_stripHsAtEnd.getBooleanValue());
 
 				for (FragmentValue fVal : ent.getValue()) {
 					RowKey rowId = new RowKey("Row_" + newRowCnt++);
@@ -186,17 +175,14 @@ public class RdkitMMPFragmentNodeModel extends
 					int i = 0;
 					cells[i++] = fVal.getIDCell();
 					cells[i++] = keySmiles;
-					cells[i++] = fVal.getSMILESCell(m_stripHsAtEnd
-							.getBooleanValue());
+					cells[i++] = fVal.getSMILESCell(m_stripHsAtEnd.getBooleanValue());
 					if (m_outputNumChgHAs.getBooleanValue()) {
 						cells[i++] = fVal.getNumberChangingAtomsCell();
 					}
 					if (m_outputHARatio.getBooleanValue()) {
-						cells[i++] = ent.getKey()
-								.getConstantToVaryingAtomRatioCell(fVal);
+						cells[i++] = ent.getKey().getConstantToVaryingAtomRatioCell(fVal);
 					}
-					if (m_apFingerprints.isEnabled()
-							&& m_apFingerprints.getBooleanValue()) {
+					if (m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue()) {
 						cells = addAPFPs(cells, ent.getKey());
 					}
 					dc_0.addRowToTable(new DefaultRow(rowId, cells));
@@ -206,8 +192,7 @@ public class RdkitMMPFragmentNodeModel extends
 			newFrags.clear();
 			progress = (double) ++rowCnt / (double) numRows;
 			exec.checkCanceled();
-			exec.setProgress(progress, "Fragmented Row " + rowCnt + " of "
-					+ numRows);
+			exec.setProgress(progress, "Fragmented Row " + rowCnt + " of " + numRows);
 		}
 		dc_0.close();
 		dc_1.close();
@@ -231,16 +216,14 @@ public class RdkitMMPFragmentNodeModel extends
 		int i = 0;
 		specs[i++] = createColSpec("ID", StringCell.TYPE);
 		specs[i++] = createColSpec(
-				"Fragmentation 'Key' (" + m_numCuts.getIntValue()
-						+ " bond cuts)", SmilesCell.TYPE);
+				"Fragmentation 'Key' (" + m_numCuts.getIntValue() + " bond cuts)", SmilesCell.TYPE);
 		specs[i++] = createColSpec("Fragmentation 'Value'", SmilesCell.TYPE);
 
 		if (m_outputNumChgHAs.getBooleanValue()) {
 			specs[i++] = createColSpec("Changing Heavy Atoms", IntCell.TYPE);
 		}
 		if (m_outputHARatio.getBooleanValue()) {
-			specs[i++] = createColSpec(
-					"Ratio of Changing / Unchanging Heavy Atoms",
+			specs[i++] = createColSpec("Ratio of Changing / Unchanging Heavy Atoms",
 					DoubleCell.TYPE);
 		}
 

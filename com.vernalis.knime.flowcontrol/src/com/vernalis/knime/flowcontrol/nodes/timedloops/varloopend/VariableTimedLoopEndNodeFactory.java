@@ -12,9 +12,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  *******************************************************************************/
-/**
- * 
- */
 package com.vernalis.knime.flowcontrol.nodes.timedloops.varloopend;
 
 import org.knime.core.node.NodeDialogPane;
@@ -26,8 +23,7 @@ import org.knime.core.node.NodeView;
  * 
  * @author S.Roughley <s.roughley@vernalis.com>
  */
-public class VariableTimedLoopEndNodeFactory extends
-		NodeFactory<VariableTimedLoopEndNodeModel> {
+public class VariableTimedLoopEndNodeFactory extends NodeFactory<VariableTimedLoopEndNodeModel> {
 
 	/*
 	 * (non-Javadoc)
@@ -67,8 +63,8 @@ public class VariableTimedLoopEndNodeFactory extends
 	 * org.knime.core.node.NodeModel)
 	 */
 	@Override
-	public NodeView<VariableTimedLoopEndNodeModel> createNodeView(
-			int viewIndex, VariableTimedLoopEndNodeModel nodeModel) {
+	public NodeView<VariableTimedLoopEndNodeModel> createNodeView(int viewIndex,
+			VariableTimedLoopEndNodeModel nodeModel) {
 		return null;
 	}
 

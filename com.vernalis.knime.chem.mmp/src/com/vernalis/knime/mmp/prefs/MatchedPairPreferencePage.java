@@ -12,9 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses>
  *******************************************************************************/
-/**
- * 
- */
 package com.vernalis.knime.mmp.prefs;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -54,14 +51,12 @@ public class MatchedPairPreferencePage extends FieldEditorPreferencePage
 	/**
 	 * The key for the {@code Verbose Logging} preference
 	 */
-	public static final String MMP_PREF_VERBOSE_LOGGING = MMP_PREF_KEY_BASE
-			+ "verbose.logging";
+	public static final String MMP_PREF_VERBOSE_LOGGING = MMP_PREF_KEY_BASE + "verbose.logging";
 
 	/**
 	 * The key for the {@code Max No. of Threads Ratio} preference
 	 */
-	public static final String MMP_PREF_MAX_THREADS = MMP_PREF_KEY_BASE
-			+ "max.threads.ratio";
+	public static final String MMP_PREF_MAX_THREADS = MMP_PREF_KEY_BASE + "max.threads.ratio";
 
 	/**
 	 * The default value for the {@code Max No. of Threads Ratio} preference
@@ -90,8 +85,7 @@ public class MatchedPairPreferencePage extends FieldEditorPreferencePage
 	 */
 	public MatchedPairPreferencePage() {
 		super(GRID);
-		setPreferenceStore(MatchedPairsMultipleCutsNodePlugin.getDefault()
-				.getPreferenceStore());
+		setPreferenceStore(MatchedPairsMultipleCutsNodePlugin.getDefault().getPreferenceStore());
 		setDescription("Matched Molecular Pair Preferences");
 	}
 
@@ -124,25 +118,22 @@ public class MatchedPairPreferencePage extends FieldEditorPreferencePage
 		layout.fill = true;
 		parent.setLayout(layout);
 
-		BooleanFieldEditor verboseLoggingEditor = new BooleanFieldEditor(
-				MMP_PREF_VERBOSE_LOGGING, "Enable Verbose Logging", parent);
+		BooleanFieldEditor verboseLoggingEditor = new BooleanFieldEditor(MMP_PREF_VERBOSE_LOGGING,
+				"Enable Verbose Logging", parent);
 		addField(verboseLoggingEditor);
 
 		// Add the parallelisation options in a new group
 		Group parallelParent = new Group(parent, parent.getStyle());
 		parallelParent.setText("Parallel processing options");
-		DoubleFieldEditor processorRatio = new DoubleFieldEditor(
-				MMP_PREF_MAX_THREADS,
+		DoubleFieldEditor processorRatio = new DoubleFieldEditor(MMP_PREF_MAX_THREADS,
 				"Ratio of Maximum number of threads to processor cores "
 						+ "(e.g. for 8 cores, a value of 0.5 will use a maximum of 4 cores)",
 				parallelParent);
 		processorRatio.setValidRange(0.1, 2.5);
 		addField(processorRatio);
 
-		IntegerFieldEditor queueRatio = new IntegerFieldEditor(
-				MMP_PREF_QUEUE_TO_THREADS_RATIO,
-				"Ratio of Queue size to Threads Ratio "
-						+ "(smaller values will use less memory, "
+		IntegerFieldEditor queueRatio = new IntegerFieldEditor(MMP_PREF_QUEUE_TO_THREADS_RATIO,
+				"Ratio of Queue size to Threads Ratio " + "(smaller values will use less memory, "
 						+ "but are more likely to have more threads "
 						+ "inactive waiitng for a slow row to complete)",
 				parallelParent);
@@ -154,19 +145,16 @@ public class MatchedPairPreferencePage extends FieldEditorPreferencePage
 	/**
 	 * Initialize the default values
 	 */
-	public static void initializeDefaultPreferences() {
+	public synchronized static void initializeDefaultPreferences() {
 		if (!m_defaultInitialised) {
 			m_defaultInitialised = true;
 			try {
 				MatchedPairsMultipleCutsNodePlugin plugin = MatchedPairsMultipleCutsNodePlugin
 						.getDefault();
 				if (plugin != null) {
-					final IPreferenceStore prefStore = plugin
-							.getPreferenceStore();
-					prefStore.setDefault(MMP_PREF_VERBOSE_LOGGING,
-							DEFAULT_VERBOSE_LOGGING);
-					prefStore.setDefault(MMP_PREF_MAX_THREADS,
-							DEFAULT_MAX_THREADS_TO_CORES_RATIO);
+					final IPreferenceStore prefStore = plugin.getPreferenceStore();
+					prefStore.setDefault(MMP_PREF_VERBOSE_LOGGING, DEFAULT_VERBOSE_LOGGING);
+					prefStore.setDefault(MMP_PREF_MAX_THREADS, DEFAULT_MAX_THREADS_TO_CORES_RATIO);
 					prefStore.setDefault(MMP_PREF_QUEUE_TO_THREADS_RATIO,
 							DEFAULT_QUEUE_TO_THREADS_RATIO);
 				}
@@ -182,8 +170,7 @@ public class MatchedPairPreferencePage extends FieldEditorPreferencePage
 	 */
 	public static Integer getThreadsCount() {
 
-		MatchedPairsMultipleCutsNodePlugin plugin = MatchedPairsMultipleCutsNodePlugin
-				.getDefault();
+		MatchedPairsMultipleCutsNodePlugin plugin = MatchedPairsMultipleCutsNodePlugin.getDefault();
 		if (plugin != null) {
 			final IPreferenceStore prefStore = plugin.getPreferenceStore();
 
@@ -198,12 +185,10 @@ public class MatchedPairPreferencePage extends FieldEditorPreferencePage
 	 *         number of available cores
 	 */
 	public static Integer getQueueSize() {
-		MatchedPairsMultipleCutsNodePlugin plugin = MatchedPairsMultipleCutsNodePlugin
-				.getDefault();
+		MatchedPairsMultipleCutsNodePlugin plugin = MatchedPairsMultipleCutsNodePlugin.getDefault();
 		if (plugin != null) {
 			final IPreferenceStore prefStore = plugin.getPreferenceStore();
-			return getThreadsCount()
-					* prefStore.getInt(MMP_PREF_QUEUE_TO_THREADS_RATIO);
+			return getThreadsCount() * prefStore.getInt(MMP_PREF_QUEUE_TO_THREADS_RATIO);
 		}
 		return null;
 	}

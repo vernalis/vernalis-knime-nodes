@@ -224,10 +224,7 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 				"Use chirality"));
 	}
 
-	/**
-	 * 
-	 */
-	protected void updateCanFp() {
+		protected void updateCanFp() {
 		m_apFingerprints.setEnabled(m_NumCuts.getIntValue() == 1
 				|| m_trackCutConnectivity.getBooleanValue());
 		updateFingerprintEnabled();
@@ -236,10 +233,7 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 	/*
 	 * Methods for the change listeners
 	 */
-	/**
-	 * 
-	 */
-	protected void updateFingerprintEnabled() {
+		protected void updateFingerprintEnabled() {
 		m_fpUseBondTypes.setEnabled(m_apFingerprints.isEnabled()
 				&& m_apFingerprints.getBooleanValue());
 		m_fpLength.setEnabled(m_apFingerprints.isEnabled()

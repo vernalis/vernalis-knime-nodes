@@ -12,9 +12,6 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  *******************************************************************************/
-/**
- * 
- */
 package com.vernalis.knime.mmp.nodes.rdkit.multicut;
 
 import static com.vernalis.knime.mmp.RDKitFragment.doRDKitFragmentation;
@@ -55,11 +52,11 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 
+import com.vernalis.exceptions.RowExecutionException;
 import com.vernalis.knime.mmp.FragmentKey;
 import com.vernalis.knime.mmp.FragmentValue;
 import com.vernalis.knime.mmp.FragmentationTypes;
 import com.vernalis.knime.mmp.RDKitUtils;
-import com.vernalis.knime.mmp.RowExecutionException;
 import com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeModel;
 
 /**
@@ -68,8 +65,7 @@ import com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMulti
  * @author "Stephen Roughley  <s.roughley@vernalis.com>"
  * 
  */
-public class RdkitMatchedPairsNodeModel extends
-		AbstractRdkitMatchedPairsMultipleCutsNodeModel {
+public class RdkitMatchedPairsNodeModel extends AbstractRdkitMatchedPairsMultipleCutsNodeModel {
 
 	protected final SettingsModelBoolean m_outputKey = createOutputKeyModel();
 	private final SettingsModelBoolean m_showReverseTransforms = createShowReverseTransformsModel();
@@ -87,8 +83,8 @@ public class RdkitMatchedPairsNodeModel extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected BufferedDataTable[] execute(BufferedDataTable[] inData,
-			ExecutionContext exec) throws Exception {
+	protected BufferedDataTable[] execute(BufferedDataTable[] inData, ExecutionContext exec)
+			throws Exception {
 
 		// Do some setting up
 		BufferedDataTable table = inData[0];
@@ -109,10 +105,9 @@ public class RdkitMatchedPairsNodeModel extends
 		}
 
 		// Sort out the reaction
-		String fragSMIRKS = FragmentationTypes.valueOf(
-				m_fragSMIRKS.getStringValue()).getSMARTS();
-		if ((fragSMIRKS == null || "".equals(fragSMIRKS))
-				&& FragmentationTypes.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED) {
+		String fragSMIRKS = FragmentationTypes.valueOf(m_fragSMIRKS.getStringValue()).getSMARTS();
+		if ((fragSMIRKS == null || "".equals(fragSMIRKS)) && FragmentationTypes
+				.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED) {
 			fragSMIRKS = m_customSmarts.getStringValue();
 		}
 
@@ -122,10 +117,10 @@ public class RdkitMatchedPairsNodeModel extends
 		boolean addHs = (numCuts == 1) ? m_AddHs.getBooleanValue() : false;
 
 		// These two can both be null
-		Integer maxNumVarAtm = (m_hasChangingAtoms.getBooleanValue()) ? m_maxChangingAtoms
-				.getIntValue() : null;
-		Double minCnstToVarAtmRatio = (m_hasHARatioFilter.getBooleanValue()) ? m_minHARatioFilter
-				.getDoubleValue() : null;
+		Integer maxNumVarAtm = (m_hasChangingAtoms.getBooleanValue())
+				? m_maxChangingAtoms.getIntValue() : null;
+		Double minCnstToVarAtmRatio = (m_hasHARatioFilter.getBooleanValue())
+				? m_minHARatioFilter.getDoubleValue() : null;
 
 		boolean trackCutConnectivity = m_trackCutConnectivity.isEnabled()
 				&& m_trackCutConnectivity.getBooleanValue();
@@ -134,8 +129,7 @@ public class RdkitMatchedPairsNodeModel extends
 		HashMap<FragmentKey, TreeSet<FragmentValue>> frags = new HashMap<FragmentKey, TreeSet<FragmentValue>>();
 
 		m_Logger.info("Starting fragmentation");
-		m_Logger.info("Fragmentation SMIRKS: " + fragSMIRKS + " (" + numCuts
-				+ " cuts)");
+		m_Logger.info("Fragmentation SMIRKS: " + fragSMIRKS + " (" + numCuts + " cuts)");
 		if (addHs) {
 			m_Logger.info("Adding Hydrogens before fragmentation");
 		}
@@ -150,9 +144,8 @@ public class RdkitMatchedPairsNodeModel extends
 			DataCell molCell = row.getCell(molIdx);
 			if (molCell.isMissing()) {
 				// Deal with missing mols
-				dc_1.addRowToTable((m_addFailReasons.getBooleanValue()) ? new AppendedColumnRow(
-						row, new StringCell("Missing value in Molecule Column"))
-						: row);
+				dc_1.addRowToTable((m_addFailReasons.getBooleanValue()) ? new AppendedColumnRow(row,
+						new StringCell("Missing value in Molecule Column")) : row);
 				continue;
 			}
 
@@ -162,11 +155,11 @@ public class RdkitMatchedPairsNodeModel extends
 				roMol = getROMolFromCell(row.getCell(molIdx));
 			} catch (RowExecutionException e) {
 				// Log the failed row
-				m_Logger.info("Error parsing molecule (Row: "
-						+ row.getKey().getString() + ") " + e.getMessage());
+				m_Logger.info("Error parsing molecule (Row: " + row.getKey().getString() + ") "
+						+ e.getMessage());
 				// And add it to the second output
-				dc_1.addRowToTable((m_addFailReasons.getBooleanValue()) ? new AppendedColumnRow(
-						row, new StringCell(e.getMessage())) : row);
+				dc_1.addRowToTable((m_addFailReasons.getBooleanValue())
+						? new AppendedColumnRow(row, new StringCell(e.getMessage())) : row);
 				continue;
 			}
 
@@ -174,9 +167,8 @@ public class RdkitMatchedPairsNodeModel extends
 				// Deal with when we cannot get an ROMol object - e.g. for 'No
 				// Structure' Mol files
 				// And add it to the second output
-				dc_1.addRowToTable((m_addFailReasons.getBooleanValue()) ? new AppendedColumnRow(
-						row, new StringCell("'No Structure' input molecule"))
-						: row);
+				dc_1.addRowToTable((m_addFailReasons.getBooleanValue()) ? new AppendedColumnRow(row,
+						new StringCell("'No Structure' input molecule")) : row);
 				continue;
 			}
 
@@ -185,17 +177,14 @@ public class RdkitMatchedPairsNodeModel extends
 			}
 
 			// Do the fragmentation
-			HashMap<FragmentKey, TreeSet<FragmentValue>> newFrags = doRDKitFragmentation(
-					roMol, molID, numCuts, fragSMIRKS, trackCutConnectivity,
-					exec);
+			HashMap<FragmentKey, TreeSet<FragmentValue>> newFrags = doRDKitFragmentation(roMol,
+					molID, numCuts, fragSMIRKS, trackCutConnectivity, exec);
 
 			// Clean up the new fragments (apply max change etc settings -
-			newFrags = filterFragments(newFrags, maxNumVarAtm,
-					minCnstToVarAtmRatio);
+			newFrags = filterFragments(newFrags, maxNumVarAtm, minCnstToVarAtmRatio);
 
 			// Now, add the new fragments to the library
-			for (Entry<FragmentKey, TreeSet<FragmentValue>> ent : newFrags
-					.entrySet()) {
+			for (Entry<FragmentKey, TreeSet<FragmentValue>> ent : newFrags.entrySet()) {
 				if (!frags.containsKey(ent.getKey())) {
 					frags.put(ent.getKey(), new TreeSet<FragmentValue>());
 				}
@@ -203,8 +192,7 @@ public class RdkitMatchedPairsNodeModel extends
 			}
 			progress = (double) rowCnt++ / (double) numRows;
 			exec.checkCanceled();
-			exec_0.setProgress(progress, "Fragmented Row " + rowCnt + " of "
-					+ numRows);
+			exec_0.setProgress(progress, "Fragmented Row " + rowCnt + " of " + numRows);
 		}
 
 		// Now we need to add the rows to the output table
@@ -213,23 +201,17 @@ public class RdkitMatchedPairsNodeModel extends
 		int numKeys = frags.size();
 		int keyCnt = 0;
 		int rowIdx = 0;
-		m_Logger.info("Fragmentation completed.  " + numKeys
-				+ " unique keys generated.");
+		m_Logger.info("Fragmentation completed.  " + numKeys + " unique keys generated.");
 
-		if (m_outputKey.getBooleanValue()
-				|| m_outputHARatio.getBooleanValue()
-				|| (m_apFingerprints.isEnabled() && m_apFingerprints
-						.getBooleanValue())) {
+		if (m_outputKey.getBooleanValue() || m_outputHARatio.getBooleanValue()
+				|| (m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue())) {
 			// We need the overloaded method with the full parameter list, and
 			// to
 			// iterate through the entrySet()
-			for (Entry<FragmentKey, TreeSet<FragmentValue>> kv : frags
-					.entrySet()) {
-				ArrayList<DataCell[]> newRows = getTransforms(kv.getValue(),
-						kv.getKey(), numCols, m_stripHsAtEnd.isEnabled()
-								&& m_stripHsAtEnd.getBooleanValue(),
-						m_outputKey.getBooleanValue(),
-						m_outputNumChgHAs.getBooleanValue(),
+			for (Entry<FragmentKey, TreeSet<FragmentValue>> kv : frags.entrySet()) {
+				ArrayList<DataCell[]> newRows = getTransforms(kv.getValue(), kv.getKey(), numCols,
+						m_stripHsAtEnd.isEnabled() && m_stripHsAtEnd.getBooleanValue(),
+						m_outputKey.getBooleanValue(), m_outputNumChgHAs.getBooleanValue(),
 						m_outputHARatio.getBooleanValue(),
 						m_showReverseTransforms.getBooleanValue());
 				for (DataCell[] cells : newRows) {
@@ -245,19 +227,16 @@ public class RdkitMatchedPairsNodeModel extends
 				}
 				progress = (double) keyCnt++ / (double) numKeys;
 				exec.checkCanceled();
-				exec_0.setProgress(progress, "Processed Key " + keyCnt + " of "
-						+ numKeys + ".  " + rowIdx + " transforms generated.");
+				exec_0.setProgress(progress, "Processed Key " + keyCnt + " of " + numKeys + ".  "
+						+ rowIdx + " transforms generated.");
 			}
 
 		} else {
 			// We can use the method with fewer arguments and only iterate
 			// through the values
 			for (TreeSet<FragmentValue> vals : frags.values()) {
-				ArrayList<DataCell[]> newRows = getTransforms(
-						vals,
-						numCols,
-						m_stripHsAtEnd.isEnabled()
-								&& m_stripHsAtEnd.getBooleanValue(),
+				ArrayList<DataCell[]> newRows = getTransforms(vals, numCols,
+						m_stripHsAtEnd.isEnabled() && m_stripHsAtEnd.getBooleanValue(),
 						m_outputNumChgHAs.getBooleanValue(),
 						m_showReverseTransforms.getBooleanValue());
 
@@ -266,14 +245,14 @@ public class RdkitMatchedPairsNodeModel extends
 					if (m_includeReactionSMARTS.getBooleanValue()) {
 						cells = addReactionSmartsCell(cells);
 					}
-					
+
 					RowKey rowKey = new RowKey("Row_" + rowIdx++);
 					dc_0.addRowToTable(new DefaultRow(rowKey, cells));
 				}
 				progress = (double) keyCnt++ / (double) numKeys;
 				exec.checkCanceled();
-				exec_0.setProgress(progress, "Processed Key " + keyCnt + " of "
-						+ numKeys + ".  " + rowIdx + " transforms generated.");
+				exec_0.setProgress(progress, "Processed Key " + keyCnt + " of " + numKeys + ".  "
+						+ rowIdx + " transforms generated.");
 			}
 		}
 		dc_0.close();
@@ -290,19 +269,16 @@ public class RdkitMatchedPairsNodeModel extends
 	 * @returnThe DataCell[] for the row
 	 */
 	private DataCell[] addReactionSmartsCell(DataCell[] cells) {
-		cells[cells.length
-				- 1
-				- (m_apFingerprints.isEnabled()
-						&& m_apFingerprints.getBooleanValue() ? m_numCuts
-						.getIntValue()
-						: 0)] = new SmartsCell(
-				RDKitUtils.convertSmirksToReactionSmarts(((SmilesValue) cells[0])
-						.getSmilesValue()));
+		cells[cells.length - 1
+				- (m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue()
+						? m_numCuts.getIntValue() : 0)] = new SmartsCell(
+								RDKitUtils.convertSmirksToReactionSmarts(
+										((SmilesValue) cells[0]).getSmilesValue()));
 		return cells;
 	}
 
 	/**
-	 *{@inheritDoc}
+	 * {@inheritDoc}
 	 */
 	@Override
 	protected DataTableSpec createSpec_0(DataTableSpec spec) {
@@ -328,26 +304,20 @@ public class RdkitMatchedPairsNodeModel extends
 		specs[i++] = createColSpec("Left Fragment", SmilesCell.TYPE);
 		specs[i++] = createColSpec("Right Fragment", SmilesCell.TYPE);
 		if (m_outputKey.getBooleanValue()) {
-			specs[i++] = createColSpec("Unchanging fragment(s)",
-					SmilesCell.TYPE);
+			specs[i++] = createColSpec("Unchanging fragment(s)", SmilesCell.TYPE);
 		}
 		if (m_outputNumChgHAs.getBooleanValue()) {
-			specs[i++] = createColSpec("Changing Heavy Atoms (Left)",
-					IntCell.TYPE);
-			specs[i++] = createColSpec("Changing Heavy Atoms (Right)",
-					IntCell.TYPE);
+			specs[i++] = createColSpec("Changing Heavy Atoms (Left)", IntCell.TYPE);
+			specs[i++] = createColSpec("Changing Heavy Atoms (Right)", IntCell.TYPE);
 		}
 		if (m_outputHARatio.getBooleanValue()) {
-			specs[i++] = createColSpec(
-					"Ratio of Changing / Unchanging Heavy Atoms (Left)",
+			specs[i++] = createColSpec("Ratio of Changing / Unchanging Heavy Atoms (Left)",
 					DoubleCell.TYPE);
-			specs[i++] = createColSpec(
-					"Ratio of Changing / Unchanging Heavy Atoms (Right)",
+			specs[i++] = createColSpec("Ratio of Changing / Unchanging Heavy Atoms (Right)",
 					DoubleCell.TYPE);
 		}
 		if (m_includeReactionSMARTS.getBooleanValue()) {
-			specs[i++] = createColSpec("Transformation Reaction SMARTS",
-					SmartsCell.TYPE);
+			specs[i++] = createColSpec("Transformation Reaction SMARTS", SmartsCell.TYPE);
 		}
 
 		return new DataTableSpec(specs);
@@ -402,8 +372,7 @@ public class RdkitMatchedPairsNodeModel extends
 	 * #validateSettings(org.knime.core.node.NodeSettingsRO)
 	 */
 	@Override
-	protected void validateSettings(NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
 		super.validateSettings(settings);
 		m_outputKey.validateSettings(settings);
 		// Dont validate new settings m_showReverseTransforms and

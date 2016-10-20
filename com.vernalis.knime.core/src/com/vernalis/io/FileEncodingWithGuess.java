@@ -1,6 +1,17 @@
-/**
- * 
- */
+/*******************************************************************************
+ * Copyright (c) 2016, Vernalis (R&D) Ltd
+ *  This program is free software; you can redistribute it and/or modify it 
+ *  under the terms of the GNU General Public License, Version 3, as 
+ *  published by the Free Software Foundation.
+ *  
+ *   This program is distributed in the hope that it will be useful, but 
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of 
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *  See the GNU General Public License for more details.
+ *   
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, see <http://www.gnu.org/licenses>
+ ******************************************************************************/
 package com.vernalis.io;
 
 import org.knime.core.node.util.ButtonGroupEnumInterface;
@@ -23,7 +34,7 @@ public enum FileEncodingWithGuess implements ButtonGroupEnumInterface {
 
 	UTF32LE("UTF-32LE", "UTF-32 (Little Endian)"),
 
-	UTF32BE("UTF-32BE", "UTF-32 (Big Endian)"), ;
+	UTF32BE("UTF-32BE", "UTF-32 (Big Endian)"),;
 
 	private final String m_name;
 	private final String m_tooltip;

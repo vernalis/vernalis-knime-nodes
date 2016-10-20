@@ -17,8 +17,6 @@
  */
 package com.vernalis.rcsb.io.nodes.manip;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 
 import org.knime.bio.types.PdbCell;
@@ -35,17 +33,13 @@ import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.xml.XMLCell;
 import org.knime.core.data.xml.XMLCellFactory;
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 
 import com.vernalis.io.FileDownloadException;
 import com.vernalis.io.FileHelpers;
@@ -55,7 +49,7 @@ import com.vernalis.rcsb.io.helpers.PDBIOHelperFunctions;
  * This is the model implementation of RCSBmultiDownload. Node to allow download
  * of multiple RCSB PDB filetypes from a column of RCSB Structure IDs
  */
-public class RCSBmultiDownloadNodeModel extends NodeModel {
+public class RCSBmultiDownloadNodeModel extends SimpleStreamableFunctionNodeModel {
 
 	// the logger instance
 	@SuppressWarnings("unused")
@@ -87,22 +81,11 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 	 */
 
 	protected RCSBmultiDownloadNodeModel() {
-		super(1, 1);
+		super();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
-			final ExecutionContext exec) throws Exception {
-
-		ColumnRearranger c = createRearranger(inData[0].getDataTableSpec());
-		BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c, exec);
-		return new BufferedDataTable[] { out };
-	}
-
-	private ColumnRearranger createRearranger(DataTableSpec in) {
+	protected ColumnRearranger createColumnRearranger(DataTableSpec in) {
 		// Actually download the files and build the output
 		// The column index of the selected column
 		final int colIndexPDBID = in.findColumnIndex(m_PDBcolumnName.getStringValue());
@@ -221,14 +204,6 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void reset() {
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
 			throws InvalidSettingsException {
 
@@ -279,7 +254,7 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 		}
 
 		// everything seems to fine
-		ColumnRearranger c = createRearranger(inSpecs[0]);
+		ColumnRearranger c = createColumnRearranger(inSpecs[0]);
 		return new DataTableSpec[] { c.createSpec() };
 	}
 
@@ -324,22 +299,6 @@ public class RCSBmultiDownloadNodeModel extends NodeModel {
 		m_PDBcolumnName.validateSettings(settings);
 		m_PDBML.validateSettings(settings);
 		m_SF.validateSettings(settings);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
 	}
 
 }

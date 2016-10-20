@@ -12,9 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses>
  *******************************************************************************/
-/**
- * 
- */
 package com.vernalis.knime.mmp.fragmentors;
 
 import java.util.ArrayList;
@@ -50,7 +47,6 @@ import org.knime.core.node.NodeLogger;
 
 import com.vernalis.knime.mmp.BondIdentifier;
 import com.vernalis.knime.mmp.MulticomponentSmilesFragmentParser;
-import com.vernalis.knime.mmp.RDKitFragmentationUtils;
 import com.vernalis.knime.swiggc.ISWIGObjectGarbageCollector;
 import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
 
@@ -282,7 +278,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	@Override
 	public MulticomponentSmilesFragmentParser fragmentMolecule(BondIdentifier bond,
 			boolean treatProchiralAsChiral) throws MoleculeFragmentationException,
-					IllegalArgumentException, UnenumeratedStereochemistryException {
+			IllegalArgumentException, UnenumeratedStereochemistryException {
 		if (bond == null) {
 			throw new IllegalArgumentException("A bond must be supplied");
 		}
@@ -393,8 +389,8 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 		applyAPIsotopicLabels(value, localGcWave);
 
 		String retVal = removeHs
-				? (RDKitFragmentationUtils.removeHydrogens(key.MolToSmiles(true)) + "."
-						+ RDKitFragmentationUtils.removeHydrogens(value.MolToSmiles(true)))
+				? (gc.markForCleanup(key.removeHs(false), localGcWave).MolToSmiles(true) + "."
+						+ gc.markForCleanup(value.removeHs(false), localGcWave).MolToSmiles(true))
 				: (key.MolToSmiles(true) + "." + value.MolToSmiles(true));// getCanonicalValueSMILES(value,
 		// localGcWave);
 		// if (removeHs) {
@@ -415,7 +411,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	@Override
 	public MulticomponentSmilesFragmentParser fragmentMoleculeWithBondInsertion(BondIdentifier bond,
 			boolean treatProchiralAsChiral) throws IllegalArgumentException,
-					MoleculeFragmentationException, UnenumeratedStereochemistryException {
+			MoleculeFragmentationException, UnenumeratedStereochemistryException {
 		if (bond == null) {
 			throw new IllegalArgumentException("A bond must be supplied");
 		}
@@ -545,7 +541,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	@Override
 	public MulticomponentSmilesFragmentParser fragmentMolecule(Set<BondIdentifier> bonds,
 			boolean treatProchiralAsChiral) throws IllegalArgumentException,
-					MoleculeFragmentationException, UnenumeratedStereochemistryException {
+			MoleculeFragmentationException, UnenumeratedStereochemistryException {
 
 		if (bonds == null || bonds.size() == 0) {
 			throw new IllegalArgumentException("At least one bond must be supplied");
@@ -592,7 +588,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	 */
 	private MulticomponentSmilesFragmentParser fragmentLong(Set<BondIdentifier> bonds,
 			boolean treatProchiralAsChiral)
-					throws MoleculeFragmentationException, UnenumeratedStereochemistryException {
+			throws MoleculeFragmentationException, UnenumeratedStereochemistryException {
 
 		int localGcWave = gcWave.getAndIncrement();
 		RWMol tmp = gc.markForCleanup(new RWMol(mol), localGcWave);
@@ -807,7 +803,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	 */
 	private MulticomponentSmilesFragmentParser fragmentShort(Set<BondIdentifier> bonds,
 			boolean treatProchiralAsChiral)
-					throws MoleculeFragmentationException, UnenumeratedStereochemistryException {
+			throws MoleculeFragmentationException, UnenumeratedStereochemistryException {
 		int localGcWave = gcWave.getAndIncrement();
 		RWMol tmp = gc.markForCleanup(new RWMol(mol), localGcWave);
 
@@ -1383,7 +1379,11 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 				newIdxVect.add(Integer.parseInt(idx.trim()));
 			}
 		}
-		value.sanitizeMol();
+		try {
+			value.sanitizeMol();
+		} catch (MolSanitizeException e) {
+			logger.warn("Unable to sanitize molecule during atom order canonicalisation");
+		}
 		ROMol tmp = RDKFuncs.renumberAtoms(value, newIdxVect);
 		value.clear();
 		value.insertMol(tmp);

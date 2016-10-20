@@ -11,10 +11,7 @@ import com.vernalis.knime.mmp.MulticomponentSmilesFragmentParser;
  *
  */
 public class UnenumeratedStereochemistryException extends Exception {
-	/**
-		 * 
-		 */
-	private static final long serialVersionUID = 2406414402983464598L;
+		private static final long serialVersionUID = 2406414402983464598L;
 	private final String smiles;
 	private final boolean removeHs;
 

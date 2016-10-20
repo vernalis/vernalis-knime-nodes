@@ -1,8 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd, based on earlier PDB Connector work.
- * 
- * Copyright (c) 2012, 2014 Vernalis (R&D) Ltd and Enspiral Discovery Limited
- * 
+ * Copyright (c) 2016, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.

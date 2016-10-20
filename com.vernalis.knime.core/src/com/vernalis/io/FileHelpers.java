@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2016, Vernalis (R&D) Ltd
+ *  This program is free software; you can redistribute it and/or modify it 
+ *  under the terms of the GNU General Public License, Version 3, as 
+ *  published by the Free Software Foundation.
+ *  
+ *   This program is distributed in the hope that it will be useful, but 
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of 
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *  See the GNU General Public License for more details.
+ *   
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, see <http://www.gnu.org/licenses>
+ ******************************************************************************/
 /*
  * ------------------------------------------------------------------------
  *  Copyright (C) 2013, Vernalis (R&D) Ltd
@@ -21,14 +35,19 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.zip.GZIPInputStream;
 
 import org.knime.core.node.NodeLogger;
+import org.knime.core.util.pathresolve.ResolverUtil;
 
 /**
  * Utility class to provide basic file operations for a number of the Vernalis
@@ -52,15 +71,21 @@ public class FileHelpers {
 	 * @param pathToFile
 	 *            filepath or URL
 	 * @return URL as a String
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 * @throws MalformedURLException
 	 */
-	public static String forceURL(String pathToFile) {
+	public static String forceURL(String pathToFile)
+			throws MalformedURLException, IOException, URISyntaxException {
 		/*
 		 * Helper function to coerce filepaths to URLs NB There is no attempt to
 		 * validate in anyway!
 		 */
 		String r = pathToFile;
-		if (!(r.toLowerCase().startsWith("http:") || r.toLowerCase().startsWith("file:")
-				|| r.toLowerCase().startsWith("ftp:") || r.toLowerCase().startsWith("knime:"))) {
+		if (r.toLowerCase().startsWith("knime:")) {
+			r = ResolverUtil.resolveURItoLocalFile(new URI(r)).toURI().toURL().toString();
+		} else if (!(r.toLowerCase().startsWith("http:") || r.toLowerCase().startsWith("file:")
+				|| r.toLowerCase().startsWith("ftp:"))) {
 			try {
 				r = new File(r).toURI().toURL().toString();
 			} catch (Exception e) {
@@ -245,7 +270,6 @@ public class FileHelpers {
 					} finally {
 						is.reset();
 					}
-
 				}
 
 				// Now set up a buffered reader to read it

@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 2015, Vernalis (R&D) Ltd
- * This program is free software; you can redistribute it and/or modify it 
- * under the terms of the GNU General Public License, Version 3, as 
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, see <http://www.gnu.org/licenses>
- *******************************************************************************/
+ * Copyright (c) 2016, Vernalis (R&D) Ltd
+ *  This program is free software; you can redistribute it and/or modify it 
+ *  under the terms of the GNU General Public License, Version 3, as 
+ *  published by the Free Software Foundation.
+ *  
+ *   This program is distributed in the hope that it will be useful, but 
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of 
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *  See the GNU General Public License for more details.
+ *   
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, see <http://www.gnu.org/licenses>
+ ******************************************************************************/
 package com.vernalis.knime.swiggc;
 
 import java.lang.reflect.Method;
@@ -38,9 +38,6 @@ import org.knime.core.node.NodeLogger;
 public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
 		implements ISWIGObjectGarbageCollector {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3403451572751057864L;
 
 	/** The logger instance. */
@@ -66,8 +63,7 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
 	 * @param initialCapacity
 	 * @param loadFactor
 	 */
-	public SWIGObjectGarbageCollector2(final int initialCapacity,
-			final float loadFactor) {
+	public SWIGObjectGarbageCollector2(final int initialCapacity, final float loadFactor) {
 		super(initialCapacity, loadFactor);
 	}
 
@@ -86,8 +82,7 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
 	 * @param existing
 	 *            The existing object. Must not be null.
 	 */
-	private SWIGObjectGarbageCollector2(
-			final SWIGObjectGarbageCollector2 existing) {
+	private SWIGObjectGarbageCollector2(final SWIGObjectGarbageCollector2 existing) {
 		super(existing);
 		waveLookup = new HashMap<>(existing.waveLookup);
 	}
@@ -99,13 +94,12 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.vernalis.knime.internal.swiggc.ISWIGObjectGarbageCollector#markForCleanup
-	 * (T, int, boolean)
+	 * @see com.vernalis.knime.internal.swiggc.ISWIGObjectGarbageCollector#
+	 * markForCleanup (T, int, boolean)
 	 */
 	@Override
-	public synchronized <T extends Object> T markForCleanup(final T object,
-			final int wave, final boolean bRemoveFromOtherWave) {
+	public synchronized <T extends Object> T markForCleanup(final T object, final int wave,
+			final boolean bRemoveFromOtherWave) {
 		if (object != null) {
 
 			// Remove object from any other list, if desired
@@ -139,22 +133,19 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.vernalis.knime.internal.swiggc.ISWIGObjectGarbageCollector#markForCleanup
-	 * (T, int)
+	 * @see com.vernalis.knime.internal.swiggc.ISWIGObjectGarbageCollector#
+	 * markForCleanup (T, int)
 	 */
 	@Override
-	public synchronized <T extends Object> T markForCleanup(final T object,
-			final int wave) {
+	public synchronized <T extends Object> T markForCleanup(final T object, final int wave) {
 		return markForCleanup(object, wave, false);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.vernalis.knime.internal.swiggc.ISWIGObjectGarbageCollector#markForCleanup
-	 * (T, boolean)
+	 * @see com.vernalis.knime.internal.swiggc.ISWIGObjectGarbageCollector#
+	 * markForCleanup (T, boolean)
 	 */
 	@Override
 	public synchronized <T extends Object> T markForCleanup(final T object,
@@ -165,9 +156,8 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.vernalis.knime.internal.swiggc.ISWIGObjectGarbageCollector#markForCleanup
-	 * (T)
+	 * @see com.vernalis.knime.internal.swiggc.ISWIGObjectGarbageCollector#
+	 * markForCleanup (T)
 	 */
 	@Override
 	public synchronized <T extends Object> T markForCleanup(final T object) {
@@ -237,21 +227,19 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
 			LOGGER.error(
 					"An object had been registered for cleanup (delete() call), "
 							+ "which does not provide a delete() method."
-							+ (clazz == null ? "" : " It's of class "
-									+ clazz.getName() + "."),
+							+ (clazz == null ? "" : " It's of class " + clazz.getName() + "."),
 					excNoSuchMethod.getCause());
 		} catch (final SecurityException excSecurity) {
 			LOGGER.error(
 					"An object had been registered for cleanup (delete() call), "
 							+ "which is not accessible for security reasons."
-							+ (clazz == null ? "" : " It's of class "
-									+ clazz.getName() + "."),
+							+ (clazz == null ? "" : " It's of class " + clazz.getName() + "."),
 					excSecurity.getCause());
 		} catch (final Exception exc) {
 			LOGGER.error(
 					"Cleaning up a registered object (via delete() call) failed."
-							+ (clazz == null ? "" : " It's of class "
-									+ clazz.getName() + "."), exc.getCause());
+							+ (clazz == null ? "" : " It's of class " + clazz.getName() + "."),
+					exc.getCause());
 		}
 	}
 
@@ -262,10 +250,8 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
 	 * quarantineAndCleanupMarkedObjects(long)
 	 */
 	@Override
-	public synchronized void quarantineAndCleanupMarkedObjects(
-			long delayMilliSec) {
-		final SWIGObjectGarbageCollector2 quarantineObjects = new SWIGObjectGarbageCollector2(
-				this);
+	public synchronized void quarantineAndCleanupMarkedObjects(long delayMilliSec) {
+		final SWIGObjectGarbageCollector2 quarantineObjects = new SWIGObjectGarbageCollector2(this);
 		clear();
 
 		if (!quarantineObjects.isEmpty()) {
@@ -283,8 +269,7 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
 			};
 
 			// Schedule the cleanup task for later
-			final Timer timer = new Timer(
-					"Quarantine SWIG-based Object Cleanup", false);
+			final Timer timer = new Timer("Quarantine SWIG-based Object Cleanup", false);
 			timer.schedule(futureCleanupTask, delayMilliSec);
 		}
 	}

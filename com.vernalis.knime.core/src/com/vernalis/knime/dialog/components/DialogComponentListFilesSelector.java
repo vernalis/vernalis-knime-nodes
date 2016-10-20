@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 2015, Vernalis (R&D) Ltd
- * This program is free software; you can redistribute it and/or modify it 
- * under the terms of the GNU General Public License, Version 3, as 
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, see <http://www.gnu.org/licenses>
- *******************************************************************************/
+ * Copyright (c) 2016, Vernalis (R&D) Ltd
+ *  This program is free software; you can redistribute it and/or modify it 
+ *  under the terms of the GNU General Public License, Version 3, as 
+ *  published by the Free Software Foundation.
+ *  
+ *   This program is distributed in the hope that it will be useful, but 
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of 
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *  See the GNU General Public License for more details.
+ *   
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, see <http://www.gnu.org/licenses>
+ ******************************************************************************/
 package com.vernalis.knime.dialog.components;
 
 import java.awt.Color;
@@ -503,10 +503,7 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 		});
 	}
 
-	/**
-	 * 
-	 */
-	protected void deleteAllFiles() {
+		protected void deleteAllFiles() {
 		m_fileListModel.removeAllElements();
 		try {
 			updateModel(true);
@@ -516,10 +513,7 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 		getComponentPanel().revalidate();
 	}
 
-	/**
-	 * 
-	 */
-	protected void deleteSelectedFiles() {
+		protected void deleteSelectedFiles() {
 		for (String fName : m_fileList.getSelectedValuesList()) {
 			while (m_fileListModel.removeElement(fName)) {
 				// Make sure every copy is gone - just in case we managed to add
@@ -806,10 +800,7 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 
 	}
 
-	/**
-	 * 
-	 */
-	private void updateAddFromHistoryButtonStatus() {
+		private void updateAddFromHistoryButtonStatus() {
 		m_addFromHistoryButton.setEnabled(getModel().isEnabled()
 				&& m_fileHistoryComboBox.getSelectedIndex() != -1);
 	}

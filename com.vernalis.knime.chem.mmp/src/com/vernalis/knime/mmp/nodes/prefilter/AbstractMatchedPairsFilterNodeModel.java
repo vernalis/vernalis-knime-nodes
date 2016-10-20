@@ -62,10 +62,10 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.util.MultiThreadWorker;
 import org.rdkit.knime.types.RDKitMolValue;
 
+import com.vernalis.exceptions.RowExecutionException;
 import com.vernalis.knime.mmp.FragmentationTypes;
 import com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin;
 import com.vernalis.knime.mmp.RDKitFragmentationUtils;
-import com.vernalis.knime.mmp.RowExecutionException;
 import com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage;
 import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
 

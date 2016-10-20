@@ -12,10 +12,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  *******************************************************************************/
-/**
- * 
- */
 package com.vernalis.knime.mmp.nodes.rdkit.abstrct;
+
 import static com.vernalis.knime.mmp.MolFormats.isColTypeRDKitCompatible;
 import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createAddFailReasonModel;
 import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createAddHModel;
@@ -72,11 +70,11 @@ import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.rdkit.knime.types.RDKitMolValue;
 
+import com.vernalis.exceptions.RowExecutionException;
 import com.vernalis.knime.mmp.FragmentKey;
 import com.vernalis.knime.mmp.FragmentKeyMorganFP;
 import com.vernalis.knime.mmp.FragmentationTypes;
 import com.vernalis.knime.mmp.RDKitUtils;
-import com.vernalis.knime.mmp.RowExecutionException;
 
 /**
  * Abstract class for the shared code for the MMP and Molecule fragment nodes.
@@ -88,8 +86,7 @@ import com.vernalis.knime.mmp.RowExecutionException;
  * @author "Stephen Roughley  <s.roughley@vernalis.com>"
  * 
  */
-public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
-		NodeModel {
+public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends NodeModel {
 
 	/** The node logger Needs to be initialised in subclasses. */
 	protected NodeLogger m_Logger;
@@ -129,23 +126,21 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 	public AbstractRdkitMatchedPairsMultipleCutsNodeModel() {
 		super(1, 2);
 		m_AddHs.setEnabled(m_numCuts.getIntValue() == 1);
-		m_stripHsAtEnd.setEnabled(m_numCuts.getIntValue() == 1
-				&& m_AddHs.getBooleanValue());
+		m_stripHsAtEnd.setEnabled(m_numCuts.getIntValue() == 1 && m_AddHs.getBooleanValue());
 		m_trackCutConnectivity.setEnabled(m_numCuts.getIntValue() > 1);
 		m_maxChangingAtoms.setEnabled(m_hasChangingAtoms.getBooleanValue());
 		m_minHARatioFilter.setEnabled(m_hasHARatioFilter.getBooleanValue());
-		m_customSmarts.setEnabled(FragmentationTypes.valueOf(m_fragSMIRKS
-				.getStringValue()) == FragmentationTypes.USER_DEFINED);
-		m_apFingerprints.setEnabled(m_numCuts.getIntValue() == 1
-				|| m_trackCutConnectivity.getBooleanValue());
-		m_useBondTypes.setEnabled(m_apFingerprints.isEnabled()
-				&& m_apFingerprints.getBooleanValue());
-		m_useChirality.setEnabled(m_apFingerprints.isEnabled()
-				&& m_apFingerprints.getBooleanValue());
-		m_fpLength.setEnabled(m_apFingerprints.isEnabled()
-				&& m_apFingerprints.getBooleanValue());
-		m_morganRadius.setEnabled(m_apFingerprints.isEnabled()
-				&& m_apFingerprints.getBooleanValue());
+		m_customSmarts.setEnabled(FragmentationTypes
+				.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED);
+		m_apFingerprints.setEnabled(
+				m_numCuts.getIntValue() == 1 || m_trackCutConnectivity.getBooleanValue());
+		m_useBondTypes
+				.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
+		m_useChirality
+				.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
+		m_fpLength.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
+		m_morganRadius
+				.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
 	}
 
 	/**
@@ -155,28 +150,24 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
 			throws InvalidSettingsException {
 		// Check the molCol is a molecule
-		DataColumnSpec colSpec = inSpecs[0].getColumnSpec(m_molColName
-				.getStringValue());
+		DataColumnSpec colSpec = inSpecs[0].getColumnSpec(m_molColName.getStringValue());
 
 		if (colSpec == null) {
 			// No column selected, or selected column not found - autoguess!
 			for (int i = inSpecs[0].getNumColumns() - 1; i >= 0; i--) {
 				// Reverse order to select most recently added
-				if (isColTypeRDKitCompatible(inSpecs[0].getColumnSpec(i)
-						.getType())) {
-					m_molColName.setStringValue(inSpecs[0].getColumnSpec(i)
-							.getName());
-					m_Logger.warn("No column selected. "
-							+ m_molColName.getStringValue() + " auto-selected.");
+				if (isColTypeRDKitCompatible(inSpecs[0].getColumnSpec(i).getType())) {
+					m_molColName.setStringValue(inSpecs[0].getColumnSpec(i).getName());
+					m_Logger.warn("No column selected. " + m_molColName.getStringValue()
+							+ " auto-selected.");
 					break;
 				}
 				// If we are here when i = 0, then no suitable column found
 				if (i == 0) {
 					m_Logger.error("No molecule column of the accepted"
 							+ " input formats (SDF, Mol, SMILES) was found.");
-					throw new InvalidSettingsException(
-							"No molecule column of the accepted"
-									+ " input formats (SDF, Mol, SMILES) was found.");
+					throw new InvalidSettingsException("No molecule column of the accepted"
+							+ " input formats (SDF, Mol, SMILES) was found.");
 				}
 			}
 
@@ -185,12 +176,9 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 			if (!isColTypeRDKitCompatible(colSpec.getType())) {
 				// The column is not compatible with one of the accepted types
 				m_Logger.error("The column " + m_molColName.getStringValue()
-						+ " is not one of the accepted"
-						+ " input formats (SDF, Mol, SMILES)");
-				throw new InvalidSettingsException("The column "
-						+ m_molColName.getStringValue()
-						+ " is not one of the accepted"
-						+ " input formats (SDF, Mol, SMILES)");
+						+ " is not one of the accepted" + " input formats (SDF, Mol, SMILES)");
+				throw new InvalidSettingsException("The column " + m_molColName.getStringValue()
+						+ " is not one of the accepted" + " input formats (SDF, Mol, SMILES)");
 			}
 		}
 
@@ -203,46 +191,42 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 				// Reverse order to select most recently added
 				DataType colType = inSpecs[0].getColumnSpec(i).getType();
 				if (colType.isCompatible(StringValue.class)) {
-					m_idColName.setStringValue(inSpecs[0].getColumnSpec(i)
-							.getName());
-					m_Logger.warn("No column selected. "
-							+ m_idColName.getStringValue() + " auto-selected.");
+					m_idColName.setStringValue(inSpecs[0].getColumnSpec(i).getName());
+					m_Logger.warn("No column selected. " + m_idColName.getStringValue()
+							+ " auto-selected.");
 					break;
 				}
 				// If we are here when i = 0, then no suitable column found
 				if (i == 0) {
 					m_Logger.error("No String-compatible ID column was found.");
-					throw new InvalidSettingsException(
-							"No String-compatible ID column was found.");
+					throw new InvalidSettingsException("No String-compatible ID column was found.");
 				}
 			}
 		} else {
 			// We had a selected column, now lets see if it is a compatible type
 			if (!colSpec.getType().isCompatible(StringValue.class)) {
 				// The column is not compatible with one of the accepted types
-				m_Logger.error("The column " + m_idColName.getStringValue()
-						+ " is not String-compatible");
-				throw new InvalidSettingsException("The column "
-						+ m_idColName.getStringValue()
-						+ " is not String-compatible");
+				m_Logger.error(
+						"The column " + m_idColName.getStringValue() + " is not String-compatible");
+				throw new InvalidSettingsException(
+						"The column " + m_idColName.getStringValue() + " is not String-compatible");
 			}
 		}
 
-		if (FragmentationTypes.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED) {
+		if (FragmentationTypes
+				.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED) {
 			if (m_customSmarts.getStringValue() == null
 					|| "".equals(m_customSmarts.getStringValue())) {
 				m_Logger.error("A reaction SMARTS string must be provided "
 						+ "for user-defined fragmentation patterns");
-				throw new InvalidSettingsException(
-						"A reaction SMARTS string must be provided "
-								+ "for user-defined fragmentation patterns");
+				throw new InvalidSettingsException("A reaction SMARTS string must be provided "
+						+ "for user-defined fragmentation patterns");
 			}
-			String rSMARTSCheck = RDKitUtils.validateReactionSmarts(m_customSmarts
-					.getStringValue());
+			String rSMARTSCheck = RDKitUtils
+					.validateReactionSmarts(m_customSmarts.getStringValue());
 			if (rSMARTSCheck != null) {
 				m_Logger.error("Error parsing rSMARTS: " + rSMARTSCheck);
-				throw new InvalidSettingsException("Error parsing rSMARTS: "
-						+ rSMARTSCheck);
+				throw new InvalidSettingsException("Error parsing rSMARTS: " + rSMARTSCheck);
 			}
 		}
 		m_spec_0 = createSpec_0_superType(inSpecs[0]);
@@ -261,13 +245,11 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 	 * @return The required {@link DataTableSpec} for the 0th output port
 	 */
 	private DataTableSpec createSpec_0_superType(DataTableSpec dataTableSpec) {
-		if (!m_apFingerprints.isEnabled()
-				|| !m_apFingerprints.getBooleanValue()) {
+		if (!m_apFingerprints.isEnabled() || !m_apFingerprints.getBooleanValue()) {
 			// We just return the basic table from the subclass method
 			return createSpec_0(dataTableSpec);
 		}
-		DataTableSpecCreator retVal = new DataTableSpecCreator(
-				createSpec_0(dataTableSpec));
+		DataTableSpecCreator retVal = new DataTableSpecCreator(createSpec_0(dataTableSpec));
 		DataColumnSpec[] fpCols = new DataColumnSpec[m_numCuts.getIntValue()];
 		for (int i = 0; i < fpCols.length; i++) {
 			fpCols[i] = new DataColumnSpecCreator(
@@ -286,10 +268,9 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 	 */
 	protected DataTableSpec createSpec_1(DataTableSpec dataTableSpec) {
 		if (m_addFailReasons.getBooleanValue()) {
-			DataTableSpecCreator retVal = new DataTableSpecCreator(
-					dataTableSpec);
-			retVal.addColumns(new DataColumnSpecCreator(DataTableSpec
-					.getUniqueColumnName(dataTableSpec, "Failure Reason"),
+			DataTableSpecCreator retVal = new DataTableSpecCreator(dataTableSpec);
+			retVal.addColumns(new DataColumnSpecCreator(
+					DataTableSpec.getUniqueColumnName(dataTableSpec, "Failure Reason"),
 					StringCell.TYPE).createSpec());
 			return retVal.createSpec();
 		} else {
@@ -316,8 +297,7 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 	 *            The column {@link DataType}
 	 * @return A {@link DataColumnSpec}
 	 */
-	protected final DataColumnSpec createColSpec(String colName,
-			DataType colType) {
+	protected final DataColumnSpec createColSpec(String colName, DataType colType) {
 		return (new DataColumnSpecCreator(colName, colType)).createSpec();
 	}
 
@@ -332,34 +312,28 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 	 *             Thrown if the cell is not of the correct type
 	 * @throws RowExecutionException
 	 */
-	protected ROMol getROMolFromCell(DataCell cell)
-			throws RowExecutionException {
+	protected ROMol getROMolFromCell(DataCell cell) throws RowExecutionException {
 		ROMol mol = null;
 		DataType type = cell.getType();
 		try {
 			if (type.isCompatible(RDKitMolValue.class)) {
 				mol = ((RDKitMolValue) cell).readMoleculeValue();
 			} else if (type.isCompatible(SmilesValue.class)) {
-				RWMol rwMol = RWMol.MolFromSmiles(
-						((SmilesValue) cell).getSmilesValue(), 0, false);
+				RWMol rwMol = RWMol.MolFromSmiles(((SmilesValue) cell).getSmilesValue(), 0, false);
 				RDKFuncs.sanitizeMol(rwMol);
 				mol = rwMol;
 				// rwMol.delete();
 			} else if (type.isCompatible(MolValue.class)) {
-				mol = RWMol.MolFromMolBlock(((MolValue) cell).getMolValue(),
-						true, false);
+				mol = RWMol.MolFromMolBlock(((MolValue) cell).getMolValue(), true, false);
 			} else if (type.isCompatible(SdfValue.class)) {
-				mol = RWMol.MolFromMolBlock(((SdfValue) cell).getSdfValue(),
-						true, false);
+				mol = RWMol.MolFromMolBlock(((SdfValue) cell).getSdfValue(), true, false);
 			} else {
-				throw new RowExecutionException(
-						"Cell is not a recognised molecule type");
+				throw new RowExecutionException("Cell is not a recognised molecule type");
 			}
 		} catch (MolSanitizeException e) {
 			// MolSanitizeException returns null for #getMessage()
 			throw new RowExecutionException("Error in sanitizing molecule: "
-					+ ((StringValue) cell).getStringValue() + " : "
-					+ e.message());
+					+ ((StringValue) cell).getStringValue() + " : " + e.message());
 		} catch (Exception e) {
 			String msg = e.getMessage();
 			if (msg == null || "".equals(msg)) {
@@ -452,19 +426,15 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 		} catch (InvalidSettingsException e) {
 			// Set the back-compatible behaviour
 			m_apFingerprints.setBooleanValue(false);
-			m_apFingerprints.setEnabled(m_numCuts.getIntValue() == 1
-					|| m_trackCutConnectivity.getBooleanValue());
-			m_useBondTypes
-					.setBooleanValue(FragmentKeyMorganFP.DEFAULT_USE_BOND_TYPES);
+			m_apFingerprints.setEnabled(
+					m_numCuts.getIntValue() == 1 || m_trackCutConnectivity.getBooleanValue());
+			m_useBondTypes.setBooleanValue(FragmentKeyMorganFP.DEFAULT_USE_BOND_TYPES);
 			m_useBondTypes.setEnabled(false);
-			m_useChirality
-					.setBooleanValue(FragmentKeyMorganFP.DEFAULT_USE_CHIRALITY);
+			m_useChirality.setBooleanValue(FragmentKeyMorganFP.DEFAULT_USE_CHIRALITY);
 			m_useChirality.setEnabled(false);
-			m_fpLength
-					.setIntValue((int) FragmentKeyMorganFP.DEFAULT_FP_LENGTH);
+			m_fpLength.setIntValue((int) FragmentKeyMorganFP.DEFAULT_FP_LENGTH);
 			m_fpLength.setEnabled(false);
-			m_morganRadius
-					.setIntValue((int) FragmentKeyMorganFP.DEFAULT_FP_RADIUS);
+			m_morganRadius.setIntValue((int) FragmentKeyMorganFP.DEFAULT_FP_RADIUS);
 			m_morganRadius.setEnabled(false);
 		}
 
@@ -474,8 +444,7 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
 		m_AddHs.validateSettings(settings);
 		m_idColName.validateSettings(settings);
 		m_molColName.validateSettings(settings);
@@ -494,9 +463,8 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 		// Do nothing
 	}
 
@@ -504,9 +472,8 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 		// Do nothing
 	}
 
@@ -524,9 +491,11 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends
 	 * @return
 	 */
 	protected DataCell[] addAPFPs(DataCell[] cells, FragmentKey key) {
-		FragmentKeyMorganFP fpKey = new FragmentKeyMorganFP(key, m_morganRadius.getIntValue(), m_fpLength.getIntValue(), m_useChirality.getBooleanValue(), m_useBondTypes.getBooleanValue());
+		FragmentKeyMorganFP fpKey = new FragmentKeyMorganFP(key, m_morganRadius.getIntValue(),
+				m_fpLength.getIntValue(), m_useChirality.getBooleanValue(),
+				m_useBondTypes.getBooleanValue());
 		DataCell[] fpCells = fpKey.getDenseAttachmentPointFingerprints(m_numCuts.getIntValue());
-		for (int i=0; i<m_numCuts.getIntValue(); i++){
+		for (int i = 0; i < m_numCuts.getIntValue(); i++) {
 			cells[cells.length - m_numCuts.getIntValue() + i] = fpCells[i];
 		}
 		return cells;

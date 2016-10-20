@@ -369,9 +369,8 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 	}
 
 	/**
-	 * Method to remove all registered output columns * @see {@link
-	 * AbstractVerRDKitRearrangerNodeModel#registerResultColumn(String,
-	 * DataType)
+	 * Method to remove all registered output columns * @see
+	 * {@link AbstractVerRDKitRearrangerNodeModel#registerResultColumn(String, DataType)
 	 */
 	protected void resetResultColumns() {
 		resultColumns = new LinkedHashMap<>();
