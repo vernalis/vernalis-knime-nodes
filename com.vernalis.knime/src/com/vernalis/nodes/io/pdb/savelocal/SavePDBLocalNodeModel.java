@@ -17,8 +17,10 @@
  */
 package com.vernalis.nodes.io.pdb.savelocal;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -31,17 +33,13 @@ import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.container.SingleCellFactory;
 import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.BooleanCell.BooleanCellFactory;
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 
 import com.vernalis.io.FileHelpers;
 
@@ -49,10 +47,8 @@ import com.vernalis.io.FileHelpers;
  * This is the model implementation of SavePDBLocal. Node to save a PDB cell
  * column (as string) to a local file with path specified in a second column
  */
-public class SavePDBLocalNodeModel extends NodeModel {
-	// the logger instance
+public class SavePDBLocalNodeModel extends SimpleStreamableFunctionNodeModel {
 	private static final NodeLogger logger = NodeLogger.getLogger(SavePDBLocalNodeModel.class);
-
 	/**
 	 * the settings key which is used to retrieve and store the settings (from
 	 * the dialog or from a settings file) (package visibility to be usable from
@@ -80,25 +76,11 @@ public class SavePDBLocalNodeModel extends NodeModel {
 	 */
 	protected SavePDBLocalNodeModel() {
 
-		super(1, 1);
+		super();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
-			final ExecutionContext exec) throws Exception {
-
-		logger.info("SavePDBLocal Node executing...");
-
-		// the data table spec of the single output table,
-		ColumnRearranger c = createColumnRearranger(inData[0].getDataTableSpec());
-		BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c, exec);
-		return new BufferedDataTable[] { out };
-	}
-
-	private ColumnRearranger createColumnRearranger(DataTableSpec in) {
+	protected ColumnRearranger createColumnRearranger(DataTableSpec in) {
 		ColumnRearranger c = new ColumnRearranger(in);
 
 		// The column index of the selected columns
@@ -130,6 +112,12 @@ public class SavePDBLocalNodeModel extends NodeModel {
 				// 1. Check if the directory exist and create it if not
 
 				String pathToFile = ((StringValue) pathcell).getStringValue();
+				try {
+					pathToFile = FileHelpers.forceURL(pathToFile);
+					pathToFile = Paths.get(new URI(pathToFile)).toAbsolutePath().toString();
+				} catch (IOException | URISyntaxException e) {
+					logger.warn("Error parsing file path: " + e.getMessage());
+				}
 				if (!(FileHelpers.checkContainerFolderExists(pathToFile))) {
 					// If the folder doesnt exist we need to make it exist
 					if (!(FileHelpers.createContainerFolder(pathToFile))) {
@@ -146,13 +134,6 @@ public class SavePDBLocalNodeModel extends NodeModel {
 		};
 		c.append(factory);
 		return c;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void reset() {
 	}
 
 	/**
@@ -294,22 +275,6 @@ public class SavePDBLocalNodeModel extends NodeModel {
 		m_Overwrite.validateSettings(settings);
 		m_SuccesscolumnName.validateSettings(settings);
 
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
 	}
 
 }

@@ -17,8 +17,10 @@
  */
 package com.vernalis.nodes.io.txt;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -26,25 +28,20 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
-
-import com.vernalis.io.FileHelpers;
-
-import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.ExecutionMonitor;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeModel;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.container.SingleCellFactory;
 import org.knime.core.data.def.BooleanCell;
 import org.knime.core.data.def.BooleanCell.BooleanCellFactory;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
+import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
+
+import com.vernalis.io.FileHelpers;
 
 /**
  * This is the model implementation of SaveTxtLocal. Node to save a String cell
@@ -52,7 +49,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
  * 
  * @author SDR
  */
-public class SaveTxtLocalNodeModel extends NodeModel {
+public class SaveTxtLocalNodeModel extends SimpleStreamableFunctionNodeModel {
 	// the logger instance
 	private static final NodeLogger logger = NodeLogger.getLogger(SaveTxtLocalNodeModel.class);
 
@@ -83,24 +80,11 @@ public class SaveTxtLocalNodeModel extends NodeModel {
 	 */
 	protected SaveTxtLocalNodeModel() {
 
-		super(1, 1);
+		super();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
-			final ExecutionContext exec) throws Exception {
-
-		// the data table spec of the single output table,
-		// the table will have three columns:
-		ColumnRearranger c = createColumnRearranger(inData[0].getDataTableSpec());
-		BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c, exec);
-		return new BufferedDataTable[] { out };
-	}
-
-	private ColumnRearranger createColumnRearranger(DataTableSpec in) {
+	protected ColumnRearranger createColumnRearranger(DataTableSpec in) {
 		ColumnRearranger c = new ColumnRearranger(in);
 		// The column index of the selected column
 		final int colIndexTxt = in.findColumnIndex(m_TxtcolumnName.getStringValue());
@@ -112,6 +96,7 @@ public class SaveTxtLocalNodeModel extends NodeModel {
 
 		// utility object that performs the calculation
 		SingleCellFactory factory = new SingleCellFactory(true, newColSpec) {
+			@Override
 			public DataCell getCell(DataRow row) {
 				DataCell txtcell = row.getCell(colIndexTxt);
 				DataCell pathcell = row.getCell(colIndexPath);
@@ -131,11 +116,18 @@ public class SaveTxtLocalNodeModel extends NodeModel {
 				// 1. Check if the directory exist and create it if not
 
 				String pathToFile = ((StringValue) pathcell).getStringValue();
-				if (!(FileHelpers.isPath(pathToFile))) {
-					// Well it doesnt look like a path so return fail!
-					logger.info("Path '" + pathToFile + "' does not look like a path!");
-					return BooleanCell.FALSE;
+				try {
+					pathToFile = FileHelpers.forceURL(pathToFile);
+					pathToFile = Paths.get(new URI(pathToFile)).toAbsolutePath().toString();
+				} catch (IOException | URISyntaxException e) {
+					logger.warn("Error parsing file path: " + e.getMessage());
 				}
+				// if (!(FileHelpers.isPath(pathToFile))) {
+				// // Well it doesnt look like a path so return fail!
+				// logger.info("Path '" + pathToFile + "' does not look like a
+				// path!");
+				// return BooleanCell.FALSE;
+				// }
 				if (!(FileHelpers.checkContainerFolderExists(pathToFile))
 						&& !(FileHelpers.createContainerFolder(pathToFile))) {
 					// Folder doesnt exist and for unknown reason we fail to
@@ -152,13 +144,6 @@ public class SaveTxtLocalNodeModel extends NodeModel {
 		};
 		c.append(factory);
 		return c;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void reset() {
 	}
 
 	/**
@@ -293,24 +278,6 @@ public class SaveTxtLocalNodeModel extends NodeModel {
 		m_PathcolumnName.validateSettings(settings);
 		m_Overwrite.validateSettings(settings);
 		m_SuccesscolumnName.validateSettings(settings);
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
 
 	}
 

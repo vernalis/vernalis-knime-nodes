@@ -17,8 +17,8 @@
  */
 package com.vernalis.nodes.io.pdb.loadlocal;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import org.knime.bio.types.PdbCell;
 import org.knime.bio.types.PdbCellFactory;
@@ -31,16 +31,12 @@ import org.knime.core.data.DataType;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.container.SingleCellFactory;
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 
 import com.vernalis.io.FileDownloadException;
 import com.vernalis.io.FileHelpers;
@@ -51,7 +47,7 @@ import com.vernalis.io.FileHelpers;
  * 
  * @author SDR
  */
-public class LocalPDBLoadNodeModel2 extends NodeModel {
+public class LocalPDBLoadNodeModel2 extends SimpleStreamableFunctionNodeModel {
 	// the logger instance
 	private static final NodeLogger logger = NodeLogger.getLogger(LocalPDBLoadNodeModel2.class);
 
@@ -75,25 +71,11 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
 	 */
 	protected LocalPDBLoadNodeModel2() {
 
-		super(1, 1);
+		super();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
-			final ExecutionContext exec) throws Exception {
-
-		logger.debug("LocalPBDLoad executing");
-
-		// the data table spec of the single output table,
-		ColumnRearranger c = createColumnRearranger(inData[0].getDataTableSpec());
-		BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c, exec);
-		return new BufferedDataTable[] { out };
-	}
-
-	private ColumnRearranger createColumnRearranger(final DataTableSpec in) {
+	protected ColumnRearranger createColumnRearranger(final DataTableSpec in) {
 		ColumnRearranger c = new ColumnRearranger(in);
 
 		// The column index of the selected column
@@ -117,7 +99,14 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
 
 				String urlToRetrieve = ((StringValue) pathcell).getStringValue();
 				// Now, if it is a Location, convert to a URL
-				urlToRetrieve = FileHelpers.forceURL(urlToRetrieve);
+				try {
+					urlToRetrieve = FileHelpers.forceURL(urlToRetrieve);
+				} catch (IOException | URISyntaxException e) {
+					logger.warn(
+							"Unable to process file URL '" + urlToRetrieve + "'; Skipping row...",
+							e);
+					return DataType.getMissingCell();
+				}
 
 				// Only load up pdb files, but allow them to be g-zipped
 				if (urlToRetrieve.toLowerCase().endsWith(".pdb")
@@ -140,13 +129,6 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
 		};
 		c.append(factory);
 		return c;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void reset() {
 	}
 
 	/**
@@ -235,22 +217,6 @@ public class LocalPDBLoadNodeModel2 extends NodeModel {
 		m_FilecolumnName.validateSettings(settings);
 		m_PathColumnName.validateSettings(settings);
 
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
 	}
 
 }

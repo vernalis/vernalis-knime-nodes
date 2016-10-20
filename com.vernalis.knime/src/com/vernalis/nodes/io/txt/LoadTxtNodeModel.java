@@ -17,8 +17,8 @@
  */
 package com.vernalis.nodes.io.txt;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -30,16 +30,12 @@ import org.knime.core.data.StringValue;
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.container.SingleCellFactory;
 import org.knime.core.data.def.StringCell;
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 
 import com.vernalis.io.FileEncodingWithGuess;
 import com.vernalis.io.FileHelpers;
@@ -50,10 +46,9 @@ import com.vernalis.io.FileHelpers;
  * 
  * @author SDR
  */
-public class LoadTxtNodeModel extends NodeModel {
+public class LoadTxtNodeModel extends SimpleStreamableFunctionNodeModel {
 	// the logger instance
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(LoadTxtNodeModel.class);
+	private static final NodeLogger logger = NodeLogger.getLogger(LoadTxtNodeModel.class);
 
 	/**
 	 * the settings keys which are used to retrieve and store the settings (from
@@ -71,9 +66,8 @@ public class LoadTxtNodeModel extends NodeModel {
 	private final SettingsModelString m_FilecolumnName = new SettingsModelString(
 			CFG_FILE_COLUMN_NAME, "Text File");
 
-	private final SettingsModelString m_FileEncoding = new SettingsModelString(
-			CFG_ENCODING, FileEncodingWithGuess.getDefaultMethod()
-					.getActionCommand());
+	private final SettingsModelString m_FileEncoding = new SettingsModelString(CFG_ENCODING,
+			FileEncodingWithGuess.getDefaultMethod().getActionCommand());
 
 	private FileEncodingWithGuess m_encoding;
 
@@ -81,38 +75,22 @@ public class LoadTxtNodeModel extends NodeModel {
 	 * Constructor for the node model.
 	 */
 	protected LoadTxtNodeModel() {
-		super(1, 1);
+		super();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
-			final ExecutionContext exec) throws Exception {
-
-		// the data table spec of the single output table,
-		// the table will have three columns:
-		ColumnRearranger c = createColumnRearranger(inData[0]
-				.getDataTableSpec());
-		BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c,
-				exec);
-		return new BufferedDataTable[] { out };
-	}
-
-	private ColumnRearranger createColumnRearranger(DataTableSpec in) {
+	protected ColumnRearranger createColumnRearranger(DataTableSpec in) {
 		ColumnRearranger c = new ColumnRearranger(in);
 		// The column index of the selected column
-		final int colIndex = in.findColumnIndex(m_PathColumnName
-				.getStringValue());
+		final int colIndex = in.findColumnIndex(m_PathColumnName.getStringValue());
 		// column spec of the appended column
 		DataColumnSpec newColSpec = new DataColumnSpecCreator(
-				DataTableSpec.getUniqueColumnName(in,
-						m_FilecolumnName.getStringValue()), StringCell.TYPE)
-				.createSpec();
+				DataTableSpec.getUniqueColumnName(in, m_FilecolumnName.getStringValue()),
+				StringCell.TYPE).createSpec();
 
 		// utility object that performs the calculation
 		SingleCellFactory factory = new SingleCellFactory(true, newColSpec) {
+			@Override
 			public DataCell getCell(DataRow row) {
 				DataCell pathcell = row.getCell(colIndex);
 
@@ -121,15 +99,20 @@ public class LoadTxtNodeModel extends NodeModel {
 				}
 				// Here we actually do the meat of the work and fetch file
 
-				String urlToRetrieve = ((StringValue) pathcell)
-						.getStringValue();
+				String urlToRetrieve = ((StringValue) pathcell).getStringValue();
 				// Now, if it is a Location, convert to a URL
-				urlToRetrieve = FileHelpers.forceURL(urlToRetrieve);
+				try {
+					urlToRetrieve = FileHelpers.forceURL(urlToRetrieve);
+				} catch (IOException | URISyntaxException e) {
+					logger.warn(
+							"Unable to process file URL '" + urlToRetrieve + "'; Skipping row...",
+							e);
+					return DataType.getMissingCell();
+				}
 
 				// Only try to load the files - do not check type! Encoding and
 				// un-zipping will be handled
-				String r = FileHelpers.readURLToString(urlToRetrieve,
-						m_encoding);
+				String r = FileHelpers.readURLToString(urlToRetrieve, m_encoding);
 				if (!(r == null || "".equals(r))) {
 					return new StringCell(r);
 				}
@@ -138,14 +121,6 @@ public class LoadTxtNodeModel extends NodeModel {
 		};
 		c.append(factory);
 		return c;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void reset() {
-		// Do Nothing
 	}
 
 	/**
@@ -161,8 +136,7 @@ public class LoadTxtNodeModel extends NodeModel {
 			for (DataColumnSpec cs : inSpecs[0]) {
 				if (cs.getType().isCompatible(StringValue.class)) {
 					if (colIndex != -1) {
-						throw new InvalidSettingsException(
-								"No column selected.");
+						throw new InvalidSettingsException("No column selected.");
 					}
 					colIndex = i;
 				}
@@ -172,35 +146,27 @@ public class LoadTxtNodeModel extends NodeModel {
 			if (colIndex == -1) {
 				throw new InvalidSettingsException("No column selected.");
 			}
-			m_PathColumnName.setStringValue(inSpecs[0].getColumnSpec(colIndex)
-					.getName());
-			setWarningMessage("Column '" + m_PathColumnName.getStringValue()
-					+ "' auto selected");
+			m_PathColumnName.setStringValue(inSpecs[0].getColumnSpec(colIndex).getName());
+			setWarningMessage("Column '" + m_PathColumnName.getStringValue() + "' auto selected");
 		} else {
-			colIndex = inSpecs[0].findColumnIndex(m_PathColumnName
-					.getStringValue());
+			colIndex = inSpecs[0].findColumnIndex(m_PathColumnName.getStringValue());
 			if (colIndex < 0) {
-				throw new InvalidSettingsException("No such column: "
-						+ m_PathColumnName.getStringValue());
+				throw new InvalidSettingsException(
+						"No such column: " + m_PathColumnName.getStringValue());
 			}
 
 			DataColumnSpec colSpec = inSpecs[0].getColumnSpec(colIndex);
 			if (!colSpec.getType().isCompatible(StringValue.class)) {
-				throw new InvalidSettingsException("Column \""
-						+ m_PathColumnName
-						+ "\" does not contain string values: "
-						+ colSpec.getType().toString());
+				throw new InvalidSettingsException("Column \"" + m_PathColumnName
+						+ "\" does not contain string values: " + colSpec.getType().toString());
 			}
 		}
-		if (m_PathColumnName.getStringValue().equals("")
-				|| m_PathColumnName == null) {
+		if (m_PathColumnName.getStringValue().equals("") || m_PathColumnName == null) {
 			setWarningMessage("Path column name cannot be empty");
-			throw new InvalidSettingsException(
-					"Path column name cannot be empty");
+			throw new InvalidSettingsException("Path column name cannot be empty");
 		}
 
-		m_encoding = FileEncodingWithGuess.valueOf(m_FileEncoding
-				.getStringValue());
+		m_encoding = FileEncodingWithGuess.valueOf(m_FileEncoding.getStringValue());
 		if (m_encoding != FileEncodingWithGuess.GUESS) {
 			logger.warn("Using " + m_encoding.getActionCommand()
 					+ " file encoding.  Nonsense may result!");
@@ -235,10 +201,9 @@ public class LoadTxtNodeModel extends NodeModel {
 			m_FileEncoding.loadSettingsFrom(settings);
 		} catch (Exception e) {
 			logger.info("No file encoding setting found, using default ("
-					+ FileEncodingWithGuess.getDefaultMethod()
-							.getActionCommand() + ")");
-			m_FileEncoding.setStringValue(FileEncodingWithGuess
-					.getDefaultMethod().getActionCommand());
+					+ FileEncodingWithGuess.getDefaultMethod().getActionCommand() + ")");
+			m_FileEncoding
+					.setStringValue(FileEncodingWithGuess.getDefaultMethod().getActionCommand());
 		}
 
 	}
@@ -247,34 +212,11 @@ public class LoadTxtNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 
 		m_FilecolumnName.validateSettings(settings);
 		m_PathColumnName.validateSettings(settings);
-		//Do not validate m_fileEncoding - new setting added to v 1.1.5
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		// DO nothing
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		// DO Nothing
+		// Do not validate m_fileEncoding - new setting added to v 1.1.5
 
 	}
 

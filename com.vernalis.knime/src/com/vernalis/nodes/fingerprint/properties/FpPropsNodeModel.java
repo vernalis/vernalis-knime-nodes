@@ -15,12 +15,11 @@
  *******************************************************************************/
 package com.vernalis.nodes.fingerprint.properties;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -36,16 +35,12 @@ import org.knime.core.data.vector.bitvector.DenseBitVectorCell;
 import org.knime.core.data.vector.bitvector.SparseBitVectorCell;
 import org.knime.core.data.vector.bytevector.DenseByteVectorCell;
 import org.knime.core.data.vector.bytevector.SparseByteVectorCell;
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 
 /**
  * This is the model implementation of SparseToDense. Node to convert a
@@ -53,7 +48,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
  * 
  * @author S. Roughley
  */
-public class FpPropsNodeModel extends NodeModel {
+public class FpPropsNodeModel extends SimpleStreamableFunctionNodeModel {
 	static final String CFG_FPCOL = "Fingerprint_Column_Name";
 	static final String CFG_FPTYPE = "Fingerprint_Type";
 	static final String CFG_FPLENGTH = "Fingerprint_Length";
@@ -62,7 +57,8 @@ public class FpPropsNodeModel extends NodeModel {
 	private SettingsModelString m_fpColName = new SettingsModelString(CFG_FPCOL, null);
 	private SettingsModelBoolean m_fpType = new SettingsModelBoolean(CFG_FPTYPE, true);
 	private SettingsModelBoolean m_fpLen = new SettingsModelBoolean(CFG_FPLENGTH, true);
-	private SettingsModelBoolean m_fpCardinality = new SettingsModelBoolean(CFG_FPCARDINALITY, true);
+	private SettingsModelBoolean m_fpCardinality = new SettingsModelBoolean(CFG_FPCARDINALITY,
+			true);
 
 	private DataTableSpec m_Spec_0; // The datatable spec
 	private Map<String, DataType> m_NewColNames_0;
@@ -71,33 +67,15 @@ public class FpPropsNodeModel extends NodeModel {
 	 * Constructor for the node model.
 	 */
 	protected FpPropsNodeModel() {
-		super(1, 1);
+		super();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec)
-			throws Exception {
-		ColumnRearranger rearranger = createColumnRearranger(inData[0].getDataTableSpec());
-		BufferedDataTable outTable = exec.createColumnRearrangeTable(inData[0], rearranger, exec);
-
-		return new BufferedDataTable[] { outTable };
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void reset() {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
+	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
+			throws InvalidSettingsException {
 
 		// Check the selection for the FP column
 		int colIndex = -1;
@@ -119,19 +97,22 @@ public class FpPropsNodeModel extends NodeModel {
 				throw new InvalidSettingsException("No FP column selected.");
 			}
 			m_fpColName.setStringValue(inSpecs[0].getColumnSpec(colIndex).getName());
-			setWarningMessage("Column '" + m_fpColName.getStringValue() + "' auto selected for FP column");
+			setWarningMessage(
+					"Column '" + m_fpColName.getStringValue() + "' auto selected for FP column");
 		} else {
 			colIndex = inSpecs[0].findColumnIndex(m_fpColName.getStringValue());
 			if (colIndex < 0) {
 				setWarningMessage("No such column: " + m_fpColName.getStringValue());
-				throw new InvalidSettingsException("No such column: " + m_fpColName.getStringValue());
+				throw new InvalidSettingsException(
+						"No such column: " + m_fpColName.getStringValue());
 			}
 
 			DataColumnSpec colSpec = inSpecs[0].getColumnSpec(colIndex);
 			if (!colSpec.getType().isCompatible(BitVectorValue.class)) {
-				setWarningMessage("Column \"" + m_fpColName.getStringValue() + "\" does not contain FP values");
-				throw new InvalidSettingsException(
-						"Column \"" + m_fpColName + "\" does not contain FP values: " + colSpec.getType().toString());
+				setWarningMessage("Column \"" + m_fpColName.getStringValue()
+						+ "\" does not contain FP values");
+				throw new InvalidSettingsException("Column \"" + m_fpColName
+						+ "\" does not contain FP values: " + colSpec.getType().toString());
 			}
 		}
 
@@ -139,16 +120,18 @@ public class FpPropsNodeModel extends NodeModel {
 		String suffix = " (" + m_fpColName.getStringValue() + ")";
 		m_NewColNames_0 = new LinkedHashMap<String, DataType>();
 		if (m_fpType.getBooleanValue()) {
-			m_NewColNames_0.put(DataTableSpec.getUniqueColumnName(inSpecs[0], "Fingerprint Type" + suffix),
+			m_NewColNames_0.put(
+					DataTableSpec.getUniqueColumnName(inSpecs[0], "Fingerprint Type" + suffix),
 					StringCell.TYPE);
 		}
 		if (m_fpLen.getBooleanValue()) {
-			m_NewColNames_0.put(DataTableSpec.getUniqueColumnName(inSpecs[0], "Fingerprint Length" + suffix),
+			m_NewColNames_0.put(
+					DataTableSpec.getUniqueColumnName(inSpecs[0], "Fingerprint Length" + suffix),
 					LongCell.TYPE);
 		}
 		if (m_fpCardinality.getBooleanValue()) {
-			m_NewColNames_0.put(DataTableSpec.getUniqueColumnName(inSpecs[0], "Fingerprint Cardinality" + suffix),
-					LongCell.TYPE);
+			m_NewColNames_0.put(DataTableSpec.getUniqueColumnName(inSpecs[0],
+					"Fingerprint Cardinality" + suffix), LongCell.TYPE);
 		}
 
 		if (m_NewColNames_0.isEmpty()) {
@@ -162,13 +145,15 @@ public class FpPropsNodeModel extends NodeModel {
 		return new DataTableSpec[] { m_Spec_0 };
 	}
 
-	private ColumnRearranger createColumnRearranger(DataTableSpec spec) {
+	@Override
+	protected ColumnRearranger createColumnRearranger(DataTableSpec spec) {
 
 		// Create the specs of the new columns
 		DataColumnSpec[] colSpecs = new DataColumnSpec[m_NewColNames_0.size()];
 		int colind = 0;
 		for (Entry<String, DataType> col : m_NewColNames_0.entrySet()) {
-			colSpecs[colind++] = new DataColumnSpecCreator(col.getKey(), col.getValue()).createSpec();
+			colSpecs[colind++] = new DataColumnSpecCreator(col.getKey(), col.getValue())
+					.createSpec();
 		}
 
 		// Find the Fingerprint column and Type
@@ -177,7 +162,7 @@ public class FpPropsNodeModel extends NodeModel {
 
 		// Create the rearranger
 		ColumnRearranger rearranger = new ColumnRearranger(spec);
-		rearranger.append(new AbstractCellFactory(true,colSpecs) {
+		rearranger.append(new AbstractCellFactory(true, colSpecs) {
 
 			@Override
 			public DataCell[] getCells(DataRow row) {
@@ -204,13 +189,14 @@ public class FpPropsNodeModel extends NodeModel {
 
 					if (m_fpLen.getBooleanValue()) {
 						resultCells[newColId++] = new LongCell((fpType == SparseBitVectorCell.TYPE)
-								? ((SparseBitVectorCell) fpCell).length() : ((DenseBitVectorCell) fpCell).length());
+								? ((SparseBitVectorCell) fpCell).length()
+								: ((DenseBitVectorCell) fpCell).length());
 					}
 
 					if (m_fpCardinality.getBooleanValue()) {
-						resultCells[newColId++] = new LongCell(
-								(fpType == SparseBitVectorCell.TYPE) ? ((SparseBitVectorCell) fpCell).cardinality()
-										: ((DenseBitVectorCell) fpCell).cardinality());
+						resultCells[newColId++] = new LongCell((fpType == SparseBitVectorCell.TYPE)
+								? ((SparseBitVectorCell) fpCell).cardinality()
+								: ((DenseBitVectorCell) fpCell).cardinality());
 					}
 				}
 				return resultCells;
@@ -234,7 +220,8 @@ public class FpPropsNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		m_fpCardinality.loadSettingsFrom(settings);
 		m_fpColName.loadSettingsFrom(settings);
 		m_fpLen.loadSettingsFrom(settings);
@@ -250,24 +237,6 @@ public class FpPropsNodeModel extends NodeModel {
 		m_fpColName.validateSettings(settings);
 		m_fpLen.validateSettings(settings);
 		m_fpType.validateSettings(settings);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
-
 	}
 
 }

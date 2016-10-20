@@ -17,8 +17,6 @@
  */
 package com.vernalis.nodes.pdb.props;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 
 import org.knime.core.data.DataCell;
@@ -33,17 +31,13 @@ import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 
 import com.vernalis.helpers.PDBHelperFunctions;
 
@@ -51,7 +45,7 @@ import com.vernalis.helpers.PDBHelperFunctions;
  * This is the model implementation of PdbProperties. Node to extract properties
  * from a PDB cell
  */
-public class PdbPropertiesNodeModel extends NodeModel {
+public class PdbPropertiesNodeModel extends SimpleStreamableFunctionNodeModel {
 
 	// the logger instance
 	@SuppressWarnings("unused")
@@ -108,20 +102,10 @@ public class PdbPropertiesNodeModel extends NodeModel {
 	 */
 	protected PdbPropertiesNodeModel() {
 
-		super(1, 1);
+		super();
 	}
 
-	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
-			final ExecutionContext exec) throws Exception {
-
-		// the data table spec of the single output table,
-		ColumnRearranger c = createRearranger(inData[0].getDataTableSpec());
-		BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c, exec);
-		return new BufferedDataTable[] { out };
-	}
-
-	private ColumnRearranger createRearranger(final DataTableSpec in) {
+	protected ColumnRearranger createColumnRearranger(final DataTableSpec in) {
 
 		// The column index of the selected column
 		final int colIndexPDB = in.findColumnIndex(m_PDBcolumnName.getStringValue());
@@ -360,7 +344,7 @@ public class PdbPropertiesNodeModel extends NodeModel {
 		}
 
 		// everything seems to fine
-		ColumnRearranger c = createRearranger(inSpecs[0]);
+		ColumnRearranger c = createColumnRearranger(inSpecs[0]);
 		return new DataTableSpec[] { c.createSpec() };
 	}
 
@@ -426,29 +410,6 @@ public class PdbPropertiesNodeModel extends NodeModel {
 		m_ExpMet.validateSettings(settings);
 		m_ModelCount.validateSettings(settings);
 
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
-			throws IOException, CanceledExecutionException {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void reset() {
 	}
 
 }

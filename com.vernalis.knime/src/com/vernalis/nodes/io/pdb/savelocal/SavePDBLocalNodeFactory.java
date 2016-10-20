@@ -21,54 +21,51 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
-
 /**
- * <code>NodeFactory</code> for the "SavePDBLocal" Node.
- * Node to save a PDB cell column (as string) to a local file with path specified in a second column
+ * <code>NodeFactory</code> for the "SavePDBLocal" Node. Node to save a PDB cell
+ * column (as string) to a local file with path specified in a second column
  */
-public class SavePDBLocalNodeFactory 
-        extends NodeFactory<SavePDBLocalNodeModel> {
+public class SavePDBLocalNodeFactory extends NodeFactory<SavePDBLocalNodeModel> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SavePDBLocalNodeModel createNodeModel() {
-        return new SavePDBLocalNodeModel();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public SavePDBLocalNodeModel createNodeModel() {
+		return new SavePDBLocalNodeModel();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
-        return 0;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getNrNodeViews() {
+		return 0;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<SavePDBLocalNodeModel> createNodeView(final int viewIndex,
-            final SavePDBLocalNodeModel nodeModel) {
-        return null;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public NodeView<SavePDBLocalNodeModel> createNodeView(final int viewIndex,
+			final SavePDBLocalNodeModel nodeModel) {
+		return null;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-        return true;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean hasDialog() {
+		return true;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() {
-        return new SavePDBLocalNodeDialog();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public NodeDialogPane createNodeDialogPane() {
+		return new SavePDBLocalNodeDialog();
+	}
 
 }
-
