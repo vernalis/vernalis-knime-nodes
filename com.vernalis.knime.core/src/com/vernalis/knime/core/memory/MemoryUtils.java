@@ -16,9 +16,13 @@ package com.vernalis.knime.core.memory;
 
 import static com.vernalis.knime.core.system.SystemUtils.getPID;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.knime.core.node.NodeLogger;
 
 import com.vernalis.knime.core.os.OS;
 import com.vernalis.knime.core.os.OperatingSystem;
@@ -44,7 +48,9 @@ public class MemoryUtils {
 	/** Constant multiplier for MB */
 	private static double MB = 1024.0 * 1024.0;
 	/** Regex to extract windows memory result */
-	private static final Pattern memPatt = Pattern.compile("([\\d]+)(K|M|G)?");
+	private static final Pattern memPatt = Pattern.compile("([\\d,\\.]+)(K|M|G)?");
+	/** Node Logger Instance **/
+	private static final NodeLogger logger = NodeLogger.getLogger(MemoryUtils.class);
 
 	private MemoryUtils() {
 		// Don't instantiate
@@ -117,15 +123,25 @@ public class MemoryUtils {
 		// Now get the relevant property and convert to MB
 		// Windows 'MEM USAGE'
 		// Linux 'RES'
-		long kB;
+		double kB;
 		switch (os) {
 		case WIN:
-			returnValues.put(MEM_USAGE,
-					returnValues.get(MEM_USAGE).replace(",", "").replaceAll("\\s", ""));
-			long multiplier = 1;
+			returnValues.put(MEM_USAGE, returnValues.get(MEM_USAGE).replaceAll("\\s", ""));
+			double multiplier = 1;
 			Matcher m = memPatt.matcher(returnValues.get(MEM_USAGE));
 			if (m.find()) {
-				kB = Long.parseLong(m.group(1));
+				// Use the following to ensure correct current locale parsing of
+				// '.' and ','
+				try {
+					kB = NumberFormat.getInstance().parse(m.group(1)).doubleValue();
+				} catch (ParseException e) {
+					logger.error("Number parsing exception while getting process memory: "
+							+ e.getMessage());
+					throw new CommandExecutionException(
+							"Number parsing exception while getting process memory: "
+									+ e.getMessage(),
+							e);
+				}
 				switch (m.group(2)) {
 				case "M":
 					multiplier = 1024;
