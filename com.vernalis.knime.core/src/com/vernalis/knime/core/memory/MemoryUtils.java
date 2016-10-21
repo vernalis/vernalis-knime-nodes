@@ -48,7 +48,7 @@ public class MemoryUtils {
 	/** Constant multiplier for MB */
 	private static double MB = 1024.0 * 1024.0;
 	/** Regex to extract windows memory result */
-	private static final Pattern memPatt = Pattern.compile("([\\d,\\.]+)(K|M|G)?");
+	private static final Pattern memPatt = Pattern.compile("([+\\-]?[\\d,\\.]+)(K|M|G)?");
 	/** Node Logger Instance **/
 	private static final NodeLogger logger = NodeLogger.getLogger(MemoryUtils.class);
 
@@ -123,51 +123,47 @@ public class MemoryUtils {
 		// Now get the relevant property and convert to MB
 		// Windows 'MEM USAGE'
 		// Linux 'RES'
-		double kB;
+		String result;
 		switch (os) {
 		case WIN:
-			returnValues.put(MEM_USAGE, returnValues.get(MEM_USAGE).replaceAll("\\s", ""));
-			double multiplier = 1;
-			Matcher m = memPatt.matcher(returnValues.get(MEM_USAGE));
-			if (m.find()) {
-				// Use the following to ensure correct current locale parsing of
-				// '.' and ','
-				try {
-					kB = NumberFormat.getInstance().parse(m.group(1)).doubleValue();
-				} catch (ParseException e) {
-					logger.error("Number parsing exception while getting process memory: "
-							+ e.getMessage());
-					throw new CommandExecutionException(
-							"Number parsing exception while getting process memory: "
-									+ e.getMessage(),
-							e);
-				}
-				switch (m.group(2)) {
-				case "M":
-					multiplier = 1024;
-					break;
-				case "G":
-					multiplier = 1024 * 1024;
-				case "K":
-				default:
-					break;
-				}
-			} else {
-				kB = -1;
-			}
-			kB *= multiplier;
-			// kB = Long.parseLong(
-			// returnValues.get("MEM USAGE").replace(",", "").replace("K",
-			// "").trim());
+			result = returnValues.get(MEM_USAGE).replaceAll("\\s", "");
 			break;
 		case LINUX:
 		case MAC:
-			kB = Long.parseLong(returnValues.get(RES).trim());
+			result = returnValues.get(RES).replaceAll("\\s", "");
 			break;
 		default:
-			kB = -1;
+			result = "-1";
 			break;
 		}
+		double multiplier = 1;
+		double kB = -1;
+		Matcher m = memPatt.matcher(result);
+		if (m.find()) {
+			// Use the following to ensure correct current locale parsing of
+			// '.' and ','
+			try {
+				kB = NumberFormat.getInstance().parse(m.group(1)).doubleValue();
+			} catch (ParseException e) {
+				logger.error(
+						"Number parsing exception while getting process memory: " + e.getMessage());
+				throw new CommandExecutionException(
+						"Number parsing exception while getting process memory: " + e.getMessage(),
+						e);
+			}
+
+			switch (m.group(2) == null ? "K" : m.group(2)) {
+			case "M":
+				multiplier = 1024;
+				break;
+			case "G":
+				multiplier = 1024 * 1024;
+			case "K":
+			default:
+				break;
+			}
+		}
+		kB *= multiplier;
 		return kB / 1024.0;
 	}
 
