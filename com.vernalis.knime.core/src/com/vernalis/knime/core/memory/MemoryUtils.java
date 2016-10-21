@@ -17,6 +17,8 @@ package com.vernalis.knime.core.memory;
 import static com.vernalis.knime.core.system.SystemUtils.getPID;
 
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.vernalis.knime.core.os.OS;
 import com.vernalis.knime.core.os.OperatingSystem;
@@ -31,13 +33,22 @@ import com.vernalis.knime.core.system.SystemCommandRunner;
  * 
  */
 public class MemoryUtils {
+	/** Linux Result key */
+	private static final String RES = "RES";
+	/** Windows Result Key */
+	private static final String MEM_USAGE = "MEM USAGE";
+	/** Windows memory command */
+	private static final String WIN_MEM_CMD = "tasklist /FI \"PID eq %PID%\" /FO CSV";
+	/** Linux memory command */
+	private static final String LINUX_MEM_CMD = "top -n 1 -b -p %PID%";
+	/** Constant multiplier for MB */
+	private static double MB = 1024.0 * 1024.0;
+	/** Regex to extract windows memory result */
+	private static final Pattern memPatt = Pattern.compile("([\\d]+)(K|M|G)?");
+
 	private MemoryUtils() {
 		// Don't instantiate
 	}
-
-	private static String WIN_MEM_CMD = "tasklist /FI \"PID eq %PID%\" /FO CSV";
-	private static String LINUX_MEM_CMD = "top -n 1 -b -p %PID%";
-	private static double MB = 1024.0 * 1024.0;
 
 	/**
 	 * Run a heavy GC. System#gc() calls are repeated at the given interval,
@@ -109,12 +120,33 @@ public class MemoryUtils {
 		long kB;
 		switch (os) {
 		case WIN:
-			kB = Long.parseLong(
-					returnValues.get("MEM USAGE").replace(",", "").replace("K", "").trim());
+			returnValues.put(MEM_USAGE,
+					returnValues.get(MEM_USAGE).replace(",", "").replaceAll("\\s", ""));
+			long multiplier = 1;
+			Matcher m = memPatt.matcher(returnValues.get(MEM_USAGE));
+			if (m.find()) {
+				kB = Long.parseLong(m.group(1));
+				switch (m.group(2)) {
+				case "M":
+					multiplier = 1024;
+					break;
+				case "G":
+					multiplier = 1024 * 1024;
+				case "K":
+				default:
+					break;
+				}
+			} else {
+				kB = -1;
+			}
+			kB *= multiplier;
+			// kB = Long.parseLong(
+			// returnValues.get("MEM USAGE").replace(",", "").replace("K",
+			// "").trim());
 			break;
 		case LINUX:
 		case MAC:
-			kB = Long.parseLong(returnValues.get("RES").trim());
+			kB = Long.parseLong(returnValues.get(RES).trim());
 			break;
 		default:
 			kB = -1;
