@@ -1,0 +1,82 @@
+/*******************************************************************************
+ * Copyright (c) 2016, Vernalis (R&D) Ltd
+ *  This program is free software; you can redistribute it and/or modify it 
+ *  under the terms of the GNU General Public License, Version 3, as 
+ *  published by the Free Software Foundation.
+ *  
+ *   This program is distributed in the hope that it will be useful, but 
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of 
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *  See the GNU General Public License for more details.
+ *   
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, see <http://www.gnu.org/licenses>
+ ******************************************************************************/
+package com.vernalis.knime.chem.speedysmiles.nodes.count.rings;
+
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeView;
+
+import com.vernalis.exceptions.RowExecutionException;
+import com.vernalis.knime.chem.speedysmiles.helpers.SmilesHelpers;
+import com.vernalis.knime.chem.speedysmiles.nodes.abstrct.AbstractSpeedySmilesNodeDialog;
+import com.vernalis.knime.chem.speedysmiles.nodes.count.abstrct.AbstractSpeedySmilesSingleCountNodeModel;
+
+/**
+ * The SpeedySMILES Ring Count NodeFactory
+ * 
+ * @author S.Roughley
+ *
+ */
+public class SpeedySmilesRingCountNodeFactory
+		extends NodeFactory<AbstractSpeedySmilesSingleCountNodeModel> {
+
+	@Override
+	public AbstractSpeedySmilesSingleCountNodeModel createNodeModel() {
+		return new AbstractSpeedySmilesSingleCountNodeModel() {
+
+			@Override
+			protected String getColumnNameSuffix() {
+				return "";
+			}
+
+			@Override
+			protected String getColumnNamePrefix() {
+				return "Ring closure bond count";
+			}
+
+			@Override
+			protected Integer getResultCount(String SMILES) throws RowExecutionException {
+				Integer retVal = SmilesHelpers.countRings(SMILES);
+				if (retVal == null) {
+					throw new RowExecutionException(
+							"SMILES String '" + SMILES + "' has broken ring closure bonds");
+				}
+				return retVal;
+			}
+		};
+	}
+
+	@Override
+	protected int getNrNodeViews() {
+		return 0;
+	}
+
+	@Override
+	public NodeView<AbstractSpeedySmilesSingleCountNodeModel> createNodeView(int viewIndex,
+			AbstractSpeedySmilesSingleCountNodeModel nodeModel) {
+		return null;
+	}
+
+	@Override
+	protected boolean hasDialog() {
+		return true;
+	}
+
+	@Override
+	protected NodeDialogPane createNodeDialogPane() {
+		return new AbstractSpeedySmilesNodeDialog();
+	}
+
+}
