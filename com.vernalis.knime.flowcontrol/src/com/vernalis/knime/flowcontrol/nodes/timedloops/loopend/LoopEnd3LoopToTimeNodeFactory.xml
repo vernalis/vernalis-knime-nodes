@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./LoopEndTimed.png" type="LoopEnd"
+	xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
+	<name>Timed Loop End (3 port)</name>
+
+	<shortDescription>
+        Loop End node for timed loops, exposing unprocessed rows in the final port
+    </shortDescription>
+
+	<fullDescription>
+		<intro>
+
+			<p>Loop end node to partner with 'Run-to-time' and
+				'Run-for-time' loop start nodes. Rows which were not
+				processed before the loop execution finished as a result of
+				the time setting of the loop start node are made available
+				at the last output port. Flow variables with the last
+				iteration counter and end time are exposed.
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+
+		<option name="Add iteration column">Adds a column to each output table containing the
+			iteration number, starting with 0</option>
+		<option name="Uniquify row IDs">If set, ensure row IDs are unique by suffixing
+			incoming row IDs with '_Iter#' followed by the
+			iteration number
+		</option>
+		<option name="Ignore empty input tables at port ...">Selecting this option means the structure of empty
+			input tables at the
+			specified port will be ignored and they will not cause the node to fail
+		</option>
+
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="In-Port 0">Loop data (0)</inPort>
+		<inPort index="1" name="In-Port 1">Loop data (1)</inPort>
+		<inPort index="2" name="In-Port 2">Loop data (2)</inPort>
+		<outPort index="0" name="Processed Data (0)">Data processed in the loop (0)
+		</outPort>
+		<outPort index="1" name="Processed Data (1)">Data processed in the loop (1)
+		</outPort>
+		<outPort index="2" name="Processed Data (2)">Data processed in the loop (2)
+		</outPort>
+		<outPort index="3" name="Unprocessed Data">Data not processed in the loop due to
+			time-out</outPort>
+	</ports>
+</knimeNode>
