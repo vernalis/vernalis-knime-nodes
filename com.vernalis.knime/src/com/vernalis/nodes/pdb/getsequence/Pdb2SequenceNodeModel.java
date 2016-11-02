@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.knime.core.data.DataCell;
@@ -36,7 +37,6 @@ import org.knime.core.data.StringValue;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.data.def.StringCell;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -48,6 +48,17 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.streamable.BufferedDataTableRowOutput;
+import org.knime.core.node.streamable.DataTableRowInput;
+import org.knime.core.node.streamable.InputPortRole;
+import org.knime.core.node.streamable.OutputPortRole;
+import org.knime.core.node.streamable.PartitionInfo;
+import org.knime.core.node.streamable.PortInput;
+import org.knime.core.node.streamable.PortOutput;
+import org.knime.core.node.streamable.RowInput;
+import org.knime.core.node.streamable.RowOutput;
+import org.knime.core.node.streamable.StreamableOperator;
 
 /**
  * This is the model implementation of Pdb2Sequence. Node to extract sequence(s)
@@ -93,9 +104,6 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
 			final ExecutionContext exec) throws Exception {
 
-		if (inData == null || inData.length != 1) {
-			throw new InvalidSettingsException("Invalid input data");
-		}
 		final BufferedDataTable table = inData[0];
 		final boolean removePdbCol = m_DelPdb.getBooleanValue();
 		Set<String> newColNames = Pdb2SeqHelpers.ColumnNames(m_Seq1.getBooleanValue(),
@@ -105,41 +113,46 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 		// Create the new output table spec and a Buffered Data Container for it
 		final DataTableSpec newSpec = createTableSpec(table.getDataTableSpec(),
 				m_PdbColName.getStringValue(), removePdbCol, newColNames);
-		final BufferedDataContainer dc = exec.createDataContainer(newSpec);
-
-		// Handle Empty Tables
-		if (table.size() == 0) {
-			dc.close();
-			return new BufferedDataTable[] { dc.getTable() };
-		}
+		BufferedDataTableRowOutput output = new BufferedDataTableRowOutput(
+				exec.createDataContainer(newSpec));
+		RowInput input = new DataTableRowInput(table);
 
 		final int colIdx = table.getSpec().findColumnIndex(m_PdbColName.getStringValue());
 		final long totalRowCount = table.size();
-		final double progressPerRow = 1.0 / totalRowCount;
-		long rowCounter = 0;
 
 		// count of new columns
 		int newColCnt = newColNames.size();
 
 		// And an ArrayList of empty cells for missing PDB Cells
-		ArrayList<DataCell> Empties = new ArrayList<DataCell>();
+		List<DataCell> empties = new ArrayList<DataCell>();
 		for (int i = 0; i < newColCnt; i++) {
-			Empties.add(DataType.getMissingCell());
+			empties.add(DataType.getMissingCell());
 		}
 
-		// Now loop through the rows of the table
-		for (final DataRow row : table) {
-			rowCounter++;
+		this.execute(input, output, colIdx, removePdbCol, newColCnt, totalRowCount, empties, exec);
+		return new BufferedDataTable[] { output.getDataTable() };
+	}
+
+	protected void execute(final RowInput inRow, RowOutput out, int colIdx, boolean removePdbCol,
+			int newColCnt, final long numRows, List<DataCell> empties, final ExecutionContext exec)
+			throws InterruptedException, CanceledExecutionException {
+		long rowIdx = 0;
+		DataRow row;
+		while ((row = inRow.poll()) != null) {
+			if (numRows > 0) {
+				exec.setProgress((++rowIdx) / (double) numRows,
+						"Processing row " + rowIdx + " of " + numRows);
+			} else {
+				exec.setProgress("Processing row " + rowIdx);
+			}
 			exec.checkCanceled();
-			exec.setProgress(rowCounter * progressPerRow,
-					"Processing row " + rowCounter + " of " + totalRowCount);
 			DataCell c = row.getCell(colIdx);
 
 			// Firstly, deal with the possibility of an empty PDB sell
 			if (c.isMissing()) {
 				final DefaultRow newRow = createClone(row.getKey(), row, colIdx, removePdbCol,
-						Empties);
-				dc.addRowToTable(newRow);
+						empties);
+				out.push(newRow);
 				continue;
 			}
 
@@ -155,12 +168,10 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 			}
 			// Now deal with the possibility that the PCB cell couldnt be parsed
 			// properly
-			// TODO: WHAT IS THE CORRECT WAY OF DEALING WITH THIS SITUATION -
-			// HERE WE CARRY ON REGARDLESS
 			if (newCells == null) {
 				final DefaultRow newRow = createClone(row.getKey(), row, colIdx, removePdbCol,
-						Empties);
-				dc.addRowToTable(newRow);
+						empties);
+				out.push(newRow);
 				// skip to the next row
 				continue;
 			}
@@ -169,8 +180,8 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 			// sequence info and retain the row
 			if (newCells.size() == 0) {
 				final DefaultRow newRow = createClone(row.getKey(), row, colIdx, removePdbCol,
-						Empties);
-				dc.addRowToTable(newRow);
+						empties);
+				out.push(newRow);
 				logger.info("Row " + row.getKey() + " returned no sequences...");
 				// skip to the next row
 				continue;
@@ -186,11 +197,53 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 
 				final DefaultRow newRow = createClone(newKey, row, colIdx, removePdbCol,
 						iter.next());
-				dc.addRowToTable(newRow);
+				out.push(newRow);
 			}
 		}
-		dc.close();
-		return new BufferedDataTable[] { dc.getTable() };
+		out.close();
+
+	}
+
+	@Override
+	public StreamableOperator createStreamableOperator(final PartitionInfo partitionInfo,
+			final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+		final boolean removePdbCol = m_DelPdb.getBooleanValue();
+		Set<String> newColNames = Pdb2SeqHelpers.ColumnNames(m_Seq1.getBooleanValue(),
+				m_Seq3.getBooleanValue(), m_Coord1.getBooleanValue(), m_Coord3.getBooleanValue(),
+				m_IgnMod);
+		final int colIdx = ((DataTableSpec) inSpecs[0])
+				.findColumnIndex(m_PdbColName.getStringValue());
+		int newColCnt = newColNames.size();
+
+		// And an ArrayList of empty cells for missing PDB Cells
+		List<DataCell> empties = new ArrayList<DataCell>();
+		for (int i = 0; i < newColCnt; i++) {
+			empties.add(DataType.getMissingCell());
+		}
+
+		return new StreamableOperator() {
+
+			@Override
+			public void runFinal(PortInput[] inputs, PortOutput[] outputs, ExecutionContext exec)
+					throws Exception {
+
+				// Run it - dont know row count!
+				Pdb2SequenceNodeModel.this.execute((RowInput) inputs[0], (RowOutput) outputs[0],
+						colIdx, removePdbCol, newColCnt, -1, empties, exec);
+
+			}
+
+		};
+	}
+
+	@Override
+	public InputPortRole[] getInputPortRoles() {
+		return new InputPortRole[] { InputPortRole.DISTRIBUTED_STREAMABLE };
+	}
+
+	@Override
+	public OutputPortRole[] getOutputPortRoles() {
+		return new OutputPortRole[] { OutputPortRole.DISTRIBUTED };
 	}
 
 	/**
@@ -280,7 +333,7 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 	 */
 	private static DataTableSpec createTableSpec(final DataTableSpec spec, final String colName,
 			final boolean removePdbCol, final Collection<String> NewColumnNames)
-					throws InvalidSettingsException {
+			throws InvalidSettingsException {
 		/*
 		 * Method to create a new table spec, optionally retaining the PDB
 		 * column and adding optionally a extra columns along with Chain and
@@ -335,17 +388,17 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 	 *            The Id of the PDB column
 	 * @param removePDBCol
 	 *            Is thePDB column to be removed?
-	 * @param newCells
+	 * @param empties
 	 *            ArrayList containing the new DataCells
 	 * @return
 	 */
 	private DefaultRow createClone(final RowKey newKey, final DataRow row, final int PDBColId,
-			final boolean removePDBCol, final ArrayList<DataCell> newCells) {
+			final boolean removePDBCol, final List<DataCell> empties) {
 		// Create a clone of the existing row adding the new columns to the end
 		// Calculate number of cells
 		int cellCount = row.getNumCells();
 		cellCount -= (removePDBCol) ? 1 : 0;
-		cellCount += newCells.size();
+		cellCount += empties.size();
 
 		final DataCell[] newRowCells = new DataCell[cellCount];
 		int cellIdx = 0;
@@ -361,7 +414,7 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 		}
 
 		// now add the new cells
-		Iterator<DataCell> iter = newCells.iterator();
+		Iterator<DataCell> iter = empties.iterator();
 		while (iter.hasNext()) {
 			DataCell temp = iter.next();
 			newRowCells[cellIdx++] = (temp == null) ? DataType.getMissingCell() : temp;

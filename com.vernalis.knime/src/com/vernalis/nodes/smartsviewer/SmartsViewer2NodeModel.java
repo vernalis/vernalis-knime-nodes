@@ -17,8 +17,6 @@
  */
 package com.vernalis.nodes.smartsviewer;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 
 import org.knime.core.data.DataCell;
@@ -31,29 +29,24 @@ import org.knime.core.data.StringValue;
 import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.container.SingleCellFactory;
 import org.knime.core.data.image.png.PNGImageContent;
-import org.knime.core.node.BufferedDataTable;
-import org.knime.core.node.CanceledExecutionException;
-import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 
 /**
  * This is the model implementation of SmartsViewer. Retrieves a SMARTSViewer
  * visualisation of a columns of SMARTS strings using the service at
  * www.smartsviewer.de
  */
-public class SmartsViewer2NodeModel extends NodeModel {
+public class SmartsViewer2NodeModel extends SimpleStreamableFunctionNodeModel {
 
 	// the logger instance
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(SmartsViewer2NodeModel.class);
+	private static final NodeLogger logger = NodeLogger.getLogger(SmartsViewer2NodeModel.class);
 
 	/**
 	 * the settings key which is used to retrieve and store the settings (from
@@ -69,14 +62,11 @@ public class SmartsViewer2NodeModel extends NodeModel {
 	static final String CFG_DELAY = "Retry_Delay";
 	static final String CFG_IGNORE_ERR = "Ignore_Errors";
 
-	private final SettingsModelString m_SmartsCol = new SettingsModelString(
-			CFG_SMARTS, null);
+	private final SettingsModelString m_SmartsCol = new SettingsModelString(CFG_SMARTS, null);
 
-	private final SettingsModelString m_VisModus = new SettingsModelString(
-			CFG_VIS_MODUS, "1");
+	private final SettingsModelString m_VisModus = new SettingsModelString(CFG_VIS_MODUS, "1");
 
-	private final SettingsModelString m_Legend = new SettingsModelString(
-			CFG_LEGEND, "both");
+	private final SettingsModelString m_Legend = new SettingsModelString(CFG_LEGEND, "both");
 
 	private final SettingsModelIntegerBounded m_maxRetries = new SettingsModelIntegerBounded(
 			CFG_NUM_RETRIES, 10, 0, 20);
@@ -84,8 +74,8 @@ public class SmartsViewer2NodeModel extends NodeModel {
 	private final SettingsModelIntegerBounded m_retryDelay = new SettingsModelIntegerBounded(
 			CFG_DELAY, 1, 1, 600);
 
-	private final SettingsModelBoolean m_ignoreErrors = new SettingsModelBoolean(
-			CFG_IGNORE_ERR, true);
+	private final SettingsModelBoolean m_ignoreErrors = new SettingsModelBoolean(CFG_IGNORE_ERR,
+			true);
 
 	// private final SettingsModelString m_ImgFmt =
 	// new SettingsModelString (CFG_IMG_FORMAT,"png");
@@ -98,29 +88,7 @@ public class SmartsViewer2NodeModel extends NodeModel {
 	 */
 	protected SmartsViewer2NodeModel() {
 
-		super(1, 1);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
-			final ExecutionContext exec) throws Exception {
-
-		ColumnRearranger c = createColumnRearranger(inData[0]
-				.getDataTableSpec());
-		BufferedDataTable out = exec.createColumnRearrangeTable(inData[0], c,
-				exec);
-		return new BufferedDataTable[] { out };
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void reset() {
-		// nothing
+		super();
 	}
 
 	/**
@@ -137,8 +105,7 @@ public class SmartsViewer2NodeModel extends NodeModel {
 			for (DataColumnSpec cs : inSpecs[0]) {
 				if (cs.getType().isCompatible(StringValue.class)) {
 					if (colIndex != -1) {
-						throw new InvalidSettingsException(
-								"No column selected.");
+						throw new InvalidSettingsException("No column selected.");
 					}
 					colIndex = i;
 				}
@@ -148,28 +115,24 @@ public class SmartsViewer2NodeModel extends NodeModel {
 			if (colIndex == -1) {
 				throw new InvalidSettingsException("No column selected.");
 			}
-			m_SmartsCol.setStringValue(inSpecs[0].getColumnSpec(colIndex)
-					.getName());
-			setWarningMessage("Column '" + m_SmartsCol.getStringValue()
-					+ "' auto selected");
+			m_SmartsCol.setStringValue(inSpecs[0].getColumnSpec(colIndex).getName());
+			setWarningMessage("Column '" + m_SmartsCol.getStringValue() + "' auto selected");
 		} else {
 			colIndex = inSpecs[0].findColumnIndex(m_SmartsCol.getStringValue());
 			if (colIndex < 0) {
-				throw new InvalidSettingsException("No such column: "
-						+ m_SmartsCol.getStringValue());
+				throw new InvalidSettingsException(
+						"No such column: " + m_SmartsCol.getStringValue());
 			}
 
 			DataColumnSpec colSpec = inSpecs[0].getColumnSpec(colIndex);
 			if (!colSpec.getType().isCompatible(StringValue.class)) {
 				throw new InvalidSettingsException("Column \"" + m_SmartsCol
-						+ "\" does not contain string values: "
-						+ colSpec.getType().toString());
+						+ "\" does not contain string values: " + colSpec.getType().toString());
 			}
 		}
 		if (m_SmartsCol.getStringValue().equals("") || m_SmartsCol == null) {
 			setWarningMessage("SMARTS column name cannot be empty");
-			throw new InvalidSettingsException(
-					"SMARTS column name cannot be empty");
+			throw new InvalidSettingsException("SMARTS column name cannot be empty");
 		}
 		// everything seems to fine
 		ColumnRearranger c = createColumnRearranger(inSpecs[0]);
@@ -177,7 +140,8 @@ public class SmartsViewer2NodeModel extends NodeModel {
 
 	}
 
-	private ColumnRearranger createColumnRearranger(final DataTableSpec in) {
+	@Override
+	protected ColumnRearranger createColumnRearranger(final DataTableSpec in) {
 
 		ColumnRearranger c = new ColumnRearranger(in);
 
@@ -186,20 +150,18 @@ public class SmartsViewer2NodeModel extends NodeModel {
 
 		// column spec of the appended column
 		DataColumnSpec newColSpec = new DataColumnSpecCreator(
-				DataTableSpec.getUniqueColumnName(in,
-						"SMARTS Viewer Representation"), PNGImageContent.TYPE)
-				.createSpec();
+				DataTableSpec.getUniqueColumnName(in, "SMARTS Viewer Representation"),
+				PNGImageContent.TYPE).createSpec();
 
 		// utility object that performs the calculation
-		//NB Not parallelized as I dont now what that will do to the server!
+		// NB Not parallelized as I dont now what that will do to the server!
 		SingleCellFactory factory = new SingleCellFactory(newColSpec) {
 			@Override
 			public DataCell getCell(final DataRow row) {
 				DataCell smartscell = row.getCell(colIndex);
 
 				// Deal with an empty input or missing cell
-				if (smartscell.isMissing()
-						|| !(smartscell instanceof StringValue)) {
+				if (smartscell.isMissing() || !(smartscell instanceof StringValue)) {
 					return DataType.getMissingCell();
 				}
 
@@ -216,10 +178,8 @@ public class SmartsViewer2NodeModel extends NodeModel {
 					try {
 						return SmartsviewerHelper.toPNGCell(url);
 					} catch (Exception e) {
-						logger.warn("Unable to connect to SMARTSviewer server - "
-								+ triesLeft
-								+ " of "
-								+ m_maxRetries.getIntValue() + " remaining...");
+						logger.warn("Unable to connect to SMARTSviewer server - " + triesLeft
+								+ " of " + m_maxRetries.getIntValue() + " remaining...");
 						triesLeft--;
 						pause(m_retryDelay.getIntValue());
 						// TODO: Figure how to implement checkCanceled
@@ -286,8 +246,7 @@ public class SmartsViewer2NodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 
 		// m_ImgFmt.validateSettings(settings);
 		m_VisModus.validateSettings(settings);
@@ -296,26 +255,6 @@ public class SmartsViewer2NodeModel extends NodeModel {
 		m_ignoreErrors.validateSettings(settings);
 		m_maxRetries.validateSettings(settings);
 		m_retryDelay.validateSettings(settings);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		// nothing
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
-		// nothing
 	}
 
 }

@@ -125,8 +125,8 @@ public abstract class AbstractSpeedySmilesFilterNodeModel extends NodeModel {
 		previewContainers = new BufferedDataContainer[isSplitter ? 2 : 1];
 		bdc[0] = exec.createDataContainer(inTable.getDataTableSpec());
 		previewContainers[0] = exec.createDataContainer(inTable.getDataTableSpec());
-		RowOutput keeps = new BufferedDataTableRowOutput(bdc[0]);
-		RowOutput drops;
+		BufferedDataTableRowOutput keeps = new BufferedDataTableRowOutput(bdc[0]);
+		BufferedDataTableRowOutput drops;
 		if (isSplitter) {
 			bdc[1] = exec.createDataContainer(inTable.getDataTableSpec());
 			drops = new BufferedDataTableRowOutput(bdc[1]);
@@ -135,8 +135,8 @@ public abstract class AbstractSpeedySmilesFilterNodeModel extends NodeModel {
 			drops = null;
 		}
 		this.execute(inputRow, keeps, drops, smiColIdx, inTable.size(), exec);
-		return (isSplitter) ? new BufferedDataTable[] { bdc[0].getTable(), bdc[1].getTable() }
-				: new BufferedDataTable[] { bdc[0].getTable() };
+		return (isSplitter) ? new BufferedDataTable[] { keeps.getDataTable(), drops.getDataTable() }
+				: new BufferedDataTable[] { keeps.getDataTable() };
 	}
 
 	protected void execute(final RowInput inRow, RowOutput keeps, RowOutput drop, int smiColIdx,

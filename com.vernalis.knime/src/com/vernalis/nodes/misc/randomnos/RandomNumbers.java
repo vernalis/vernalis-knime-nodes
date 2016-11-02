@@ -31,6 +31,7 @@ import org.knime.core.data.def.IntCell;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.streamable.RowOutput;
 
 /**
  * Utility functions to generate random numbers according to various conditions
@@ -95,10 +96,13 @@ public class RandomNumbers {
 	 *            then max-min)
 	 * @param dc
 	 *            {@link BufferedDataContainer} to add the numbers too
-	 * @param exec 
-	 * @throws CanceledExecutionException 
+	 * @param exec
+	 * @throws CanceledExecutionException
+	 * @{@link Deprecated} See
+	 *         {@link #addUniqueInts(int, int, long, RowOutput, ExecutionContext)}
 	 */
-	public static void addUniqueInts(int min, int max, long l, BufferedDataContainer dc, ExecutionContext exec) throws CanceledExecutionException {
+	public static void addUniqueInts(int min, int max, long l, BufferedDataContainer dc,
+			ExecutionContext exec) throws CanceledExecutionException {
 
 		// Check the range is sensible
 		if (min > max) {
@@ -123,6 +127,55 @@ public class RandomNumbers {
 			RandomNum = (rand.nextInt(max - min + 1) + min);
 			if (Numbers.add(RandomNum)) {
 				dc.addRowToTable(new DefaultRow("Row_" + (numbersAdded++), new IntCell(RandomNum)));
+				exec.setProgress((double) numbersAdded / l,
+						"Added " + numbersAdded + " of " + l + " rows");
+			}
+			exec.checkCanceled();
+		}
+	}
+
+	/**
+	 * Create a collection object of unique random integers
+	 * 
+	 * @param min
+	 *            The minimum value in the collection
+	 * @param max
+	 *            The maximum value in the collections
+	 * @param l
+	 *            The number of values to return (will be reduced if greater
+	 *            then max-min)
+	 * @param out
+	 *            {@link BufferedDataContainer} to add the numbers too
+	 * @param exec
+	 * @throws CanceledExecutionException
+	 * @throws InterruptedException
+	 */
+	public static void addUniqueInts(int min, int max, long l, RowOutput out, ExecutionContext exec)
+			throws CanceledExecutionException, InterruptedException {
+
+		// Check the range is sensible
+		if (min > max) {
+			int t = min;
+			min = max;
+			max = t;
+		}
+
+		// Ensure that we dont get stuck in an infinite effort to create more
+		// integers than are in
+		// the min max range
+		if (l > (max - min + 1)) {
+			l = max - min + 1;
+		}
+
+		// Now populate the set
+		Set<Integer> Numbers = new HashSet<Integer>();
+		long numbersAdded = 0;
+		Random rand = new Random();
+		Integer RandomNum;
+		while (numbersAdded < l) {
+			RandomNum = (rand.nextInt(max - min + 1) + min);
+			if (Numbers.add(RandomNum)) {
+				out.push(new DefaultRow("Row_" + (numbersAdded++), new IntCell(RandomNum)));
 				exec.setProgress((double) numbersAdded / l,
 						"Added " + numbersAdded + " of " + l + " rows");
 			}
@@ -176,10 +229,13 @@ public class RandomNumbers {
 	 *            The number of values
 	 * @param dc
 	 *            The data container to add values to
-	 * @param exec 
-	 * @throws CanceledExecutionException 
+	 * @param exec
+	 * @throws CanceledExecutionException
+	 * @{@link Deprecated} See
+	 *         {@link #addInts(int, int, long, RowOutput, ExecutionContext)}
 	 */
-	public static void addInts(int min, int max, final long n, BufferedDataContainer dc, ExecutionContext exec) throws CanceledExecutionException {
+	public static void addInts(int min, int max, final long n, BufferedDataContainer dc,
+			ExecutionContext exec) throws CanceledExecutionException {
 
 		// Check the range is sensible
 		if (min > max) {
@@ -195,6 +251,44 @@ public class RandomNumbers {
 		while (numbersAdded < n) {
 			RandomNum = (rand.nextInt(max - min + 1) + min);
 			dc.addRowToTable(new DefaultRow("Row_" + (numbersAdded++), new IntCell(RandomNum)));
+			exec.setProgress((double) numbersAdded / n,
+					"Added " + numbersAdded + " of " + n + " rows");
+			exec.checkCanceled();
+		}
+	}
+
+	/**
+	 * Add a collection object of random integers to a Data Container
+	 * 
+	 * @param min
+	 *            The minimum value
+	 * @param max
+	 *            The maximum value
+	 * @param n
+	 *            The number of values
+	 * @param out
+	 *            The data container to add values to
+	 * @param exec
+	 * @throws CanceledExecutionException
+	 * @throws InterruptedException
+	 */
+	public static void addInts(int min, int max, final long n, RowOutput out, ExecutionContext exec)
+			throws CanceledExecutionException, InterruptedException {
+
+		// Check the range is sensible
+		if (min > max) {
+			int t = min;
+			min = max;
+			max = t;
+		}
+
+		// Now populate the set
+		Random rand = new Random();
+		Integer RandomNum;
+		long numbersAdded = 0;
+		while (numbersAdded < n) {
+			RandomNum = (rand.nextInt(max - min + 1) + min);
+			out.push(new DefaultRow("Row_" + (numbersAdded++), new IntCell(RandomNum)));
 			exec.setProgress((double) numbersAdded / n,
 					"Added " + numbersAdded + " of " + n + " rows");
 			exec.checkCanceled();
@@ -246,9 +340,11 @@ public class RandomNumbers {
 	 *            The number of values to include
 	 * @param dc
 	 *            The {@link BufferedDataContainer} to add the values to
-	 * @param exec 
+	 * @param exec
 	 * @return A Set object of random doubles
-	 * @throws CanceledExecutionException 
+	 * @throws CanceledExecutionException
+	 * @{@link Deprecated} See
+	 *         {@link #addUniqueDoubles(Double, Double, long, RowOutput, ExecutionContext)}
 	 */
 	public static void addUniqueDoubles(Double min, Double max, final long n,
 			BufferedDataContainer dc, ExecutionContext exec) throws CanceledExecutionException {
@@ -269,6 +365,48 @@ public class RandomNumbers {
 			if (Numbers.add(RandomNum)) {
 				dc.addRowToTable(
 						new DefaultRow("Row_" + (numbersAdded++), new DoubleCell(RandomNum)));
+				exec.setProgress((double) numbersAdded / n,
+						"Added " + numbersAdded + " of " + n + " rows");
+			}
+			exec.checkCanceled();
+		}
+
+	}
+
+	/**
+	 * Create a collection of unique random doubles
+	 * 
+	 * @param min
+	 *            The minimum value in the set
+	 * @param max
+	 *            The maximum value in the set
+	 * @param n
+	 *            The number of values to include
+	 * @param out
+	 *            The {@link BufferedDataContainer} to add the values to
+	 * @param exec
+	 * @return A Set object of random doubles
+	 * @throws CanceledExecutionException
+	 * @throws InterruptedException
+	 */
+	public static void addUniqueDoubles(Double min, Double max, final long n, RowOutput out,
+			ExecutionContext exec) throws CanceledExecutionException, InterruptedException {
+
+		// Check the range is sensible
+		if (min > max) {
+			Double t = min;
+			min = max;
+			max = t;
+		}
+
+		// Now populate the set
+		Set<Double> Numbers = new HashSet<Double>();
+		long numbersAdded = 0;
+		Double RandomNum;
+		while (numbersAdded < n) {
+			RandomNum = min + (Math.random() * ((max - min) + 1));
+			if (Numbers.add(RandomNum)) {
+				out.push(new DefaultRow("Row_" + (numbersAdded++), new DoubleCell(RandomNum)));
 				exec.setProgress((double) numbersAdded / n,
 						"Added " + numbersAdded + " of " + n + " rows");
 			}
@@ -324,6 +462,8 @@ public class RandomNumbers {
 	 *            The {@link BufferedDataContainer} to add the values to
 	 * @param exec
 	 * @throws CanceledExecutionException
+	 * @{@link Deprecated} See
+	 *         {@link #addDoubles(Double, Double, long, RowOutput, ExecutionContext)}
 	 */
 	public static void addDoubles(Double min, Double max, final long n, BufferedDataContainer dc,
 			ExecutionContext exec) throws CanceledExecutionException {
@@ -341,6 +481,43 @@ public class RandomNumbers {
 		while (numbersAdded < n) {
 			RandomNum = min + (Math.random() * ((max - min) + 1));
 			dc.addRowToTable(new DefaultRow("Row_" + (numbersAdded++), new DoubleCell(RandomNum)));
+			exec.setProgress((double) numbersAdded / n,
+					"Added " + numbersAdded + " of " + n + " rows");
+			exec.checkCanceled();
+		}
+	}
+
+	/**
+	 * Create a collection of random doubles
+	 * 
+	 * @param min
+	 *            The minimum value in the set
+	 * @param max
+	 *            The maximum value in the set
+	 * @param n
+	 *            The number of values to include
+	 * @param out
+	 *            The {@link BufferedDataContainer} to add the values to
+	 * @param exec
+	 * @throws CanceledExecutionException
+	 * @throws InterruptedException
+	 */
+	public static void addDoubles(Double min, Double max, final long n, RowOutput out,
+			ExecutionContext exec) throws CanceledExecutionException, InterruptedException {
+
+		// Check the range is sensible
+		if (min > max) {
+			Double t = min;
+			min = max;
+			max = t;
+		}
+
+		// Now populate the set
+		Double RandomNum;
+		long numbersAdded = 0;
+		while (numbersAdded < n) {
+			RandomNum = min + (Math.random() * ((max - min) + 1));
+			out.push(new DefaultRow("Row_" + (numbersAdded++), new DoubleCell(RandomNum)));
 			exec.setProgress((double) numbersAdded / n,
 					"Added " + numbersAdded + " of " + n + " rows");
 			exec.checkCanceled();

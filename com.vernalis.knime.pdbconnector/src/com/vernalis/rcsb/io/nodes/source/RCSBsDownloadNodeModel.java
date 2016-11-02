@@ -26,13 +26,13 @@ import org.knime.bio.types.PdbCellFactory;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
+import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.xml.XMLCell;
 import org.knime.core.data.xml.XMLCellFactory;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -44,6 +44,13 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.streamable.BufferedDataTableRowOutput;
+import org.knime.core.node.streamable.PartitionInfo;
+import org.knime.core.node.streamable.PortInput;
+import org.knime.core.node.streamable.PortOutput;
+import org.knime.core.node.streamable.RowOutput;
+import org.knime.core.node.streamable.StreamableOperator;
 
 import com.vernalis.io.FileDownloadException;
 import com.vernalis.io.FileHelpers;
@@ -79,9 +86,8 @@ public class RCSBsDownloadNodeModel extends NodeModel {
 
 	private final static SettingsModelBoolean m_FASTA = new SettingsModelBoolean(CFG_FASTA, false);
 
-	private BufferedDataContainer m_dc;
-	private long m_retrieved_ids;
-	private long m_currentRowID;
+	// private long m_retrieved_ids;
+	// private long currentRowID;
 	private static int m_colCnt;
 
 	// DataTableSpec for the output table. This will be created during the
@@ -104,29 +110,60 @@ public class RCSBsDownloadNodeModel extends NodeModel {
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
 			final ExecutionContext exec) throws Exception {
 
-		String[] pdb_ids = m_PDBID.getStringValue().toUpperCase().split(";");
-
-		// Create a datacontainer with the required columns
-		m_dc = exec.createDataContainer(spec);
-		m_currentRowID = 0;
-		m_retrieved_ids = 0;
-
-		for (String pdbid : pdb_ids) {
-			pdbid = pdbid.trim();
-			addRow(pdbid, exec);
-		}
-		m_dc.close();
-		return new BufferedDataTable[] { m_dc.getTable() };
+		// String[] pdb_ids = m_PDBID.getStringValue().toUpperCase().split(";");
+		//
+		// // Create a datacontainer with the required columns
+		// BufferedDataContainer bdc = exec.createDataContainer(spec);
+		// long currentRowID = 0;
+		//
+		// for (String pdbid : pdb_ids) {
+		// exec.setProgress(currentRowID + " PDB ID(s) analysed");
+		// exec.checkCanceled();
+		// pdbid = pdbid.trim();
+		// bdc.addRowToTable(buildRow(pdbid, currentRowID++, exec));
+		// }
+		// bdc.close();
+		BufferedDataTableRowOutput output = new BufferedDataTableRowOutput(
+				exec.createDataContainer(spec));
+		createStreamableOperator(null, null).runFinal(new PortInput[0], new PortOutput[] { output },
+				exec);
+		return new BufferedDataTable[] { output.getDataTable() };
 	}
 
-	private void addRow(final String pdbid, final ExecutionContext exec)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.knime.core.node.NodeModel#createStreamableOperator(org.knime.core.
+	 * node.streamable.PartitionInfo, org.knime.core.node.port.PortObjectSpec[])
+	 */
+	@Override
+	public StreamableOperator createStreamableOperator(PartitionInfo partitionInfo,
+			PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+		return new StreamableOperator() {
+
+			@Override
+			public void runFinal(PortInput[] inputs, PortOutput[] outputs, ExecutionContext exec)
+					throws Exception {
+				String[] pdb_ids = m_PDBID.getStringValue().toUpperCase().split(";");
+				RowOutput out = (RowOutput) outputs[0];
+				long currentRowID = 0;
+				for (String pdbid : pdb_ids) {
+					exec.setProgress(currentRowID + " PDB ID(s) analysed");
+					exec.checkCanceled();
+					pdbid = pdbid.trim();
+					out.push(buildRow(pdbid, currentRowID++, exec));
+				}
+				out.close();
+			}
+		};
+	}
+
+	private DataRow buildRow(final String pdbid, long currentRowID, final ExecutionContext exec)
 			throws CanceledExecutionException, FileDownloadException {
 		/*
 		 * Utility function to add a row to the output table
 		 */
-		m_retrieved_ids++;
-		exec.setProgress(m_retrieved_ids + " PDB ID(s) analysed");
-		exec.checkCanceled();
 
 		DataCell[] row = new DataCell[m_colCnt];
 		Arrays.fill(row, DataType.getMissingCell());
@@ -173,8 +210,7 @@ public class RCSBsDownloadNodeModel extends NodeModel {
 			}
 
 		}
-		m_dc.addRowToTable(new DefaultRow("Row " + m_currentRowID, row));
-		m_currentRowID++;
+		return new DefaultRow("Row " + currentRowID, row);
 
 	}
 

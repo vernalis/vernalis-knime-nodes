@@ -1,24 +1,26 @@
 /*******************************************************************************
- * Copyright (c) 2014, Vernalis (R&D) Ltd
- * This program is free software; you can redistribute it and/or modify it 
- * under the terms of the GNU General Public License, Version 3, as 
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- * See the GNU General Public License for more details.
+ * Copyright (c) 2016, Vernalis (R&D) Ltd
+ *  This program is free software; you can redistribute it and/or modify it 
+ *  under the terms of the GNU General Public License, Version 3, as 
+ *  published by the Free Software Foundation.
  *  
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, see <http://www.gnu.org/licenses>.
- *  
- *******************************************************************************/
+ *   This program is distributed in the hope that it will be useful, but 
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of 
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *  See the GNU General Public License for more details.
+ *   
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, see <http://www.gnu.org/licenses>
+ ******************************************************************************/
 package com.vernalis.nodes.epmc;
+
+import static com.vernalis.nodes.epmc.EuroPmcAdvancedSearchNodeDialog.createEmailModel;
+import static com.vernalis.nodes.epmc.EuroPmcAdvancedSearchNodeDialog.createPageSizeModel;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.knime.core.data.DataCell;
@@ -27,7 +29,6 @@ import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.xml.XMLCell;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -37,12 +38,23 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
+import org.knime.core.node.streamable.BufferedDataTableRowOutput;
+import org.knime.core.node.streamable.MergeOperator;
+import org.knime.core.node.streamable.OutputPortRole;
+import org.knime.core.node.streamable.PartitionInfo;
+import org.knime.core.node.streamable.PortInput;
+import org.knime.core.node.streamable.PortObjectOutput;
+import org.knime.core.node.streamable.PortOutput;
+import org.knime.core.node.streamable.RowOutput;
+import org.knime.core.node.streamable.StreamableOperator;
+import org.knime.core.node.streamable.StreamableOperatorInternals;
 
 /**
  * This is the model implementation of EuroPmcAdvancedSearch. Node to run a
@@ -79,21 +91,11 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	private final SettingsModelString m_Gnl = new SettingsModelString(CFG_GNL_QUERY, null);
 	private final SettingsModelString m_QueryType = new SettingsModelString(CFG_QUERY_TYPE, "Core");
 	private final SettingsModelString m_SortOrder = new SettingsModelString(CFG_SORT_ORDER, "Date");
+	private final SettingsModelIntegerBounded m_pageSize = createPageSizeModel();
+	private final SettingsModelString m_email = createEmailModel();
 
 	// Data table Spec
 	private static final DataTableSpec spec = new DataTableSpec(createDataColumnSpec());
-
-	// Data container for results
-	private BufferedDataContainer m_dc;
-
-	// Row counter
-	private long m_currentRowID;
-
-	// page counter
-	private int m_pageCount;
-
-	// hit count
-	private long hitCount;
 
 	/**
 	 * Constructor for the node model.
@@ -110,72 +112,181 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
 			throws Exception {
 
-		// Now create a data container for the new output table
-		m_dc = exec.createDataContainer(spec);
-		m_currentRowID = 0;
-		m_pageCount = 1;
-
-		// Build the query string
-		boolean sortDate = m_SortOrder.getStringValue().equals("Date");
-		String queryText = EpmcHelpers.buildQueryString(m_Title.getStringValue(),
-				m_Authors.getStringValue(), m_Affiliation.getStringValue(), m_From.getStringValue(),
-				m_To.getStringValue(), m_Journals.getStringValue(), m_MeSH.getStringValue(),
-				m_Gnl.getStringValue(), sortDate);
-
-		// Inform the user of progress...
-		logger.info("Query string used: " + queryText);
-		// Now we need to run the initial query and add the results from this
-		// to the buffered dc
-		String xmlResult = EpmcHelpers.askEpmc(
-				EpmcHelpers.buildQueryURL(queryText, m_QueryType.getStringValue(), m_pageCount));
-		hitCount = Long.parseLong(EpmcHelpers.getStringFromXmlField(xmlResult, "hitCount"));
-
-		if (hitCount > 0) {
-			List<DataCell> results = new ArrayList<DataCell>();
-			results = EpmcHelpers.getRecordsFromXml(xmlResult, "result", "result");
-			addResultsToDc(m_dc, results, exec);
-
-			// Now we need to loop through the remaining pages
-			while (m_currentRowID < hitCount) {
-				xmlResult = EpmcHelpers.askEpmc(EpmcHelpers.buildQueryURL(queryText,
-						m_QueryType.getStringValue(), m_pageCount));
-				results = EpmcHelpers.getRecordsFromXml(xmlResult, "result", "result");
-				addResultsToDc(m_dc, results, exec);
-			}
-		}
-		m_dc.close();
-
-		// Now we add the flow variables. Note that they don't actually
-		// specifically associate
-		// with the fv port, but we need to create this for the return object
-		final FlowVariablePortObject flowVars = FlowVariablePortObject.INSTANCE;
-		pushFlowVariableInt("hitCount", (int) hitCount);
-		pushFlowVariableInt("pagecount", --m_pageCount);
-		pushFlowVariableString("queryString", queryText);
-		pushFlowVariableString("queryURL",
-				EpmcHelpers.buildQueryURL(queryText, m_QueryType.getStringValue(), 1).toString());
-		pushFlowVariableString("resultType", m_QueryType.getStringValue());
-		pushFlowVariableString("queryFromEPMCXml",
-				EpmcHelpers.getStringFromXmlField(xmlResult, "query"));
-		return new PortObject[] { m_dc.getTable(), flowVars };
+		// // Now create a data container for the new output table
+		BufferedDataTableRowOutput output = new BufferedDataTableRowOutput(
+				exec.createDataContainer(spec));
+		PortObjectOutput fvOutput = new PortObjectOutput();
+		fvOutput.setPortObject(FlowVariablePortObject.INSTANCE);
+		createStreamableOperator(null, null).runFinal(new PortInput[0],
+				new PortOutput[] { output, fvOutput }, exec);
+		return new PortObject[] { output.getDataTable(), fvOutput.getPortObject() };
 	}
 
-	private void addResultsToDc(BufferedDataContainer m_dc2, List<DataCell> results,
-			final ExecutionContext exec) throws CanceledExecutionException {
-		// Update the status text
-		exec.setProgress(m_pageCount + " page(s) fetched..." + m_currentRowID + " hits of "
-				+ hitCount + " added to output");
-		exec.checkCanceled();
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.knime.core.node.NodeModel#createStreamableOperator(org.knime.core.
+	 * node.streamable.PartitionInfo, org.knime.core.node.port.PortObjectSpec[])
+	 */
+	@Override
+	public StreamableOperator createStreamableOperator(PartitionInfo partitionInfo,
+			PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+		return new StreamableOperator() {
+			ServiceResultStreamableOperatorInternals internals = new ServiceResultStreamableOperatorInternals();
 
-		// And now add the results
-		Iterator<DataCell> itr = results.iterator();
-		while (itr.hasNext()) {
-			m_dc.addRowToTable(new DefaultRow("Row " + m_currentRowID, itr.next()));
-			m_currentRowID++;
-		}
+			@Override
+			public void runFinal(PortInput[] inputs, PortOutput[] outputs, ExecutionContext exec)
+					throws Exception {
+				RowOutput out = (RowOutput) outputs[0];
+				long currentRowID = 0;
+				long pageCount = 1;
+				String nextCursor = "*";
 
-		// Now update the page counter
-		m_pageCount++;
+				// Build the query string
+				boolean sortDate = m_SortOrder.getStringValue().equals("Date");
+				String queryText = EpmcHelpers.buildQueryString(m_Title.getStringValue(),
+						m_Authors.getStringValue(), m_Affiliation.getStringValue(),
+						m_From.getStringValue(), m_To.getStringValue(), m_Journals.getStringValue(),
+						m_MeSH.getStringValue(), m_Gnl.getStringValue(), sortDate);
+
+				// Inform the user of progress...
+				logger.info("Query string used: " + queryText);
+				// Now we need to run the initial query and add the results from
+				// this to the output
+				exec.setMessage("Fetching first result page...");
+				URL queryURL = EpmcHelpers.buildQueryURL(queryText, m_QueryType.getStringValue(),
+						nextCursor, m_pageSize.getIntValue(), null, m_email.getStringValue());
+				String xmlResult = EpmcHelpers.askEpmc(queryURL, exec);
+				long hitCount = Long
+						.parseLong(EpmcHelpers.getStringFromXmlField(xmlResult, "hitCount"));
+				String serviceVersion = EpmcHelpers.getStringFromXmlField(xmlResult, "version");
+
+				if (hitCount > 0) {
+					List<DataCell> results = new ArrayList<DataCell>();
+					results = EpmcHelpers.getRecordsFromXml(xmlResult, "result", "result");
+
+					// And now add the results
+					for (DataCell result : results) {
+						out.push(new DefaultRow("Row " + currentRowID++, result));
+						exec.setProgress(pageCount + " page(s) fetched..." + currentRowID
+								+ " hits of " + hitCount + " added to output");
+						exec.checkCanceled();
+					}
+
+					// Now update the page counter
+					pageCount++;
+
+					// Now we need to loop through the remaining pages
+					while (currentRowID < hitCount) {
+						nextCursor = EpmcHelpers.getStringFromXmlField(xmlResult, "nextCursorMark");
+						queryURL = EpmcHelpers.buildQueryURL(queryText,
+								m_QueryType.getStringValue(), nextCursor, m_pageSize.getIntValue(),
+								null, m_email.getStringValue());
+						xmlResult = EpmcHelpers.askEpmc(queryURL, exec);
+						results = EpmcHelpers.getRecordsFromXml(xmlResult, "result", "result");
+
+						// And now add the results
+						for (DataCell result : results) {
+							out.push(new DefaultRow("Row " + currentRowID++, result));
+							// Update the status text
+							exec.setProgress(pageCount + " page(s) fetched..." + currentRowID
+									+ " hits of " + hitCount + " added to output");
+							exec.checkCanceled();
+						}
+
+						// Now update the page counter
+						pageCount++;
+					}
+				}
+				out.close();
+				pushFlowVariableInt("hitCount", (int) hitCount);
+				internals.setHitCount(hitCount);
+				pushFlowVariableInt("pagecount", (int) --pageCount);
+				internals.setPageCount(pageCount);
+				pushFlowVariableString("queryString", queryText);
+				internals.setQueryString(queryText);
+				String url = EpmcHelpers.buildQueryURL(queryText, m_QueryType.getStringValue(), "*")
+						.toString();
+				pushFlowVariableString("queryURL", url);
+				internals.setQueryURL(url);
+				pushFlowVariableString("resultType", m_QueryType.getStringValue());
+				internals.setResultType(m_QueryType.getStringValue());
+				String queryFromXml = EpmcHelpers.getStringFromXmlField(xmlResult, "query");
+				pushFlowVariableString("queryFromEPMCXml", queryFromXml);
+				internals.setQueryFromXML(queryFromXml);
+				pushFlowVariableString("Service Version", serviceVersion);
+				internals.setVersion(serviceVersion);
+				((PortObjectOutput) outputs[1]).setPortObject(FlowVariablePortObject.INSTANCE);
+			}
+
+			/*
+			 * (non-Javadoc)
+			 *
+			 * @see
+			 *
+			 * org.knime.core.node.streamable.StreamableOperator#saveInternals()
+			 */
+			@Override
+			public StreamableOperatorInternals saveInternals() {
+				return internals;
+			}
+		};
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.knime.core.node.NodeModel#getOutputPortRoles()
+	 */
+	@Override
+	public OutputPortRole[] getOutputPortRoles() {
+		return new OutputPortRole[] { OutputPortRole.DISTRIBUTED, OutputPortRole.NONDISTRIBUTED };
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.knime.core.node.NodeModel#createMergeOperator()
+	 */
+	@Override
+	public MergeOperator createMergeOperator() {
+		return new MergeOperator() {
+
+			@Override
+			public StreamableOperatorInternals mergeFinal(StreamableOperatorInternals[] operators) {
+				// Should only ever be 1
+				if (operators.length != 1) {
+					logger.warn(
+							"Something strange - wrong number of streamable operator internals found ("
+									+ operators.length + ")");
+				}
+				return operators[0];
+			}
+		};
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.knime.core.node.NodeModel#finishStreamableExecution(org.knime.core.
+	 * node.streamable.StreamableOperatorInternals,
+	 * org.knime.core.node.ExecutionContext,
+	 * org.knime.core.node.streamable.PortOutput[])
+	 */
+	@Override
+	public void finishStreamableExecution(StreamableOperatorInternals internals,
+			ExecutionContext exec, PortOutput[] output) throws Exception {
+		ServiceResultStreamableOperatorInternals castInt = (ServiceResultStreamableOperatorInternals) internals;
+		pushFlowVariableInt("hitCount", (int) castInt.getHitCount());
+		pushFlowVariableInt("pageCount", (int) castInt.getPageCount());
+		pushFlowVariableString("queryString", castInt.getQueryString());
+		pushFlowVariableString("queryURL", castInt.getQueryURL());
+		pushFlowVariableString("resultType", castInt.getResultType());
+		pushFlowVariableString("queryFromEPMCXml", castInt.getQueryFromXML());
+		pushFlowVariableString("Service Version", castInt.getVersion());
 	}
 
 	/**
@@ -198,7 +309,7 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 		pushFlowVariableString("queryURL", "");
 		pushFlowVariableString("resultType", "");
 		pushFlowVariableString("queryFromEPMCXml", "");
-
+		pushFlowVariableString("Service Version", "");
 		return new PortObjectSpec[] { spec, FlowVariablePortObjectSpec.INSTANCE };
 	}
 
@@ -217,6 +328,8 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 		m_SortOrder.saveSettingsTo(settings);
 		m_Title.saveSettingsTo(settings);
 		m_To.saveSettingsTo(settings);
+		m_pageSize.saveSettingsTo(settings);
+		m_email.saveSettingsTo(settings);
 	}
 
 	/**
@@ -235,6 +348,17 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 		m_SortOrder.loadSettingsFrom(settings);
 		m_Title.loadSettingsFrom(settings);
 		m_To.loadSettingsFrom(settings);
+		try {
+			m_pageSize.loadSettingsFrom(settings);
+		} catch (InvalidSettingsException e) {
+			// legacy behaviour
+			m_pageSize.setIntValue(25);
+		}
+		try {
+			m_email.loadSettingsFrom(settings);
+		} catch (InvalidSettingsException e) {
+			m_email.setStringValue(null);
+		}
 	}
 
 	/**
@@ -252,6 +376,7 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 		m_SortOrder.validateSettings(settings);
 		m_Title.validateSettings(settings);
 		m_To.validateSettings(settings);
+		// dont validate new settings
 	}
 
 	/**

@@ -44,7 +44,6 @@ import org.knime.core.data.RowKey;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.StringCell;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -57,6 +56,14 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelDoubleBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.streamable.BufferedDataTableRowOutput;
+import org.knime.core.node.streamable.OutputPortRole;
+import org.knime.core.node.streamable.PartitionInfo;
+import org.knime.core.node.streamable.PortInput;
+import org.knime.core.node.streamable.PortOutput;
+import org.knime.core.node.streamable.RowOutput;
+import org.knime.core.node.streamable.StreamableOperator;
 
 import com.vernalis.pdbconnector.containers.HeterogenStructureDetails;
 import com.vernalis.rest.GetRunner;
@@ -131,94 +138,227 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
 			final ExecutionContext exec) throws Exception {
 
-		// First we need to perform the query
-		// URL is built (NB the SMILES needs "cleaned" of special characters)
-		// Query run and results processed and then tables written
+		// // First we need to perform the query
+		// // URL is built (NB the SMILES needs "cleaned" of special characters)
+		// // Query run and results processed and then tables written
+		//
+		// // Build the URL - use the URI constructor to clean the SMILES string
+		// String url = (new URI("http", null, SERVICE_BASE_URL,
+		// getQueryString(), null)).toString();
+		// logger.info("Query URL: " + url);
+		//
+		// // Sets for the IDs - we use TreeSets to have sorted IDs
+		// Set<String> hetIDs = new TreeSet<String>();
+		// Set<String> pdbIDs = new TreeSet<String>();
+		//
+		// exec.setMessage("Running Query");
+		// // Running the query is 50% of time
+		// ExecutionMonitor exec0 = exec.createSubProgress(0.50);
+		// exec0.setProgress(0.0);
+		// ArrayList<HeterogenStructureDetails> hetDetails =
+		// getHeterogenData(url, exec0);
+		// Collections.sort(hetDetails);
+		// exec0.setProgress(1.0, "Query phase Complete");
+		// logger.info("Query returned " + hetDetails.size() + " hits");
+		//
+		// // Write the first (main) table - 30% of time
+		// exec0 = exec.createSubProgress(0.3);
+		// // Container for the 0th table - the full results table
+		// BufferedDataContainer cont0 = exec.createDataContainer(getSpec0());
+		// long row = 0;
+		// long numRows = hetDetails.size();
+		// double progPerRow = 1.0 / numRows;
+		//
+		// exec.setMessage("Writing 1st output Table");
+		// for (HeterogenStructureDetails entry : hetDetails) {
+		// RowKey rowKey = RowKey.createRowKey(row);
+		// exec0.checkCanceled();
+		// exec0.setProgress(row * progPerRow, "Row " + (++row) + " of " +
+		// numRows);
+		// DefaultRow newRow = createDataRow(rowKey, entry);
+		// cont0.addRowToTable(newRow);
+		//
+		// // While we are here, extract the hetID and structureId for the
+		// // other table
+		// hetIDs.add(entry.getHetID());
+		// pdbIDs.add(entry.getStructureID());
+		// }
+		//
+		// // Now write the 1st table
+		// cont0.close();
+		// BufferedDataTable out0 = cont0.getTable();
+		//
+		// // Now the second table - 10% of time
+		// exec0 = exec.createSubProgress(0.1);
+		// BufferedDataContainer cont1 = exec.createDataContainer(getSpec1());
+		// row = 0;
+		// numRows = hetIDs.size();
+		// progPerRow = 1.0 / numRows;
+		//
+		// exec.setMessage("Writing 2nd output Table");
+		// logger.info(numRows + " Unique matching chemical components found");
+		// for (String entry : hetIDs) {
+		// RowKey rowKey = RowKey.createRowKey(row);
+		// exec0.checkCanceled();
+		// exec0.setProgress(row * progPerRow, "Row " + (++row) + " of " +
+		// numRows);
+		// cont1.addRowToTable(new DefaultRow(rowKey, new DataCell[] { new
+		// StringCell(entry) }));
+		// }
+		//
+		// // Now write the 2nd table
+		// cont1.close();
+		// BufferedDataTable out1 = cont1.getTable();
+		//
+		// // Now the third table - 10% of time
+		// exec0 = exec.createSubProgress(0.1);
+		// BufferedDataContainer cont2 = exec.createDataContainer(getSpec2());
+		// row = 0;
+		// numRows = pdbIDs.size();
+		// progPerRow = 1.0 / numRows;
+		//
+		// exec.setMessage("Writing 3rd output Table");
+		// logger.info(numRows + " Structures containing the matching chemical
+		// components returned");
+		// for (String entry : pdbIDs) {
+		// RowKey rowKey = RowKey.createRowKey(row);
+		// exec0.checkCanceled();
+		// exec0.setProgress(row * progPerRow, "Row " + (++row) + " of " +
+		// numRows);
+		// cont2.addRowToTable(new DefaultRow(rowKey, new DataCell[] { new
+		// StringCell(entry) }));
+		// }
+		//
+		// // Now write the 3rd table
+		// cont2.close();
+		// BufferedDataTable out2 = cont2.getTable();
+		BufferedDataTableRowOutput out0 = new BufferedDataTableRowOutput(
+				exec.createDataContainer(getSpec0()));
+		BufferedDataTableRowOutput out1 = new BufferedDataTableRowOutput(
+				exec.createDataContainer(getSpec1()));
+		BufferedDataTableRowOutput out2 = new BufferedDataTableRowOutput(
+				exec.createDataContainer(getSpec2()));
+		createStreamableOperator(null, null).runFinal(new PortInput[0],
+				new PortOutput[] { out0, out1, out2 }, exec);
+		return new BufferedDataTable[] { out0.getDataTable(), out1.getDataTable(),
+				out2.getDataTable() };
+	}
 
-		// Build the URL - use the URI constructor to clean the SMILES string
-		String url = (new URI("http", null, SERVICE_BASE_URL, getQueryString(), null)).toString();
-		logger.info("Query URL: " + url);
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.knime.core.node.NodeModel#createStreamableOperator(org.knime.core.
+	 * node.streamable.PartitionInfo, org.knime.core.node.port.PortObjectSpec[])
+	 */
+	@Override
+	public StreamableOperator createStreamableOperator(PartitionInfo partitionInfo,
+			PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+		return new StreamableOperator() {
 
-		// Sets for the IDs - we use TreeSets to have sorted IDs
-		Set<String> hetIDs = new TreeSet<String>();
-		Set<String> pdbIDs = new TreeSet<String>();
+			@Override
+			public void runFinal(PortInput[] inputs, PortOutput[] outputs, ExecutionContext exec)
+					throws Exception {
+				// First we need to perform the query
+				// URL is built (NB the SMILES needs "cleaned" of special
+				// characters)
+				// Query run and results processed and then tables written
 
-		exec.setMessage("Running Query");
-		// Running the query is 50% of time
-		ExecutionMonitor exec0 = exec.createSubProgress(0.50);
-		exec0.setProgress(0.0);
-		ArrayList<HeterogenStructureDetails> hetDetails = getHeterogenData(url, exec0);
-		Collections.sort(hetDetails);
-		exec0.setProgress(1.0, "Query phase Complete");
-		logger.info("Query returned " + hetDetails.size() + " hits");
+				// Build the URL - use the URI constructor to clean the SMILES
+				// string
+				String url = (new URI("http", null, SERVICE_BASE_URL, getQueryString(), null))
+						.toString();
+				logger.info("Query URL: " + url);
 
-		// Write the first (main) table - 30% of time
-		exec0 = exec.createSubProgress(0.3);
-		// Container for the 0th table - the full results table
-		BufferedDataContainer cont0 = exec.createDataContainer(getSpec0());
-		long row = 0;
-		long numRows = hetDetails.size();
-		double progPerRow = 1.0 / numRows;
+				// Sets for the IDs - we use TreeSets to have sorted IDs
+				Set<String> hetIDs = new TreeSet<String>();
+				Set<String> pdbIDs = new TreeSet<String>();
 
-		exec.setMessage("Writing 1st output Table");
-		for (HeterogenStructureDetails entry : hetDetails) {
-			RowKey rowKey = RowKey.createRowKey(row);
-			exec0.checkCanceled();
-			exec0.setProgress(row * progPerRow, "Row " + (++row) + " of " + numRows);
-			DefaultRow newRow = createDataRow(rowKey, entry);
-			cont0.addRowToTable(newRow);
+				exec.setMessage("Running Query");
+				// Running the query is 50% of time
+				ExecutionMonitor exec0 = exec.createSubProgress(0.50);
+				exec0.setProgress(0.0);
+				ArrayList<HeterogenStructureDetails> hetDetails = getHeterogenData(url, exec0);
+				Collections.sort(hetDetails);
+				exec0.setProgress(1.0, "Query phase Complete");
+				logger.info("Query returned " + hetDetails.size() + " hits");
 
-			// While we are here, extract the hetID and structureId for the
-			// other table
-			hetIDs.add(entry.getHetID());
-			pdbIDs.add(entry.getStructureID());
-		}
+				// Write the first (main) table - 30% of time
+				exec0 = exec.createSubProgress(0.3);
+				// Container for the 0th table - the full results table
+				RowOutput cont0 = (RowOutput) outputs[0];
+				long row = 0;
+				long numRows = hetDetails.size();
+				double progPerRow = 1.0 / numRows;
 
-		// Now write the 1st table
-		cont0.close();
-		BufferedDataTable out0 = cont0.getTable();
+				exec.setMessage("Writing 1st output Table");
+				for (HeterogenStructureDetails entry : hetDetails) {
+					RowKey rowKey = RowKey.createRowKey(row);
+					exec0.checkCanceled();
+					exec0.setProgress(row * progPerRow, "Row " + (++row) + " of " + numRows);
+					DefaultRow newRow = createDataRow(rowKey, entry);
+					cont0.push(newRow);
 
-		// Now the second table - 10% of time
-		exec0 = exec.createSubProgress(0.1);
-		BufferedDataContainer cont1 = exec.createDataContainer(getSpec1());
-		row = 0;
-		numRows = hetIDs.size();
-		progPerRow = 1.0 / numRows;
+					// While we are here, extract the hetID and structureId for
+					// the
+					// other table
+					hetIDs.add(entry.getHetID());
+					pdbIDs.add(entry.getStructureID());
+				}
+				cont0.close();
 
-		exec.setMessage("Writing 2nd output Table");
-		logger.info(numRows + " Unique matching chemical components found");
-		for (String entry : hetIDs) {
-			RowKey rowKey = RowKey.createRowKey(row);
-			exec0.checkCanceled();
-			exec0.setProgress(row * progPerRow, "Row " + (++row) + " of " + numRows);
-			cont1.addRowToTable(new DefaultRow(rowKey, new DataCell[] { new StringCell(entry) }));
-		}
+				// Now the second table - 10% of time
+				exec0 = exec.createSubProgress(0.1);
+				RowOutput cont1 = (RowOutput) outputs[1];
+				row = 0;
+				numRows = hetIDs.size();
+				progPerRow = 1.0 / numRows;
 
-		// Now write the 2nd table
-		cont1.close();
-		BufferedDataTable out1 = cont1.getTable();
+				exec.setMessage("Writing 2nd output Table");
+				logger.info(numRows + " Unique matching chemical components found");
+				for (String entry : hetIDs) {
+					RowKey rowKey = RowKey.createRowKey(row);
+					exec0.checkCanceled();
+					exec0.setProgress(row * progPerRow, "Row " + (++row) + " of " + numRows);
+					cont1.push(new DefaultRow(rowKey, new DataCell[] { new StringCell(entry) }));
+				}
 
-		// Now the third table - 10% of time
-		exec0 = exec.createSubProgress(0.1);
-		BufferedDataContainer cont2 = exec.createDataContainer(getSpec2());
-		row = 0;
-		numRows = pdbIDs.size();
-		progPerRow = 1.0 / numRows;
+				cont1.close();
 
-		exec.setMessage("Writing 3rd output Table");
-		logger.info(numRows + " Structures containing the matching chemical components returned");
-		for (String entry : pdbIDs) {
-			RowKey rowKey = RowKey.createRowKey(row);
-			exec0.checkCanceled();
-			exec0.setProgress(row * progPerRow, "Row " + (++row) + " of " + numRows);
-			cont2.addRowToTable(new DefaultRow(rowKey, new DataCell[] { new StringCell(entry) }));
-		}
+				// Now the third table - 10% of time
+				exec0 = exec.createSubProgress(0.1);
+				RowOutput cont2 = (RowOutput) outputs[2];
+				row = 0;
+				numRows = pdbIDs.size();
+				progPerRow = 1.0 / numRows;
 
-		// Now write the 3rd table
-		cont2.close();
-		BufferedDataTable out2 = cont2.getTable();
+				exec.setMessage("Writing 3rd output Table");
+				logger.info(numRows
+						+ " Structures containing the matching chemical components returned");
+				for (String entry : pdbIDs) {
+					RowKey rowKey = RowKey.createRowKey(row);
+					exec0.checkCanceled();
+					exec0.setProgress(row * progPerRow, "Row " + (++row) + " of " + numRows);
+					cont2.push(new DefaultRow(rowKey, new DataCell[] { new StringCell(entry) }));
+				}
 
-		return new BufferedDataTable[] { out0, out1, out2 };
+				// Now write the 3rd table
+				cont2.close();
+			}
+		};
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.knime.core.node.NodeModel#getOutputPortRoles()
+	 */
+	@Override
+	public OutputPortRole[] getOutputPortRoles() {
+		OutputPortRole[] retVal = new OutputPortRole[3];
+		Arrays.fill(retVal, OutputPortRole.DISTRIBUTED);
+		return retVal;
 	}
 
 	private DefaultRow createDataRow(RowKey rowKey, HeterogenStructureDetails entry) {
