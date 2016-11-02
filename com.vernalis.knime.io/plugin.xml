@@ -18,30 +18,37 @@
          point="org.knime.workbench.repository.nodes">
       <node
             category-path="/community/vernalis/io"
-            factory-class="com.vernalis.knime.io.nodes.load.txt.LoadTextFilesNodeFactory"/>
+            factory-class="com.vernalis.knime.io.nodes.load.txt.LoadTextFilesNodeFactory"
+            id="1"/>
       <node
             category-path="/community/vernalis/io"
-            factory-class="com.vernalis.knime.io.nodes.load.pdb.LoadLocalPdbFilesNodeFactory">
+            factory-class="com.vernalis.knime.io.nodes.load.pdb.LoadLocalPdbFilesNodeFactory"
+            id="2">
       </node>
       <node
             category-path="/community/vernalis/io"
-            factory-class="com.vernalis.knime.io.nodes.load.cdxml.LoadLocalCdxmlFilesNodeFactory">
+            factory-class="com.vernalis.knime.io.nodes.load.cdxml.LoadLocalCdxmlFilesNodeFactory"
+            id="3">
       </node>
       <node
             category-path="/community/vernalis/io"
-            factory-class="com.vernalis.knime.io.nodes.load.xml.LoadLocalXmlFilesNodeFactory">
+            factory-class="com.vernalis.knime.io.nodes.load.xml.LoadLocalXmlFilesNodeFactory"
+            id="4">
       </node>
       <node
             category-path="/community/vernalis/io"
-            factory-class="com.vernalis.knime.io.nodes.load.mol.LoadLocalMolFilesNodeFactory">
+            factory-class="com.vernalis.knime.io.nodes.load.mol.LoadLocalMolFilesNodeFactory"
+            id="5">
       </node>
       <node
             category-path="/community/vernalis/io"
-            factory-class="com.vernalis.knime.io.nodes.load.mol2.LoadLocalMol2FilesNodeFactory">
+            factory-class="com.vernalis.knime.io.nodes.load.mol2.LoadLocalMol2FilesNodeFactory"
+            id="6">
       </node>
       <node
             category-path="/community/vernalis/io"
-            factory-class="com.vernalis.knime.io.nodes.load.rxn.LoadLocalRxnFilesNodeFactory">
+            factory-class="com.vernalis.knime.io.nodes.load.rxn.LoadLocalRxnFilesNodeFactory"
+            id="7">
       </node>
    </extension>
    <extension

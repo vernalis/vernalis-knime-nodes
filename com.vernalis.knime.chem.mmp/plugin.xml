@@ -15,48 +15,59 @@
   <extension point="org.knime.workbench.repository.nodes"> 
  <node
        category-path="/community/vernalis/mmp/filter"
-       factory-class="com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeFactory">
+       factory-class="com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeFactory"
+       id="1">
  </node>
  <node
        category-path="/community/vernalis/mmp/filter"
-       factory-class="com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterSplitterNodeFactory">
+       factory-class="com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterSplitterNodeFactory"
+       id="2">
  </node>
  <node
        category-path="/community/vernalis/mmp"
-       factory-class="com.vernalis.knime.mmp.nodes.maxcuts.MmpMaxCutsNodeFactory">
+       factory-class="com.vernalis.knime.mmp.nodes.maxcuts.MmpMaxCutsNodeFactory"
+       id="3">
  </node>
  <node
        category-path="/community/vernalis/mmp/pairgen"
-       factory-class="com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeFactory">
+       factory-class="com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeFactory"
+       id="4">
  </node>
  <node
        category-path="/community/vernalis/mmp"
-       factory-class="com.vernalis.knime.mmp.nodes.loop.CutTypeLoopStartNodeFactory">
+       factory-class="com.vernalis.knime.mmp.nodes.loop.CutTypeLoopStartNodeFactory"
+       id="5">
  </node>
  <node
        category-path="/community/vernalis/mmp/frag"
-       factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeFactory">
+       factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeFactory"
+       id="6">
  </node>
  <node
        category-path="/community/vernalis/mmp/frag"
-       factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment2.ParallelRdkitMMPFragment3NodeFactory">
+       factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment2.ParallelRdkitMMPFragment3NodeFactory"
+       id="7">
  </node>
  <node
        category-path="/community/vernalis/mmp/"
-       factory-class="com.vernalis.knime.mmp.nodes.uniquifyids.UniquifyIdsNodeFactory">
+       factory-class="com.vernalis.knime.mmp.nodes.uniquifyids.UniquifyIdsNodeFactory"
+       id="8">
  </node>
 
  <node
        deprecated="true"
-       factory-class="com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeFactory">
+       factory-class="com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeFactory"
+       id="9">
  </node>
  <node
        deprecated="true"
-       factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment.RdkitMMPFragmentNodeFactory">
+       factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment.RdkitMMPFragmentNodeFactory"
+       id="10">
  </node>
  <node
        deprecated="true"
-       factory-class="com.vernalis.knime.mmp.nodes.rdkit.multicut.RdkitMatchedPairsNodeFactory">
+       factory-class="com.vernalis.knime.mmp.nodes.rdkit.multicut.RdkitMatchedPairsNodeFactory"
+       id="11">
  </node>
 </extension>
 
