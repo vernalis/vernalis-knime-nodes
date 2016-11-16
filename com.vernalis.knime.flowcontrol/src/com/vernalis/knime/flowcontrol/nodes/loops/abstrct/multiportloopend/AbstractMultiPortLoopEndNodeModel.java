@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, Vernalis (R&D) Ltd
+ * Copyright (c) 2014, 2016 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -16,17 +16,12 @@ package com.vernalis.knime.flowcontrol.nodes.loops.abstrct.multiportloopend;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 
-import org.knime.base.data.append.column.AppendedColumnRow;
 import org.knime.core.data.DataColumnSpecCreator;
-import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.RowKey;
-import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.IntCell;
-import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
@@ -38,10 +33,12 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 import org.knime.core.node.workflow.LoopEndNode;
 import org.knime.core.node.workflow.LoopStartNodeTerminator;
+import org.knime.core.util.DuplicateKeyException;
 
 import com.vernalis.knime.flowcontrol.FlowControlHelpers;
 
@@ -51,34 +48,29 @@ import com.vernalis.knime.flowcontrol.FlowControlHelpers;
  * 
  * @author S. Roughley
  */
-public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements
-		LoopEndNode {
+public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements LoopEndNode {
 
 	/** the logger instance. */
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(AbstractMultiPortLoopEndNodeModel.class);
+	protected final NodeLogger logger = NodeLogger.getLogger(getClass());
 
 	// Settings Keys
 	/** The Constant NON_CONNECTED_OPTION. */
 	static final String NON_CONNECTED_OPTION = "Non-Connected_Branch_Behaviour";
 
 	/** The m_ num ports. */
-	private final int m_NumPorts;
+	protected final int m_NumPorts;
 
 	/** The m_result container. */
-	private BufferedDataContainer[] m_resultContainer;
+	protected ConcatenatingTablesCollector[] m_resultContainer;
 
 	/** The m_current iteration. */
-	private int m_currentIteration = 0;
+	protected int m_currentIteration = 0;
 
 	/** The m_settings. */
-	private final AbstractMultiPortLoopEndSettings m_settings;
-
-	/** The m_empty table. */
-	private BufferedDataTable[] m_emptyTable;
+	protected final AbstractMultiPortLoopEndSettings m_settings;
 
 	/** The m_specs. */
-	private PortObjectSpec[] m_specs;
+	protected PortObjectSpec[] m_specs;
 
 	/**
 	 * Single argument constructor for the model, specifying the number of
@@ -89,14 +81,7 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements
 	 *            The number of dataports
 	 */
 	public AbstractMultiPortLoopEndNodeModel(final int numPorts) {
-
-		super(FlowControlHelpers.createEndInPorts(BufferedDataTable.TYPE,
-				numPorts), FlowControlHelpers.createStartOutPorts(
-				BufferedDataTable.TYPE, numPorts));
-		m_NumPorts = numPorts;
-		m_resultContainer = new BufferedDataContainer[numPorts];
-		m_settings = new AbstractMultiPortLoopEndSettings(numPorts);
-		m_emptyTable = new BufferedDataTable[numPorts];
+		this(numPorts, true);
 	}
 
 	/**
@@ -112,136 +97,121 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements
 	 *            there {@link numPorts} > 2. Omitting this argument treats it
 	 *            as 'true'
 	 */
-	public AbstractMultiPortLoopEndNodeModel(final int numPorts,
-			final boolean optionalInPorts) {
+	public AbstractMultiPortLoopEndNodeModel(final int numPorts, final boolean optionalInPorts) {
+		this((optionalInPorts)
+				? FlowControlHelpers.createEndInPorts(BufferedDataTable.TYPE, numPorts)
+				: FlowControlHelpers.createStartOutPorts(BufferedDataTable.TYPE, numPorts),
+				FlowControlHelpers.createStartOutPorts(BufferedDataTable.TYPE, numPorts));
+	}
 
-		super((optionalInPorts) ? FlowControlHelpers.createEndInPorts(
-				BufferedDataTable.TYPE, numPorts) : FlowControlHelpers
-				.createStartOutPorts(BufferedDataTable.TYPE, numPorts),
-				FlowControlHelpers.createStartOutPorts(BufferedDataTable.TYPE,
-						numPorts));
-		m_NumPorts = numPorts;
-		m_resultContainer = new BufferedDataContainer[numPorts];
-		m_settings = new AbstractMultiPortLoopEndSettings(numPorts);
-		m_emptyTable = new BufferedDataTable[numPorts];
+	protected AbstractMultiPortLoopEndNodeModel(final PortType[] inPortTypes,
+			final PortType[] outPortTypes) {
+		super(inPortTypes, outPortTypes);
+		m_NumPorts = inPortTypes.length;
+		m_resultContainer = new ConcatenatingTablesCollector[inPortTypes.length];
+		m_settings = new AbstractMultiPortLoopEndSettings(inPortTypes.length);
+		// m_emptyTable = new BufferedDataTable[inPortTypes.];
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData,
-			final ExecutionContext exec) throws Exception {
-		if (!(this.getLoopStartNode() instanceof LoopStartNodeTerminator)) {
-			throw new IllegalStateException(
-					"No matching loop start node found!");
-		}
-
-		// final IntCell currIterCell = new IntCell(m_currentIteration);
+	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
+			throws Exception {
+		validateLoopStartNode();
 
 		// Handle whatever data tables we find in the current iteration
 		for (int i = 0; i < m_NumPorts; i++) {
-			if (inData[i] != null) {
-				if (m_settings.ignoreEmptyTables(i)
-						&& ((BufferedDataTable) inData[i]).size() < 1) {
-					if (m_emptyTable[i] == null) {
-						m_emptyTable[i] = (BufferedDataTable) inData[i];
-					}
-				} else if (m_resultContainer[i] == null) {
-					m_resultContainer[i] = exec
-							.createDataContainer(createOutputTableSpec(inData[i]));
-				}
+			if (m_currentIteration == 0 || m_resultContainer[i] == null) {
+				m_resultContainer[i] = new ConcatenatingTablesCollector(
+						m_settings.ignoreEmptyTables(i), m_settings.getAddIterationColumn(i),
+						m_settings.allowChangingColumnTypes(i),
+						m_settings.allowChangingTableSpecs(i),
+						Optional.of(m_settings.getRowKeyPolicy(i)), Optional.of(i));
+			}
 
-				if (!m_settings.ignoreEmptyTables(i)
-						|| ((BufferedDataTable) inData[i]).size() > 0) {
-					if (!(createOutputTableSpec(inData[i]))
-							.equalStructure(m_resultContainer[i].getTableSpec())) {
-						// The output table does not match the existing spec
-						String error = getComparisonMessage(
-								createOutputTableSpec(inData[i]),
-								m_resultContainer[i].getTableSpec(), i);
-						for (String errorLine : error.split(";[\\s]*")) {
-							// Report the problem(s) to the console in a
-							// multi-line format
-							logger.error(errorLine);
-						}
-						// And throw an error
-						throw new IllegalArgumentException(error);
+			if (inData[i] != null) {
+				try {
+					m_resultContainer[i].appendTable((BufferedDataTable) inData[i], exec);
+				} catch (IllegalArgumentException e) {
+					for (String errorLine : e.getMessage().split(";[\\s]*")) {
+						// Report the problem(s) to the console in a
+						// multi-line format
+						logger.error(errorLine);
 					}
-					for (DataRow row : (BufferedDataTable) inData[i]) {
-						// Now we add the rows from the current iteration to the
-						// output port
-						AppendedColumnRow newRow = getNewRow(row);
-						m_resultContainer[i].addRowToTable(newRow);
-					}
+					// And throw the error
+					throw e;
+
 				}
-			} else {
-				// Put an empty table in the output for missing ports
-				m_resultContainer[i] = exec
-						.createDataContainer(new DataTableSpec());
 			}
 		}
 
 		// Now check whether we are at the end of the loop
 		if (((LoopStartNodeTerminator) this.getLoopStartNode()).terminateLoop()) {
-			final PortObject[] outTables = new PortObject[m_NumPorts];
-			for (int i = 0; i < m_NumPorts; i++) {
-				if (inData[i] == null) {
-					if (m_settings.inactivateDisconnectedBranches()) {
-						outTables[i] = InactiveBranchPortObject.INSTANCE;
-					} else {
-						m_resultContainer[i].close();
-						outTables[i] = m_resultContainer[i].getTable();
-					}
-				} else {
-					if (m_settings.ignoreEmptyTables(i)
-							&& m_resultContainer[i] == null) {
-						outTables[i] = m_emptyTable[i];
-					} else {
-						m_resultContainer[i].close();
-						outTables[i] = m_resultContainer[i].getTable();
-					}
-				}
+			boolean[] portsConnected = new boolean[inData.length];
+			for (int i = 0; i < inData.length; i++) {
+				portsConnected[i] = inData[i] != null;
 			}
-
-			// Finally, do a reset to restore the interation counter and result
-			// container
-			reset();
-			return outTables;
+			return endLoopExecution(portsConnected, exec);
 		} else {
-			continueLoop();
-			m_currentIteration++;
-			return new BufferedDataTable[m_NumPorts];
+			return continueLoopExecution();
 		}
 
 	}
 
 	/**
-	 * Utility function to generate a new output {@link DataRow} taking into
-	 * account the addIterationColumn and uniqueRowIDs settings.
-	 * 
-	 * @param row
-	 *            {@link DataRow} to generate new {@link DataRow} from
-	 * @return the new output {@link DataRow}
+	 * @return
 	 */
-	private AppendedColumnRow getNewRow(final DataRow row) {
-		RowKey newRowKey = getNewRowKey(row);
-		return new AppendedColumnRow(newRowKey, row, new DefaultRow(newRowKey,
-				new IntCell(m_currentIteration)),
-				new boolean[] { m_settings.addIterationColumn() });
+	protected PortObject[] continueLoopExecution() {
+		continueLoop();
+		m_currentIteration++;
+		return new BufferedDataTable[m_NumPorts];
 	}
 
 	/**
-	 * Utility function to get a new {@link RowKey}, taking into account the
-	 * uniqueRowIDs setting.
-	 * 
-	 * @param row
-	 *            {@link DataRow} to generate new {@link RowKey} from
-	 * @return the new {@link RowKey}
+	 * @throws IllegalStateException
+	 *             if the loop start node is incorrect
 	 */
-	private RowKey getNewRowKey(final DataRow row) {
-		return (m_settings.uniqueRowIDs()) ? new RowKey(row.getKey() + "_Iter#"
-				+ m_currentIteration) : row.getKey();
+	protected void validateLoopStartNode() throws IllegalStateException {
+		if (!(this.getLoopStartNode() instanceof LoopStartNodeTerminator)) {
+			throw new IllegalStateException("No matching loop start node found!");
+		}
+	}
+
+	/**
+	 * Method called after incoming tables have been processed for what is then
+	 * found to be the final time
+	 * 
+	 * @param inData
+	 *            Are the incoming ports connected?
+	 * @param exec
+	 *            The execution context
+	 * @return The out-going port objects
+	 * @throws CanceledExecutionException
+	 * @throws DuplicateKeyException
+	 * @throws IOException
+	 */
+	protected PortObject[] endLoopExecution(final boolean[] inConnected,
+			final ExecutionContext exec)
+			throws CanceledExecutionException, DuplicateKeyException, IOException {
+		final PortObject[] outTables = new PortObject[m_NumPorts];
+		for (int i = 0; i < m_NumPorts; i++) {
+			if (!inConnected[i]) {
+				if (m_settings.inactivateDisconnectedBranches()) {
+					outTables[i] = InactiveBranchPortObject.INSTANCE;
+				} else {
+					outTables[i] = m_resultContainer[i].createTable(exec);
+				}
+			} else {
+				outTables[i] = m_resultContainer[i].createTable(exec);
+			}
+		}
+
+		// Finally, do a reset to restore the interation counter and result
+		// container
+		reset();
+		return outTables;
 	}
 
 	/**
@@ -251,179 +221,16 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements
 	 * 
 	 * @param inSpec
 	 *            the in spec
+	 * @param portId
 	 * @return The {@link DataTableSpec} for the output port
 	 */
-	private DataTableSpec createOutputTableSpec(final PortObjectSpec inSpec) {
-		return (m_settings.addIterationColumn()) ? new DataTableSpec(
-				(DataTableSpec) inSpec, new DataTableSpec(
-						(new DataColumnSpecCreator(
-								DataTableSpec.getUniqueColumnName(
-										((DataTableSpec) inSpec), "Iteration"),
-								IntCell.TYPE)).createSpec()))
+	private DataTableSpec createOutputTableSpec(final PortObjectSpec inSpec, int portId) {
+		return (m_settings.getAddIterationColumn(portId)) ? new DataTableSpec(
+				(DataTableSpec) inSpec,
+				new DataTableSpec((new DataColumnSpecCreator(
+						DataTableSpec.getUniqueColumnName(((DataTableSpec) inSpec), "Iteration"),
+						IntCell.TYPE)).createSpec()))
 				: ((DataTableSpec) inSpec);
-	}
-
-	/**
-	 * Utility function to generate output table {@link DataTableSpec} from a
-	 * {@link PortObject}, taking into account the addIterationColumn setting.
-	 * 
-	 * @param inData
-	 *            The {@link PortObject}
-	 * @return The {@link DataTableSpec} for the output port
-	 */
-	private DataTableSpec createOutputTableSpec(final PortObject inData) {
-		PortObjectSpec inSpec = ((BufferedDataTable) inData).getDataTableSpec();
-		return createOutputTableSpec(inSpec);
-	}
-
-	/**
-	 * Utility function to generate meaningful description of the nature of a
-	 * mis-match between two {@link DataTableSpec}s.
-	 * 
-	 * @param dataTableSpec0
-	 *            The first {@link DataTableSpec}
-	 * @param dataTableSpec1
-	 *            The second {@link DataTableSpec}
-	 * @param portIndex
-	 *            the port index
-	 * @return Description of the mis-match
-	 */
-	@SuppressWarnings("unchecked")
-	private String getComparisonMessage(final DataTableSpec dataTableSpec0,
-			final DataTableSpec dataTableSpec1, final int portIndex) {
-
-		int colcnt0 = dataTableSpec0.getNumColumns();
-		int colcnt1 = dataTableSpec1.getNumColumns();
-
-		ArrayList<String> colNames0 = new ArrayList<String>(
-				Arrays.asList(dataTableSpec0.getColumnNames()));
-		ArrayList<String> colNames1 = new ArrayList<String>(
-				Arrays.asList(dataTableSpec1.getColumnNames()));
-
-		StringBuilder sb = new StringBuilder(
-				"Tables have different specs; Iteration #")
-				.append(m_currentIteration).append(", Port ").append(portIndex)
-				.append("; ");
-
-		boolean typesChanged = false;
-		int movedCols = 0;
-		// List moved columns including type changes different types and
-		// re-typed columns
-		for (String colName : colNames0) {
-			// Index of colName in 1st table
-			int colIndex0 = colNames0.indexOf(colName);
-			// Index of colName in 2nd table - -1 if not present
-			int colIndex1 = colNames1.indexOf(colName);
-			if (colIndex0 != colIndex1 && colIndex1 >= 0) {
-				// column has moved
-				movedCols++;
-				sb.append("Column moved: [").append(colName).append("] from ")
-						.append(colIndex0);
-				sb.append(getOrdinalSuffix(colIndex0)).append(" to ");
-				sb.append(colIndex1).append(getOrdinalSuffix(colIndex1))
-						.append(" position");
-				// Now check the types are the same for the moved columns
-				if (!dataTableSpec0.getColumnSpec(colName).equalStructure(
-						dataTableSpec1.getColumnSpec(colName))) {
-					sb.append(" (types also changed - ")
-							.append(dataTableSpec0.getColumnSpec(colName)
-									.getType())
-							.append(" to ")
-							.append(dataTableSpec1.getColumnSpec(colName)
-									.getType()).append(")); ");
-					typesChanged = true;
-				} else {
-					sb.append(" (types unchanged); ");
-				}
-			} else if (colNames0.indexOf(colName) == colNames1.indexOf(colName)) {
-				// Check that the type is unchanged if the column has not moved
-				if (!dataTableSpec0.getColumnSpec(colName).equalStructure(
-						dataTableSpec1.getColumnSpec(colName))) {
-					sb.append("Column re-typed: [")
-							.append(colName)
-							.append("] - ")
-							.append(dataTableSpec0.getColumnSpec(colName)
-									.getType())
-							.append(" to ")
-							.append(dataTableSpec1.getColumnSpec(colName)
-									.getType()).append("; ");
-					typesChanged = true;
-				}
-			}
-
-		}
-
-		if (colNames0.containsAll(colNames1)
-				&& colNames1.containsAll(colNames0)) {
-			// Simple cases....
-			sb.append("Summary: ");
-			if (movedCols > 0) {
-				// Just a re-arrangement
-				sb.append("Columns re-ordered");
-				if (typesChanged) {
-					// with or without re-typing
-					sb.append(" with type changes");
-				}
-			} else {
-				// Just a re-typing
-				sb.append("Column type change(s)");
-			}
-			return sb.toString();
-		}
-
-		// Now we have something more complicated - which will be some added or
-		// lost columns. We've already listed columns which have moved or been
-		// re-typed
-		// so now we need to deal with those lost or added
-		// First deal with different numbers of columns
-		if (colcnt0 != colcnt1) {
-			sb.append("Tables have different number of columns: ")
-					.append(colcnt0).append(" vs. ").append(colcnt1)
-					.append("; ");
-		}
-
-		// List all lost columns
-		ArrayList<String> temp = (ArrayList<String>) colNames0.clone();
-		temp.removeAll(colNames1);
-		for (String colName : temp) {
-			sb.append("Column lost: ").append(colName).append("; ");
-		}
-
-		// Now list added columns
-		temp = (ArrayList<String>) colNames1.clone();
-		temp.removeAll(colNames0);
-		for (String colName : temp) {
-			sb.append("Column added: ").append(colName).append(" (")
-					.append(dataTableSpec1.getColumnSpec(colName).getType())
-					.append("); ");
-		}
-		sb.append("Summary: Complex changes to table structure");
-		return sb.toString();
-	}
-
-	/**
-	 * Routine to return correct ordinal number text suffix (th, st, nd, rd) for
-	 * a given integer.
-	 * 
-	 * @param number
-	 *            The number to process
-	 * @return th, st, nd or rd, depending on the last digit of number
-	 */
-	private String getOrdinalSuffix(final int number) {
-		if (number >= 11 & number <= 13) {
-			// These are irregular and all are 'th'
-			return "th";
-		}
-		switch (number % 10) {
-		case 1:
-			return "st";
-		case 2:
-			return "nd";
-		case 3:
-			return "rd";
-		default:
-			return "th";
-		}
 	}
 
 	/**
@@ -432,7 +239,7 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements
 	@Override
 	protected void reset() {
 		// restore the interation counter and result container
-		m_resultContainer = new BufferedDataContainer[m_NumPorts];
+		m_resultContainer = new ConcatenatingTablesCollector[m_NumPorts];
 		m_currentIteration = 0;
 	}
 
@@ -447,11 +254,11 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements
 		for (int i = 0; i < m_NumPorts; i++) {
 			if (inSpecs[i] != null) {
 				if (!m_settings.ignoreEmptyTables(i)) {
-					m_specs[i] = createOutputTableSpec(inSpecs[i]);
+					m_specs[i] = createOutputTableSpec(inSpecs[i], i);
 				}
 			} else {
-				m_specs[i] = (m_settings.inactivateDisconnectedBranches()) ? InactiveBranchPortObjectSpec.INSTANCE
-						: new DataTableSpec();
+				m_specs[i] = (m_settings.inactivateDisconnectedBranches())
+						? InactiveBranchPortObjectSpec.INSTANCE : new DataTableSpec();
 			}
 		}
 		return m_specs;
@@ -480,11 +287,9 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 		// We just try loading
-		AbstractMultiPortLoopEndSettings s = new AbstractMultiPortLoopEndSettings(
-				m_NumPorts);
+		AbstractMultiPortLoopEndSettings s = new AbstractMultiPortLoopEndSettings(m_NumPorts);
 		s.loadSettings(settings);
 	}
 
@@ -492,9 +297,8 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 
 	}
 
@@ -502,9 +306,8 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 	}
 
 }
