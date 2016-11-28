@@ -18,59 +18,59 @@
          point="org.knime.workbench.repository.nodes">
       <node
             category-path="/community/vernalis/testing/"
-            factory-class="com.vernalis.knime.perfmon.nodes.memoryuse.MemoryUsageNodeFactory">
+            factory-class="com.vernalis.knime.perfmon.nodes.memoryuse.MemoryUsageNodeFactory" id="1">
       </node>
       <node
             category-path="/community/vernalis/testing/benchmarking"
-            factory-class="com.vernalis.knime.perfmon.nodes.loopstart.timing.PerfMonTimingStartNodeFactory"/>
+            factory-class="com.vernalis.knime.perfmon.nodes.loopstart.timing.PerfMonTimingStartNodeFactory" id="2"/>
       <node
             category-path="/community/vernalis/testing/benchmarking"
-            factory-class="com.vernalis.knime.perfmon.nodes.loopstart.timing.PerfMonTiming2PortStartNodeFactory">
+            factory-class="com.vernalis.knime.perfmon.nodes.loopstart.timing.PerfMonTiming2PortStartNodeFactory" id="3">
       </node>
       <node
             category-path="/community/vernalis/testing/benchmarking"
-            factory-class="com.vernalis.knime.perfmon.nodes.loopstart.timing.PerfMonTiming3PortStartNodeFactory">
+            factory-class="com.vernalis.knime.perfmon.nodes.loopstart.timing.PerfMonTiming3PortStartNodeFactory" id="4">
       </node>
       <node
             category-path="/community/vernalis/testing/benchmarking"
-            factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.PerfMonTimingEndNodeFactory">
+            factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.PerfMonTimingEndNodeFactory" id="5">
       </node>
       <node
             category-path="/community/vernalis/testing/benchmarking"
-            factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.PerfMonTimingEnd2PortNodeFactory">
+            factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.PerfMonTimingEnd2PortNodeFactory" id="6">
       </node>
       <node
             category-path="/community/vernalis/testing/benchmarking"
-            factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.PerfMonTimingEnd3PortNodeFactory">
+            factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.PerfMonTimingEnd3PortNodeFactory" id="7">
       </node>
       <node
             category-path="/community/vernalis/testing/benchmarking"
-            factory-class="com.vernalis.knime.perfmon.nodes.loopstart.timing.memory.PerfMemMonTiming1PortStartNodeFactory">
+            factory-class="com.vernalis.knime.perfmon.nodes.loopstart.timing.memory.PerfMemMonTiming1PortStartNodeFactory" id="8">
       </node>
            <node
             category-path="/community/vernalis/testing/benchmarking"
-            factory-class="com.vernalis.knime.perfmon.nodes.loopstart.timing.memory.PerfMemMonTiming2PortStartNodeFactory">
+            factory-class="com.vernalis.knime.perfmon.nodes.loopstart.timing.memory.PerfMemMonTiming2PortStartNodeFactory" id="9">
       </node>
            <node
             category-path="/community/vernalis/testing/benchmarking"
-            factory-class="com.vernalis.knime.perfmon.nodes.loopstart.timing.memory.PerfMemMonTiming3PortStartNodeFactory">
+            factory-class="com.vernalis.knime.perfmon.nodes.loopstart.timing.memory.PerfMemMonTiming3PortStartNodeFactory" id="10">
       </node>
       <node
             category-path="/community/vernalis/testing/benchmarking"
-            factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.memory.PerfMemMonTiming1PortEndNodeFactory">
+            factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.memory.PerfMemMonTiming1PortEndNodeFactory" id="11">
       </node>
        <node
             category-path="/community/vernalis/testing/benchmarking"
-            factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.memory.PerfMemMonTiming2PortEndNodeFactory">
+            factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.memory.PerfMemMonTiming2PortEndNodeFactory" id="12">
       </node>
        <node
             category-path="/community/vernalis/testing/benchmarking"
-            factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.memory.PerfMemMonTiming3PortEndNodeFactory">
+            factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.memory.PerfMemMonTiming3PortEndNodeFactory" id="13">
       </node>
       <node
             category-path="/community/vernalis/testing/"
             deprecated="false"
-            factory-class="com.vernalis.knime.perfmon.nodes.testing.missingvals.EmptyColumnTestNodeFactory">
+            factory-class="com.vernalis.knime.perfmon.nodes.testing.missingvals.EmptyColumnTestNodeFactory" id="14">
       </node>
    </extension>
    <extension
