@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <!-- This is an example for providing an own category 
+      <extension
+         point="org.knime.workbench.repository.categories">
+      <category
+            description="Category containing my nodes"
+            icon="icons/default.png"
+            level-id="myNodes"
+            name="My nodes"
+            path="/"/>
+   </extension>
+   -->
+   
+   <extension
+         point="org.knime.workbench.repository.nodes">
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.chirality.ChiralFilterNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.chirality.ChiralSplitterNodeFactory"/>
+      
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.brokenbonds.BrokenBondsFilterNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.brokenbonds.BrokenBondsSplitterNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/manipulate"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.hacdesalt.SmilesHACLargestComponentDesaltNodeFactory"/>
+       <node
+            category-path="/community/vernalis/speedy/manipulate"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.stereo.enumerate.SimpleSpeedySmilesStereoenumerateNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/speedy/manipulate"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.stereo.invert.StereoInvertNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/props"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.count.hac.SmilesHACNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/props"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.count.elem.SmilesElemCountNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/props"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.count.charge.SmilesChargeCountNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.multicomponent.MulticomponentFilterNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.multicomponent.MulticomponentSplitterNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/props"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.count.chiralcentres.SmilesChiralCentreCountNodeFactory">
+      </node>
+        <node
+            category-path="/community/vernalis/speedy/props"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.count.diastereomers.StereoisomerCountNodeFactory"/>
+        <node
+              category-path="/community/vernalis/speedy/props"
+              deprecated="false"
+              factory-class="com.vernalis.knime.chem.speedysmiles.nodes.count.components.SpeedySmilesComponentCountNodeFactory">
+        </node>
+        <node
+              category-path="/community/vernalis/speedy/props"
+              deprecated="false"
+              factory-class="com.vernalis.knime.chem.speedysmiles.nodes.count.rings.SpeedySmilesRingCountNodeFactory">
+        </node>
+   </extension>
+   <extension
+         point="org.knime.workbench.repository.categories">
+      <category
+            icon="icons/SpeedySMILES.png"
+            level-id="speedy"
+            name="Speedy SMILES"
+            path="/community/vernalis/">
+      </category>
+      <category
+            icon="icons/SpeedySMILESprops.png"
+            level-id="props"
+            name="Properties"
+            path="/community/vernalis/speedy/">
+      </category>
+      <category
+            icon="icons/SpeedySMILESmanip.png"
+            level-id="manipulate"
+            name="Manipulations"
+            path="/community/vernalis/speedy/">
+      </category>
+      <category
+            icon="icons/SpeedySMILESfilters.png"
+            level-id="filters"
+            name="Filters"
+            path="/community/vernalis/speedy/">
+      </category>
+   </extension>
+   
+</plugin>
