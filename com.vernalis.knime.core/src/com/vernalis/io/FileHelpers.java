@@ -411,6 +411,7 @@ public class FileHelpers {
 			return output.toString();
 		} catch (Exception e) {
 			// e.printStackTrace();
+			logger.info(e.getMessage());
 			return null;
 		}
 	}
