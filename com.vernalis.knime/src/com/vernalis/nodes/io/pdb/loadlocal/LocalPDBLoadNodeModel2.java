@@ -38,7 +38,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 
-import com.vernalis.io.FileDownloadException;
+import com.vernalis.io.FileEncodingWithGuess;
 import com.vernalis.io.FileHelpers;
 
 /**
@@ -111,17 +111,13 @@ public class LocalPDBLoadNodeModel2 extends SimpleStreamableFunctionNodeModel {
 				// Only load up pdb files, but allow them to be g-zipped
 				if (urlToRetrieve.toLowerCase().endsWith(".pdb")
 						|| urlToRetrieve.toLowerCase().endsWith(".pdb.gz")) {
-					String r;
-					try {
-						r = FileHelpers.readURLToString(urlToRetrieve);
-					} catch (FileDownloadException e) {
-						logger.warn("Unable to download file "
-								+ ((StringValue) pathcell).getStringValue() + "; Skipping row...",
-								e);
-						r = null;
-					}
-					if (!(r == null || "".equals(r))) {
+					String r = FileHelpers.readURLToString(urlToRetrieve,
+							FileEncodingWithGuess.GUESS);
+					if (r != null && !r.isEmpty()) {
 						return PdbCellFactory.create(r);
+					} else {
+						logger.warn("Unable to download file URL '" + urlToRetrieve
+								+ "'; Skipping row...");
 					}
 				}
 				return DataType.getMissingCell();
