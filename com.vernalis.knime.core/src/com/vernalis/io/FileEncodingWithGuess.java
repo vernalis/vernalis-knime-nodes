@@ -20,7 +20,7 @@ import org.knime.core.node.util.ButtonGroupEnumInterface;
  * A {@link ButtonGroupEnumInterface} to provide file encoding options,
  * including 'guess'
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public enum FileEncodingWithGuess implements ButtonGroupEnumInterface {

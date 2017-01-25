@@ -51,7 +51,7 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.TimedNodeType;
  * Abtsract class for the Wait nodes. Subclasses should implement
  * {@link RunForTime} or {@link RunToTime}.
  * 
- * @author S.Roughley <s.roughley@vernalis.com>
+ * @author S.Roughley knime@vernalis.com
  * 
  */
 public class AbstractWaitNodeModel extends NodeModel {

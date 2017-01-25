@@ -23,7 +23,7 @@ import com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMulti
 /**
  * {@link NodeFactory} for the Molecule Fragment node
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public class RdkitMMPFragmentNodeFactory extends

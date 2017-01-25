@@ -25,7 +25,7 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.loopstart.Abstrac
  * <code>NodeFactory</code> for the "LoopStartChunkToTime" Node. Loop start node
  * to chunk table into block and run until a specified time of day has past
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 public class LoopStartChunkForTimeNodeFactory extends
 		NodeFactory<AbstractChunkTimedLoopStartNodeModel> {

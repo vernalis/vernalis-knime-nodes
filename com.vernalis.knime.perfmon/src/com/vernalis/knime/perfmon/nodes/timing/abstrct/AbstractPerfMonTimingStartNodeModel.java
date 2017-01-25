@@ -43,7 +43,7 @@ import com.vernalis.knime.perfmon.PerformanceMonitoringLoopStart;
  * This is the model implementation of Performance TimingStart. Loop start for
  * execution timing
  * 
- * @author S. Roughley <s.roughley@vernalis.com>
+ * @author S. Roughley knime@vernalis.com
  */
 public class AbstractPerfMonTimingStartNodeModel extends NodeModel implements
 		PerformanceMonitoringLoopStart {

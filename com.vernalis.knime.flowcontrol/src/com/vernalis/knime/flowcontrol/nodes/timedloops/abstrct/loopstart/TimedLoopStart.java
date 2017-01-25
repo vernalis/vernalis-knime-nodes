@@ -26,7 +26,7 @@ import org.knime.core.node.ExecutionContext;
  * methods are required to be implemented so that the timed loop end nodes can
  * use them.
  * 
- * @author Stephen Roughley <s.roughley@vernalis.com>
+ * @author Stephen Roughley knime@vernalis.com
  * 
  */
 public interface TimedLoopStart {

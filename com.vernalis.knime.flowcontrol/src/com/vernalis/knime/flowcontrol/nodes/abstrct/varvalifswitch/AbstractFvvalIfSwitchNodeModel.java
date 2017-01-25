@@ -39,7 +39,7 @@ import com.vernalis.knime.flowcontrol.FlowControlHelpers;
 /**
  * This is shared NodeModel implementation of the if switch flow var value nodes
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 

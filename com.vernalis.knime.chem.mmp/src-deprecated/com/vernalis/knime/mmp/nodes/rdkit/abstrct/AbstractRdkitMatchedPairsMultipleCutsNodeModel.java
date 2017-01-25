@@ -83,7 +83,7 @@ import com.vernalis.knime.mmp.RDKitUtils;
  * {@link #configure(DataTableSpec[])} implementation. Subclasses must intialise
  * the {@link #m_Logger}.
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends NodeModel {

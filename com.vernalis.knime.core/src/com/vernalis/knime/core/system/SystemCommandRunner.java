@@ -22,7 +22,7 @@ import java.io.InputStreamReader;
  * Class providing methods to run a command on the operating system and capture
  * the results of running the command
  * 
- * @author S. Roughley <s.roughley@vernalis.com>
+ * @author S. Roughley knime@vernalis.com
  * 
  */
 public class SystemCommandRunner {

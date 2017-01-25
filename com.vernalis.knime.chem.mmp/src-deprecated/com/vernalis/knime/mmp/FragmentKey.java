@@ -26,7 +26,7 @@ import org.knime.core.data.def.DoubleCell;
  * A simple class to hold the fragment key as an ArrayList, which is then sorted
  * and concatenated to a multicomponent SMILES
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public class FragmentKey implements Comparable<FragmentKey> {

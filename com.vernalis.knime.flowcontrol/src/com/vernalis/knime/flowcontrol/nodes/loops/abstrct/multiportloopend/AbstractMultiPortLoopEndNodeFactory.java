@@ -22,7 +22,7 @@ import org.knime.core.node.NodeView;
  * <code>NodeFactory</code> for the "AbstractMultiPortLoopEnd" Node. Loop end
  * node to handle optional input ports n
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 public abstract class AbstractMultiPortLoopEndNodeFactory extends
 		NodeFactory<AbstractMultiPortLoopEndNodeModel> {

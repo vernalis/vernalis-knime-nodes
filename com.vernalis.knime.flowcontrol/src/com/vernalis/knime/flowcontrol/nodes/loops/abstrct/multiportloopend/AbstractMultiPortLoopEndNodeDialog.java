@@ -43,7 +43,7 @@ import org.knime.core.node.NotConfigurableException;
  * 
  * This node dialog derives from {@link AbstractLoopEndNodeDialog}.
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 public class AbstractMultiPortLoopEndNodeDialog extends NodeDialogPane {
 	/** The node settings */

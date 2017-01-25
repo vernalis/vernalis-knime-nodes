@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Text;
  * {@link FieldEditorPreferencePage}. Based very closely on the
  * {@link IntegerFieldEditor}
  * 
- * @author S. Roughley <s.roughley@vernalis.com>
+ * @author S. Roughley knime@vernalis.com
  * 
  */
 public class DoubleFieldEditor extends StringFieldEditor {

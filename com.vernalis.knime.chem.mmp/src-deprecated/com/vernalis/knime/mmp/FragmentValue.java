@@ -26,7 +26,7 @@ import org.knime.core.data.def.StringCell;
  * Simple container class to hold an ID string and SMILES String together and
  * allow comparison and sorting for use in HashSet etc
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public class FragmentValue implements Comparable<FragmentValue> {

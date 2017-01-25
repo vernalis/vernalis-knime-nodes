@@ -19,7 +19,7 @@ import org.knime.core.node.util.ButtonGroupEnumInterface;
 /**
  * enum for the missing value policy for flow variable based timed loop starts.
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public enum TimedMissingValuePolicy implements ButtonGroupEnumInterface {

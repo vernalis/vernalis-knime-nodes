@@ -63,7 +63,7 @@ import org.knime.core.util.SimpleFileFilter;
  * selected files. A dropdown with files from history is also provided, and
  * optional flow variable model button and Title, border, and captions
  * 
- * @author s.roughley <s.roughley@vernalis.com>
+ * @author s.roughley knime@vernalis.com
  * 
  */
 public class DialogComponentListFilesSelector extends DialogComponent {

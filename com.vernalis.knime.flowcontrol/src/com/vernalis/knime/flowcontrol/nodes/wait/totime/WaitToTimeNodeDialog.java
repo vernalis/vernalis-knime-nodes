@@ -26,7 +26,7 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.loopstart.Abstrac
  * complex dialog please derive directly from
  * {@link org.knime.core.node.NodeDialogPane}.
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 public class WaitToTimeNodeDialog extends AbstractTimedLoopStartNodeDialog {
 

@@ -24,7 +24,7 @@ import com.vernalis.knime.flowcontrol.nodes.abstrct.fvendswitch.AbstractFlowVarE
  * <code>NodeFactory</code> for the "FlowVarEndIf" Node. Flow Variable End If
  * node to collect inactive and active branches and return an active port
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 public class FlowVarEndIfNodeFactory extends
 		NodeFactory<AbstractFlowVarEndSwitchNodeModel> {

@@ -24,7 +24,7 @@ import com.vernalis.knime.flowcontrol.nodes.wait.abstrct.AbstractWaitNodeModel;
 /**
  * <code>NodeFactory</code> for the Wait For Time node
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 public class WaitForTimeNodeFactory extends NodeFactory<AbstractWaitNodeModel> {
 

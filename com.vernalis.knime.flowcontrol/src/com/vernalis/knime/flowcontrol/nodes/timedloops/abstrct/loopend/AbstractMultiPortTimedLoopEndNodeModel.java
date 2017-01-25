@@ -33,7 +33,7 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.loopstart.Abstrac
  * This is the model implementation of AbstractMultiPortLoopEnd. Loop end node
  * to handle optional input ports n
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 public class AbstractMultiPortTimedLoopEndNodeModel extends AbstractMultiPortLoopEndNodeModel
 		implements LoopEndNode {

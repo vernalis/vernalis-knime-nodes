@@ -52,7 +52,7 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.loopstart.Abstrac
 /**
  * Variable Timed Loop End NodeModel implementatin
  * 
- * @author S.Roughley <s.roughley@vernalis.com>
+ * @author S.Roughley knime@vernalis.com
  */
 public class VariableTimedLoopEndNodeModel extends NodeModel implements
 		LoopEndNode {

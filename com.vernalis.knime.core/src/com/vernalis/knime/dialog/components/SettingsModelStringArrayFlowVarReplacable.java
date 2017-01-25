@@ -32,7 +32,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
  * must be a valid regex, as it is used during deserialisation in
  * {@link String#split(String)}
  * 
- * @author "Steve Roughley <s.roughley@vernalis.com>"
+ * @author "Steve Roughley knime@vernalis.com"
  * 
  */
 public class SettingsModelStringArrayFlowVarReplacable extends

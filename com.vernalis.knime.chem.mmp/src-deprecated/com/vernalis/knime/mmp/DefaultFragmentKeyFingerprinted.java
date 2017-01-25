@@ -39,7 +39,7 @@ import org.knime.core.data.vector.bitvector.SparseBitVectorCellFactory;
  * constructors with the required settings for fingerprint generation, or their
  * default values, which over-ride or call the three provided constructors.
  * 
- * @author Steve Roughley <s.roughley@vernalis.com>
+ * @author Steve Roughley knime@vernalis.com
  * 
  */
 public abstract class DefaultFragmentKeyFingerprinted extends FragmentKey

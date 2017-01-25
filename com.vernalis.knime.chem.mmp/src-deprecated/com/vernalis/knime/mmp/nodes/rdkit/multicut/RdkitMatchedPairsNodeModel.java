@@ -62,7 +62,7 @@ import com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMulti
 /**
  * {@link NodeModel} implementation for the MMP node
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public class RdkitMatchedPairsNodeModel extends AbstractRdkitMatchedPairsMultipleCutsNodeModel {

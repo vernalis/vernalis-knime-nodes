@@ -18,7 +18,7 @@ package com.vernalis.exceptions;
  * Runtime Exception to allow passing of the error upwards within a
  * ColumnRearranger so that the Row information may be attached
  * 
- * @author Stephen Roughley <s.roughley@vernalis.com>
+ * @author Stephen Roughley knime@vernalis.com
  * 
  */
 @SuppressWarnings("serial")

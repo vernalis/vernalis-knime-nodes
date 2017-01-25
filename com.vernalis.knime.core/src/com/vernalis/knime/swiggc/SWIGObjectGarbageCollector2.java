@@ -32,7 +32,7 @@ import org.knime.core.node.NodeLogger;
  * /org/rdkit/knime/nodes/AbstractRDKitNodeModel.java but is heavily refactored
  * to implement reference counting
  * 
- * @author S Roughley <s.roughley@vernalis.com>
+ * @author S Roughley knime@vernalis.com
  * 
  */
 public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>

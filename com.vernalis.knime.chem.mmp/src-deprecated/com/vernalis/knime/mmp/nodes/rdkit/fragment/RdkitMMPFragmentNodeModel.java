@@ -49,7 +49,7 @@ import com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMulti
 /**
  * The {@link NodeModel} implementation for the MMP Molecule Fragment node
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public class RdkitMMPFragmentNodeModel extends AbstractRdkitMatchedPairsMultipleCutsNodeModel {

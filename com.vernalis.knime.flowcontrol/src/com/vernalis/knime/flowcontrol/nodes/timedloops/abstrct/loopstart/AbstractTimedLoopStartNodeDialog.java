@@ -35,7 +35,7 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.TimedMissingValue
  * Abstract Node Dialog class for Timed Loop start nodes. Provides methods for
  * adding dialog panes and creating settings models.
  * 
- * @author S.Roughley <s.roughley@vernalis.com>
+ * @author S.Roughley knime@vernalis.com
  * 
  */
 public abstract class AbstractTimedLoopStartNodeDialog extends

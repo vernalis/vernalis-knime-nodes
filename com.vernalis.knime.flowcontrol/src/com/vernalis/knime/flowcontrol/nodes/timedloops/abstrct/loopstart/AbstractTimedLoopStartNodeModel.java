@@ -75,7 +75,7 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.TimedNodeType;
  * set m_inspec.
  * </p>
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public abstract class AbstractTimedLoopStartNodeModel extends NodeModel

@@ -36,7 +36,7 @@ import com.vernalis.knime.mmp.MolFormats;
 /**
  * Node Dialog implementation for the MMP and Fragmentation nodes.
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends

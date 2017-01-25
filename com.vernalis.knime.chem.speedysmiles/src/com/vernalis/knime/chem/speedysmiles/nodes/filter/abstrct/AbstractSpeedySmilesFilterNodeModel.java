@@ -161,6 +161,7 @@ public abstract class AbstractSpeedySmilesFilterNodeModel extends NodeModel {
 				} else if (drop != null) {
 					drop.push(row);
 				}
+				continue;
 			}
 
 			if (rowMatches(smi) == m_keepMatches.getBooleanValue()) {

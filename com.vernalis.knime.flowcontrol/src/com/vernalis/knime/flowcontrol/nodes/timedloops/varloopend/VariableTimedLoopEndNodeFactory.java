@@ -21,7 +21,7 @@ import org.knime.core.node.NodeView;
 /**
  * A factory for creating VariableTimedLoopEndNode Nodes.
  * 
- * @author S.Roughley <s.roughley@vernalis.com>
+ * @author S.Roughley knime@vernalis.com
  */
 public class VariableTimedLoopEndNodeFactory extends NodeFactory<VariableTimedLoopEndNodeModel> {
 

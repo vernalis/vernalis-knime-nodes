@@ -28,7 +28,7 @@ import org.knime.core.data.vector.bitvector.SparseBitVectorCell;
  * environment fingerprinted {@link FragmentKey}s. Implementations should
  * sub-class {@link FragmentKey}.
  * 
- * @author Steve Roughley <s.roughley@vernalis.com>
+ * @author Steve Roughley knime@vernalis.com
  * 
  */
 public interface FragmentKeyFingerprinted {

@@ -24,7 +24,7 @@ import com.vernalis.knime.flowcontrol.nodes.loops.abstrct.multiportloopend.Abstr
  * Abstract <code>NodeFactory</code> for the Timed Loop End nodes Node. Loop End
  * node for timed loops, exposing unprocessed rows in the last output port
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 public abstract class AbstractMultiPortTimedLoopEndNodeFactory extends
 		NodeFactory<AbstractMultiPortTimedLoopEndNodeModel> {

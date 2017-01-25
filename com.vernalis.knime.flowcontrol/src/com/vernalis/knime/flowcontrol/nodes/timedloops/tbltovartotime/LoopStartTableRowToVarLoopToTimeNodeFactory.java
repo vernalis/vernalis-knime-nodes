@@ -25,7 +25,7 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.loopstart.Abstrac
  * <code>NodeFactory</code> for the "LoopStartTableRowToVarLoopToTime" Node. A
  * table row to variable loop start node with Run-to-time option
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 public class LoopStartTableRowToVarLoopToTimeNodeFactory extends
 		NodeFactory<AbstractVariableTimedLoopStartNodeModel> {

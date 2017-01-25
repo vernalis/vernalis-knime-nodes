@@ -17,7 +17,7 @@ package com.vernalis.knime.flowcontrol.nodes.loops.abstrct.multiportloopend;
 /**
  * Enum for the options for Row Key policies in loop end
  * 
- * @author S.Roughley <s.roughley@vernalis.com>
+ * @author S.Roughley knime@vernalis.com
  *
  */
 public enum RowPolicies {

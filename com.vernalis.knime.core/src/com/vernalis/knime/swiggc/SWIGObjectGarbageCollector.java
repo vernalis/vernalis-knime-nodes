@@ -33,7 +33,7 @@ import org.knime.core.node.NodeLogger;
  * org/svn/nodes4knime/trunk/org.rdkit/org.rdkit.knime.nodes/src
  * /org/rdkit/knime/nodes/AbstractRDKitNodeModel.java
  * 
- * @author S Roughley <s.roughley@vernalis.com>
+ * @author S Roughley knime@vernalis.com
  * 
  */
 // TODO: Can we save some messing around using a HashSet<Object>?

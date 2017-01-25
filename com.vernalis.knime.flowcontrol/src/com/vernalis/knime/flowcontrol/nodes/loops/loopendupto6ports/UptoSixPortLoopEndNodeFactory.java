@@ -21,7 +21,7 @@ import com.vernalis.knime.flowcontrol.nodes.loops.abstrct.multiportloopend.Abstr
  * handle upto 6 optional input ports
  * 
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 public class UptoSixPortLoopEndNodeFactory extends
 		AbstractMultiPortLoopEndNodeFactory {

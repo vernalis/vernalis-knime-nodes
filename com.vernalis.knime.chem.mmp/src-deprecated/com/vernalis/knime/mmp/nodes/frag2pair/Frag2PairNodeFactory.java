@@ -21,7 +21,7 @@ import org.knime.core.node.NodeView;
 /**
  * Node Factory class for the Fragment to MMP node
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public class Frag2PairNodeFactory extends NodeFactory<Frag2PairNodeModel> {

@@ -20,7 +20,7 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.loopend.AbstractM
  * <code>NodeFactory</code> for the "LoopEnd2LoopToTime" Node. Loop End node for
  * timed loops, exposing unprocessed rows
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 public class LoopEnd2LoopToTimeNodeFactory extends
 		AbstractMultiPortTimedLoopEndNodeFactory {

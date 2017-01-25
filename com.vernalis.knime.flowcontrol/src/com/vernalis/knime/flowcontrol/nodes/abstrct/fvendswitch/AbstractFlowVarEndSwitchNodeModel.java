@@ -38,7 +38,7 @@ import com.vernalis.knime.flowcontrol.FlowControlHelpers;
  * nodes. The flow variable version does not need to handle merging as this is
  * handled by the core.
  * 
- * @author S.D. Roughley <s.roughley@vernalis.com>
+ * @author S.D. Roughley knime@vernalis.com
  */
 public class AbstractFlowVarEndSwitchNodeModel extends NodeModel implements
 		InactiveBranchConsumer {

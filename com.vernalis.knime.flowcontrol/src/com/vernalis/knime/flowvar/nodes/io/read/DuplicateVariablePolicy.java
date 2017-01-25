@@ -19,7 +19,7 @@ import org.knime.core.node.util.ButtonGroupEnumInterface;
 /**
  * enum for the duplicate variable policy.
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public enum DuplicateVariablePolicy implements ButtonGroupEnumInterface {

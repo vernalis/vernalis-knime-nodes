@@ -38,7 +38,7 @@ import org.knime.core.node.workflow.FlowVariable;
 /**
  * The shared IF Switch NodeDialog
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 public class AbstractFvvalIfSwitchNodeDialog extends DefaultNodeSettingsPane {
 

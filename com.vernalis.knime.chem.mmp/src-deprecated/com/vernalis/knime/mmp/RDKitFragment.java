@@ -35,7 +35,7 @@ import org.knime.core.node.NodeModel;
  * preferred entry point is
  * {@link #doRDKitFragmentation(ROMol, String, int, String, boolean, ExecutionContext)}
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public class RDKitFragment {

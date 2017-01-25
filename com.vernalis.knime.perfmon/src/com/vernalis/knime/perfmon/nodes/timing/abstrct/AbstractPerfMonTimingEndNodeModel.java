@@ -56,7 +56,7 @@ import com.vernalis.knime.perfmon.PerformanceMonitoringLoopStart;
 /**
  * This is the abstract Performance monitoring loop end node model class.
  * 
- * @author S. Roughley <s.roughley@vernalis.com>
+ * @author S. Roughley knime@vernalis.com
  */
 public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements
 		PerformanceMonitoringLoopEnd {

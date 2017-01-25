@@ -27,7 +27,7 @@ import com.vernalis.knime.flowcontrol.nodes.abstrct.ifswitch.AbstractIfSwitchNod
  * <code>NodeFactory</code> for the "FVarFVIfSwitch" Node. Flow variable if
  * switch
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 
 public class DatabaseIfSwitchNodeFactory extends

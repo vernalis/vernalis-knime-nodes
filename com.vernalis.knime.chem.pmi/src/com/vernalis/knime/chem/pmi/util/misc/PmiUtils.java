@@ -37,7 +37,7 @@ import com.vernalis.knime.chem.pmi.util.math.TransformUtil;
  * A convenience class to provide various static methods used by some or all of
  * the PMI nodes
  * 
- * @author S. Roughley <s.roughley@vernalis.com>
+ * @author S. Roughley knime@vernalis.com
  * 
  */
 public abstract class PmiUtils {

@@ -27,7 +27,7 @@ import org.RDKit.UInt_Vect;
  * attachment points were not tracked during fragmentation, but the results will
  * not be meaningful.
  * 
- * @author Steve Roughley <s.roughley@vernalis.com>
+ * @author Steve Roughley knime@vernalis.com
  * 
  */
 public class FragmentKeyMorganFP extends DefaultFragmentKeyFingerprinted {

@@ -18,7 +18,7 @@ package com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct;
  * An Enum to allow designation of node types for timed loop nodes and other
  * nodes which are set to run based on a time constraint.
  * 
- * @author S.Roughley <s.roughley@vernalis.com>
+ * @author S.Roughley knime@vernalis.com
  */
 public enum TimedNodeType {
 

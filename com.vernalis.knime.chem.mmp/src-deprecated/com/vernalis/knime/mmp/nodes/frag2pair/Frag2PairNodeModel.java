@@ -71,7 +71,7 @@ import com.vernalis.knime.mmp.FragmentValue;
 /**
  * {@link NodeModel} for the Fragment to MMP node
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public class Frag2PairNodeModel extends NodeModel {

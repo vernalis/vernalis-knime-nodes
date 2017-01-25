@@ -28,7 +28,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 /**
  * Node Dialog for the Fragment to MMP node
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public class Frag2PairNodeDialog extends DefaultNodeSettingsPane {

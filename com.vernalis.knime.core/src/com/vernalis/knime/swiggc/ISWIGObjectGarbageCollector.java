@@ -15,7 +15,7 @@
 package com.vernalis.knime.swiggc;
 
 /**
- * @author s.roughley <s.roughley@vernalis.com>
+ * @author s.roughley knime@vernalis.com
  *
  */
 public interface ISWIGObjectGarbageCollector {

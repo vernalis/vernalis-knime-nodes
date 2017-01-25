@@ -33,7 +33,7 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
  * {@link PortObjectSpec}s to allow their use in both
  * {@link org.knime.core.node.NodeModel}#configure and #execute methods
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  * 
  */
 public class FlowControlHelpers {

@@ -69,7 +69,7 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.TimedNodeType;
  * Subclasses should implement {@link RunForTime} or {@link RunToTime}.
  * </p>
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 public class AbstractVariableTimedLoopStartNodeModel extends
 		AbstractTimedLoopStartNodeModel {

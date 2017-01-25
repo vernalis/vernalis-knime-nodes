@@ -27,7 +27,7 @@ import com.vernalis.knime.flowcontrol.nodes.abstrct.varvalifswitch.AbstractFvval
  * <code>NodeFactory</code> for the "FlowVarIfSwitch" Node.
  * 
  * 
- * @author "Stephen Roughley  <s.roughley@vernalis.com>"
+ * @author "Stephen Roughley  knime@vernalis.com"
  */
 public class FlowVarFvvalIfSwitchNodeFactory extends
 		NodeFactory<AbstractFvvalIfSwitchNodeModel> {
