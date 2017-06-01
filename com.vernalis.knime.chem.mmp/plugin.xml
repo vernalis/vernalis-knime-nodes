@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.0"?><plugin>
+
+   <!-- This is an example for providing an own category 
+      <extension
+         point="org.knime.workbench.repository.categories">
+      <category
+            description="Category containing my nodes"
+            icon="icons/default.png"
+            level-id="myNodes"
+            name="My nodes"
+            path="/"/>
+   </extension>
+   -->
+  <extension point="org.knime.workbench.repository.nodes"> 
+ <node
+       category-path="/community/vernalis/mmp/filter"
+       factory-class="com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/mmp/filter"
+       factory-class="com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterSplitterNodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/mmp"
+       factory-class="com.vernalis.knime.mmp.nodes.maxcuts.MmpMaxCutsNodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/mmp/pairgen"
+       factory-class="com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/mmp"
+       factory-class="com.vernalis.knime.mmp.nodes.loop.CutTypeLoopStartNodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/mmp/frag"
+       factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/mmp/frag"
+       factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment2.ParallelRdkitMMPFragment3NodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/mmp/"
+       factory-class="com.vernalis.knime.mmp.nodes.uniquifyids.UniquifyIdsNodeFactory">
+ </node>
+
+ <node
+       deprecated="true"
+       factory-class="com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeFactory">
+ </node>
+ <node
+       deprecated="true"
+       factory-class="com.vernalis.knime.mmp.nodes.rdkit.fragment.RdkitMMPFragmentNodeFactory">
+ </node>
+ <node
+       deprecated="true"
+       factory-class="com.vernalis.knime.mmp.nodes.rdkit.multicut.RdkitMatchedPairsNodeFactory">
+ </node>
+</extension>
+
+<extension point="org.knime.workbench.repository.categories">
+	<category
+       description="Vernalis Matched Molecular Pairs implementation"
+       icon="icons/MMPCut.png"
+       level-id="mmp"
+       name="Matched Molecular Pairs (MMPs)"
+       path="/community/vernalis/">
+	</category>
+ <category
+       icon="icons/MMPFrag_Cat.png"
+       level-id="frag"
+       locked="false"
+       name="Fragmentation"
+       path="/community/vernalis/mmp/">
+ </category>
+ <category
+       icon="icons/MMP_PairGen_Cat3.png"
+       level-id="pairgen"
+       locked="false"
+       name="Pair Generation"
+       path="/community/vernalis/mmp/">
+ </category>
+ <category
+       icon="icons/MMP_Prefilter_Cat.png"
+       level-id="filter"
+       locked="false"
+       name="Filtering"
+       path="/community/vernalis/mmp/">
+ </category>
+   </extension>
+<extension
+      point="org.eclipse.ui.preferencePages">
+   <page
+         category="com.vernalis.knime.core.preferences"
+         class="com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage"
+         id="com.vernalis.knime.chem.mmp.page1"
+         name="Matched Molecular Pairs (MMPs)">
+   </page>
+</extension>
+<extension
+      point="org.eclipse.core.runtime.preferences">
+   <initializer
+         class="com.vernalis.knime.mmp.prefs.MatchedPairPreferenceInitializer">
+   </initializer>
+</extension>
+   
+</plugin>
