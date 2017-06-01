@@ -33,6 +33,7 @@ import org.RDKit.Atom.ChiralType;
 import org.RDKit.AtomIterator;
 import org.RDKit.Bond;
 import org.RDKit.Bond.BondDir;
+import org.RDKit.Bond.BondStereo;
 import org.RDKit.Bond.BondType;
 import org.RDKit.BondIterator;
 import org.RDKit.Bond_Vect;
@@ -147,13 +148,23 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	 * flagged with the property {@value #UNSPECIFIED_DOUBLE_BOND}
 	 */
 	protected void markUnassignedPossibleDoubleBonds() {
-
+		// reportStereoBonds("Before");
+		// This is to fix breakage from pull request
+		// https://github.com/rdkit/rdkit/pull/1202
+		Set<Integer> stereoNones = new HashSet<>();
+		for (int i = 0; i < mol.getNumBonds(); i++) {
+			Bond bd = gc.markForCleanup(mol.getBondWithIdx(i), 1);
+			if (bd.getBondType() == BondType.DOUBLE && bd.getStereo() == BondStereo.STEREONONE) {
+				stereoNones.add(i);
+			}
+		}
 		RDKFuncs.findPotentialStereoBonds(this.mol, false);
 		// Now loop through the bonds
 		for (BondIterator iter = gc.markForCleanup(this.mol.beginBonds(), 1); iter
 				.ne(gc.markForCleanup(this.mol.endBonds(), 1)); gc.markForCleanup(iter.next(), 1)) {
 
 			Bond bd = gc.markForCleanup(iter.getBond(), 1);
+
 			// System.out.println(bd.getBondType() + "\t::\t" + bd.getBondDir()
 			// + "\t::\t"
 			// + bd.getStereoAtoms().size());
@@ -230,6 +241,27 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 				}
 			}
 		}
+		// Put stereonones back...
+		for (int i : stereoNones) {
+			gc.markForCleanup(mol.getBondWithIdx(i), 1).setStereo(BondStereo.STEREONONE);
+		}
+		// reportStereoBonds("After");
+	}
+
+	/**
+	 * Debugging only to pin down fix for bug introduced with
+	 * https://github.com/rdkit/rdkit/pull/1202
+	 */
+	@SuppressWarnings("unused")
+	private void reportStereoBonds(String string) {
+		System.out.println(string + "...");
+		System.out.println(this.mol.MolToSmiles(true));
+		for (int i = 0; i < this.mol.getNumBonds(); i++) {
+			if (this.mol.getBondWithIdx(i).getBondType() == BondType.DOUBLE) {
+				System.out.println(i + ":\t" + this.mol.getBondWithIdx(i).getStereo());
+			}
+		}
+
 	}
 
 	/**
@@ -380,11 +412,9 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 			assignAPChirality(key, localGcWave);
 		}
 		assignCreatedDblBondGeometry(key, localGcWave);
-		// System.out.println(value.MolToSmiles(true));
 		assignCreatedDblBondGeometry(value, localGcWave);
-		// System.out.println(value.MolToSmiles(true));
+
 		canonicaliseDuplicateKeyComponents(value, localGcWave, key);
-		// System.out.println(value.MolToSmiles(true));
 		applyAPIsotopicLabels(key, localGcWave);
 		applyAPIsotopicLabels(value, localGcWave);
 
@@ -1172,13 +1202,15 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 					// The second fragmentation component dbl bond is partially
 					// specified from the diene parent but is lost as it is
 					// unmatched
-					// and so becomes *C=C(>*)C here
+					// and so becomes *C=C(->*)C here
 					// We need to check that each stereoatom with a specified
 					// bond still has a dbl bond attached to it
 
 					if (partialAssignment) {
 						// One end of the double bond has stereochemistry, but
 						// it may or may not be output...
+						// System.out.println("Partially assigned bond
+						// stereo:\t" + bd.getStereo());
 						if (beginStereoBond.getBondDir() == BondDir.NONE) {
 							// Not set, need to DATIVE to enumerate
 							// possibilities
@@ -1207,7 +1239,9 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 						beginStereoBond.setBondDir(BondDir.ENDUPRIGHT);
 						endStereoBond.setBondDir(BondDir.ENDUPRIGHT);
 					}
-
+					// Fix for https://github.com/rdkit/rdkit/pull/1202
+					bd.setStereo(BondStereo.STEREONONE);
+					// System.out.println(bd.getStereo());
 				}
 			}
 

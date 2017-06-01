@@ -263,8 +263,8 @@ public class RDKitFragmentationUtils {
 			Match_Vect bond = swigGC.markForCleanup(bondMatches.get(i));
 			int startId = swigGC.markForCleanup(bond.get(0)).getSecond();
 			int endId = swigGC.markForCleanup(bond.get(1)).getSecond();
-			int bondIdx = (int) swigGC.markForCleanup(inMol.getBondBetweenAtoms(startId, endId))
-					.getIdx();
+			int bondIdx =
+					(int) swigGC.markForCleanup(inMol.getBondBetweenAtoms(startId, endId)).getIdx();
 			retVal.add(new BondIdentifier(startId, endId, bondIdx));
 		}
 		swigGC.cleanupMarkedObjects();
@@ -299,12 +299,12 @@ public class RDKitFragmentationUtils {
 					"numCuts must be in range 1-" + MMPConstants.MAXIMUM_NUMBER_OF_CUTS);
 		}
 
-		ArrayList<BondIdentifier> bonds = new ArrayList<>(
-				identifyAllMatchingBonds(inMol, bondMatch));
+		ArrayList<BondIdentifier> bonds =
+				new ArrayList<>(identifyAllMatchingBonds(inMol, bondMatch));
 
 		if (numCuts <= 2) {
 			// Any matching bond or pair of bonds is cuttable!
-			return new LinkedHashSet<BondIdentifier>(bonds);
+			return new LinkedHashSet<>(bonds);
 		}
 
 		SWIGObjectGarbageCollector swigGC = new SWIGObjectGarbageCollector();
@@ -337,7 +337,7 @@ public class RDKitFragmentationUtils {
 			}
 			swigGC.cleanupMarkedObjects();
 		}
-		return new LinkedHashSet<BondIdentifier>(bonds);
+		return new LinkedHashSet<>(bonds);
 	}
 
 	/**
@@ -476,8 +476,8 @@ public class RDKitFragmentationUtils {
 			// add
 			// H's, and whether doing so helps...
 			ROMol inMolH = swigGC.markForCleanup(inMol.addHs(false, false));
-			Match_Vect_Vect matches2 = swigGC
-					.markForCleanup(inMolH.getSubstructMatches(bondMatch, true));
+			Match_Vect_Vect matches2 =
+					swigGC.markForCleanup(inMolH.getSubstructMatches(bondMatch, true));
 			if (matches2.size() > 0) {
 				numCuts = 1;
 				// We return here, because we dont allow A-H >> key:
@@ -823,8 +823,8 @@ public class RDKitFragmentationUtils {
 	public static RWMol fixAtomChirality(RWMol mol, long atomIdx, long bondIdx,
 			SWIGObjectGarbageCollector swigGC, int gcWrapLayer) {
 
-		ChiralType atmChirality = swigGC.markForCleanup(mol.getAtomWithIdx(atomIdx), gcWrapLayer)
-				.getChiralTag();
+		ChiralType atmChirality =
+				swigGC.markForCleanup(mol.getAtomWithIdx(atomIdx), gcWrapLayer).getChiralTag();
 		if (atmChirality == ChiralType.CHI_TETRAHEDRAL_CCW
 				|| atmChirality == ChiralType.CHI_TETRAHEDRAL_CW) {
 			// We need to fix the chirality of the chiral attachment point atom
@@ -836,9 +836,9 @@ public class RDKitFragmentationUtils {
 			// && mol.getAtomWithIdx(atomIdx).getProp("_SmilesStart") == "1";
 			// And also whether it has any ring closure bonds (these are the '1'
 			// in e.g. C1CCC1)
-			boolean atomHasRingClosures = swigGC
-					.markForCleanup(mol.getAtomWithIdx(atomIdx), gcWrapLayer)
-					.hasProp("_RingClosures");
+			boolean atomHasRingClosures =
+					swigGC.markForCleanup(mol.getAtomWithIdx(atomIdx), gcWrapLayer)
+							.hasProp("_RingClosures");
 			List<Long> ringClosureBonds = new ArrayList<>();
 			if (atomHasRingClosures) {
 				String prop = swigGC.markForCleanup(mol.getAtomWithIdx(atomIdx), gcWrapLayer)
@@ -1024,8 +1024,8 @@ public class RDKitFragmentationUtils {
 			int numNewCols, boolean removeExplicitHs, boolean includeNumChangingHAs,
 			boolean showReverseTransforms, boolean allowSelfTransforms) {
 
-		ArrayList<DataCell[]> retVal = new ArrayList<DataCell[]>();
-		TreeSet<FragmentValue2> orderedFrags = new TreeSet<FragmentValue2>(fragmentValues);
+		ArrayList<DataCell[]> retVal = new ArrayList<>();
+		TreeSet<FragmentValue2> orderedFrags = new TreeSet<>(fragmentValues);
 		for (FragmentValue2 leftFrag : orderedFrags) {
 			for (FragmentValue2 rightFrag : orderedFrags.tailSet(leftFrag, false)) {
 				if ((allowSelfTransforms || !leftFrag.getID().equals(rightFrag.getID()))
@@ -1123,8 +1123,8 @@ public class RDKitFragmentationUtils {
 			boolean includeKeySMILES, boolean includeNumChangingHAs, boolean includeRatioHAs,
 			boolean showReverseTransforms, boolean allowSelfTransforms) {
 
-		ArrayList<DataCell[]> retVal = new ArrayList<DataCell[]>();
-		TreeSet<FragmentValue2> orderedFrags = new TreeSet<FragmentValue2>(fragmentValues);
+		ArrayList<DataCell[]> retVal = new ArrayList<>();
+		TreeSet<FragmentValue2> orderedFrags = new TreeSet<>(fragmentValues);
 		for (FragmentValue2 leftFrag : orderedFrags) {
 			for (FragmentValue2 rightFrag : orderedFrags.tailSet(leftFrag, false)) {
 				if ((allowSelfTransforms || !leftFrag.getID().equals(rightFrag.getID()))
@@ -1205,20 +1205,23 @@ public class RDKitFragmentationUtils {
 		// back on)
 		Set<MulticomponentSmilesFragmentParser> retVal = new LinkedHashSet<>();
 		Set<String> currentIteration = new LinkedHashSet<>();
-		currentIteration.add(e.getSmiles());
+		currentIteration.add(e.getSmiles()/*
+											 * .replaceAll("(<|>)-",
+											 * "$1").replaceAll("-(<|>)", "$1")
+											 */);
 		while (currentIteration.size() > 0) {
 			Set<String> nextIteration = new LinkedHashSet<>();
 			for (String smi : currentIteration) {
 				for (String geom : isomers) {
 
-					String newSmi = smi.replaceFirst("(<|>)", geom);
-					if (newSmi.contains(">") || newSmi.contains("<")) {
+					String newSmi = smi.replaceFirst("(<-|->)", geom);
+					if (newSmi.contains("->") || newSmi.contains("<-")) {
 						nextIteration.add(newSmi);
 					} else {
 						// All dative bonds replaced
 						try {
-							MulticomponentSmilesFragmentParser r = new MulticomponentSmilesFragmentParser(
-									newSmi, e.getRemoveHs());
+							MulticomponentSmilesFragmentParser r =
+									new MulticomponentSmilesFragmentParser(newSmi, e.getRemoveHs());
 							retVal.add(r);
 							if (r.getNumCuts() == 1) {
 								retVal.add(r.getReverse());

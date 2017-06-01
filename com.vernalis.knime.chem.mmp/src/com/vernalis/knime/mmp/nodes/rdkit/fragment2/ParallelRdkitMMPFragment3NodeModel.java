@@ -202,8 +202,8 @@ public class ParallelRdkitMMPFragment3NodeModel extends AbstractParallelRdkitMMP
 		Set<MulticomponentSmilesFragmentParser> fragmentations = new TreeSet<>();
 
 		// Identify all the cuttable bonds
-		Set<BondIdentifier> cuttableBonds = RDKitFragmentationUtils.identifyAllCuttableBonds(roMol,
-				bondMatch, numCuts);
+		Set<BondIdentifier> cuttableBonds =
+				RDKitFragmentationUtils.identifyAllCuttableBonds(roMol, bondMatch, numCuts);
 
 		// Check we have anything to do
 		if (cuttableBonds.size() <= 0) {
@@ -296,18 +296,18 @@ public class ParallelRdkitMMPFragment3NodeModel extends AbstractParallelRdkitMMP
 			int numCuts) throws IllegalArgumentException {
 
 		// Generate the combinations of numCuts bonds
-		Collection<BondIdentifier> cuttableBonds = RDKitFragmentationUtils
-				.identifyAllCuttableBonds(roMol, bondMatch, numCuts);
-		Set<Set<BondIdentifier>> bondCombos = CombinationFinder.getCombinationsFor(cuttableBonds,
-				numCuts);
+		Collection<BondIdentifier> cuttableBonds =
+				RDKitFragmentationUtils.identifyAllCuttableBonds(roMol, bondMatch, numCuts);
+		Set<Set<BondIdentifier>> bondCombos =
+				CombinationFinder.getCombinationsFor(cuttableBonds, numCuts);
 
 		/*
 		 * Remove invalid triples - not worth it if numCuts==3 as results in
 		 * double processing. Note - now allowing for 3 as it may be quicker!
 		 */
 		if (numCuts >= 3) {
-			Set<Set<BondIdentifier>> triplets = CombinationFinder.getCombinationsFor(cuttableBonds,
-					3);
+			Set<Set<BondIdentifier>> triplets =
+					CombinationFinder.getCombinationsFor(cuttableBonds, 3);
 
 			// TODO: Optimise this ratio
 			if ((triplets.size() * 1.0 / bondCombos.size()) < 1.0) {
