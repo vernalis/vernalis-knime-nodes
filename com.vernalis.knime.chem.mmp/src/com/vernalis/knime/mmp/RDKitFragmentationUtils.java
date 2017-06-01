@@ -54,6 +54,30 @@ public class RDKitFragmentationUtils {
 		// Dont instantiate
 	}
 
+	public static final boolean IS_PREDATIVE_BOND_CHANGE = isPreDativeFixVersion();
+
+	/**
+	 * Routine to figure if the rdkit version is after 15-May-2017 when changes
+	 * breaking dative bonds were added
+	 */
+	public static boolean isPreDativeFixVersion() {
+		// Bundle rdKitBundle = Platform.getBundle("org.rdkit.knime.types");
+		// Version rdkitVersion = rdKitBundle.getVersion();
+		// SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+		RWMol mol = RWMol.MolFromSmiles("CC");
+		mol.getBondWithIdx(0).setBondType(BondType.DATIVE);
+		String smi = mol.MolToSmiles();
+		mol.delete();
+		return !smi.contains("-");
+		// System.out.println(mol.MolToSmiles());
+		// try {
+		// Date vDate = sdf.parse(rdkitVersion.getQualifier().substring(1));
+		// return vDate.before(sdf.parse("201705150000"));
+		// } catch (ParseException e) {
+		// return false;
+		// }
+	}
+
 	/**
 	 * Function to convert the SMIRKS representation, with attachment points
 	 * labelled by isotopic value (e.g. [2*]), to Reaction SMARTS, with
@@ -1197,6 +1221,9 @@ public class RDKitFragmentationUtils {
 		return retVal;
 	}
 
+	private static final Pattern DATIVE_PATTERN =
+			Pattern.compile(IS_PREDATIVE_BOND_CHANGE ? "(<|>)" : "(<-|->)");
+
 	public static Set<MulticomponentSmilesFragmentParser> enumerateDativeMaskedDoubleBondIsomers(
 			UnenumeratedStereochemistryException e) throws MoleculeFragmentationException {
 		String[] isomers = new String[] { "/", "\\\\" };
@@ -1214,8 +1241,8 @@ public class RDKitFragmentationUtils {
 			for (String smi : currentIteration) {
 				for (String geom : isomers) {
 
-					String newSmi = smi.replaceFirst("(<-|->)", geom);
-					if (newSmi.contains("->") || newSmi.contains("<-")) {
+					String newSmi = DATIVE_PATTERN.matcher(smi).replaceFirst(geom);
+					if (DATIVE_PATTERN.matcher(newSmi).find()) {
 						nextIteration.add(newSmi);
 					} else {
 						// All dative bonds replaced
