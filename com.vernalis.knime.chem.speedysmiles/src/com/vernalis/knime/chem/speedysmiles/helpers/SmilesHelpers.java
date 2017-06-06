@@ -64,7 +64,7 @@ public class SmilesHelpers {
 	 * 'organic SMILES atoms' which do not need to be enclosed in [] in their
 	 * normal valence state
 	 */
-	public static ArrayList<String> organicSMILESSubset = new ArrayList<String>();
+	public static ArrayList<String> organicSMILESSubset = new ArrayList<>();
 
 	static {
 		organicSMILESSubset.add("B");
@@ -82,7 +82,7 @@ public class SmilesHelpers {
 	/**
 	 * A list of bond symbols in Daylight SMILES definition
 	 */
-	public static ArrayList<Character> bondSymbols = new ArrayList<Character>();
+	public static ArrayList<Character> bondSymbols = new ArrayList<>();
 	static {
 		bondSymbols.add('-');
 		bondSymbols.add('=');
@@ -100,11 +100,10 @@ public class SmilesHelpers {
 	 * @see #getLargestByHacComponents(String)
 	 */
 	public static Set<DataCell> getLargestDataCellByHacComponents(String smiles) {
-		if (smiles == null || "".equals(smiles)) {
-			throw new IllegalArgumentException("You must supply a non-empty, non-null String");
-		}
-
 		LinkedHashSet<DataCell> retVal = new LinkedHashSet<>();
+		if (smiles == null || "".equals(smiles)) {
+			return retVal;
+		}
 		if (smiles.indexOf(".") < 0) {
 			// only got 1 component, so this is the biggest
 			retVal.add(SmilesCellFactory.createAdapterCell(smiles));
@@ -156,13 +155,15 @@ public class SmilesHelpers {
 	 *            The SMILES string to handle
 	 * @return The biggest component(s)
 	 * @see #getLargestDataCellByHacComponents(String)
+	 * @deprecated
 	 */
+	@Deprecated
 	public static Set<String> getLargestByHacComponents(String smiles) {
 		if (smiles == null || "".equals(smiles)) {
 			throw new IllegalArgumentException("You must supply a non-empty, non-null String");
 		}
 
-		Set<String> retVal = new HashSet<String>();
+		Set<String> retVal = new HashSet<>();
 		if (smiles.indexOf(".") < 0) {
 			// only got 1 component, so this is the biggest
 			retVal.add(smiles);
@@ -272,11 +273,11 @@ public class SmilesHelpers {
 		int cnt = smi.split("(?<!@)(" + elementSymbol + "|" + elementSymbol.toLowerCase() + ")",
 				-1).length - 1;
 
-		String counterCaseRegex = "(?<!@)("
-				+ Arrays.stream(counterCases).collect(Collectors.joining("|"));
-		String orgCounterCases = Arrays.stream(counterCases)
-				.filter(x -> organicSMILESSubset.contains(x)).map(x -> x.toLowerCase())
-				.collect(Collectors.joining("|"));
+		String counterCaseRegex =
+				"(?<!@)(" + Arrays.stream(counterCases).collect(Collectors.joining("|"));
+		String orgCounterCases =
+				Arrays.stream(counterCases).filter(x -> organicSMILESSubset.contains(x))
+						.map(x -> x.toLowerCase()).collect(Collectors.joining("|"));
 		if (!orgCounterCases.isEmpty()) {
 			counterCaseRegex += "|" + orgCounterCases;
 		}
@@ -317,7 +318,7 @@ public class SmilesHelpers {
 	 * @return
 	 */
 	public static boolean hasUnclosedBonds(String smi) {
-		ArrayList<Integer> bondIds = new ArrayList<Integer>();
+		ArrayList<Integer> bondIds = new ArrayList<>();
 		for (int i = 0, l = smi.length(); i < l; i++) {
 			char x = smi.charAt(i);
 			if (x == '[') {
@@ -390,7 +391,7 @@ public class SmilesHelpers {
 	 *         is an unclosed bond
 	 */
 	public static Integer countRings(String smi) {
-		ArrayList<Integer> bondIds = new ArrayList<Integer>();
+		ArrayList<Integer> bondIds = new ArrayList<>();
 		int count = 0;
 		for (int i = 0, l = smi.length(); i < l; i++) {
 			char x = smi.charAt(i);
@@ -496,8 +497,8 @@ public class SmilesHelpers {
 	 * Regex to match higher stereocentres, ie those with indices which can go
 	 * beyond 2
 	 */
-	private static final Pattern HIGHER_STEREOCENTRE_PATTERN = Pattern
-			.compile("@((?:SP|TB|OH)\\d*)");
+	private static final Pattern HIGHER_STEREOCENTRE_PATTERN =
+			Pattern.compile("@((?:SP|TB|OH)\\d*)");
 
 	/**
 	 * Invert tetrahedral stereochemistry. NB @TB1 and @OH1 will be converted
@@ -558,8 +559,8 @@ public class SmilesHelpers {
 	 * Regex to match any labelled stereocentre (i.e on which is not simply @
 	 * or @@)
 	 */
-	private static final Pattern ALL_LABELLED_STEREOCENTRE_PATTERN = Pattern
-			.compile("@(TH|AL|SP|TB|OH)[\\d]+");
+	private static final Pattern ALL_LABELLED_STEREOCENTRE_PATTERN =
+			Pattern.compile("@(TH|AL|SP|TB|OH)[\\d]+");
 	/**
 	 * Regex to match any non-labelled stereocentre, i.e. @ or @@ (or higher)
 	 */
@@ -610,8 +611,8 @@ public class SmilesHelpers {
 	 * Regex to match any labelled stereocentre which has been masked for
 	 * enumeration
 	 */
-	private static final Pattern MASKED_LABELLED_STEREOCENTRE_PATTERN = Pattern
-			.compile("&(TH|AL|SP|TB|OH)?£");
+	private static final Pattern MASKED_LABELLED_STEREOCENTRE_PATTERN =
+			Pattern.compile("&(TH|AL|SP|TB|OH)?£");
 
 	/**
 	 * Regex to match any non-labelled stereocentre which has been masked for
@@ -724,7 +725,7 @@ public class SmilesHelpers {
 	 * @return SetCell of Unique components
 	 */
 	public static DataCell getUniqueComponentsSmilesSetCell(String smi) {
-		HashSet<SmilesCell> retVal = new HashSet<SmilesCell>();
+		HashSet<SmilesCell> retVal = new HashSet<>();
 		for (String smi2 : getUniqueComponents(smi)) {
 			retVal.add((SmilesCell) SmilesCellFactory.create(smi2));
 		}
@@ -739,7 +740,7 @@ public class SmilesHelpers {
 	 * @return {@link HashSet} os component SMILES
 	 */
 	private static Set<String> getUniqueComponents(String smi) {
-		HashSet<String> retVal = new HashSet<String>();
+		HashSet<String> retVal = new HashSet<>();
 		if (!smi.contains(".")) {
 			retVal.add(smi);
 			return retVal;

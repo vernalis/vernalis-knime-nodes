@@ -87,7 +87,7 @@ public class SmilesHACLargestComponentDesaltNodeModel
 	@Override
 	protected DataCell getResultCell(String SMILES) {
 		Set<DataCell> newCells = getLargestDataCellByHacComponents(SMILES);
-		if (newCells.size() == 0) {
+		if (newCells.isEmpty()) {
 			return DataType.getMissingCell();
 		}
 		if (m_keepFirstOnly.getBooleanValue()) {
