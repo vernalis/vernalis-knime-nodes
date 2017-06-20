@@ -1,20 +1,17 @@
-/*
- * ------------------------------------------------------------------------
- *  Copyright (C) 2013, Vernalis (R&D) Ltd
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License, Version 3, as
+/*******************************************************************************
+ * Copyright (c) 2013,2017, Vernalis (R&D) Ltd
+ *  This program is free software; you can redistribute it and/or modify it 
+ *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
+ *  
+ *  This program is distributed in the hope that it will be useful, but 
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of 
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *  See the GNU General Public License for more details.
+ *   
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, see <http://www.gnu.org/licenses>.
- * ------------------------------------------------------------------------
- */
+ *  along with this program; if not, see <http://www.gnu.org/licenses>
+ ******************************************************************************/
 package com.vernalis.rcsb.io.helpers;
 
 /**
@@ -46,25 +43,32 @@ public class PDBIOHelperFunctions {
 		if (pdbid == null) {
 			return null;
 		}
-		String URL = "http://www.rcsb.org/pdb/files/";
+		String URL = "http://www.rcsb.org/pdb/files/" + pdbid;
 
-		// Deal with FASTA first as the format is different
-		if (filetype.toUpperCase().equals("FASTA")) {
-			return URL + "fasta.txt?structureIdList=" + pdbid;
-		}
+		switch (filetype.toLowerCase()) {
 
-		// Now deal with the others
-		URL += pdbid;
-		String temp = filetype.toLowerCase();
+		case "fasta":
+			return "http://www.rcsb.org/pdb/download/viewFastaFiles.do?structureIdList=" + pdbid
+					+ (gz ? "&compressionType=gz" : "&compressionType=uncompressed");
 
-		if ("pdb".equals(temp)) {
+		case "structurefactor":
+		case "sf":
+			URL = "https://files.rcsb.org/download/" + pdbid + "-sf.cif";
+			break;
+		case "pdb":
 			URL += ".pdb";
-		} else if ("mmcif".equals(temp) || "cif".equals(temp)) {
+			break;
+		case "mmcif":
+		case "cif":
 			URL += ".cif";
-		} else if ("structurefactor".equals(temp) || "sf".equals(temp)) {
-			URL += "-sf.cif";
-		} else if ("pdbml".equals(temp) || "pdbml/xml".equals(temp) || "xml".equals(temp)) {
+			break;
+		case "pdbml":
+		case "pdbml/xml":
+		case "xml":
 			URL += ".xml";
+			break;
+		default:
+			return null;
 		}
 		return (gz) ? URL + ".gz" : URL;
 	}

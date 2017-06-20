@@ -38,31 +38,30 @@ public class RCSBmultiDownloadNodeDialog extends DefaultNodeSettingsPane {
 		super();
 		createNewGroup("PDB ID Column");
 		addDialogComponent(new DialogComponentColumnNameSelection(
-				new SettingsModelString(
-						RCSBmultiDownloadNodeModel.CFG_PDB_COLUMN_NAME, null),
-				"Select a column containing the PDB IDs:", 0, true,
-				StringValue.class));
+				new SettingsModelString(RCSBmultiDownloadNodeModel.CFG_PDB_COLUMN_NAME, null),
+				"Select a column containing the PDB IDs:", 0, true, StringValue.class));
 
 		closeCurrentGroup();
 
 		createNewGroup("Download formats:");
 		// Note that we are not going to give the user the option of naming all
 		// these columns!
-		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
-				RCSBmultiDownloadNodeModel.CFG_PDB, true), "PDB File"));
+		addDialogComponent(new DialogComponentBoolean(
+				new SettingsModelBoolean(RCSBmultiDownloadNodeModel.CFG_PDB, true), "PDB File"));
 
-		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
-				RCSBmultiDownloadNodeModel.CFG_CIF, true), "mmCIF File"));
+		addDialogComponent(new DialogComponentBoolean(
+				new SettingsModelBoolean(RCSBmultiDownloadNodeModel.CFG_CIF, true), "mmCIF File"));
 
-		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
-				RCSBmultiDownloadNodeModel.CFG_SF, true), "Structure Factors"));
+		addDialogComponent(new DialogComponentBoolean(
+				new SettingsModelBoolean(RCSBmultiDownloadNodeModel.CFG_SF, true),
+				"Structure Factors"));
 
-		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
-				RCSBmultiDownloadNodeModel.CFG_PDBML, true),
+		addDialogComponent(new DialogComponentBoolean(
+				new SettingsModelBoolean(RCSBmultiDownloadNodeModel.CFG_PDBML, true),
 				"PDBML/XML (PDBx) File"));
 
-		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
-				RCSBmultiDownloadNodeModel.CFG_FASTA, true),
+		addDialogComponent(new DialogComponentBoolean(
+				new SettingsModelBoolean(RCSBmultiDownloadNodeModel.CFG_FASTA, true),
 				"FASTA Sequence File"));
 
 		closeCurrentGroup();

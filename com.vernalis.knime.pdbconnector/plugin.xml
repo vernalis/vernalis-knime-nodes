@@ -59,14 +59,27 @@
 </node>
       <node
             category-path="/community/vernalis/rcsb"
-           factory-class="com.vernalis.rcsb.io.nodes.source.RCSBsDownloadNodeFactory"
+            deprecated="true"
+            factory-class="com.vernalis.rcsb.io.nodes.source.RCSBsDownloadNodeFactory"
+            id="RCSBsDownloadNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/rcsb"
+            factory-class="com.vernalis.rcsb.io.nodes.source.RCSBsDownload2NodeFactory"
             id="RCSBsDownloadNodeFactory">
       </node>
       <node
             after="RCSBsDownloadNodeFactory"
             category-path="/community/vernalis/rcsb"
+            deprecated="true"
             factory-class="com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownloadNodeFactory"
             id="RCSBmultiDownloadNodeFactory">
+      </node>
+      <node
+            after="RCSBsDownloadNodeFactory"
+            category-path="/community/vernalis/rcsb"
+            factory-class="com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownload2NodeFactory"
+            id="RCSBmultiDownload2NodeFactory">
       </node>
 </extension>
    <extension point="org.knime.workbench.repository.categories">

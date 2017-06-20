@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2013,2017 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -12,23 +12,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
-/*
- * ------------------------------------------------------------------------
- *  Copyright (C) 2013, Vernalis (R&D) Ltd
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License, Version 3, as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, see <http://www.gnu.org/licenses>.
- * ------------------------------------------------------------------------
- */
+
 package com.vernalis.io;
 
 import java.io.BufferedReader;
@@ -39,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -203,11 +188,29 @@ public class FileHelpers {
 			try {
 				// Form a URL connection
 				URL url = new URL(urlToRetrieve);
-				URLConnection uc = url.openConnection();
+				HttpURLConnection uc = (HttpURLConnection) url.openConnection();
+				if (uc.getResponseCode() != HttpURLConnection.HTTP_OK) {
+					// Check for relocation...
+					if (uc.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM) {
+						// url = new URL(uc.getHeaderField("Location"));
+						logger.debug("Redirecting '" + urlToRetrieve + "' to "
+								+ uc.getHeaderField("Location"));
+						// uc = (HttpURLConnection) url.openConnection();
+						return readURLToString(uc.getHeaderField("Location"));
+					} else {
+						throw new FileDownloadException("Attempt to download '" + urlToRetrieve
+								+ "' failed with response code " + uc.getResponseCode() + " ("
+								+ uc.getResponseMessage() + ")");
+					}
+				}
 				InputStream is = uc.getInputStream();
 
 				// decompress, if necessary
-				if (urlToRetrieve.endsWith(".gz")) {
+				if (urlToRetrieve.endsWith(".gz")
+						|| (uc.getHeaderField("Content-Disposition") != null
+								&& uc.getHeaderField("Content-Disposition")
+										.matches(".*[Ff]ilename=\\\".*?\\.gz\\\".*"))
+						|| urlToRetrieve.contains("&compressionType=gz")) {
 					is = new GZIPInputStream(is);
 				}
 

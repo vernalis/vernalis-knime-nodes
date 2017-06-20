@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------------------
- *  Copyright (C) 2013, Vernalis (R&D) Ltd
+ *  Copyright (C) 2013 Vernalis (R&D) Ltd
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -63,8 +63,8 @@ public class RCSBmultiDownloadNodeModel extends SimpleStreamableFunctionNodeMode
 	static final String CFG_PDBML = "PDBML";
 	static final String CFG_FASTA = "FASTA";
 
-	private final SettingsModelString m_PDBcolumnName = new SettingsModelString(CFG_PDB_COLUMN_NAME,
-			null);
+	private final SettingsModelString m_PDBcolumnName =
+			new SettingsModelString(CFG_PDB_COLUMN_NAME, null);
 
 	private final SettingsModelBoolean m_PDB = new SettingsModelBoolean(CFG_PDB, true);
 
@@ -122,13 +122,15 @@ public class RCSBmultiDownloadNodeModel extends SimpleStreamableFunctionNodeMode
 			i++;
 		}
 		if (m_PDBML.getBooleanValue()) {
-			newColSpec[i] = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(in, "PDBML"), XMLCell.TYPE).createSpec();
+			newColSpec[i] =
+					new DataColumnSpecCreator(DataTableSpec.getUniqueColumnName(in, "PDBML"),
+							XMLCell.TYPE).createSpec();
 			i++;
 		}
 		if (m_FASTA.getBooleanValue()) {
-			newColSpec[i] = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(in, "FASTA"), StringCell.TYPE).createSpec();
+			newColSpec[i] =
+					new DataColumnSpecCreator(DataTableSpec.getUniqueColumnName(in, "FASTA"),
+							StringCell.TYPE).createSpec();
 			i++;
 		}
 
