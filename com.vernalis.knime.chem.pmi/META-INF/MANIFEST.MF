@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-SymbolicName: com.vernalis.knime.chem.pmi;singleton:=true
+Bundle-Version: 1.9.0.qualifier
+Bundle-ClassPath: pmi.jar
+Bundle-Activator: com.vernalis.knime.chem.pmi.PmiNodePlugin
+Bundle-Vendor: %Bundle-Vendor
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core;bundle-version="[3.0.0,4.0.0)",
+ org.knime.workbench.repository;bundle-version="[3.0.0,4.0.0)",
+ org.knime.base;bundle-version="[3.0.0,4.0.0)",
+ org.knime.chem.types;bundle-version="[3.0.0,4.0.0)",
+ org.knime.chem.base;bundle-version="[3.0.0,4.0.0)",
+ org.rdkit.knime.types;bundle-version="3.0.0",
+ com.vernalis.knime.core;bundle-version="1.6.0"
+Bundle-ActivationPolicy: lazy
+Export-Package: 
+ com.vernalis.knime.chem.pmi,
+ com.vernalis.knime.chem.pmi.nodes.pmi2,
+ com.vernalis.knime.chem.pmi.util.math,
+ com.vernalis.knime.chem.pmi.util.misc
+
