@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.knime.workbench.repository.categories">
+      <category
+            description="Vernalis Nodes"
+            icon="icons/Vernalis.ico"
+            level-id="vernalis"
+            locked="false"
+            name="Vernalis"
+            path="/community">
+      </category>
+   </extension>
+   <extension
+         point="org.knime.product.splashExtension">
+      <splashExtension
+            icon="icons/Vernalis_splash_48.png"
+            icon24="icons/Vernalis_splash_24.png"
+            icon32="icons/Vernalis_splash_32.png"
+            id="VernalisSplashExtenstion"
+            tooltip="Vernalis Nodes">
+      </splashExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.knime.workbench.ui.preferences"
+            class="com.vernalis.knime.preferences.VernalisPreferencePage"
+            id="com.vernalis.knime.core.preferences"
+            name="Vernalis">
+      </page>
+   </extension>
+   
+</plugin>
