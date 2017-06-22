@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.zip.GZIPInputStream;
 
 import org.knime.core.node.NodeLogger;
@@ -327,19 +328,22 @@ public class FileHelpers {
 			try {
 				// Form a URL connection
 				URL url = new URL(urlToRetrieve);
-				HttpURLConnection uc = (HttpURLConnection) url.openConnection();
-				if (uc.getResponseCode() != HttpURLConnection.HTTP_OK) {
-					// Check for relocation...
-					if (uc.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM) {
-						// url = new URL(uc.getHeaderField("Location"));
-						logger.debug("Redirecting '" + urlToRetrieve + "' to "
-								+ uc.getHeaderField("Location"));
-						// uc = (HttpURLConnection) url.openConnection();
-						return readURLToString(uc.getHeaderField("Location"), fileEncoding);
-					} else {
-						throw new FileDownloadException("Attempt to download '" + urlToRetrieve
-								+ "' failed with response code " + uc.getResponseCode() + " ("
-								+ uc.getResponseMessage() + ")");
+				URLConnection uc = url.openConnection();
+				if (uc instanceof HttpURLConnection) {
+					HttpURLConnection http = (HttpURLConnection) uc;
+					if (http.getResponseCode() != HttpURLConnection.HTTP_OK) {
+						// Check for relocation...
+						if (http.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM) {
+							// url = new URL(uc.getHeaderField("Location"));
+							logger.debug("Redirecting '" + urlToRetrieve + "' to "
+									+ uc.getHeaderField("Location"));
+							// uc = (HttpURLConnection) url.openConnection();
+							return readURLToString(uc.getHeaderField("Location"), fileEncoding);
+						} else {
+							throw new FileDownloadException("Attempt to download '" + urlToRetrieve
+									+ "' failed with response code " + http.getResponseCode() + " ("
+									+ http.getResponseMessage() + ")");
+						}
 					}
 				}
 				InputStream is = uc.getInputStream();
