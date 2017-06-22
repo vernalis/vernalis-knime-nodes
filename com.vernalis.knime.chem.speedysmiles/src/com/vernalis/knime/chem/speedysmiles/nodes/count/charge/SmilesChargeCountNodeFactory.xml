@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2016, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+    This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="./SpeedySMILES_chargecount.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v2.8"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
+	<name>Speedy SMILES Charge Count</name>
+
+	<shortDescription>
+		Node to count the charges of a SMILES
+		molecule
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>This node returns the charge count(s) of a SMILES Cell.
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+
+		<option name="Select SMILES column">The SMILES column, containing molecules</option>
+		<option name="Total Positive Charge">Count the total number of Positive Charges (e.g
+			[Fe2+] = 2, [Li+] = 1 etc.)
+		</option>
+		<option name="Total Negative Charge">Count the total number of Negative Charges (e.g.
+			[Cl-] = 1, [O2-] = 2 etc.)
+		</option>
+		<option name="Total Net Charge">Count the net charge (i.e. the overall charge,
+			Positive charges - Negative charges; [Li+].[O-] will return 0)
+		</option>
+		<option name="Total Gross Charge">Count the total number of charges (i.e. Positive
+			charges + Negative charges; [Li+].[O-] will return 2)
+		</option>
+		<option name="Biggest Positive Charge">Get the charge of the most positively charged atom
+		</option>
+		<option name="Biggest Negative Charge">Get the magnitude of the charge of the most
+			negatively charged atom
+		</option>
+		<option name="Biggest Absolute Charge">Get the magnitude of the charge of the most
+			charged atom
+		</option>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="SMILES Cells">Input Table containing a SMILES Column
+		</inPort>
+
+		<outPort
+			index="0"
+			name="Charge Counts">Charge counts
+		</outPort>
+	</ports>
+
+</knimeNode>
