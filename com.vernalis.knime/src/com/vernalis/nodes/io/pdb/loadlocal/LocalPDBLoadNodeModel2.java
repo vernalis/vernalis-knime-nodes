@@ -1,20 +1,17 @@
-/*
- * ------------------------------------------------------------------------
- *  Copyright (C) 2013, Vernalis (R&D) Ltd
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License, Version 3, as
+/*******************************************************************************
+ * Copyright (c) 2013, 2017, Vernalis (R&D) Ltd
+ *  This program is free software; you can redistribute it and/or modify it 
+ *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
+ *  
+ *   This program is distributed in the hope that it will be useful, but 
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of 
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *  See the GNU General Public License for more details.
+ *   
  *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, see <http://www.gnu.org/licenses>.
- * ------------------------------------------------------------------------
- */
+ *  along with this program; if not, see <http://www.gnu.org/licenses>
+ ******************************************************************************/
 package com.vernalis.nodes.io.pdb.loadlocal;
 
 import java.io.IOException;
@@ -38,6 +35,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 
+import com.vernalis.io.FileDownloadException;
 import com.vernalis.io.FileEncodingWithGuess;
 import com.vernalis.io.FileHelpers;
 
@@ -60,11 +58,11 @@ public class LocalPDBLoadNodeModel2 extends SimpleStreamableFunctionNodeModel {
 	static final String CFG_PATH_COLUMN_NAME = "Path_column_name";
 	static final String CFG_FILE_COLUMN_NAME = "File_column_name";
 
-	private final SettingsModelString m_PathColumnName = new SettingsModelString(
-			CFG_PATH_COLUMN_NAME, null);
+	private final SettingsModelString m_PathColumnName =
+			new SettingsModelString(CFG_PATH_COLUMN_NAME, null);
 
-	private final SettingsModelString m_FilecolumnName = new SettingsModelString(
-			CFG_FILE_COLUMN_NAME, "PDB File");
+	private final SettingsModelString m_FilecolumnName =
+			new SettingsModelString(CFG_FILE_COLUMN_NAME, "PDB File");
 
 	/**
 	 * Constructor for the node model.
@@ -111,13 +109,17 @@ public class LocalPDBLoadNodeModel2 extends SimpleStreamableFunctionNodeModel {
 				// Only load up pdb files, but allow them to be g-zipped
 				if (urlToRetrieve.toLowerCase().endsWith(".pdb")
 						|| urlToRetrieve.toLowerCase().endsWith(".pdb.gz")) {
-					String r = FileHelpers.readURLToString(urlToRetrieve,
-							FileEncodingWithGuess.GUESS);
-					if (r != null && !r.isEmpty()) {
-						return PdbCellFactory.create(r);
-					} else {
-						logger.warn("Unable to download file URL '" + urlToRetrieve
-								+ "'; Skipping row...");
+					String r;
+					try {
+						r = FileHelpers.readURLToString(urlToRetrieve, FileEncodingWithGuess.GUESS);
+						if (r != null && !r.isEmpty()) {
+							return PdbCellFactory.create(r);
+						} else {
+							logger.warn("Unable to download file URL '" + urlToRetrieve
+									+ "'; Skipping row...");
+						}
+					} catch (FileDownloadException e) {
+						logger.info(e.getMessage());
 					}
 				}
 				return DataType.getMissingCell();
