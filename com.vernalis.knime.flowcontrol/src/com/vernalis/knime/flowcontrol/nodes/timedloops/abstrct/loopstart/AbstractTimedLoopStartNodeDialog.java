@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, Vernalis (R&D) Ltd
+ * Copyright (c) 2014,2017, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -30,6 +30,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.TimedMissingValuePolicy;
+import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.TimedNodeType;
 
 /**
  * Abstract Node Dialog class for Timed Loop start nodes. Provides methods for
@@ -38,8 +39,7 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.TimedMissingValue
  * @author S.Roughley knime@vernalis.com
  * 
  */
-public abstract class AbstractTimedLoopStartNodeDialog extends
-		DefaultNodeSettingsPane {
+public class AbstractTimedLoopStartNodeDialog extends DefaultNodeSettingsPane {
 
 	/**
 	 * Settings model for the missing value policy. Is null unless set by the
@@ -65,7 +65,7 @@ public abstract class AbstractTimedLoopStartNodeDialog extends
 	/**
 	 * Simplest initiation, adding no panels to the dialog.
 	 */
-	protected AbstractTimedLoopStartNodeDialog() {
+	public AbstractTimedLoopStartNodeDialog() {
 		super();
 	}
 
@@ -76,16 +76,52 @@ public abstract class AbstractTimedLoopStartNodeDialog extends
 	 * 
 	 * @param isRunToTime
 	 *            True if Run-to-time node, or False if Run-for-time
+	 * @deprecated Implementations should preferably use the
+	 *             {@link #AbstractTimedLoopStartNodeDialog(TimedNodeType)}
+	 *             constructor
 	 */
-	protected AbstractTimedLoopStartNodeDialog(boolean isRunToTime) {
+	@Deprecated
+	public AbstractTimedLoopStartNodeDialog(boolean isRunToTime) {
+		this(isRunToTime ? TimedNodeType.RUN_TO_TIME : TimedNodeType.RUN_FOR_TIME);
+	}
+
+	/**
+	 * Simple Start Timed Loop Node Dialog panel. A chunk size panel is created,
+	 * and either a run-to-time or run-for-time expiry time panel. Finally a
+	 * iteration counter start panel is added.
+	 * 
+	 * @param timedNodeType
+	 *            The type of node (run-to-time or run-for-time)
+	 */
+	public AbstractTimedLoopStartNodeDialog(TimedNodeType timedNodeType) {
+		this(timedNodeType, true);
+	}
+
+	/**
+	 * Simple start timed loop node dialog panel in which optionally a chunk
+	 * size panel is created, and either a run-to-time or run-for-time expiry
+	 * panel. Finally a iteration counter start panel is added.
+	 * 
+	 * @param timedNodeType
+	 *            The node type
+	 * @param hasChunkSize
+	 *            True if a chunk size dialog is to be added
+	 */
+	public AbstractTimedLoopStartNodeDialog(TimedNodeType timedNodeType, boolean hasChunkSize) {
 		super();
-		addChunkSizePanel();
-		// Add the appropriate Expiry Time panel
-		if (isRunToTime) {
-			addRunToTimePanel();
-		} else {
-			addRunForTimePanel();
+		if (hasChunkSize) {
+			addChunkSizePanel();
 		}
+		// Add the appropriate Expiry Time panel
+		switch (timedNodeType) {
+		case RUN_FOR_TIME:
+			addRunForTimePanel();
+			break;
+		case RUN_TO_TIME:
+			addRunToTimePanel();
+			break;
+		}
+		closeCurrentGroup();
 		addZerothIterationCountPanel();
 	}
 
@@ -96,8 +132,8 @@ public abstract class AbstractTimedLoopStartNodeDialog extends
 	 */
 	protected void addChunkSizePanel() {
 		createNewGroup("Chunking");
-		addDialogComponent(new DialogComponentNumber(createChunkSizeModel(),
-				"Number of rows per chunk", 5));
+		addDialogComponent(
+				new DialogComponentNumber(createChunkSizeModel(), "Number of rows per chunk", 5));
 	}
 
 	/**
@@ -110,15 +146,13 @@ public abstract class AbstractTimedLoopStartNodeDialog extends
 		createNewGroup("Expiry Time");
 		addDialogComponent(new DialogComponentLabel("End time (hh:mm):"));
 		setHorizontalPlacement(true);
-		addDialogComponent(new DialogComponentNumber(createHourModel(true), "",
-				1));
-		addDialogComponent(new DialogComponentNumber(createMinuteModel(), ":",
-				5));
+		addDialogComponent(new DialogComponentNumber(createHourModel(true), "", 1));
+		addDialogComponent(new DialogComponentNumber(createMinuteModel(), ":", 5));
 		setHorizontalPlacement(false);
-		addDialogComponent(new DialogComponentBoolean(
-				createRunToTomorrowModel(), "Run to tomorrow"));
-		addDialogComponent(new DialogComponentBoolean(
-				createRunThruWeekendModel(), "Run through weekend"));
+		addDialogComponent(
+				new DialogComponentBoolean(createRunToTomorrowModel(), "Run to tomorrow"));
+		addDialogComponent(
+				new DialogComponentBoolean(createRunThruWeekendModel(), "Run through weekend"));
 	}
 
 	/**
@@ -132,12 +166,9 @@ public abstract class AbstractTimedLoopStartNodeDialog extends
 		addDialogComponent(new DialogComponentLabel("Run time (dd:hh:mm:ss):"));
 		setHorizontalPlacement(true);
 		addDialogComponent(new DialogComponentNumber(createDayModel(), "", 1));
-		addDialogComponent(new DialogComponentNumber(createHourModel(false),
-				":", 1));
-		addDialogComponent(new DialogComponentNumber(createMinuteModel(), ":",
-				5));
-		addDialogComponent(new DialogComponentNumber(createSecondModel(), ":",
-				5));
+		addDialogComponent(new DialogComponentNumber(createHourModel(false), ":", 1));
+		addDialogComponent(new DialogComponentNumber(createMinuteModel(), ":", 5));
+		addDialogComponent(new DialogComponentNumber(createSecondModel(), ":", 5));
 		setHorizontalPlacement(false);
 	}
 
@@ -172,16 +203,15 @@ public abstract class AbstractTimedLoopStartNodeDialog extends
 			}
 		});
 
-		addDialogComponent(new DialogComponentButtonGroup(m_onMissing,
-				"Missing Value behaviours", true,
-				TimedMissingValuePolicy.values()));
+		addDialogComponent(new DialogComponentButtonGroup(m_onMissing, "Missing Value behaviours",
+				true, TimedMissingValuePolicy.values()));
 
-		addDialogComponent(new DialogComponentNumber(m_missingInteger,
-				"Default Integer value", 1, 10));
-		addDialogComponent(new DialogComponentNumber(m_missingDouble,
-				"Default Double Value", 1.0, 10));
-		addDialogComponent(new DialogComponentString(m_missingString,
-				"Default String Value", true, 13));
+		addDialogComponent(
+				new DialogComponentNumber(m_missingInteger, "Default Integer value", 1, 10));
+		addDialogComponent(
+				new DialogComponentNumber(m_missingDouble, "Default Double Value", 1.0, 10));
+		addDialogComponent(
+				new DialogComponentString(m_missingString, "Default String Value", true, 13));
 		updateDefaultsStatus();
 
 	}
@@ -190,8 +220,8 @@ public abstract class AbstractTimedLoopStartNodeDialog extends
 	 * Update the enabled status of the Settings Models.
 	 */
 	public static void updateDefaultsStatus() {
-		TimedMissingValuePolicy selOption = TimedMissingValuePolicy
-				.valueOf(m_onMissing.getStringValue());
+		TimedMissingValuePolicy selOption =
+				TimedMissingValuePolicy.valueOf(m_onMissing.getStringValue());
 		if (selOption == TimedMissingValuePolicy.DEFAULT) {
 			m_missingDouble.setEnabled(true);
 			m_missingInteger.setEnabled(true);
@@ -211,8 +241,7 @@ public abstract class AbstractTimedLoopStartNodeDialog extends
 	 * @return the settings model integer bounded
 	 */
 	public static SettingsModelIntegerBounded createZerothIterModel() {
-		return new SettingsModelIntegerBounded("Zeroth Iteration", 0, 0,
-				Integer.MAX_VALUE);
+		return new SettingsModelIntegerBounded("Zeroth Iteration", 0, 0, Integer.MAX_VALUE);
 	}
 
 	/**
@@ -221,8 +250,7 @@ public abstract class AbstractTimedLoopStartNodeDialog extends
 	 * @return the settings model integer bounded
 	 */
 	public static SettingsModelIntegerBounded createChunkSizeModel() {
-		return new SettingsModelIntegerBounded("Rows per chunk", 1, 1,
-				Integer.MAX_VALUE);
+		return new SettingsModelIntegerBounded("Rows per chunk", 1, 1, Integer.MAX_VALUE);
 	}
 
 	/**
@@ -241,10 +269,8 @@ public abstract class AbstractTimedLoopStartNodeDialog extends
 	 *            if true, then the default is 7, otherwise is 0
 	 * @return the settings model integer bounded
 	 */
-	public static SettingsModelIntegerBounded createHourModel(
-			final boolean isRunToTime) {
-		return new SettingsModelIntegerBounded("Hours", isRunToTime ? 7 : 0, 0,
-				24);
+	public static SettingsModelIntegerBounded createHourModel(final boolean isRunToTime) {
+		return new SettingsModelIntegerBounded("Hours", isRunToTime ? 7 : 0, 0, 24);
 	}
 
 	/**
@@ -289,8 +315,8 @@ public abstract class AbstractTimedLoopStartNodeDialog extends
 	 * @return the settings model string
 	 */
 	public static SettingsModelString createOnMissingModel() {
-		return new SettingsModelString("Missing Value", TimedMissingValuePolicy
-				.getDefaultMethod().getActionCommand());
+		return new SettingsModelString("Missing Value",
+				TimedMissingValuePolicy.getDefaultMethod().getActionCommand());
 	}
 
 	/**

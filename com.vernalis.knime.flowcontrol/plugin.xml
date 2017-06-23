@@ -98,6 +98,16 @@
       factory-class="com.vernalis.knime.flowcontrol.nodes.timedloops.varloopend.VariableTimedLoopEndNodeFactory"
       id="VariableTimedLoopEndNodeFactory">
 </node>
+<node
+      category-path="/community/vernalis/flowcontrol/loops/timed"
+      deprecated="false"
+      factory-class="com.vernalis.knime.flowcontrol.nodes.timedloops.genericstart.LoopStartGenericForTimeNodeFactory">
+</node>
+<node
+      category-path="/community/vernalis/flowcontrol/loops/timed"
+      deprecated="false"
+      factory-class="com.vernalis.knime.flowcontrol.nodes.timedloops.genericstart.LoopStartGenericToTimeNodeFactory">
+</node>
 </extension>
    <extension point="org.knime.workbench.repository.categories">
       <category description="Nodes for Flow control" icon="icons/FlowControlGroup_16x16.png" level-id="flowcontrol" name="Flow Control" path="/community/vernalis/">

@@ -33,7 +33,7 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.loopstart.Abstrac
  * This is the model implementation of AbstractMultiPortLoopEnd. Loop end node
  * to handle optional input ports n
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @author "Stephen Roughley knime@vernalis.com"
  */
 public class AbstractMultiPortTimedLoopEndNodeModel extends AbstractMultiPortLoopEndNodeModel
 		implements LoopEndNode {
@@ -108,8 +108,8 @@ public class AbstractMultiPortTimedLoopEndNodeModel extends AbstractMultiPortLoo
 		// Get the spec for the unprocessed rows
 		// Now need to check that the loop start is a timed loop start
 		if (this.getLoopStartNode() instanceof AbstractTimedLoopStartNodeModel) {
-			m_specs[portId] = ((AbstractTimedLoopStartNodeModel) this.getLoopStartNode())
-					.getInSpec();
+			m_specs[portId] =
+					((AbstractTimedLoopStartNodeModel) this.getLoopStartNode()).getInSpec();
 		}
 
 		pushFlowVariableInt("Last Iteration", 0);
@@ -146,14 +146,14 @@ public class AbstractMultiPortTimedLoopEndNodeModel extends AbstractMultiPortLoo
 		}
 
 		// Now add the unprocessed rows from the loop start
-		AbstractTimedLoopStartNodeModel loopStartModel = (AbstractTimedLoopStartNodeModel) this
-				.getLoopStartNode();
+		AbstractTimedLoopStartNodeModel loopStartModel =
+				(AbstractTimedLoopStartNodeModel) this.getLoopStartNode();
 		outTables[portId] = loopStartModel.getUnprocessedRows(exec);
 		// And add the iteration as a flow variable - the iteration counter
 		// will be one higher!
 
 		pushFlowVariableString("End Time", loopStartModel.getEndTime().toString());
-
+		pushFlowVariableInt("Last Iteration", (int) loopStartModel.getIteration());
 		// Finally, do a reset to restore the interaction counter and result
 		// container
 		reset();

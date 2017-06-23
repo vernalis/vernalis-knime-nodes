@@ -121,6 +121,7 @@ public class AbstractChunkTimedLoopStartNodeModel extends AbstractTimedLoopStart
 		// Now generate the chunked output table
 		BufferedDataContainer container = exec.createDataContainer(table.getSpec());
 		for (int i = 0; i < rowsPerChunk && m_iterator.hasNext(); i++) {
+			exec.checkCanceled();
 			container.addRowToTable(m_iterator.next());
 		}
 		container.close();

@@ -69,10 +69,9 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.TimedNodeType;
  * Subclasses should implement {@link RunForTime} or {@link RunToTime}.
  * </p>
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @author "Stephen Roughley knime@vernalis.com"
  */
-public class AbstractVariableTimedLoopStartNodeModel extends
-		AbstractTimedLoopStartNodeModel {
+public class AbstractVariableTimedLoopStartNodeModel extends AbstractTimedLoopStartNodeModel {
 
 	// Settings models
 	/** The m_on missing. */
@@ -100,16 +99,15 @@ public class AbstractVariableTimedLoopStartNodeModel extends
 		super(new PortType[] { BufferedDataTable.TYPE },
 				new PortType[] { FlowVariablePortObject.TYPE }, nodeType);
 		synchronizeModelStati();
-		m_logger = NodeLogger
-				.getLogger(AbstractVariableTimedLoopStartNodeModel.class);
+		m_logger = NodeLogger.getLogger(AbstractVariableTimedLoopStartNodeModel.class);
 	}
 
 	/**
 	 * Synchronizes the stati of the node settings models on initialisation.
 	 */
 	private void synchronizeModelStati() {
-		TimedMissingValuePolicy selOption = TimedMissingValuePolicy
-				.valueOf(m_onMissing.getStringValue());
+		TimedMissingValuePolicy selOption =
+				TimedMissingValuePolicy.valueOf(m_onMissing.getStringValue());
 		if (selOption == TimedMissingValuePolicy.DEFAULT) {
 			m_missingDouble.setEnabled(true);
 			m_missingInteger.setEnabled(true);
@@ -126,8 +124,7 @@ public class AbstractVariableTimedLoopStartNodeModel extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException {
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException {
 
 		m_iteration = m_ZerothIteration.getIntValue();
 
@@ -150,8 +147,8 @@ public class AbstractVariableTimedLoopStartNodeModel extends
 		// Put the default values onto the variable stack if appropriate
 		// Not sure this is the optimal behaviour regards the settings, but it
 		// emulates that in the knime base tablerow to variable nodes.
-		TimedMissingValuePolicy selOption = TimedMissingValuePolicy
-				.valueOf(m_onMissing.getStringValue());
+		TimedMissingValuePolicy selOption =
+				TimedMissingValuePolicy.valueOf(m_onMissing.getStringValue());
 		if (selOption != TimedMissingValuePolicy.SKIP_ADDTOUNPROCESSED
 				&& selOption != TimedMissingValuePolicy.SKIP) {
 			pushDefaultVariables(inSpecs[0]);
@@ -171,8 +168,8 @@ public class AbstractVariableTimedLoopStartNodeModel extends
 	 * </p>
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData,
-			final ExecutionContext exec) throws Exception {
+	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
+			throws Exception {
 		BufferedDataTable table = (BufferedDataTable) inData[0];
 		long rowCount = table.size();
 
@@ -185,11 +182,9 @@ public class AbstractVariableTimedLoopStartNodeModel extends
 			pushFlowVariableString("endTime", m_endTime.toString());
 			m_logger.info("Loop execution will terminate after " + m_endTime);
 			if (isNowAfter(m_endTime)) {
-				throw new Exception(
-						"No rows executed as end time has already passed");
+				throw new Exception("No rows executed as end time has already passed");
 			}
-			m_skippedRows = exec
-					.createDataContainer(m_table.getDataTableSpec());
+			m_skippedRows = exec.createDataContainer(m_table.getDataTableSpec());
 		} else {
 			// Just some assertions for second iteration and beyond
 			assert getLoopEndNode() != null : "No end node set";
@@ -201,13 +196,13 @@ public class AbstractVariableTimedLoopStartNodeModel extends
 			// Now process the row - either it goes onto the variable stack, or
 			// it
 			// is saved for the loop end
-			boolean addToUnprocessedRows = pushVariables(
-					m_table.getDataTableSpec(), row);
+			boolean addToUnprocessedRows = pushVariables(m_table.getDataTableSpec(), row);
 			if (addToUnprocessedRows) {
 				m_skippedRows.addRowToTable(row);
 				// TODO: Maybe try again here instead of pushing the row anyway?
 			}
 		}
+		exec.checkCanceled();
 		// Update the loop counters
 		pushFlowVariableInt("currentIteration", m_iteration++);
 		pushFlowVariableInt("maxIterations", (int) rowCount);
@@ -244,8 +239,7 @@ public class AbstractVariableTimedLoopStartNodeModel extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 		super.validateSettings(settings);
 		m_onMissing.validateSettings(settings);
 		m_missingDouble.validateSettings(settings);
@@ -270,22 +264,21 @@ public class AbstractVariableTimedLoopStartNodeModel extends
 			final DataRow currentVariables) throws Exception {
 		// Start by putting the RowID onto the stack
 		final String rowIDName = "RowID";
-		pushFlowVariableString(rowIDName, currentVariables == null ? ""
-				: currentVariables.getKey().getString());
+		pushFlowVariableString(rowIDName,
+				currentVariables == null ? "" : currentVariables.getKey().getString());
 
-		final boolean fail = m_onMissing.getStringValue().equals(
-				TimedMissingValuePolicy.FAIL);
-		final boolean defaults = m_onMissing.getStringValue().equals(
-				TimedMissingValuePolicy.DEFAULT);
-		final boolean addSkippedToUnproc = m_onMissing.getStringValue().equals(
-				TimedMissingValuePolicy.SKIP_ADDTOUNPROCESSED);
+		final boolean fail = m_onMissing.getStringValue().equals(TimedMissingValuePolicy.FAIL);
+		final boolean defaults =
+				m_onMissing.getStringValue().equals(TimedMissingValuePolicy.DEFAULT);
+		final boolean addSkippedToUnproc =
+				m_onMissing.getStringValue().equals(TimedMissingValuePolicy.SKIP_ADDTOUNPROCESSED);
 		boolean retVal = false;
 
 		final DataCell[] defaultCells = createDefaultCells(variablesSpec);
 
 		// Column names which start with "knime." need to be uniquified
 		String internalNamePrefix = FlowVariable.Scope.Global.getPrefix() + ".";
-		final HashSet<String> varNames = new HashSet<String>();
+		final HashSet<String> varNames = new HashSet<>();
 		varNames.add(rowIDName);
 		final int colCnt = variablesSpec.getNumColumns();
 		for (int i = colCnt; --i >= 0;) {
@@ -307,16 +300,13 @@ public class AbstractVariableTimedLoopStartNodeModel extends
 
 			// Now sort out the value
 			final DataCell cell;
-			if (currentVariables == null
-					|| currentVariables.getCell(i).isMissing()) {
+			if (currentVariables == null || currentVariables.getCell(i).isMissing()) {
 				// A missing row or a row with missing values
 				if (fail) {
-					throw new Exception(
-							(currentVariables == null) ? "No rows in input table"
-									: "Missing values are not allowed (Row ID: "
-											+ currentVariables.getKey()
-													.getString()
-											+ "; Column \"" + baseName + "\")");
+					throw new Exception((currentVariables == null) ? "No rows in input table"
+							: "Missing values are not allowed (Row ID: "
+									+ currentVariables.getKey().getString() + "; Column \""
+									+ baseName + "\")");
 				} else if (defaults) {
 					cell = defaultCells[i];
 				} else {
@@ -332,14 +322,11 @@ public class AbstractVariableTimedLoopStartNodeModel extends
 			// Now convert the cell to the correct variable type
 			if (cell != null) {
 				if (colType.isCompatible(IntValue.class)) {
-					pushFlowVariableInt(colName,
-							((IntValue) cell).getIntValue());
+					pushFlowVariableInt(colName, ((IntValue) cell).getIntValue());
 				} else if (colType.isCompatible(DoubleValue.class)) {
-					pushFlowVariableDouble(colName,
-							((DoubleValue) cell).getDoubleValue());
+					pushFlowVariableDouble(colName, ((DoubleValue) cell).getDoubleValue());
 				} else if (colType.isCompatible(StringValue.class)) {
-					pushFlowVariableString(colName,
-							((StringValue) cell).getStringValue());
+					pushFlowVariableString(colName, ((StringValue) cell).getStringValue());
 				}
 			}
 		}
@@ -356,8 +343,7 @@ public class AbstractVariableTimedLoopStartNodeModel extends
 	 */
 	protected void pushDefaultVariables(PortObjectSpec portObjectSpec) {
 		DataTableSpec variablesSpec = (DataTableSpec) portObjectSpec;
-		final DefaultRow row = new DefaultRow("",
-				createDefaultCells(variablesSpec));
+		final DefaultRow row = new DefaultRow("", createDefaultCells(variablesSpec));
 		try {
 			pushVariables(variablesSpec, row);
 		} catch (Exception e) {
@@ -412,13 +398,12 @@ public class AbstractVariableTimedLoopStartNodeModel extends
 		// Here we use the m_skipped Rows to generate the table. This will have
 		// been initiated, but may or may not already contain any rows
 		exec.setMessage("Retrieving unprocessed rows...");
-		long rowsToRetrieve = m_table.size()
-				- ((m_iteration - m_ZerothIteration.getIntValue()) + 1);
+		long rowsToRetrieve =
+				m_table.size() - ((m_iteration - m_ZerothIteration.getIntValue()) + 1);
 		long rowcnt = 0;
 		while (m_iterator.hasNext()) {
 			exec.setProgress((double) rowcnt / rowsToRetrieve,
-					"Retrieving unprocessed row " + rowcnt++ + " of "
-							+ rowsToRetrieve);
+					"Retrieving unprocessed row " + rowcnt++ + " of " + rowsToRetrieve);
 			exec.checkCanceled();
 			m_skippedRows.addRowToTable(m_iterator.next());
 		}

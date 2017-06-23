@@ -35,7 +35,7 @@
 				loop iteration</option>
 		</tab>
 		<tab name="Expiry time">
-			<option name="End time (dd:hh:mm:ss):">The time period after which execution will finish
+			<option name="Run time (dd:hh:mm:ss):">The time period after which execution will finish
 				(dd:hh:mm:ss)</option>
 			<option name="Start value of iteration counter">Allows the user to manually set the value at
 				which the iteration

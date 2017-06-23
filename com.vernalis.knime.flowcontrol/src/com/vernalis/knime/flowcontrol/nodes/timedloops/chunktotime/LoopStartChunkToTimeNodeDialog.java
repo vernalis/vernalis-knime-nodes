@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, Vernalis (R&D) Ltd
+ * Copyright (c) 2014,2017, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -16,6 +16,7 @@ package com.vernalis.knime.flowcontrol.nodes.timedloops.chunktotime;
 
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 
+import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.TimedNodeType;
 import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.loopstart.AbstractTimedLoopStartNodeDialog;
 
 /**
@@ -29,14 +30,13 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.loopstart.Abstrac
  * 
  * @author S. Roughley
  */
-public class LoopStartChunkToTimeNodeDialog extends
-		AbstractTimedLoopStartNodeDialog {
+public class LoopStartChunkToTimeNodeDialog extends AbstractTimedLoopStartNodeDialog {
 
 	/**
 	 * New pane for configuring the LoopStartChunkToTime node.
 	 */
 	protected LoopStartChunkToTimeNodeDialog() {
-		super(true);
+		super(TimedNodeType.RUN_TO_TIME);
 
 	}
 
