@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015, Vernalis (R&D) Ltd
+ * Copyright (c) 2014, 2017, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -26,33 +26,67 @@ import org.knime.core.node.util.ButtonGroupEnumInterface;
  */
 public enum FragmentationTypes implements ButtonGroupEnumInterface {
 	ALL_ACYCLIC("All acyclic single bonds",
-			"Break all acyclic single bonds during fragmentation",
+			"Any acyclic single bonds between any two atoms will be broken. This is the most exhaustive "
+					+ "approach, which can generate a large number of pairs",
 			"[*:1]!@!=!#[*:2]>>[*:1]-[*].[*:2]-[*]"),
 
 	RING_ACYCLIC("Only acyclic single bonds to rings",
-			"Break only single acyclic bonds with at least one ring atom",
+			"Single acyclic bonds between any atoms will be broken, "
+					+ "as long as at least one atom is in a ring",
 			"[*;R:1]!@!=!#[*:2]>>[*:1]-[*].[*:2]-[*]"),
 
 	EXTENDED_RING_ACYCLIC(
 			"Only acyclic single bonds to either rings or to double bonds exocyclic to rings",
-			"Break only single acyclic bonds with at least one atom either in "
-					+ "a ring or in a double bond, the other end of which is in a ring",
+			"Single acyclic bonds between any atoms will "
+					+ "be broken, as long as 1 atom is either in a ring, or in a double "
+					+ "bond exocyclic to a ring, with the other end in the ring",
 			"[*:1]!@!=!#[*;!R0,$(*=!@[*!R0]):2]>>[*:1]-[*].[*:2]-[*]"),
 
 	HETATM_ACYCLIC("Only single bonds to a heteroatom",
-			"Break only single acyclic bonds with at least one non-C atom",
+			"Single acyclic bonds between any two atoms, at least one of which "
+					+ "is not Carbon will be broken. Included to mirror C-X bond breaking "
+					+ "chemistry prevalent in modern drug discovery (e.g. SNAr, Reductive "
+					+ "Aminations, Amide formations etc. See Ref. 2)",
 			"[!#6:1]!@!=!#[*:2]>>[*:1]-[*].[*:2]-[*]"),
 
 	HUSSAIN_GSK("Non-functional group single bonds",
-			"Break only single bonds which are not part of a functional group",
+			"This reproduces the fragmentation pattern used in the original "
+					+ "Hussein/Rea paper (See footnote 24, Ref. 1), and also used in the "
+					+ "RDKit Python implementation (Ref 3) ",
 			"[#6+0;!$(*=,#[!#6]):1]!@!=!#[*:2]>>[*:1]-[*].[*:2]-[*]"),
 
-	USER_DEFINED("User defined",
-			"Enter a reaction SMARTS transformation below", null);
+	MATSY("Matsy (One atom in ring, or a non-sp2 C atom bonded to a non-C atom)",
+			"This reproduces the fragmentation pattern used by NextMove's 'Matsy', i.e. "
+					+ "single acyclic bonds between either a ring atom and any other atom, "
+					+ "or a heteroatom bonded to a non-sp2 C atom, as described in the "
+					+ "Matched Series paper (Ref 4)",
+			"[$([#6!^2]-!@[!#6]),$([*;R]-!@[*]):1]-!@[$([!#6]-!@[#6!^2]),$([*]-!@[*;R]):2]>>"
+					+ "[*:1]-[*].[*:2]-[*]"),
+
+	PEPTIDE_SIDECHAIN("Peptide Sidechains",
+			"Acyclic single bonds from C\u03B1 to C\u03B2 will be broken.  "
+					+ "C-H will only be broken for Glycine, and only when explicit H are present "
+					+ "(both CH bonds will be broken in this case)",
+			"[C;$(CC(=O)[O,N]);$(CN):1]-!@"
+					+ "[$([C]-!@C(C(=O)[N,O])N),$([#1]-!@[CH2](C(=O)[N,O])N):2]>>"
+					+ "[*:1]-[*].[*:2]-[*]"),
+
+	NUCLEIC_ACID_SIDECHAIN("Nucleic Acid Sidechains",
+			"Acyclic single bonds in the anomeric position between the aromatic base N and "
+					+ "sugar will be broken. The minimum requirement is N(Ar)CO(CO)CO to "
+					+ "allow for open chain analogues",
+			"[n:1]-!@[$(COC(CO)CO):2]>>[*:1]-[*].[*:2]-[*]"),
+
+	USER_DEFINED("User defined", "The user needs to provide their own (r)SMARTS "
+			+ "fragmentation definition, following the guidelines below", null);
 
 	private final String m_name;
 	private final String m_tooltip;
 	private final String m_SMARTS;
+
+	private FragmentationTypes(String name, String tooltip) {
+		this(name, tooltip, null);
+	}
 
 	/**
 	 * Constructor to set properties
@@ -114,7 +148,9 @@ public enum FragmentationTypes implements ButtonGroupEnumInterface {
 		return m_SMARTS.split(">>")[0].replaceAll(".*\\](.*?)\\[.*", "$1");
 	}
 
-	/** @return Return the SMARTS for atom at the start of the bond to be broken */
+	/**
+	 * @return Return the SMARTS for atom at the start of the bond to be broken
+	 */
 	public String getFirstAtomTypeSMARTS() {
 		if (m_SMARTS == null) {
 			return null;
@@ -122,12 +158,13 @@ public enum FragmentationTypes implements ButtonGroupEnumInterface {
 		return m_SMARTS.split(">>")[0].replaceAll(".*?(\\[.*?\\]).*", "$1");
 	}
 
-	/** @return Return the SMARTS for atom at the end of the bond to be broken */
+	/**
+	 * @return Return the SMARTS for atom at the end of the bond to be broken
+	 */
 	public String getSecondAtomTypeSMARTS() {
 		if (m_SMARTS == null) {
 			return null;
 		}
-		return m_SMARTS.split(">>")[0].replaceAll(
-				".*?\\[.*?\\].*?(\\[.*?\\]).*", "$1");
+		return m_SMARTS.split(">>")[0].replaceAll(".*?\\[.*?\\].*?(\\[.*?\\]).*", "$1");
 	}
 }

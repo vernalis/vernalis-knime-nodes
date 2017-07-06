@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, Vernalis (R&D) Ltd
  * This program is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License, Version 3, as 
  * published by the Free Software Foundation.
@@ -13,7 +13,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>
  *******************************************************************************/
 /**
- * Provides Fragmentation factory interface, implementations and related exceptions
- *  for Matched Molecular Pair related nodes.
+ * Provides Fragmentation factory interface, absatract and concrete
+ * implementations, and related exceptions for Matched Molecular Pair related
+ * nodes.
  */
 package com.vernalis.knime.mmp.fragmentors;

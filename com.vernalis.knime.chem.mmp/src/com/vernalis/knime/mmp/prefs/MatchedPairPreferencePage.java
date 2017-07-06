@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, Vernalis (R&D) Ltd
+ * Copyright (c) 2015, 2017, Vernalis (R&D) Ltd
  * This program is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License, Version 3, as 
  * published by the Free Software Foundation.
@@ -59,6 +59,17 @@ public class MatchedPairPreferencePage extends FieldEditorPreferencePage
 	public static final String MMP_PREF_MAX_THREADS = MMP_PREF_KEY_BASE + "max.threads.ratio";
 
 	/**
+	 * The key for the {@code Fragment Cache Size} preference
+	 */
+	public static final String MMP_PREF_FRAGMENT_CACHE = MMP_PREF_KEY_BASE + "fragment.cache.size";
+
+	/**
+	 * Default size for the fragment cache - this value allows for 250 matching
+	 * bonds to be cached without loss
+	 */
+	public static final int DEFAULT_FRAG_CACHE_SIZE = 500;
+
+	/**
 	 * The default value for the {@code Max No. of Threads Ratio} preference
 	 */
 	public static final double DEFAULT_MAX_THREADS_TO_CORES_RATIO = 1.5;
@@ -66,8 +77,8 @@ public class MatchedPairPreferencePage extends FieldEditorPreferencePage
 	/**
 	 * The key for the {@code Queue-to-threads ratio} preference
 	 */
-	public static final String MMP_PREF_QUEUE_TO_THREADS_RATIO = MMP_PREF_KEY_BASE
-			+ "queue.threads.ratio";
+	public static final String MMP_PREF_QUEUE_TO_THREADS_RATIO =
+			MMP_PREF_KEY_BASE + "queue.threads.ratio";
 
 	/**
 	 * The default value for the {@code Queue-to-threads ratio} preference
@@ -118,9 +129,14 @@ public class MatchedPairPreferencePage extends FieldEditorPreferencePage
 		layout.fill = true;
 		parent.setLayout(layout);
 
-		BooleanFieldEditor verboseLoggingEditor = new BooleanFieldEditor(MMP_PREF_VERBOSE_LOGGING,
-				"Enable Verbose Logging", parent);
+		BooleanFieldEditor verboseLoggingEditor =
+				new BooleanFieldEditor(MMP_PREF_VERBOSE_LOGGING, "Enable Verbose Logging", parent);
 		addField(verboseLoggingEditor);
+
+		IntegerFieldEditor cacheSize =
+				new IntegerFieldEditor(MMP_PREF_FRAGMENT_CACHE, "Fragmentation Cache Size", parent);
+		cacheSize.setValidRange(1, 1000000);
+		addField(cacheSize);
 
 		// Add the parallelisation options in a new group
 		Group parallelParent = new Group(parent, parent.getStyle());
@@ -135,7 +151,7 @@ public class MatchedPairPreferencePage extends FieldEditorPreferencePage
 		IntegerFieldEditor queueRatio = new IntegerFieldEditor(MMP_PREF_QUEUE_TO_THREADS_RATIO,
 				"Ratio of Queue size to Threads Ratio " + "(smaller values will use less memory, "
 						+ "but are more likely to have more threads "
-						+ "inactive waiitng for a slow row to complete)",
+						+ "inactive waiting for a slow row to complete)",
 				parallelParent);
 		queueRatio.setValidRange(1, 5000);
 		addField(queueRatio);
@@ -149,14 +165,15 @@ public class MatchedPairPreferencePage extends FieldEditorPreferencePage
 		if (!m_defaultInitialised) {
 			m_defaultInitialised = true;
 			try {
-				MatchedPairsMultipleCutsNodePlugin plugin = MatchedPairsMultipleCutsNodePlugin
-						.getDefault();
+				MatchedPairsMultipleCutsNodePlugin plugin =
+						MatchedPairsMultipleCutsNodePlugin.getDefault();
 				if (plugin != null) {
 					final IPreferenceStore prefStore = plugin.getPreferenceStore();
 					prefStore.setDefault(MMP_PREF_VERBOSE_LOGGING, DEFAULT_VERBOSE_LOGGING);
 					prefStore.setDefault(MMP_PREF_MAX_THREADS, DEFAULT_MAX_THREADS_TO_CORES_RATIO);
 					prefStore.setDefault(MMP_PREF_QUEUE_TO_THREADS_RATIO,
 							DEFAULT_QUEUE_TO_THREADS_RATIO);
+					prefStore.setDefault(MMP_PREF_FRAGMENT_CACHE, DEFAULT_FRAG_CACHE_SIZE);
 				}
 			} catch (Exception e) {
 				;

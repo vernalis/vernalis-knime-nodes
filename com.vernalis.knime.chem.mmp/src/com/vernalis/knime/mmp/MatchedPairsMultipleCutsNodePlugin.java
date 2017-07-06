@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015, Vernalis (R&D) Ltd
+ * Copyright (c) 2014, 2017, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -38,7 +38,7 @@ import org.osgi.framework.BundleContext;
 public class MatchedPairsMultipleCutsNodePlugin extends AbstractUIPlugin {
 	// The shared instance.
 	private static MatchedPairsMultipleCutsNodePlugin plugin;
-	public static final String PLUGIN_ID = "com.vernalis.knime.internal.mmp";
+	public static final String PLUGIN_ID = "com.vernalis.knime.mmp";
 
 	/**
 	 * A ROMol Query molecule to match an attachment point

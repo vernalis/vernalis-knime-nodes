@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, Vernalis (R&D) Ltd
+ * Copyright (c) 2015, 2017, Vernalis (R&D) Ltd
  * This program is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License, Version 3, as 
  * published by the Free Software Foundation.
@@ -14,9 +14,14 @@
  *******************************************************************************/
 package com.vernalis.knime.mmp.nodes.loop;
 
+import java.io.IOException;
+
+import org.apache.xmlbeans.XmlException;
+import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
+import org.xml.sax.SAXException;
 
 /**
  * Node Factory for the Cut type loop start node
@@ -24,8 +29,7 @@ import org.knime.core.node.NodeView;
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
-public class CutTypeLoopStartNodeFactory extends
-		NodeFactory<CutTypeLoopStartNodeModel> {
+public class CutTypeLoopStartNodeFactory extends NodeFactory<CutTypeLoopStartNodeModel> {
 
 	/*
 	 * (non-Javadoc)
@@ -77,6 +81,17 @@ public class CutTypeLoopStartNodeFactory extends
 	@Override
 	protected NodeDialogPane createNodeDialogPane() {
 		return new CutTypeLoopStartNodeDialog();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.knime.core.node.NodeFactory#createNodeDescription()
+	 */
+	@Override
+	protected NodeDescription createNodeDescription()
+			throws SAXException, IOException, XmlException {
+		return new CutTypeLoopStartNodeDescription();
 	}
 
 }

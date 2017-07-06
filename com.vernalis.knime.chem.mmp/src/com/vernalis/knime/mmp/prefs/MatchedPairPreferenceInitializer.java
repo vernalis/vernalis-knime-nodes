@@ -17,14 +17,18 @@ package com.vernalis.knime.mmp.prefs;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 
 /**
+ * Preference initializer class for the Vernalis MMP nodes plugin preferences
+ * 
  * @author s.roughley
  *
  */
-public class MatchedPairPreferenceInitializer extends
-		AbstractPreferenceInitializer {
+public class MatchedPairPreferenceInitializer extends AbstractPreferenceInitializer {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#
+	 * initializeDefaultPreferences()
 	 */
 	@Override
 	public void initializeDefaultPreferences() {
