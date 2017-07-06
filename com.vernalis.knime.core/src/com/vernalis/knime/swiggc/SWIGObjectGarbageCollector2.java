@@ -1,17 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016,2017, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
- *   
+ *  
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
- ******************************************************************************/
+ *******************************************************************************/
 package com.vernalis.knime.swiggc;
 
 import java.lang.reflect.Method;
@@ -35,16 +35,16 @@ import org.knime.core.node.NodeLogger;
  * @author S Roughley knime@vernalis.com
  * 
  */
-public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
+public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Long>>
 		implements ISWIGObjectGarbageCollector {
 
 	private static final long serialVersionUID = 3403451572751057864L;
 
 	/** The logger instance. */
-	protected static final NodeLogger LOGGER = NodeLogger
-			.getLogger(SWIGObjectGarbageCollector2.class);
+	protected static final NodeLogger LOGGER =
+			NodeLogger.getLogger(SWIGObjectGarbageCollector2.class);
 
-	HashMap<Integer, Set<Object>> waveLookup = new HashMap<>();
+	HashMap<Long, Set<Object>> waveLookup = new HashMap<>();
 
 	//
 	// Constructors
@@ -95,62 +95,25 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
 	 * (non-Javadoc)
 	 * 
 	 * @see com.vernalis.knime.internal.swiggc.ISWIGObjectGarbageCollector#
-	 * markForCleanup (T, int, boolean)
-	 */
-	@Override
-	public synchronized <T extends Object> T markForCleanup(final T object, final int wave,
-			final boolean bRemoveFromOtherWave) {
-		if (object != null) {
-
-			// Remove object from any other list, if desired
-			if (bRemoveFromOtherWave || !this.containsKey(object)) {
-				Set<Integer> waves = get(object);
-				if (waves != null) {
-					// remove from wave lookup
-					for (int waveID : get(object)) {
-						waveLookup.get(waveID).remove(object);
-					}
-				}
-				Set<Integer> tmp = new HashSet<>();
-				tmp.add(wave);
-				put(object, tmp);
-
-			} else {
-				get(object).add(wave);
-			}
-
-			// Now make sure it is in the wave lookup
-			if (!waveLookup.containsKey(wave)) {
-				HashSet<Object> waveObjSet = new HashSet<Object>();
-				waveLookup.put(wave, waveObjSet);
-			}
-			waveLookup.get(wave).add(object);
-		}
-
-		return object;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.vernalis.knime.internal.swiggc.ISWIGObjectGarbageCollector#
 	 * markForCleanup (T, int)
 	 */
 	@Override
-	public synchronized <T extends Object> T markForCleanup(final T object, final int wave) {
-		return markForCleanup(object, wave, false);
-	}
+	public synchronized <T extends Object> T markForCleanup(final T object, final Long wave) {
+		if (object != null) {
+			if (!containsKey(object)) {
+				// New object
+				put(object, new HashSet<>());
+			}
+			// Add the wave to the object
+			get(object).add(wave);
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.vernalis.knime.internal.swiggc.ISWIGObjectGarbageCollector#
-	 * markForCleanup (T, boolean)
-	 */
-	@Override
-	public synchronized <T extends Object> T markForCleanup(final T object,
-			boolean bRemoveFromOtherWave) {
-		return markForCleanup(object, 0, bRemoveFromOtherWave);
+			// Now add to the lookup
+			if (!waveLookup.containsKey(wave)) {
+				waveLookup.put(wave, new HashSet<>());
+			}
+			waveLookup.get(wave).add(object);
+		}
+		return object;
 	}
 
 	/*
@@ -161,7 +124,7 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
 	 */
 	@Override
 	public synchronized <T extends Object> T markForCleanup(final T object) {
-		return markForCleanup(object, 0, false);
+		return markForCleanup(object, 0L);
 	}
 
 	/*
@@ -172,11 +135,13 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
 	 */
 	@Override
 	public synchronized void cleanupMarkedObjects() {
+		waveLookup.clear();
 		// And now run through the keys of the reference counter
 		for (Object obj : this.keySet()) {
 			cleanUpObject(obj);
 		}
 		this.clear();
+
 	}
 
 	/*
@@ -186,7 +151,7 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
 	 * cleanupMarkedObjects(int)
 	 */
 	@Override
-	public synchronized void cleanupMarkedObjects(final int wave) {
+	public synchronized void cleanupMarkedObjects(final Long wave) {
 		// Iterator<Entry<Object, Set<Integer>>> iter =
 		// this.entrySet().iterator();
 		// while (iter.hasNext()) {
@@ -199,8 +164,16 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
 		// }
 		// }
 		// }
+
+		// Loop through all the objects in the wave
+		if (!waveLookup.containsKey(wave)) {
+			LOGGER.debug("Wave ID " + wave + " not found during native object cleanup");
+			return;
+		}
 		for (Object obj : waveLookup.get(wave)) {
-			get(obj).remove(wave);
+			Set<Long> objWaves = get(obj);
+			// Remove the reference to the object from this wave
+			objWaves.remove(wave);
 			if (get(obj).size() == 0) {
 				cleanUpObject(obj);
 				remove(obj);
@@ -253,6 +226,7 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Integer>>
 	public synchronized void quarantineAndCleanupMarkedObjects(long delayMilliSec) {
 		final SWIGObjectGarbageCollector2 quarantineObjects = new SWIGObjectGarbageCollector2(this);
 		clear();
+		waveLookup.clear();
 
 		if (!quarantineObjects.isEmpty()) {
 			// Create the future cleanup task

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -13,6 +13,7 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
 /**
- * This package contains system tools
+ * This package contains classes to collect and dispose safely of native objects
+ * generated via SWIG wrappers
  */
-package com.vernalis.knime.core.system;
+package com.vernalis.knime.swiggc;

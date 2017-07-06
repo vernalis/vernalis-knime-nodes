@@ -4,14 +4,14 @@
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
- *   
+ *  
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
- ******************************************************************************/
+ *******************************************************************************/
 package com.vernalis.knime.swiggc;
 
 import java.lang.reflect.Method;
@@ -37,15 +37,12 @@ import org.knime.core.node.NodeLogger;
  * 
  */
 // TODO: Can we save some messing around using a HashSet<Object>?
-public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
-		implements ISWIGObjectGarbageCollector {
+@Deprecated
+public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>> {
 
 	Map<Object, Integer> refCount = new HashMap<>();
 
-	/**
-	 * Constructor
-	 */
-	private static final long serialVersionUID = 3403451572751057864L;
+		private static final long serialVersionUID = 3403451572751057864L;
 
 	/** The logger instance. */
 	protected static final NodeLogger LOGGER = NodeLogger
@@ -126,7 +123,6 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 	 * 
 	 * @return The same object that was passed in. Null, if null was passed in.
 	 */
-	@Override
 	public synchronized <T extends Object> T markForCleanup(final T object, final int wave,
 			final boolean bRemoveFromOtherWave) {
 		if (object != null) {
@@ -201,7 +197,6 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 	 *            "wave".
 	 * @return The same object that was passed in. Null, if null was passed in.
 	 */
-	@Override
 	public synchronized <T extends Object> T markForCleanup(final T object, final int wave) {
 		return markForCleanup(object, wave, false);
 	}
@@ -234,7 +229,6 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 	 *            "wave".
 	 * @return The same object that was passed in. Null, if null was passed in.
 	 */
-	@Override
 	public synchronized <T extends Object> T markForCleanup(final T object,
 			boolean bRemoveFromOtherWave) {
 		return markForCleanup(object, 0, bRemoveFromOtherWave);
@@ -268,7 +262,6 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 	 *            "wave".
 	 * @return The same object that was passed in. Null, if null was passed in.
 	 */
-	@Override
 	public synchronized <T extends Object> T markForCleanup(final T object) {
 		return markForCleanup(object, 0, false);
 	}
@@ -277,7 +270,6 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 	 * Frees resources for all objects that have been registered prior to this
 	 * last call using the method {@link #cleanupMarkedObjects()}.
 	 */
-	@Override
 	public synchronized void cleanupMarkedObjects() {
 		// // Loop through all waves for cleanup - we create a copy here,
 		// because
@@ -305,7 +297,6 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 	 *            A number that identifies objects registered for a certain
 	 *            "wave".
 	 */
-	@Override
 	public synchronized void cleanupMarkedObjects(final int wave) {
 		// Find the right wave list, if not found yet
 		final List<Object> list = get(wave);
@@ -369,7 +360,6 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 	 * @param delayMilliSec
 	 *            The delay before actual cleaning in ms
 	 */
-	@Override
 	public synchronized void quarantineAndCleanupMarkedObjects(long delayMilliSec) {
 		final SWIGObjectGarbageCollector quarantineObjects = new SWIGObjectGarbageCollector(this);
 		clear();
@@ -400,7 +390,6 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 	 * delays the cleanup process. It basically moves the objects of interest
 	 * into quarantine for 60 seconds.
 	 */
-	@Override
 	public synchronized void quarantineAndCleanupMarkedObjects() {
 		// Quarantine for a default delay of 60 seconds
 		quarantineAndCleanupMarkedObjects(60000);
@@ -432,20 +421,12 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>>
 	}
 
 	protected void decReferenceCount(Object obj) {
-		// if (!refCount.containsKey(obj)) {
-		// refCount.put(obj, 0);
-		// } else {
-		// int count = refCount.get(obj);
-		// count--;
-		// refCount.put(obj, count);
-		// }
-		if (refCount.containsKey(obj)) {
+		if (!refCount.containsKey(obj)) {
+			refCount.put(obj, 0);
+		} else {
 			int count = refCount.get(obj);
 			count--;
 			refCount.put(obj, count);
-			if (count == 0) {
-				refCount.remove(obj);
-			}
 		}
 	}
 }
