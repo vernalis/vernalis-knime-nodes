@@ -52,7 +52,6 @@ import com.vernalis.knime.mmp.transform.TransformUtilityFactory;
  *            The type of the reaction/transform object
  */
 public class AbstractApplyTransformNodeDialog<T, U, V> extends DefaultNodeSettingsPane {
-
 	TransformUtilityFactory<T, U, V> utilFactory;
 	private final SettingsModelDoubleBounded alphaMdl, betaMdl;
 	private final SettingsModelString similarityType;

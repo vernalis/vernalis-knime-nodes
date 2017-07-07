@@ -4,11 +4,11 @@
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
- *   
+ *  
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
@@ -25,7 +25,8 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
  * @author "Stephen Roughley  knime@vernalis.com"
  *
  */
-public class VernalisPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+public class VernalisPreferencePage extends PreferencePage implements
+		IWorkbenchPreferencePage {
 
 	/**
 	 * Constructor
