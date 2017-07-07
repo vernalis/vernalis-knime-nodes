@@ -13,7 +13,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>
  *******************************************************************************/
 /**
- * Provides Fragmentation factory interface, absatract and concrete
+ * Provides Fragmentation factory interface, abstract and concrete
  * implementations, and related exceptions for Matched Molecular Pair related
  * nodes.
  */

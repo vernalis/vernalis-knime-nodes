@@ -16,7 +16,6 @@ package com.vernalis.knime.mmp.frags.abstrct;
 
 import java.util.Collection;
 
-import org.apache.batik.css.engine.value.AbstractValue;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
 

@@ -40,8 +40,9 @@ import org.knime.core.data.vector.bitvector.SparseBitVectorCellFactory;
  * default values, which over-ride or call the three provided constructors.
  * 
  * @author Steve Roughley knime@vernalis.com
- * 
+ * @deprecated Fingerprint generation is now in the {@link RDKitLeaf} class
  */
+@Deprecated
 public abstract class DefaultFragmentKeyFingerprinted extends FragmentKey
 		implements FragmentKeyFingerprinted {
 	protected HashMap<String, ExplicitBitVect> m_apEnvironments;

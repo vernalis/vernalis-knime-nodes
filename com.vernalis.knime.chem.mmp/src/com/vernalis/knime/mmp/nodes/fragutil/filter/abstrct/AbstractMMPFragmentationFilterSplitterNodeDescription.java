@@ -66,7 +66,6 @@ public class AbstractMMPFragmentationFilterSplitterNodeDescription<T, U> extends
 
 	@Override
 	public String getIconPath() {
-		// Otherwise it is relative to the path of the node factory class
 		return getClass()
 				.getResource(isSplitter ? "MMP_Prefilter_Splitter.png" : "MMP_Prefilter_Filter.png")
 				.getFile();

@@ -37,7 +37,7 @@ public class ProgressTableHeader extends JTableHeader {
 	boolean lockAspectRatio = false;
 
 	/**
-	 * Constructur
+	 * Constructor
 	 * 
 	 * @param columnModel
 	 *            The {@link TableColumnModel} for the tables

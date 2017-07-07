@@ -36,14 +36,10 @@ import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
 /**
  * Abstract node dialog for nodes using the {@link FragmentationUtilsFactory}
  * 
- * @author s.roughley {@literal <knime@vernalis.com>}
- * 
- */
-/**
  * @author s.roughley
  *
- * @param <T>
- * @param <U>
+ * @param <T> The molecule type paramter
+ * @param <U> The matcher type parameter
  */
 public class AbstractMMPFragmentationFactoryNodeDialog<T, U> extends DefaultNodeSettingsPane {
 
@@ -263,7 +259,6 @@ public class AbstractMMPFragmentationFactoryNodeDialog<T, U> extends DefaultNode
 			addDialogComponent(new DialogComponentButtonGroup(createIncomingExplicitHsModel(),
 					"Incoming explicit H's treatment", true, IncomingExplicitHsOption.values()));
 		}
-
 		closeCurrentGroup();
 	}
 

@@ -23,7 +23,7 @@ import com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFrag
 /**
  * Node Factory class for the 'Reference' Fragment to MMP node
  * 
- * @author s.roughley {@literal <knime@vernalis.com>}
+ * @author s.roughley
  * 
  */
 public class ReferenceFrag2Pair3NodeFactory extends NodeFactory<Frag2Pair3NodeModel> {

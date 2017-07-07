@@ -55,9 +55,6 @@ public class AbstractMMPMatchingBondsRenderNodeDialog<T, U>
 	/**
 	 * @return The settings model to use for the hilited bonds
 	 */
-	/**
-	 * @return
-	 */
 	static SettingsModelColor createBondColourModel() {
 		return new SettingsModelColor(MMPConstants.BOND_COLOUR, MMPConstants.DEFAULT_BOND_COLOUR);
 	}

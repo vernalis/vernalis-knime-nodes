@@ -28,10 +28,11 @@ import org.RDKit.UInt_Vect;
  * not be meaningful.
  * 
  * @author Steve Roughley knime@vernalis.com
- * 
+ * @deprecated Fingerprinting is now provided in the {@link RDKitLeaf} class
  */
+@Deprecated
 public class FragmentKeyMorganFP extends DefaultFragmentKeyFingerprinted {
-	
+
 	private long m_radius;
 	private long m_numBits;
 	private boolean m_useChirality;
@@ -159,6 +160,7 @@ public class FragmentKeyMorganFP extends DefaultFragmentKeyFingerprinted {
 	}
 
 	/**
+	 * {@inheritDoc}
 	 * <p>
 	 * Generated a {@link FragmentKeyMorganFP} from a (possibly
 	 * multi-component) SMILES string, using default properties for fingerprint

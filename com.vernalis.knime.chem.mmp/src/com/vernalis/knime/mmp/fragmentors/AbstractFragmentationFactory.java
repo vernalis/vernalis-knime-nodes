@@ -1570,7 +1570,6 @@ public abstract class AbstractFragmentationFactory<T, U>
 		if (!cuttableBondCombos.containsKey(numCuts)) {
 
 			Set<Set<BondIdentifier>> newBondCombos = new HashSet<>();
-
 			if (numCuts == 1) {
 				for (BondIdentifier bond : matchingBonds) {
 					newBondCombos.add(Collections.singleton(bond));

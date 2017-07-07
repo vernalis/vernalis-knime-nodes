@@ -556,7 +556,7 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	}
 
 	/**
-	 * @param compthe
+	 * @param comp the
 	 *            component to find the correct index
 	 * @param localGcWave
 	 *            The GC wave for cleanup

@@ -14,7 +14,7 @@
  ******************************************************************************/
 /**
  * 
- * This class contains fragmentation utilities - factory classes for the
+ * This package contains fragmentation utilities - factory classes for the
  * generation of fragmentation-related classes
  * 
  * @see com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory

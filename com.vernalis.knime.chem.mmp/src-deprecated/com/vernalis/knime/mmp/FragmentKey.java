@@ -27,8 +27,9 @@ import org.knime.core.data.def.DoubleCell;
  * and concatenated to a multicomponent SMILES
  * 
  * @author "Stephen Roughley  knime@vernalis.com"
- * 
+ * @deprecated Implementations should use {@link RDKitFragmentKey}
  */
+@Deprecated
 public class FragmentKey implements Comparable<FragmentKey> {
 	protected ArrayList<String> m_keyComponents;
 

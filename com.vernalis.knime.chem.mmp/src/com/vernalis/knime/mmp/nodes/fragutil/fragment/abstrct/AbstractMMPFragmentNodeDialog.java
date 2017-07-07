@@ -36,6 +36,8 @@ import com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFac
 
 /**
  * Node dialog pane for the MMP Fragment nodes
+ * 
+ * @author s.roughley
  */
 public class AbstractMMPFragmentNodeDialog<T, U>
 		extends AbstractMMPFragmentationFactoryNodeDialog<T, U> {

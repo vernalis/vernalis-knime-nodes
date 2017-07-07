@@ -520,5 +520,4 @@ public class AbstractMatchedPairsFromFragmentsNodeDialog extends DefaultNodeSett
 				DataColumnSpecFilterConfiguration.FILTER_BY_DATATYPE
 						| DataColumnSpecFilterConfiguration.FILTER_BY_NAMEPATTERN);
 	}
-
 }

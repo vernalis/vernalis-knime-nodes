@@ -27,8 +27,9 @@ import org.knime.core.data.def.StringCell;
  * allow comparison and sorting for use in HashSet etc
  * 
  * @author "Stephen Roughley  knime@vernalis.com"
- * 
+ * @deprecated Implementations should use the {@link RDKitFragmentValue} class
  */
+@Deprecated
 public class FragmentValue implements Comparable<FragmentValue> {
 	private final String ID, SMILES;
 

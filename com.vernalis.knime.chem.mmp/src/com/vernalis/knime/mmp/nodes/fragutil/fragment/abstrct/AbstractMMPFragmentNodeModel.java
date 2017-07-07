@@ -578,7 +578,6 @@ public class AbstractMMPFragmentNodeModel<T, U>
 
 			final boolean stripHsAtEnd =
 					m_stripHsAtEnd.isEnabled() && m_stripHsAtEnd.getBooleanValue();
-			// addHs;
 
 			logger.info("Fragmentation SMIRKS: " + fragSMIRKS + " (Upto " + maxNumCuts + " cuts)");
 			logger.info("Using " + getNumThreads() + " threads and " + getQueueSize()
@@ -905,7 +904,6 @@ public class AbstractMMPFragmentNodeModel<T, U>
 
 			}
 		}
-
 		if (minNumCuts == 1) {
 			// Do 1 cut along all matching bonds
 			try {
@@ -1019,7 +1017,6 @@ public class AbstractMMPFragmentNodeModel<T, U>
 
 				final boolean stripHsAtEnd =
 						m_stripHsAtEnd.isEnabled() && m_stripHsAtEnd.getBooleanValue();
-				// addHs;
 
 				final AtomicLong rowIdx = new AtomicLong(1);
 

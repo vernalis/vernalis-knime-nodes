@@ -29,8 +29,9 @@ import org.knime.core.data.vector.bitvector.SparseBitVectorCell;
  * sub-class {@link FragmentKey}.
  * 
  * @author Steve Roughley knime@vernalis.com
- * 
+ * @deprecated Fingerprinting is now provided in the {@link RDKitLeaf} class
  */
+@Deprecated
 public interface FragmentKeyFingerprinted {
 
 	/**

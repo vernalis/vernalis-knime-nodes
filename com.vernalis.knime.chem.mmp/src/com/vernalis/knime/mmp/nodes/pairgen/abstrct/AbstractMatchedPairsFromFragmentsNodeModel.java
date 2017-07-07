@@ -184,6 +184,7 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 	protected final boolean presortTableByKey;
 	protected ValueGraphDistanceFingerprintComparisonType graphDistFPComparisonType;
 	protected final boolean hasTwoInputs;
+	protected final boolean showBothKeys;
 
 	// Highlighting fields
 	/** Mapping from the input row to fragments */
@@ -193,7 +194,8 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 	protected static final String SETTINGS_FILE_NAME = "internals";
 
 	/**
-	 * Constructor for the node model class with 1 in and 1 out port
+	 * Constructor for the node model class with 1 in and 1 out port, showing
+	 * only 1 key
 	 * 
 	 * @param presortTableByKey
 	 *            Should the table be presorted by key
@@ -203,18 +205,34 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 	}
 
 	/**
-	 * Constructor for the node model class
+	 * Constructor for the node model class showing only 1 key
 	 * 
 	 * @param presortTableByKey
 	 *            Should the table be presorted by key
-	 * 
 	 * @param hasTwoInputs
 	 *            Should the node have two input ports?
 	 */
 	public AbstractMatchedPairsFromFragmentsNodeModel(boolean presortTableByKey,
 			boolean hasTwoInputs) {
+		this(presortTableByKey, hasTwoInputs, false);
+	}
+
+	/**
+	 * Constructor for the node model class
+	 * 
+	 * @param presortTableByKey
+	 *            Should the table be presorted by key
+	 * @param hasTwoInputs
+	 *            Should the node have two input ports?
+	 * @param showBothKeys
+	 *            Should both L & R keys be shown if the 'show unchanging
+	 *            portion' option is selected?
+	 */
+	public AbstractMatchedPairsFromFragmentsNodeModel(boolean presortTableByKey,
+			boolean hasTwoInputs, boolean showBothKeys) {
 		super(hasTwoInputs ? 2 : 1, 1);
 		this.hasTwoInputs = hasTwoInputs;
+		this.showBothKeys = showBothKeys;
 		m_filterByDeltaHACMdl.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -1006,13 +1024,17 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 		final List<DataColumnSpec> specs = new ArrayList<>();
 
 		specs.add(createColSpec("Transformation", SmilesCellFactory.TYPE, null));
-		specs.add(createColSpec("ID (Left)", StringCell.TYPE, null));
-		specs.add(createColSpec("ID (Right)", StringCell.TYPE, null));
-		specs.add(createColSpec("Left Fragment", SmilesCell.TYPE, null));
-		specs.add(createColSpec("Right Fragment", SmilesCell.TYPE, null));
+		specs.add(createColSpec("ID (Left)", SmilesCellFactory.TYPE, null));
+		specs.add(createColSpec("ID (Right)", SmilesCellFactory.TYPE, null));
+		specs.add(createColSpec("Left Fragment", SmilesCellFactory.TYPE, null));
+		specs.add(createColSpec("Right Fragment", SmilesCellFactory.TYPE, null));
 		if (m_includeUnchangingPortions.getBooleanValue()) {
-			specs.add(createColSpec("Key", SmilesCell.TYPE, null));
-			// specs.add(createColSpec("Key (Right)", SmilesCell.TYPE, null));
+			if (showBothKeys) {
+				specs.add(createColSpec("Key (Left)", SmilesCellFactory.TYPE, null));
+				specs.add(createColSpec("Key (Right)", SmilesCellFactory.TYPE, null));
+			} else {
+				specs.add(createColSpec("Key", SmilesCellFactory.TYPE, null));
+			}
 		}
 		if (m_includeHACount.getBooleanValue()) {
 			specs.add(createColSpec("Changing Heavy Atoms (Left)", IntCell.TYPE, null));
@@ -1245,7 +1267,9 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 		cells.add(rightVal.getSMILESCell());
 		if (m_includeUnchangingPortions.getBooleanValue()) {
 			cells.add(leftKey.getKeyAsDataCell());
-			// cells.add(rightKey.getKeyAsDataCell());
+			if (showBothKeys) {
+				cells.add(rightKey.getKeyAsDataCell());
+			}
 		}
 		if (m_includeHACount.getBooleanValue()) {
 			cells.add(leftVal.getNumberChangingAtomsCell());

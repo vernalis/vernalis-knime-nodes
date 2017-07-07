@@ -36,8 +36,10 @@ import org.knime.core.node.NodeModel;
  * {@link #doRDKitFragmentation(ROMol, String, int, String, boolean, ExecutionContext)}
  * 
  * @author "Stephen Roughley  knime@vernalis.com"
- * 
+ * @deprecated All methods are inefficient and replaced with methods in the
+ *             {@link RDKitFragmentationUtils} class
  */
+@Deprecated
 public class RDKitFragment {
 	private RDKitFragment() {
 		// Dont instantiate
@@ -107,6 +109,8 @@ public class RDKitFragment {
 	 * @return {@link HashMap} of {@link FragmentKey}s linking to
 	 *         {@link TreeSet} of {@link FragmentValue}s
 	 * @throws CanceledExecutionException
+	 * @see {@link #doRDKitFragmentation(ROMol, String, int, String, boolean)}
+	 *      for preferred entry point
 	 */
 	public static HashMap<FragmentKey, TreeSet<FragmentValue>> doRDKitFragmentation(
 			HashMap<FragmentKey, TreeSet<FragmentValue>> fragments,
@@ -160,6 +164,8 @@ public class RDKitFragment {
 	 * 
 	 * @param exec
 	 * @throws CanceledExecutionException
+	 * 
+	 * @see #doRDKitFragmentation(HashMap, int, String, boolean)
 	 */
 	private static HashMap<FragmentKey, TreeSet<FragmentValue>> runRDKitFragment(
 			ROMol roMol, String id, String fragSMIRKS, Integer cutIndex,
@@ -237,6 +243,8 @@ public class RDKitFragment {
 	 * @return An {@link ArrayList} of {@link DataCell}s for each new transform
 	 *         to be added derived from the {@link TreeSet} of
 	 *         {@link FragmentValue}s
+	 * @see #getTransforms(TreeSet, FragmentKey, int, boolean, boolean, boolean,
+	 *      boolean)
 	 */
 	public static ArrayList<DataCell[]> getTransforms(
 			TreeSet<FragmentValue> fragmentValues, int numNewCols,
@@ -336,6 +344,7 @@ public class RDKitFragment {
 	 * @return An {@link ArrayList} of {@link DataCell}s for each new transform
 	 *         to be added derived from the {@link TreeSet} of
 	 *         {@link FragmentValue}s
+	 * @see #getTransforms(TreeSet, int, boolean, boolean)
 	 */
 	public static ArrayList<DataCell[]> getTransforms(
 			TreeSet<FragmentValue> fragmentValues, FragmentKey fragmentKey,
@@ -473,8 +482,8 @@ public class RDKitFragment {
 	/**
 	 * Convenience method to apply the fragmentation to an ROMol input object
 	 * 
-	 * @deprecated use
-	 *             {@link #doRDKitFragmentation(HashMap, int, String, boolean, ExecutionContext)}
+	 * @deprecated
+	 * @see #doRDKitFragmentation(HashMap, int, String, boolean)
 	 */
 	@Deprecated
 	public static HashMap<FragmentKey, TreeSet<FragmentValue>> doRDKitFragmentationFromRxn(
@@ -496,8 +505,8 @@ public class RDKitFragment {
 	/**
 	 * This method performs multiple layers of fragmentation by recursion
 	 * 
-	 * @deprecated use
-	 *             {@link #doRDKitFragmentation(HashMap, int, String, boolean, ExecutionContext)}
+	 * @deprecated
+	 * @see #doRDKitFragmentation(HashMap, int, String, boolean)
 	 */
 	@Deprecated
 	public static HashMap<FragmentKey, TreeSet<FragmentValue>> doRDKitFragmentationFromRxn(
@@ -540,8 +549,8 @@ public class RDKitFragment {
 	/**
 	 * This method actually runs a fragmentation - public use is discouraged!
 	 * 
-	 * @deprecated Use
-	 *             {@link #runRDKitFragment(ROMol, String, String, Integer, boolean, ExecutionContext)}
+	 * @deprecated
+	 * @see #runRDKitFragment(ROMol, String, String, Integer, boolean)
 	 */
 	@Deprecated
 	public static HashMap<FragmentKey, TreeSet<FragmentValue>> runRDKitFragmentFromRxn(

@@ -422,13 +422,6 @@ public class AbstractApplyTransformNodeModel<T, U, V> extends NodeModel {
 					transforms.add(transformUtilFactory.generateReactionFromRSmarts(rSMARTS, false,
 							index));
 				}
-
-				// transforms =
-				// transformUtilFactory.generateReactionFromRSmarts(transformsrSMARTS[0],
-				// false, index);
-				// entTransform = transformUtilFactory
-				// .generateReactionFromRSmarts(transformsrSMARTS[1], false,
-				// index);
 			} else {
 				transforms = Collections.singleton(transformUtilFactory
 						.generateReactionFromRSmarts(transformSMARTS, false, index));
@@ -547,17 +540,6 @@ public class AbstractApplyTransformNodeModel<T, U, V> extends NodeModel {
 					productSmiles.addAll(transformUtilFactory.getTransformedMoleculesSmiles(mol,
 							trans, okMatchAtoms, tryChiralProductsMdl.getBooleanValue(), index));
 				}
-				// productSmiles =
-				// transformUtilFactory.getTransformedMoleculesSmiles(mol,
-				// transforms,
-				// okMatchAtoms, tryChiralProductsMdl.getBooleanValue(), index);
-				// if (tryChiralProductsMdl.getBooleanValue()) {
-				// productSmiles.addAll(
-				// transformUtilFactory.getTransformedMoleculesSmiles(mol,
-				// entTransform,
-				// okMatchAtoms, tryChiralProductsMdl.getBooleanValue(),
-				// index));
-				// }
 			} catch (ToolkitException e) {
 				continue;
 			}
