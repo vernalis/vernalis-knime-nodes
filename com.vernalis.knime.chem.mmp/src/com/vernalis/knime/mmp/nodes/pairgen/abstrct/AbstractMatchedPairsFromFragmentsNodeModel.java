@@ -1024,8 +1024,8 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 		final List<DataColumnSpec> specs = new ArrayList<>();
 
 		specs.add(createColSpec("Transformation", SmilesCellFactory.TYPE, null));
-		specs.add(createColSpec("ID (Left)", SmilesCellFactory.TYPE, null));
-		specs.add(createColSpec("ID (Right)", SmilesCellFactory.TYPE, null));
+		specs.add(createColSpec("ID (Left)", StringCell.TYPE, null));
+		specs.add(createColSpec("ID (Right)", StringCell.TYPE, null));
 		specs.add(createColSpec("Left Fragment", SmilesCellFactory.TYPE, null));
 		specs.add(createColSpec("Right Fragment", SmilesCellFactory.TYPE, null));
 		if (m_includeUnchangingPortions.getBooleanValue()) {
