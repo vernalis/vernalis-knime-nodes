@@ -45,7 +45,7 @@ class ProgressTableModel extends AbstractTableModel {
 	}
 
 	@Override
-	public int getRowCount() {
+	public synchronized int getRowCount() {
 		return numThreads;
 	}
 
@@ -70,7 +70,7 @@ class ProgressTableModel extends AbstractTableModel {
 	}
 
 	@Override
-	public Object getValueAt(int row, int col) {
+	public synchronized Object getValueAt(int row, int col) {
 		if (row < indices.size()) {
 			switch (col) {
 			case 0:
@@ -114,18 +114,20 @@ class ProgressTableModel extends AbstractTableModel {
 	 * @param index
 	 *            Index of the transform to remove from the table
 	 */
-	public void removeTransfrom(Long index) {
+	public synchronized void removeTransfrom(Long index) {
 		int idx = indices.indexOf(index);
+		// if (idx >= 0 && idx < indices.size()) {
 		indices.remove(idx);
 		transformProgress.remove(idx);
 		transformSmarts.remove(idx);
 		fireTableRowsDeleted(idx, idx);
+		// }
 	}
 
 	/**
 	 * Clear all the table rows
 	 */
-	public void clear() {
+	public synchronized void clear() {
 		int size = indices.size();
 		indices.clear();
 		transformProgress.clear();

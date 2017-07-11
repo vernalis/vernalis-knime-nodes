@@ -681,9 +681,9 @@ public class AbstractApplyTransformNodeModel<T, U, V> extends NodeModel {
 			}
 		}
 
-		if (filterByRxnEnvironmentMdl.getBooleanValue()) {
+		if (filterByRxnEnvironmentMdl.isEnabled() && filterByRxnEnvironmentMdl.getBooleanValue()) {
 
-			// Check the fpCol is a reaction
+			// Check the fpCol is a f
 			DataColumnSpec fpColSpec =
 					rxnTableSpec.getColumnSpec(keyAPFPColNameMdl.getStringValue());
 
@@ -721,19 +721,28 @@ public class AbstractApplyTransformNodeModel<T, U, V> extends NodeModel {
 			}
 
 			DataColumnProperties fpColProps = fpColSpec.getProperties();
-			if (!fpColProps.getProperty("Toolkit").equals(transformUtilFactory.getToolkitName())) {
-				throw new InvalidSettingsException(
-						"Fingerprints were generated with a different toolkit ("
-								+ fpColProps.getProperty("Toolkit") + ")");
+			if (fpColProps.containsProperty("Toolkit")) {
+				if (!fpColProps.getProperty("Toolkit")
+						.equals(transformUtilFactory.getToolkitName())) {
+					throw new InvalidSettingsException(
+							"Fingerprints were generated with a different toolkit ("
+									+ fpColProps.getProperty("Toolkit") + ")");
+				}
+				fpLength = Integer.parseInt(fpColProps.getProperty("Length"));
+				fpMorganRadius = Integer.parseInt(fpColProps.getProperty("Radius"));
+				fpUseBondTypes = fpColProps.containsProperty("Use bond types")
+						? Boolean.parseBoolean(fpColProps.getProperty("Use bond types"))
+						: MMPConstants.DEFAULT_USE_BOND_TYPES;
+				fpUseChirality = fpColProps.containsProperty("Use chirality")
+						? Boolean.parseBoolean(fpColProps.getProperty("Use chirality"))
+						: MMPConstants.DEFAULT_USE_CHIRALITY;
+			} else {
+				setWarningMessage("No fingerprint header - using defaults");
+				fpLength = (int) MMPConstants.DEFAULT_FP_LENGTH;
+				fpMorganRadius = (int) MMPConstants.DEFAULT_FP_RADIUS;
+				fpUseBondTypes = MMPConstants.DEFAULT_USE_BOND_TYPES;
+				fpUseChirality = MMPConstants.DEFAULT_USE_CHIRALITY;
 			}
-			fpLength = Integer.parseInt(fpColProps.getProperty("Length"));
-			fpMorganRadius = Integer.parseInt(fpColProps.getProperty("Radius"));
-			fpUseBondTypes = fpColProps.containsProperty("Use bond types")
-					? Boolean.parseBoolean(fpColProps.getProperty("Use bond types"))
-					: MMPConstants.DEFAULT_USE_BOND_TYPES;
-			fpUseChirality = fpColProps.containsProperty("Use chirality")
-					? Boolean.parseBoolean(fpColProps.getProperty("Use chirality"))
-					: MMPConstants.DEFAULT_USE_CHIRALITY;
 
 			// Find the indices of the correct set of fingerprint columns
 			Pattern fpColPattern =

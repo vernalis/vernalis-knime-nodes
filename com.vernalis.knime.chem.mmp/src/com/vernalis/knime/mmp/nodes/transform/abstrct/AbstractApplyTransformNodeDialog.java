@@ -67,7 +67,7 @@ public class AbstractApplyTransformNodeDialog<T, U, V> extends DefaultNodeSettin
 		@Override
 		public boolean includeColumn(DataColumnSpec colSpec) {
 			return colSpec.getType() == DenseBitVectorCell.TYPE
-					&& colSpec.getName().matches("Attachment point 1 fingerprint.*(L).*");
+					&& colSpec.getName().matches("Attachment point 1 fingerprint.*?\\(L\\).*");
 		}
 
 		@Override
