@@ -1,0 +1,1 @@
+Deprecated Literature PMI properties node as content is now replicated and expanded upon in the generic properties node framework

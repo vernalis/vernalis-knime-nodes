@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="com.vernalis.knime.update"
+      label="Vernalis Update Site"
+      version="1.0.0.qualifier">
+
+   <includes
+         id="com.vernalis.knime.feature"
+         version="0.0.0"/>
+
+   <includes
+         id="com.vernalis.knime.testing.feature"
+         version="0.0.0"/>
+
+</feature>
