@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.CancellationException;
@@ -150,8 +151,10 @@ public class AbstractApplyTransformNodeModel<T, U, V> extends NodeModel {
 	private int[] rxnKeepColIdxs, molKeepColIdxs;
 
 	// Some fields for the view to access
-	protected TreeMap<Long, Double> transformProgress = new TreeMap<>();
-	protected TreeMap<Long, String> transformSMARTSMap = new TreeMap<>();
+	protected SortedMap<Long, Double> transformProgress =
+			Collections.synchronizedSortedMap(new TreeMap<>());
+	protected SortedMap<Long, String> transformSMARTSMap =
+			Collections.synchronizedSortedMap(new TreeMap<>());
 	protected double totalProgress = -1;
 
 	/*
@@ -778,9 +781,8 @@ public class AbstractApplyTransformNodeModel<T, U, V> extends NodeModel {
 
 		DataColumnSpec[] outSpecs = new DataColumnSpec[colCnt];
 		int colIdx = 0;
-		outSpecs[colIdx++] =
-				new DataColumnSpecCreator("Transformed Molecule", SmilesCellFactory.TYPE)
-						.createSpec();
+		outSpecs[colIdx++] = new DataColumnSpecCreator("Transformed Molecule",
+				MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE).createSpec();
 		if (molColNameMdl.getStringValue().equals(rxnColNameMdl.getStringValue())) {
 			DataColumnSpecCreator specFact = new DataColumnSpecCreator(
 					molTableSpec.getColumnSpec(molColNameMdl.getStringValue()));

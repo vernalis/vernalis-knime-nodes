@@ -21,7 +21,10 @@ import java.util.HashMap;
 import org.knime.chem.types.SmilesCell;
 import org.knime.chem.types.SmilesCellFactory;
 import org.knime.core.data.DataCell;
+import org.knime.core.data.DataType;
 import org.knime.core.data.def.DoubleCell;
+
+import com.vernalis.knime.mmp.MMPConstants;
 
 /**
  * The abstract implementation of a Fragmenation Key. A key comprises a number
@@ -187,7 +190,14 @@ public abstract class AbstractFragmentKey<T> implements Comparable<AbstractFragm
 	 * @return A {@link SmilesCell} of the correct type
 	 */
 	public DataCell getKeyAsDataCell() {
-		return SmilesCellFactory.create(this.getKeyAsString());
+		return SmilesCellFactory.createAdapterCell(this.getKeyAsString());
+	}
+
+	/**
+	 * @return The cell type to use in specs
+	 */
+	public DataType getCellType() {
+		return MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE;
 	}
 
 	/**

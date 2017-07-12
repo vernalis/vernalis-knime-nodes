@@ -115,18 +115,20 @@ public class AbstractApplyTransformProgressNodeView<T, U, V>
 			overallProgress.setValue((int) (100.0 * getNodeModel().totalProgress));
 			int i = 0;
 			try {
-				Iterator<Entry<Long, Double>> iter =
-						getNodeModel().transformProgress.entrySet().iterator();
-				while (iter.hasNext() && i < transformProgressBars.length) {
-					Entry<Long, Double> prog = iter.next();
-					transformProgressLabels[i].setText("Transform " + prog.getKey());
-					transformProgressLabels[i]
-							.setToolTipText(getNodeModel().transformSMARTSMap.get(prog.getKey()));
-					transformProgressBars[i].setValue((int) (prog.getValue() * 100.0));
-					if (!transformProgressBars[i].isVisible()) {
-						transformProgressBars[i].setVisible(true);
+				synchronized (getNodeModel().transformProgress) {
+					Iterator<Entry<Long, Double>> iter =
+							getNodeModel().transformProgress.entrySet().iterator();
+					while (iter.hasNext() && i < transformProgressBars.length) {
+						Entry<Long, Double> prog = iter.next();
+						transformProgressLabels[i].setText("Transform " + prog.getKey());
+						transformProgressLabels[i].setToolTipText(
+								getNodeModel().transformSMARTSMap.get(prog.getKey()));
+						transformProgressBars[i].setValue((int) (prog.getValue() * 100.0));
+						if (!transformProgressBars[i].isVisible()) {
+							transformProgressBars[i].setVisible(true);
+						}
+						i++;
 					}
-					i++;
 				}
 				while (i < transformProgressBars.length) {
 					transformProgressLabels[i].setText("");

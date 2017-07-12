@@ -119,6 +119,7 @@ import com.vernalis.knime.dialog.components.SettingsModelDoubleBoundedRerangable
 import com.vernalis.knime.dialog.components.SettingsModelIntegerBoundedRerangable;
 import com.vernalis.knime.dialog.components.SettingsModelIntegerRange;
 import com.vernalis.knime.iterators.PairwiseIterable;
+import com.vernalis.knime.mmp.MMPConstants;
 import com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin;
 import com.vernalis.knime.mmp.frags.simple.SimpleFragmentKey;
 import com.vernalis.knime.mmp.frags.simple.SimpleFragmentValue;
@@ -922,14 +923,14 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 		// Try autoguessing the 3 column names and validating selection
 		m_FragKeyColName
 				.setStringValue(guessColumnName(inSpecs[0], m_FragKeyColName.getStringValue(),
-						SmilesCell.TYPE, "'Key'", inSpecs[0].getNumColumns() - 1));
+						SmilesCellFactory.TYPE, "'Key'", inSpecs[0].getNumColumns() - 1));
 		m_IDColName.setStringValue(guessColumnName(inSpecs[0], m_IDColName.getStringValue(),
 				StringCell.TYPE, "ID", inSpecs[0].getNumColumns() - 1));
 
 		// Start looking from the fragment before
 		m_FragValColName
 				.setStringValue(guessColumnName(inSpecs[0], m_FragValColName.getStringValue(),
-						SmilesCell.TYPE, "'Value'", inSpecs[0].getNumColumns() - 1));
+						SmilesCellFactory.TYPE, "'Value'", inSpecs[0].getNumColumns() - 1));
 
 		// Now check the 2 SMILES columns are different
 		if (m_FragKeyColName.getStringValue().equals(m_FragValColName.getStringValue())) {
@@ -1023,17 +1024,22 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 
 		final List<DataColumnSpec> specs = new ArrayList<>();
 
-		specs.add(createColSpec("Transformation", SmilesCellFactory.TYPE, null));
+		specs.add(createColSpec("Transformation", MMPConstants.DEFAULT_TRANSFORM_TYPE, null));
 		specs.add(createColSpec("ID (Left)", StringCell.TYPE, null));
 		specs.add(createColSpec("ID (Right)", StringCell.TYPE, null));
-		specs.add(createColSpec("Left Fragment", SmilesCellFactory.TYPE, null));
-		specs.add(createColSpec("Right Fragment", SmilesCellFactory.TYPE, null));
+		specs.add(createColSpec("Left Fragment", MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE,
+				null));
+		specs.add(createColSpec("Right Fragment", MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE,
+				null));
 		if (m_includeUnchangingPortions.getBooleanValue()) {
 			if (showBothKeys) {
-				specs.add(createColSpec("Key (Left)", SmilesCellFactory.TYPE, null));
-				specs.add(createColSpec("Key (Right)", SmilesCellFactory.TYPE, null));
+				specs.add(createColSpec("Key (Left)",
+						MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE, null));
+				specs.add(createColSpec("Key (Right)",
+						MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE, null));
 			} else {
-				specs.add(createColSpec("Key", SmilesCellFactory.TYPE, null));
+				specs.add(createColSpec("Key", MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE,
+						null));
 			}
 		}
 		if (m_includeHACount.getBooleanValue()) {

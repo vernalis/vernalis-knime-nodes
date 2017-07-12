@@ -31,6 +31,8 @@ import org.knime.core.data.vector.bytevector.DenseByteVector;
 import org.knime.core.data.vector.bytevector.DenseByteVectorCell;
 import org.knime.core.data.vector.bytevector.DenseByteVectorCellFactory;
 
+import com.vernalis.knime.mmp.MMPConstants;
+
 /**
  * The abstract implementation of the Fragmentation 'Value' component.
  * 
@@ -117,6 +119,13 @@ public abstract class AbstractFragmentValue<T> implements Comparable<AbstractFra
 	}
 
 	/**
+	 * @return The cell type to use in specs
+	 */
+	public DataType getSMILESCellType() {
+		return MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE;
+	}
+
+	/**
 	 * Get the SMILES as a {@link DataCell}
 	 */
 	public SmilesAdapterCell getSMILESCell() {
@@ -128,6 +137,13 @@ public abstract class AbstractFragmentValue<T> implements Comparable<AbstractFra
 	 */
 	public String getID() {
 		return ID;
+	}
+
+	/**
+	 * @return The cell type to use in specs
+	 */
+	public DataType getIDCellType() {
+		return StringCell.TYPE;
 	}
 
 	/**

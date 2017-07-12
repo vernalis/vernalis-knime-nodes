@@ -65,7 +65,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.knime.chem.types.SmilesCell;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnProperties;
 import org.knime.core.data.DataColumnSpec;
@@ -115,6 +114,7 @@ import org.knime.core.node.streamable.StreamableOperator;
 import org.knime.core.util.MultiThreadWorker;
 
 import com.vernalis.knime.mmp.IncomingMoleculeException;
+import com.vernalis.knime.mmp.MMPConstants;
 import com.vernalis.knime.mmp.ToolkitException;
 import com.vernalis.knime.mmp.fragmentors.AbstractFragmentationFactory;
 import com.vernalis.knime.mmp.fragmentors.ClosedFactoryException;
@@ -417,9 +417,13 @@ public class AbstractMMPFragmentNodeModel<T, U>
 		DataColumnSpec[] specs = new DataColumnSpec[numCols];
 		int i = 0;
 		specs[i++] = createColSpec("ID", StringCell.TYPE);
-		specs[i++] = createColSpec("Fragmentation 'Key' (" + (isMulticut ? "Upto " : "")
-				+ m_numCuts.getIntValue() + " bond cuts)", SmilesCell.TYPE);
-		specs[i++] = createColSpec("Fragmentation 'Value'", SmilesCell.TYPE);
+		specs[i++] =
+				createColSpec(
+						"Fragmentation 'Key' (" + (isMulticut ? "Upto " : "")
+								+ m_numCuts.getIntValue() + " bond cuts)",
+						MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE);
+		specs[i++] = createColSpec("Fragmentation 'Value'",
+				MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE);
 
 		if (renderFragmentationMdl != null && renderFragmentationMdl.getBooleanValue()) {
 			specs[i++] =

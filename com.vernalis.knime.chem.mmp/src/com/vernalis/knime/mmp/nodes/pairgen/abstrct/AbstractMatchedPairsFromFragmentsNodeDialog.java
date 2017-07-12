@@ -18,6 +18,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.knime.chem.types.SmilesCellFactory;
+import org.knime.chem.types.SmilesValue;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
@@ -105,7 +106,8 @@ public class AbstractMatchedPairsFromFragmentsNodeDialog extends DefaultNodeSett
 
 					@Override
 					public boolean includeColumn(DataColumnSpec colSpec) {
-						return colSpec.getType() == SmilesCellFactory.TYPE
+						return (colSpec.getType() == SmilesCellFactory.TYPE
+								|| colSpec.getType().isAdaptable(SmilesValue.class))
 								&& colSpec.getName().startsWith("Fragmentation 'Key'");
 					}
 
@@ -127,7 +129,8 @@ public class AbstractMatchedPairsFromFragmentsNodeDialog extends DefaultNodeSett
 
 					@Override
 					public boolean includeColumn(DataColumnSpec colSpec) {
-						return colSpec.getType() == SmilesCellFactory.TYPE
+						return (colSpec.getType() == SmilesCellFactory.TYPE
+								|| colSpec.getType().isAdaptable(SmilesValue.class))
 								&& colSpec.getName().startsWith("Fragmentation 'Value'");
 					}
 

@@ -17,6 +17,8 @@ package com.vernalis.knime.mmp;
 import java.awt.Color;
 
 import org.RDKit.Bond.BondStereo;
+import org.knime.chem.types.SmilesAdapterCell;
+import org.knime.core.data.DataType;
 
 /**
  * A variety of constants and default settings values for the MMP plugin
@@ -25,6 +27,17 @@ import org.RDKit.Bond.BondStereo;
  * 
  */
 public class MMPConstants {
+
+	/**
+	 * The default column type for molecule outputs (i.e. transformed molecules,
+	 * fragmentation components)
+	 */
+	public static final DataType DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE =
+			SmilesAdapterCell.RAW_TYPE;
+
+	/** The default column type for Transform (i.e.) reaction outputs */
+	public static final DataType DEFAULT_TRANSFORM_TYPE = SmilesAdapterCell.RAW_TYPE;
+
 	/** Default add attachment point fingerprints */
 	public static final boolean DEFAULT_ADD_AP_FINGERPRINTS = true;
 
