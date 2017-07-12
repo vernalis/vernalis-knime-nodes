@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-SymbolicName: com.vernalis.knime.chem.mmp;singleton:=true
+Bundle-Version: 1.11.2.qualifier
+Bundle-ClassPath: matchedpairsmultiplecuts.jar
+Bundle-Activator: com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin
+Bundle-Vendor: %Bundle-Vendor
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.base,
+ org.knime.chem.base,
+ org.knime.chem.types,
+ org.rdkit.knime.types,
+ com.vernalis.knime.core;bundle-version="1.5.0",
+ org.eclipse.osgi,
+ org.knime.ext.svg;bundle-version="[3.0.0,4.0.0)"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: com.vernalis.knime.mmp,
+ com.vernalis.knime.mmp.nodes.frag2pair,
+ com.vernalis.knime.mmp.nodes.rdkit.abstrct,
+ com.vernalis.knime.mmp.nodes.rdkit.fragment,
+ com.vernalis.knime.mmp.nodes.rdkit.multicut
+
