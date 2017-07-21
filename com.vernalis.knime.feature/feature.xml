@@ -2,7 +2,7 @@
 <feature
       id="com.vernalis.knime.feature"
       label="Vernalis KNIME Nodes"
-      version="1.11.2.qualifier"
+      version="1.12.0.qualifier"
       provider-name="Vernalis"
       plugin="com.vernalis.knime.core">
 
@@ -755,6 +755,12 @@ Public License instead of this License.  But first, please read
 
    <plugin
          id="com.vernalis.knime.io"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.vernalis.knime.fingerprint"
          download-size="0"
          install-size="0"
          version="0.0.0"/>

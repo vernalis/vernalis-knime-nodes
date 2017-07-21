@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./fp_from_listcell.png" type="Manipulator"
+	xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
+	<name>Fingerprint From Set Bits list</name>
+
+	<shortDescription>
+        Convert to a fingerprint column from a list of set bits
+    </shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				This node converts to a fingerprint column from a column
+				containing a list of set bits
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+		</intro>
+
+
+		<option name="Select the Length column">The column containing the length of the
+			fingerprint
+		</option>
+		<option name="Select the list of set bits column">A collection column containing long or integer
+			cells listing the set bits</option>
+		<option name="Keep input columns">If true, the input columns are kept
+		</option>
+		<option name="Fingerprint Type">The fingerprint type for the output</option>
+
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Set bits">Input table containing a list of lengths and set bits
+		</inPort>
+
+		<outPort index="0" name="BitVector Fingerprint">Output table with BitVector
+			fingerprint
+		</outPort>
+
+	</ports>
+
+</knimeNode>
