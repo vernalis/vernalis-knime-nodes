@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
 import com.vernalis.knime.fingerprint.nodes.abstrct.desc.AbstractSinglePortFingerprintNodeDescription;
 import com.vernalis.knime.fingerprint.nodes.abstrct.dialog.AbstractSingleFingerprintNodeDialog;
 import com.vernalis.knime.fingerprint.nodes.abstrct.model.AbstractSingleFingerprintNodeModel;
-import com.vernalis.knime.internal.misc.EitherOr;
+import com.vernalis.knime.misc.EitherOr;
 
 /**
  * Abstract Node Factory class implementation for Single Fingerprint nodes

@@ -14,11 +14,6 @@
  ******************************************************************************/
 package com.vernalis.knime.mmp.nodes.loop;
 
-import static com.vernalis.knime.mmp.nodes.abstrct.NodeDescriptionUtils.addDevelopedByVernalis;
-import static com.vernalis.knime.mmp.nodes.abstrct.NodeDescriptionUtils.addFragmentationOptionsDiscription;
-import static com.vernalis.knime.mmp.nodes.abstrct.NodeDescriptionUtils.addOptionWithoutTab;
-import static com.vernalis.knime.mmp.nodes.abstrct.NodeDescriptionUtils.insertReference;
-
 import org.apache.xmlbeans.XmlCursor;
 import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeFactory.NodeType;
@@ -34,6 +29,11 @@ import org.knime.node2012.ViewsDocument.Views;
 import org.w3c.dom.Element;
 
 import com.vernalis.knime.mmp.FragmentationTypes;
+
+import static com.vernalis.knime.mmp.nodes.abstrct.MMPNodeDescriptionUtils.addFragmentationOptionsDiscription;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionWithoutTab;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.insertReference;
 
 /**
  * Node description which builds the node description for the 'Cut Type Loop

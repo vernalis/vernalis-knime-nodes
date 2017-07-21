@@ -20,7 +20,7 @@ import java.util.Map;
 import org.knime.core.node.NodeDialogPane;
 
 import com.vernalis.knime.fingerprint.nodes.abstrct.factory.AbstractSingleFingerprintNodeFactory;
-import com.vernalis.knime.internal.misc.EitherOr;
+import com.vernalis.knime.misc.EitherOr;
 
 /**
  * @author "Stephen Roughley knime@vernalis.com"

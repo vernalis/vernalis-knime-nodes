@@ -16,7 +16,7 @@ package com.vernalis.knime.fingerprint.nodes.abstrct.desc;
 
 import java.util.Map;
 
-import com.vernalis.knime.internal.misc.EitherOr;
+import com.vernalis.knime.misc.EitherOr;
 
 /**
  * A convenience type to allow port names and descriptions to be passed in as

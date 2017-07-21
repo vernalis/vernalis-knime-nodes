@@ -12,14 +12,18 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
-package com.vernalis.knime.mmp.nodes.abstrct;
+package com.vernalis.knime.nodes;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 
 import org.apache.xmlbeans.XmlCursor;
 import org.knime.node2012.FullDescriptionDocument.FullDescription;
 import org.knime.node2012.OptionDocument.Option;
 import org.knime.node2012.TabDocument.Tab;
 
-import com.vernalis.knime.mmp.FragmentationTypes;
+import com.vernalis.knime.misc.EitherOr;
 
 /**
  * Utility class to proved tools to build Node Descriptions
@@ -30,60 +34,6 @@ import com.vernalis.knime.mmp.FragmentationTypes;
 public class NodeDescriptionUtils {
 	private NodeDescriptionUtils() {
 		// Utility Class - Do not Instantiate
-	}
-
-	/**
-	 * Method to add the {@link FragmentationTypes} descriptions
-	 * 
-	 * @param introCursor
-	 *            The cursor
-	 */
-	public static void addFragmentationOptionsDiscription(XmlCursor introCursor) {
-		introCursor.beginElement("p");
-		introCursor.insertChars("A variety of fragmentation options are included:");
-		introCursor.beginElement("ol");
-		for (FragmentationTypes type : FragmentationTypes.values()) {
-			introCursor.insertElementWithText("li", "\"" + type.getText() + "\" - "
-					+ type.getToolTip()
-					+ (type.getSMARTS() != null ? " (rSMARTS: " + type.getSMARTS() + ")" : ""));
-		}
-		introCursor.toEndToken();
-		introCursor.toNextToken();
-		introCursor.toEndToken();
-		introCursor.toNextToken();
-	}
-
-	/**
-	 * Method to add the guidelines about the rSMARTS specification
-	 * 
-	 * @param introCursor
-	 *            The cursor
-	 */
-	public static void addRSmartsGuidelines(XmlCursor introCursor) {
-		introCursor.beginElement("p");
-		introCursor.insertElementWithText("i", "Guidelines for Custom (r)SMARTS Definition");
-		introCursor.insertElement("br");
-		introCursor.insertChars(
-				"An rSMARTS is no longer required, but may be specified if preferred for backwards compatibility. "
-						+ "If specified must comply with the following rules. "
-						+ "Otherwise, simply a match for two atoms separated by a single, acyclic bond must be provided");
-		introCursor.beginElement("ul");
-		introCursor.insertElementWithText("li",
-				"'>>' is required to separate reactants and products");
-		introCursor.insertElementWithText("li",
-				"Products require '[*]' to occur twice, for the attachment "
-						+ "points (the node will handle the tagging of these)");
-		introCursor.insertElementWithText("li",
-				"Reactants and products require exactly two atom mappings, e.g. "
-						+ ":1] and :2] (other values could be used).");
-		introCursor.insertElementWithText("li", "The atom mappings must be two different values");
-		introCursor.insertElementWithText("li",
-				"The same atom mappings must be used for reactants and products");
-		introCursor.toEndToken();
-		introCursor.insertChars("rSMARTS not conforming to these guidelines will be "
-				+ "rejected during node configuration.");
-		introCursor.toEndToken();
-		introCursor.toNextToken();
 	}
 
 	/**
@@ -195,6 +145,39 @@ public class NodeDescriptionUtils {
 		introCursor.toNextToken();
 		introCursor.toEndToken();
 		introCursor.toNextToken();
+	}
+
+	/**
+	 * Method to add all options to the node description. Options are either
+	 * added to the end of the description or in Tabs
+	 * 
+	 * @param fullDesc
+	 *            The full description object of the node description
+	 * @param options
+	 *            The options - either a {@code Map<String, String>} for all
+	 *            options to be added (K=option name, V= description), or a
+	 *            {@code Map<String, Map<String, String>>} keyed on tab names
+	 *            for options to be added to tabs
+	 * @throws NoSuchElementException
+	 */
+	public static void addOptionsToDescription(FullDescription fullDesc,
+			EitherOr<Map<String, String>, Map<String, Map<String, String>>> options)
+			throws NoSuchElementException {
+		if (options != null && options.isPresent()) {
+			if (options.isLeft()) {
+				for (Entry<String, String> option : options.getLeft().entrySet()) {
+					addOptionWithoutTab(fullDesc, option.getKey(), option.getValue());
+				}
+			} else {
+				for (Entry<String, Map<String, String>> tabEntry : options.getRight().entrySet()) {
+					Tab tab = fullDesc.addNewTab();
+					tab.setName(tabEntry.getKey());
+					for (Entry<String, String> option : tabEntry.getValue().entrySet()) {
+						addOptionToTab(tab, option.getKey(), option.getValue());
+					}
+				}
+			}
+		}
 	}
 
 }

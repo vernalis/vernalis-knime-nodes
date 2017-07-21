@@ -43,10 +43,10 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.w3c.dom.Element;
 
-import com.vernalis.knime.internal.misc.EitherOr;
+import com.vernalis.knime.misc.EitherOr;
 
-import static com.vernalis.knime.internal.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
-import static com.vernalis.knime.internal.nodes.NodeDescriptionUtils.addOptionsToDescription;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionsToDescription;
 
 /**
  * The base abstract class for the fingerprint node descriptions

@@ -14,12 +14,6 @@
  ******************************************************************************/
 package com.vernalis.knime.mmp.nodes.fragutil.filter.abstrct;
 
-import static com.vernalis.knime.mmp.nodes.abstrct.NodeDescriptionUtils.addDevelopedByVernalis;
-import static com.vernalis.knime.mmp.nodes.abstrct.NodeDescriptionUtils.addFragmentationOptionsDiscription;
-import static com.vernalis.knime.mmp.nodes.abstrct.NodeDescriptionUtils.addOptionWithoutTab;
-import static com.vernalis.knime.mmp.nodes.abstrct.NodeDescriptionUtils.addRSmartsGuidelines;
-import static com.vernalis.knime.mmp.nodes.abstrct.NodeDescriptionUtils.insertReference;
-
 import org.apache.xmlbeans.XmlCursor;
 import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeFactory.NodeType;
@@ -35,6 +29,12 @@ import org.knime.node2012.ViewsDocument.Views;
 import org.w3c.dom.Element;
 
 import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
+
+import static com.vernalis.knime.mmp.nodes.abstrct.MMPNodeDescriptionUtils.addFragmentationOptionsDiscription;
+import static com.vernalis.knime.mmp.nodes.abstrct.MMPNodeDescriptionUtils.addRSmartsGuidelines;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionWithoutTab;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.insertReference;
 
 /**
  * Node Description for the Filter / Splitter nodes

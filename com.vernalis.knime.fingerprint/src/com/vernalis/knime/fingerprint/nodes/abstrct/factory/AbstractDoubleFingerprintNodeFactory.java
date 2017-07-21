@@ -22,7 +22,7 @@ import org.knime.core.node.NodeDialogPane;
 
 import com.vernalis.knime.fingerprint.nodes.abstrct.dialog.AbstractDoubleFingerprintNodeDialog;
 import com.vernalis.knime.fingerprint.nodes.abstrct.model.AbstractDoubleFingerprintSingleOutNodeModel;
-import com.vernalis.knime.internal.misc.EitherOr;
+import com.vernalis.knime.misc.EitherOr;
 
 /**
  * Abstract Node Factory for the double fingerprint nodes

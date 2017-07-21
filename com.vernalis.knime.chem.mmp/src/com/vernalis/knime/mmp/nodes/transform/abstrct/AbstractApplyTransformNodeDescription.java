@@ -14,9 +14,6 @@
  ******************************************************************************/
 package com.vernalis.knime.mmp.nodes.transform.abstrct;
 
-import static com.vernalis.knime.mmp.nodes.abstrct.NodeDescriptionUtils.addDevelopedByVernalis;
-import static com.vernalis.knime.mmp.nodes.abstrct.NodeDescriptionUtils.addOptionToTab;
-
 import org.apache.xmlbeans.XmlCursor;
 import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeFactory.NodeType;
@@ -33,6 +30,9 @@ import org.knime.node2012.ViewsDocument.Views;
 import org.w3c.dom.Element;
 
 import com.vernalis.knime.mmp.transform.TransformUtilityFactory;
+
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionToTab;
 
 /**
  * Node description class for the apply transform nodes
