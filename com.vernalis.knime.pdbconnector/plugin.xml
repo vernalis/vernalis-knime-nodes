@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension point="org.knime.workbench.repository.nodes">
+      <node
+            category-path="/community/vernalis/rcsb"
+            deprecated="true"
+            factory-class="com.vernalis.pdbconnector.PdbConnectorNodeFactory"
+            id="PdbConnectorNodeFactory(dep)">
+      </node>
+      <node
+            category-path="/community/vernalis/rcsb"
+            deprecated="true"
+            factory-class="com.vernalis.pdbconnector.PdbConnectorXmlQueryNodeFactory"
+            id="PdbConnectorXmlQueryNodeFactory(dep)">
+      </node>
+   <node category-path="/community/vernalis/rcsb" factory-class="com.vernalis.pdbconnector.nodes.describehet.PdbDescribeHetNodeFactory" id="PdbDescribeHetNodeFactory"/>
+<node category-path="/community/vernalis/rcsb" factory-class="com.vernalis.pdbconnector.nodes.smilesquery.PdbSmilesQueryNodeFactory" id="PdbSmilesQueryNodeFactory"/>
+<node
+      category-path="/community/vernalis/rcsb"
+      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorNodeFactory2"
+      id="PdbConnectorNodeFactory2">
+</node>
+<node
+      category-path="/community/vernalis/rcsb"
+      deprecated="false"
+      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorQueryOnlyNodeFactory"
+      id="PdbConnectorQueryOnlyNodeFactory">
+</node>
+<node
+      category-path="/community/vernalis/rcsb"
+      deprecated="false"
+      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorXmlQueryNodeFactory2"
+      id="PdbConnectorXmlQueryNodeFactory2">
+</node>
+<node
+      category-path="/community/vernalis/rcsb"
+      deprecated="false"
+      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorXmlQueryOnlyNodeFactory"
+      id="PdbConnectorXmlQueryOnlyNodeFactory">
+</node>
+<node
+      category-path="/community/vernalis/rcsb"
+      deprecated="false"
+      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbCustomReportNodeFactory"
+      id="PdbCustomReportNodeFactory">
+</node>
+<node
+      category-path="/community/vernalis/rcsb"
+      deprecated="false"
+      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbQueryBuilderNodeFactory"
+      id="PdbQueryBuilderNodeFactory">
+</node>
+<node
+      category-path="/community/vernalis/rcsb"
+      deprecated="false"
+      factory-class="com.vernalis.pdbconnector.nodes.combinequery.CombineQueryNodeFactory"
+      id="CombineQueryNodeFactory">
+</node>
+      <node
+            category-path="/community/vernalis/rcsb"
+            deprecated="true"
+            factory-class="com.vernalis.rcsb.io.nodes.source.RCSBsDownloadNodeFactory"
+            id="RCSBsDownloadNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/rcsb"
+            factory-class="com.vernalis.rcsb.io.nodes.source.RCSBsDownload2NodeFactory"
+            id="RCSBsDownloadNodeFactory">
+      </node>
+      <node
+            after="RCSBsDownloadNodeFactory"
+            category-path="/community/vernalis/rcsb"
+            deprecated="true"
+            factory-class="com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownloadNodeFactory"
+            id="RCSBmultiDownloadNodeFactory">
+      </node>
+      <node
+            after="RCSBsDownloadNodeFactory"
+            category-path="/community/vernalis/rcsb"
+            factory-class="com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownload2NodeFactory"
+            id="RCSBmultiDownload2NodeFactory">
+      </node>
+</extension>
+   <extension point="org.knime.workbench.repository.categories">
+      <category description="Vernalis Nodes for RCSB query and reporting" icon="icons/RCSB_PDB.png" level-id="rcsb" name="RCSB PDB Tools" path="/community/vernalis/">
+      </category>
+   </extension>
+   <extension
+         point="org.knime.core.NodeFactoryClassMapper">
+      <NodeFactoryClassMapper
+            classMapper="com.vernalis.rcsb.io.helpers.RCSBIONodeFactoryClassMapper">
+      </NodeFactoryClassMapper>
+   </extension>
+</plugin>
