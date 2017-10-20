@@ -39,40 +39,40 @@ import com.vernalis.knime.flowcontrol.FlowControlHelpers;
 /**
  * This is shared NodeModel implementation of the if switch flow var value nodes
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @author "Stephen Roughley knime@vernalis.com"
  */
 public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 
 	/** The logger instance */
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(AbstractFvvalIfSwitchNodeModel.class);
+	private static final NodeLogger logger =
+			NodeLogger.getLogger(AbstractFvvalIfSwitchNodeModel.class);
 
 	/** The number of out ports. */
 	private static final int m_outPorts = 2;
 
 	/** The variable name settings model */
-	private final SettingsModelString m_fvname1 = AbstractFvvalIfSwitchNodeDialog
-			.createFlowVarSelectionModel();
+	private final SettingsModelString m_fvname1 =
+			AbstractFvvalIfSwitchNodeDialog.createFlowVarSelectionModel();
 
 	/** The comparison property model. */
-	private final SettingsModelString m_property = AbstractFvvalIfSwitchNodeDialog
-			.createCompValModel();
+	private final SettingsModelString m_property =
+			AbstractFvvalIfSwitchNodeDialog.createCompValModel();
 
 	/** The comparison operator. */
-	private final SettingsModelString m_Comp = AbstractFvvalIfSwitchNodeDialog
-			.createComparatorSelectionModel();
+	private final SettingsModelString m_Comp =
+			AbstractFvvalIfSwitchNodeDialog.createComparatorSelectionModel();
 
 	/** The ignore case settings model. */
-	private final SettingsModelBoolean m_ignCase = AbstractFvvalIfSwitchNodeDialog
-			.createIgnoreCaseModel();
+	private final SettingsModelBoolean m_ignCase =
+			AbstractFvvalIfSwitchNodeDialog.createIgnoreCaseModel();
 
 	/** The ignore white space settings model. */
-	private final SettingsModelBoolean m_ignWhiteSpace = AbstractFvvalIfSwitchNodeDialog
-			.createIgnoreWhiteSpaceModel();
+	private final SettingsModelBoolean m_ignWhiteSpace =
+			AbstractFvvalIfSwitchNodeDialog.createIgnoreWhiteSpaceModel();
 
 	/** The double comparison tolerance model. */
-	private final SettingsModelDouble m_dblTol = AbstractFvvalIfSwitchNodeDialog
-			.createDoubleToleranceModel();
+	private final SettingsModelDouble m_dblTol =
+			AbstractFvvalIfSwitchNodeDialog.createDoubleToleranceModel();
 
 	/**
 	 * Constructor for the node model.
@@ -91,16 +91,15 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData,
-			final ExecutionContext exec) throws Exception {
+	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
+			throws Exception {
 		// The validity of performing the comparison has already been checked in
 		// the #configure method, so now we just need to pass the input port to
 		// the active output port based on the comparison
 		// If the comparison is true the top port is active
 		int activeOutPort = (compareVariableValue(m_fvname1.getStringValue(),
 				m_Comp.getStringValue(), m_property.getStringValue())) ? 0 : 1;
-		return FlowControlHelpers.createStartOutputPortObject(inData,
-				m_outPorts, activeOutPort);
+		return FlowControlHelpers.createStartOutputPortObject(inData, m_outPorts, activeOutPort);
 	}
 
 	/**
@@ -114,8 +113,7 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 	 *            The value to be used in the comparison
 	 * @return The {@link boolean} result of the comparison
 	 */
-	private boolean compareVariableValue(String varName, String comparitor,
-			String compValue) {
+	private boolean compareVariableValue(String varName, String comparitor, String compValue) {
 		FlowVariable fvar = getAvailableFlowVariables().get(varName);
 		Double comparisonValue = null;
 		Integer comparisonIntValue = null;
@@ -134,7 +132,7 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 			}
 			// Lexicographical comparison - > 0 means compValue is
 			// lexicographically first (i.e. compValue > fvarStringVal)
-			comparisonIntValue = fvarStringVal.compareTo(compValue);
+			comparisonIntValue = compValue.compareTo(fvarStringVal);
 			break;
 
 		case DOUBLE:
@@ -177,8 +175,7 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 		} else {
 			// Do the Double comparison, accounting for the tolerance
 			double tolerance = m_dblTol.getDoubleValue();
-			if ("=".equals(comparitor)
-					&& Math.abs(comparisonValue) <= tolerance) {
+			if ("=".equals(comparitor) && Math.abs(comparisonValue) <= tolerance) {
 				return true;
 			}
 			if (">".equals(comparitor) && comparisonValue < 0.0) {
@@ -188,8 +185,7 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 					&& (comparisonValue <= 0.0 || Math.abs(comparisonValue) <= tolerance)) {
 				return true;
 			}
-			if ("!=".equals(comparitor)
-					&& Math.abs(comparisonValue) > tolerance) {
+			if ("!=".equals(comparitor) && Math.abs(comparisonValue) > tolerance) {
 				return true;
 			}
 			if ("<".equals(comparitor) && comparisonValue > 0.0) {
@@ -260,8 +256,9 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 					throw new InvalidSettingsException(
 							"Remove trailing '.0' for integer comparison");
 				} else {
-					logger.warn("Cannot convert comparison value to numeric integer value for comparison."
-							+ "  Ensure there is no decimal point.");
+					logger.warn(
+							"Cannot convert comparison value to numeric integer value for comparison."
+									+ "  Ensure there is no decimal point.");
 					throw new InvalidSettingsException(
 							"Cannot convert comparison value to numeric integer value for comparison."
 									+ "  Ensure there is no decimal point.");
@@ -273,8 +270,8 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 		// If the comparison is true the top port is active
 		int activeOutPort = (compareVariableValue(m_fvname1.getStringValue(),
 				m_Comp.getStringValue(), m_property.getStringValue())) ? 0 : 1;
-		return FlowControlHelpers.createStartOutputPortObjectSpec(inSpecs,
-				m_outPorts, activeOutPort);
+		return FlowControlHelpers.createStartOutputPortObjectSpec(inSpecs, m_outPorts,
+				activeOutPort);
 	}
 
 	/**
@@ -309,8 +306,7 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 
 		m_Comp.validateSettings(settings);
 		m_fvname1.validateSettings(settings);
@@ -324,9 +320,8 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 
 	}
 
@@ -334,9 +329,8 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 
 	}
 
