@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, Vernalis (R&D) Ltd
+ * Copyright (c) 2014, 2017, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -38,13 +38,13 @@ import org.knime.core.node.workflow.FlowVariable;
 /**
  * The shared IF Switch NodeDialog
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @author "Stephen Roughley knime@vernalis.com"
  */
 public class AbstractFvvalIfSwitchNodeDialog extends DefaultNodeSettingsPane {
 
 	/** The logger instance */
-	private static final NodeLogger LOGGER = NodeLogger
-			.getLogger(AbstractFvvalIfSwitchNodeModel.class);
+	private static final NodeLogger LOGGER =
+			NodeLogger.getLogger(AbstractFvvalIfSwitchNodeModel2.class);
 
 	/** The the flow variable name model. */
 	private SettingsModelString m_fvname1;
@@ -83,8 +83,7 @@ public class AbstractFvvalIfSwitchNodeDialog extends DefaultNodeSettingsPane {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				try {
-					switch (getAvailableFlowVariables().get(
-							m_fvname1.getStringValue()).getType()) {
+					switch (getAvailableFlowVariables().get(m_fvname1.getStringValue()).getType()) {
 					case STRING:
 						m_ignCase.setEnabled(true);
 						m_ignWhiteSpace.setEnabled(true);
@@ -110,21 +109,19 @@ public class AbstractFvvalIfSwitchNodeDialog extends DefaultNodeSettingsPane {
 		});
 		addDialogComponent(m_fvs1);
 
-		addDialogComponent(new DialogComponentStringSelection(
-				createComparatorSelectionModel(), "", new String[] { "=", "<",
-						"<=", ">", ">=", "!=" }));
+		addDialogComponent(new DialogComponentStringSelection(createComparatorSelectionModel(), "",
+				new String[] { "=", "<", "<=", ">", ">=", "!=" }));
 
 		addDialogComponent(new DialogComponentString(createCompValModel(), ""));
 
 		createNewGroup("String Comparison settings");
 		setHorizontalPlacement(true);
 		addDialogComponent(new DialogComponentBoolean(m_ignCase, "Ignore case"));
-		addDialogComponent(new DialogComponentBoolean(m_ignWhiteSpace,
-				"Ignore leading/trailing whitespace"));
+		addDialogComponent(
+				new DialogComponentBoolean(m_ignWhiteSpace, "Ignore leading/trailing whitespace"));
 
 		createNewGroup("Double Comparison settings");
-		addDialogComponent(new DialogComponentNumberEdit(m_dblTol,
-				"Equality tolerance:"));
+		addDialogComponent(new DialogComponentNumberEdit(m_dblTol, "Equality tolerance:"));
 	}
 
 	/**
@@ -196,11 +193,10 @@ public class AbstractFvvalIfSwitchNodeDialog extends DefaultNodeSettingsPane {
 		// check for selected value
 		String flowVar = "";
 		try {
-			flowVar = ((SettingsModelString) m_fvname1
-					.createCloneWithValidatedValue(settings)).getStringValue();
+			flowVar = ((SettingsModelString) m_fvname1.createCloneWithValidatedValue(settings))
+					.getStringValue();
 		} catch (InvalidSettingsException e) {
-			LOGGER.debug("Settings model could not be cloned with given "
-					+ "settings!");
+			LOGGER.debug("Settings model could not be cloned with given " + "settings!");
 		} finally {
 			m_fvs1.replaceListItems(flowVars.values(), flowVar);
 		}

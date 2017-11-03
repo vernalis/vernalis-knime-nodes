@@ -14,9 +14,6 @@
  *******************************************************************************/
 package com.vernalis.knime.flowvar.nodes.io.read;
 
-import static com.vernalis.knime.flowvar.nodes.io.read.ReadVariablesNodeDialog.createDuplicateModel;
-import static com.vernalis.knime.flowvar.nodes.io.read.ReadVariablesNodeDialog.createFilenameModel;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +45,9 @@ import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.FlowVariable.Type;
 
+import static com.vernalis.knime.flowvar.nodes.io.read.ReadVariablesNodeDialog.createDuplicateModel;
+import static com.vernalis.knime.flowvar.nodes.io.read.ReadVariablesNodeDialog.createFilenameModel;
+
 /**
  * This is the NodeModel implementation of the Read Variables NodeModel.
  * 
@@ -57,8 +57,7 @@ import org.knime.core.node.workflow.FlowVariable.Type;
 public class ReadVariablesNodeModel extends NodeModel {
 
 	/** The NodeLogger Instance. */
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(ReadVariablesNodeModel.class);
+	private static final NodeLogger logger = NodeLogger.getLogger(ReadVariablesNodeModel.class);
 
 	/** The Create duplicates policy model. */
 	private final SettingsModelString m_duplicatePolicy = createDuplicateModel();
@@ -98,8 +97,7 @@ public class ReadVariablesNodeModel extends NodeModel {
 	protected ReadVariablesNodeModel(final NodeCreationContext droppedFile) {
 		this();
 		try {
-			m_filename.setStringValue((new File(droppedFile.getUrl().toURI())
-					.getPath()));
+			m_filename.setStringValue((new File(droppedFile.getUrl().toURI()).getPath()));
 		} catch (URISyntaxException e) {
 			logger.error("Variables File reader: " + e.getMessage());
 			logger.error("Variables File reader: Location not set");
@@ -110,17 +108,17 @@ public class ReadVariablesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData,
-			final ExecutionContext exec) throws Exception {
+	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
+			throws Exception {
 		// Get the existing variable names
 		// We have to do this in 2 steps (instantiate, addall) as
 		// getAvailableInputFlowVariables() returns an unmodifiable Map
-		Set<String> inputVars = new HashSet<String>();
+		Set<String> inputVars = new HashSet<>();
 		inputVars.addAll(getAvailableInputFlowVariables().keySet());
 
 		// Get the Duplicate policy
-		DuplicateVariablePolicy varPol = DuplicateVariablePolicy
-				.valueOf(m_duplicatePolicy.getStringValue());
+		DuplicateVariablePolicy varPol =
+				DuplicateVariablePolicy.valueOf(m_duplicatePolicy.getStringValue());
 
 		// Read the file
 		ArrayList<String> fvXML = readFile(m_filename.getStringValue());
@@ -129,18 +127,15 @@ public class ReadVariablesNodeModel extends NodeModel {
 		for (String fvar : fvXML) {
 			// (?s) at start of regex means DOTALL mode (Pattern.DOTALL) - which
 			// means .* includes newlines
-			String fvName = fvar
-					.replaceAll("(?s).*?name=\\\"(.*?)\\\".*", "$1");
+			String fvName = fvar.replaceAll("(?s).*?name=\\\"(.*?)\\\".*", "$1");
 
 			if (!fvName.startsWith(FlowVariable.Scope.Global.getPrefix() + ".")) {
 				// Skip global and reserved variables
 
-				FlowVariable.Type fvType = FlowVariable.Type.valueOf(fvar
-						.replaceAll("(?s).*?type=\\\"(.*?)\\\".*", "$1"));
-				String fvVal = fvar
-						.replaceAll(
-								"(?s).*?<flowvar(.*?(name|type)=\\\".*?\\\"){2}>(.*?)</flowvar>.*",
-								"$3");
+				FlowVariable.Type fvType = FlowVariable.Type
+						.valueOf(fvar.replaceAll("(?s).*?type=\\\"(.*?)\\\".*", "$1"));
+				String fvVal = fvar.replaceAll(
+						"(?s).*?<flowvar(.*?(name|type)=\\\".*?\\\"){2}>(.*?)</flowvar>.*", "$3");
 
 				switch (varPol) {
 				case OVERWRITE:
@@ -154,8 +149,7 @@ public class ReadVariablesNodeModel extends NodeModel {
 					}
 					break;
 				case RENAME:
-					writeVariable(getUniqueVarName(fvName, inputVars), fvType,
-							fvVal);
+					writeVariable(getUniqueVarName(fvName, inputVars), fvType, fvVal);
 					break;
 				case RENAME_DIFFERENT:
 					if (inputVars.add(fvName)) {
@@ -165,15 +159,12 @@ public class ReadVariablesNodeModel extends NodeModel {
 						// Name exists - uniquify only if
 						// * Different value
 						// * Different type
-						FlowVariable oldVar = getAvailableInputFlowVariables()
-								.get(fvName);
+						FlowVariable oldVar = getAvailableInputFlowVariables().get(fvName);
 						String oldVal = oldVar.getValueAsString();
 						FlowVariable.Type oldType = oldVar.getType();
-						if (!oldVal.replace("\r", "").equals(
-								fvVal.replace("\r", ""))
+						if (!oldVal.replace("\r", "").equals(fvVal.replace("\r", ""))
 								|| oldType != fvType) {
-							writeVariable(getUniqueVarName(fvName, inputVars),
-									fvType, fvVal);
+							writeVariable(getUniqueVarName(fvName, inputVars), fvType, fvVal);
 						}
 					}
 					break;
@@ -217,16 +208,16 @@ public class ReadVariablesNodeModel extends NodeModel {
 			try {
 				pushFlowVariableInt(fvName, Integer.parseInt(fvVal));
 			} catch (Exception e) {
-				logger.warn("Unable to parse value (" + fvVal
-						+ ") of variable " + fvName + " as Integer");
+				logger.warn("Unable to parse value (" + fvVal + ") of variable " + fvName
+						+ " as Integer");
 			}
 			break;
 		case DOUBLE:
 			try {
 				pushFlowVariableDouble(fvName, Double.parseDouble(fvVal));
 			} catch (Exception e) {
-				logger.warn("Unable to parse value (" + fvVal
-						+ ") of variable " + fvName + " as Double");
+				logger.warn("Unable to parse value (" + fvVal + ") of variable " + fvName
+						+ " as Double");
 			}
 			break;
 		case STRING:
@@ -245,7 +236,7 @@ public class ReadVariablesNodeModel extends NodeModel {
 	 */
 	private ArrayList<String> readFile(String fname) {
 
-		ArrayList<String> retVal = new ArrayList<String>();
+		ArrayList<String> retVal = new ArrayList<>();
 
 		try {
 			// Form a URL connection
@@ -275,8 +266,7 @@ public class ReadVariablesNodeModel extends NodeModel {
 			}
 
 			// Now set up a buffered reader to read it
-			BufferedReader in = new BufferedReader(new InputStreamReader(is,
-					encoding));
+			BufferedReader in = new BufferedReader(new InputStreamReader(is, encoding));
 			StringBuilder output = new StringBuilder();
 			String str;
 			// Read the first line - which should be "<flowvariables>"
@@ -351,8 +341,7 @@ public class ReadVariablesNodeModel extends NodeModel {
 		// Correct extension?
 		if (!fname.endsWith(".variables")) {
 			setWarningMessage("Filename must have 'variables' extension");
-			throw new InvalidSettingsException(
-					"Filename must have 'variables' extension");
+			throw new InvalidSettingsException("Filename must have 'variables' extension");
 		}
 		File f;
 		if (fname.startsWith("file:")) {
@@ -406,8 +395,7 @@ public class ReadVariablesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 		m_filename.validateSettings(settings);
 		m_duplicatePolicy.validateSettings(settings);
 	}
@@ -416,9 +404,8 @@ public class ReadVariablesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 
 	}
 
@@ -426,9 +413,8 @@ public class ReadVariablesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 
 	}
 

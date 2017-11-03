@@ -34,7 +34,7 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
  * {@link PortObjectSpec}s to allow their use in both
  * {@link org.knime.core.node.NodeModel}#configure and #execute methods
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @author "Stephen Roughley knime@vernalis.com"
  * 
  */
 public class FlowControlHelpers {
@@ -47,7 +47,7 @@ public class FlowControlHelpers {
 	 * @return {@link ArrayList} containing the port indices of the active ports
 	 */
 	public static List<Integer> listActivePortIds(PortObject[] inPorts) {
-		List<Integer> activePorts = new ArrayList<Integer>();
+		List<Integer> activePorts = new ArrayList<>();
 		for (int i = 0, l = inPorts.length; i < l; i++) {
 			if (inPorts[i] != null && !(inPorts[i] instanceof InactiveBranchPortObject)) {
 				activePorts.add(i);
@@ -65,7 +65,7 @@ public class FlowControlHelpers {
 	 * @return {@link ArrayList} containing the port indices of the active ports
 	 */
 	public static List<Integer> listActivePortIds(PortObjectSpec[] inSpecs) {
-		List<Integer> activePorts = new ArrayList<Integer>();
+		List<Integer> activePorts = new ArrayList<>();
 		for (int i = 0, l = inSpecs.length; i < l; i++) {
 			if (inSpecs[i] != null && !(inSpecs[i] instanceof InactiveBranchPortObjectSpec)) {
 				activePorts.add(i);

@@ -54,12 +54,10 @@ import com.vernalis.knime.flowcontrol.nodes.timedloops.abstrct.loopstart.Abstrac
  * 
  * @author S.Roughley knime@vernalis.com
  */
-public class VariableTimedLoopEndNodeModel extends NodeModel implements
-		LoopEndNode {
+public class VariableTimedLoopEndNodeModel extends NodeModel implements LoopEndNode {
 
 	/** The logger. */
-	NodeLogger logger = NodeLogger
-			.getLogger(VariableTimedLoopEndNodeModel.class);
+	NodeLogger logger = NodeLogger.getLogger(VariableTimedLoopEndNodeModel.class);
 
 	/** The m_result container. */
 	private BufferedDataContainer m_resultContainer;
@@ -71,8 +69,8 @@ public class VariableTimedLoopEndNodeModel extends NodeModel implements
 	 * Constructor for the VariableTimedLoopEndNodeModel.
 	 */
 	protected VariableTimedLoopEndNodeModel() {
-		super(new PortType[] { FlowVariablePortObject.TYPE }, new PortType[] {
-				BufferedDataTable.TYPE, BufferedDataTable.TYPE });
+		super(new PortType[] { FlowVariablePortObject.TYPE },
+				new PortType[] { BufferedDataTable.TYPE, BufferedDataTable.TYPE });
 	}
 
 	/*
@@ -83,19 +81,16 @@ public class VariableTimedLoopEndNodeModel extends NodeModel implements
 	 * [], org.knime.core.node.ExecutionContext)
 	 */
 	@Override
-	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-			throws Exception {
+	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec) throws Exception {
 		// Check for a loop start node of some sort
 		if (!(this.getLoopStartNode() instanceof LoopStartNodeTerminator)) {
-			throw new IllegalStateException(
-					"No matching loop start node found!");
+			throw new IllegalStateException("No matching loop start node found!");
 		}
 
 		// Now need to check that the loop start is a timed loop start
 		if (!(this.getLoopStartNode() instanceof AbstractTimedLoopStartNodeModel)) {
-			throw new IllegalStateException(
-					"Start loop is of wrong type - must be a "
-							+ "'Run-to-time' or 'Run-for-time' Loop Start node");
+			throw new IllegalStateException("Start loop is of wrong type - must be a "
+					+ "'Run-to-time' or 'Run-for-time' Loop Start node");
 		}
 
 		DataTableSpec currentSpec = (DataTableSpec) createVariableTableSpec();
@@ -103,8 +98,7 @@ public class VariableTimedLoopEndNodeModel extends NodeModel implements
 		if (m_resultContainer == null) {
 			// First iteration
 			m_resultContainer = exec.createDataContainer(currentSpec);
-		} else if (!currentSpec
-				.equalStructure(m_resultContainer.getTableSpec())) {
+		} else if (!currentSpec.equalStructure(m_resultContainer.getTableSpec())) {
 			throw new Exception("Variable tables have changed during execution");
 		}
 
@@ -115,17 +109,15 @@ public class VariableTimedLoopEndNodeModel extends NodeModel implements
 
 		// Now check whether we are at the end of the loop
 		// Get the loop start node
-		AbstractTimedLoopStartNodeModel loopStartModel = (AbstractTimedLoopStartNodeModel) this
-				.getLoopStartNode();
+		AbstractTimedLoopStartNodeModel loopStartModel =
+				(AbstractTimedLoopStartNodeModel) this.getLoopStartNode();
 		if (loopStartModel.terminateLoop()) {
 
 			m_resultContainer.close();
 			// And add the iteration as a flow variable - the iteration counter
 			// will be one higher!
-			pushFlowVariableInt("Last Iteration",
-					(int) (loopStartModel.getIteration() - 1));
-			pushFlowVariableString("End Time", loopStartModel.getEndTime()
-					.toString());
+			pushFlowVariableInt("Last Iteration", (int) (loopStartModel.getIteration() - 1));
+			pushFlowVariableString("End Time", loopStartModel.getEndTime().toString());
 
 			// get the table
 			BufferedDataTable table = m_resultContainer.getTable();
@@ -133,8 +125,7 @@ public class VariableTimedLoopEndNodeModel extends NodeModel implements
 			// container
 			reset();
 
-			return new PortObject[] { table,
-					loopStartModel.getUnprocessedRows(exec) };
+			return new PortObject[] { table, loopStartModel.getUnprocessedRows(exec) };
 		} else {
 			continueLoop();
 			return new BufferedDataTable[2];
@@ -150,8 +141,7 @@ public class VariableTimedLoopEndNodeModel extends NodeModel implements
 	 * @return the {@link DataCell}[] containing the variables
 	 * @throws Exception
 	 */
-	private DataCell[] variablesToCells(final DataTableSpec tableSpec)
-			throws Exception {
+	private DataCell[] variablesToCells(final DataTableSpec tableSpec) throws Exception {
 		// Somewhere to put the cells
 		DataCell[] cells = new DataCell[tableSpec.getNumColumns()];
 
@@ -161,8 +151,7 @@ public class VariableTimedLoopEndNodeModel extends NodeModel implements
 		Map<String, FlowVariable> flowVars = getAvailableInputFlowVariables();
 		for (Entry<String, FlowVariable> entVar : flowVars.entrySet()) {
 			String varName = entVar.getKey();
-			if (!varName
-					.startsWith(FlowVariable.Scope.Global.getPrefix() + ".")) {
+			if (!varName.startsWith(FlowVariable.Scope.Global.getPrefix() + ".")) {
 				// skip core knime variables
 
 				// Find the column for the current variable -they may change
@@ -200,8 +189,7 @@ public class VariableTimedLoopEndNodeModel extends NodeModel implements
 	 *             the invalid settings exception
 	 */
 	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException {
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException {
 
 		PortObjectSpec[] outSpecs = new PortObjectSpec[2];
 		// Get the spec based on the flow variables
@@ -210,8 +198,7 @@ public class VariableTimedLoopEndNodeModel extends NodeModel implements
 		// Get the spec for the unprocessed rows
 		// Now need to check that the loop start is a timed loop start
 		if (this.getLoopStartNode() instanceof AbstractTimedLoopStartNodeModel) {
-			outSpecs[1] = ((AbstractTimedLoopStartNodeModel) this
-					.getLoopStartNode()).getInSpec();
+			outSpecs[1] = ((AbstractTimedLoopStartNodeModel) this.getLoopStartNode()).getInSpec();
 		}
 
 		pushFlowVariableInt("Last Iteration", 0);
@@ -226,13 +213,12 @@ public class VariableTimedLoopEndNodeModel extends NodeModel implements
 	 * @throws InvalidSettingsException
 	 *             the invalid settings exception
 	 */
-	private PortObjectSpec createVariableTableSpec()
-			throws InvalidSettingsException {
+	private PortObjectSpec createVariableTableSpec() throws InvalidSettingsException {
 		// Use available input variables to not throw exceptions at completion
 		// due to variables added by node (which we dont want to include in the
 		// output table anyway!)
 		Map<String, FlowVariable> fvars = getAvailableInputFlowVariables();
-		ArrayList<DataColumnSpec> colSpecs = new ArrayList<DataColumnSpec>();
+		ArrayList<DataColumnSpec> colSpecs = new ArrayList<>();
 		for (Entry<String, FlowVariable> fvarEnt : fvars.entrySet()) {
 			String fname = fvarEnt.getKey();
 			if (!fname.startsWith(FlowVariable.Scope.Global.getPrefix() + ".")) {
@@ -245,12 +231,10 @@ public class VariableTimedLoopEndNodeModel extends NodeModel implements
 					newColSpec = new DataColumnSpecCreator(fname, IntCell.TYPE);
 					break;
 				case DOUBLE:
-					newColSpec = new DataColumnSpecCreator(fname,
-							DoubleCell.TYPE);
+					newColSpec = new DataColumnSpecCreator(fname, DoubleCell.TYPE);
 					break;
 				case STRING:
-					newColSpec = new DataColumnSpecCreator(fname,
-							StringCell.TYPE);
+					newColSpec = new DataColumnSpecCreator(fname, StringCell.TYPE);
 					break;
 				default:
 					throw new InvalidSettingsException("Unknown Variable Type");
@@ -286,8 +270,7 @@ public class VariableTimedLoopEndNodeModel extends NodeModel implements
 
 	/** {@inheritDoc} */
 	@Override
-	protected void validateSettings(NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
 		// No Settings
 
 	}

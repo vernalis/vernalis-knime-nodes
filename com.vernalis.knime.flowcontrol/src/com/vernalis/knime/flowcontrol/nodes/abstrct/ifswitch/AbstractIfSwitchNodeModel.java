@@ -42,15 +42,13 @@ public class AbstractIfSwitchNodeModel extends NodeModel {
 
 	/** the logger instance */
 	@SuppressWarnings("unused")
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(AbstractIfSwitchNodeModel.class);
+	private static final NodeLogger logger = NodeLogger.getLogger(AbstractIfSwitchNodeModel.class);
 
 	/** The number of output ports */
 	private static final int m_OutPorts = 2;
 
 	/** The selected port model. */
-	private final SettingsModelString m_port = AbstractIfSwitchNodeDialog
-			.createSettingsModel();
+	private final SettingsModelString m_port = AbstractIfSwitchNodeDialog.createSettingsModel();
 
 	/**
 	 * Constructor for the node model.
@@ -69,20 +67,17 @@ public class AbstractIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData,
-			final ExecutionContext exec) throws Exception {
+	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
+			throws Exception {
 
-		ArrayList<Integer> activePorts = new ArrayList<Integer>();
-		if (m_port.getStringValue().equals("both")
-				|| m_port.getStringValue().equals("top")) {
+		ArrayList<Integer> activePorts = new ArrayList<>();
+		if (m_port.getStringValue().equals("both") || m_port.getStringValue().equals("top")) {
 			activePorts.add(0);
 		}
-		if (m_port.getStringValue().equals("both")
-				|| m_port.getStringValue().equals("bottom")) {
+		if (m_port.getStringValue().equals("both") || m_port.getStringValue().equals("bottom")) {
 			activePorts.add(1);
 		}
-		return FlowControlHelpers.createStartOutputPortObjects(inData,
-				m_OutPorts, activePorts);
+		return FlowControlHelpers.createStartOutputPortObjects(inData, m_OutPorts, activePorts);
 	}
 
 	/**
@@ -100,25 +95,21 @@ public class AbstractIfSwitchNodeModel extends NodeModel {
 			throws InvalidSettingsException {
 
 		// Check for meaningful settings
-		if (!(m_port.getStringValue().equals("top")
-				|| m_port.getStringValue().equals("bottom") || m_port
-				.getStringValue().equals("both"))) {
-			throw new InvalidSettingsException(
-					"Select the active port(s) - top, bottom or both");
+		if (!(m_port.getStringValue().equals("top") || m_port.getStringValue().equals("bottom")
+				|| m_port.getStringValue().equals("both"))) {
+			throw new InvalidSettingsException("Select the active port(s) - top, bottom or both");
 		}
 
-		ArrayList<Integer> activePorts = new ArrayList<Integer>();
-		if (m_port.getStringValue().equals("both")
-				|| m_port.getStringValue().equals("top")) {
+		ArrayList<Integer> activePorts = new ArrayList<>();
+		if (m_port.getStringValue().equals("both") || m_port.getStringValue().equals("top")) {
 			activePorts.add(0);
 		}
-		if (m_port.getStringValue().equals("both")
-				|| m_port.getStringValue().equals("bottom")) {
+		if (m_port.getStringValue().equals("both") || m_port.getStringValue().equals("bottom")) {
 			activePorts.add(1);
 		}
 
-		return FlowControlHelpers.createStartOutputPortObjectSpecs(inSpecs,
-				m_OutPorts, activePorts);
+		return FlowControlHelpers.createStartOutputPortObjectSpecs(inSpecs, m_OutPorts,
+				activePorts);
 
 	}
 
@@ -143,8 +134,7 @@ public class AbstractIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 		m_port.validateSettings(settings);
 	}
 
@@ -152,9 +142,8 @@ public class AbstractIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 
 	}
 
@@ -162,9 +151,8 @@ public class AbstractIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 
 	}
 

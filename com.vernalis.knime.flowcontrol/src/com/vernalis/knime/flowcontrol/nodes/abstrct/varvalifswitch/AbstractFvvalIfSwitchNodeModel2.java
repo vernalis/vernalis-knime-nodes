@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -41,11 +41,11 @@ import com.vernalis.knime.flowcontrol.FlowControlHelpers;
  * 
  * @author "Stephen Roughley knime@vernalis.com"
  */
-public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
+public class AbstractFvvalIfSwitchNodeModel2 extends NodeModel {
 
 	/** The logger instance */
 	private static final NodeLogger logger =
-			NodeLogger.getLogger(AbstractFvvalIfSwitchNodeModel.class);
+			NodeLogger.getLogger(AbstractFvvalIfSwitchNodeModel2.class);
 
 	/** The number of out ports. */
 	private static final int m_outPorts = 2;
@@ -80,7 +80,7 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 	 * @param portType
 	 *            The {@link PortType} of the node
 	 */
-	public AbstractFvvalIfSwitchNodeModel(PortType portType) {
+	public AbstractFvvalIfSwitchNodeModel2(PortType portType) {
 
 		super(FlowControlHelpers.createStartInPort(portType),
 				FlowControlHelpers.createStartOutPorts(portType, m_outPorts));

@@ -14,9 +14,6 @@
  *******************************************************************************/
 package com.vernalis.knime.flowvar.nodes.io.write;
 
-import static com.vernalis.knime.flowvar.nodes.io.write.WriteVariablesNodeDialog.createFilenameModel;
-import static com.vernalis.knime.flowvar.nodes.io.write.WriteVariablesNodeDialog.createOverwriteModel;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -43,6 +40,9 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.FlowVariable;
 
+import static com.vernalis.knime.flowvar.nodes.io.write.WriteVariablesNodeDialog.createFilenameModel;
+import static com.vernalis.knime.flowvar.nodes.io.write.WriteVariablesNodeDialog.createOverwriteModel;
+
 /**
  * This is the NodeModel implementation of WriteVariables.
  * 
@@ -52,8 +52,7 @@ import org.knime.core.node.workflow.FlowVariable;
 public class WriteVariablesNodeModel extends NodeModel {
 
 	/** The logger instance */
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(WriteVariablesNodeModel.class);
+	private static final NodeLogger logger = NodeLogger.getLogger(WriteVariablesNodeModel.class);
 
 	/** The overwrite file model */
 	private final SettingsModelBoolean m_overwrite = createOverwriteModel();
@@ -66,20 +65,19 @@ public class WriteVariablesNodeModel extends NodeModel {
 	 */
 	public WriteVariablesNodeModel() {
 
-		super(new PortType[] { FlowVariablePortObject.TYPE_OPTIONAL },
-				new PortType[] {});
+		super(new PortType[] { FlowVariablePortObject.TYPE_OPTIONAL }, new PortType[] {});
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData,
-			final ExecutionContext exec) throws Exception {
+	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
+			throws Exception {
 
 		// First list the flow variables
 		Map<String, FlowVariable> flowVars = getAvailableFlowVariables();
-		ArrayList<String> fvXML = new ArrayList<String>();
+		ArrayList<String> fvXML = new ArrayList<>();
 		for (Entry<String, FlowVariable> ent : flowVars.entrySet()) {
 			String fvName = ent.getKey();
 			if (fvName.startsWith(FlowVariable.Scope.Global.getPrefix() + ".")) {
@@ -88,8 +86,8 @@ public class WriteVariablesNodeModel extends NodeModel {
 			}
 			String fvVal = ent.getValue().getValueAsString();
 			String fvType = ent.getValue().getType().name();
-			fvXML.add("<flowvar name=\"" + fvName + "\" type=\"" + fvType
-					+ "\">" + fvVal + "</flowvar>");
+			fvXML.add("<flowvar name=\"" + fvName + "\" type=\"" + fvType + "\">" + fvVal
+					+ "</flowvar>");
 		}
 		// Now we need to write them to a file
 		if (!writeToFile(fvXML)) {
@@ -115,8 +113,7 @@ public class WriteVariablesNodeModel extends NodeModel {
 			sb.append(xml).append("\n");
 		}
 		sb.append("</flowvariables>");
-		return saveStringToPath(sb.toString(), fname,
-				m_overwrite.getBooleanValue());
+		return saveStringToPath(sb.toString(), fname, m_overwrite.getBooleanValue());
 	}
 
 	/**
@@ -150,8 +147,7 @@ public class WriteVariablesNodeModel extends NodeModel {
 		// Correct extension?
 		if (!fname.endsWith(".variables")) {
 			setWarningMessage("Filename must have 'variables' extension");
-			throw new InvalidSettingsException(
-					"Filename must have 'variables' extension");
+			throw new InvalidSettingsException("Filename must have 'variables' extension");
 		}
 		File f;
 		if (fname.startsWith("file:")) {
@@ -170,8 +166,7 @@ public class WriteVariablesNodeModel extends NodeModel {
 			if (!m_overwrite.getBooleanValue() || !f.canWrite()) {
 				// File exists, and we may not overwrite it
 				setWarningMessage("File exists, cannot overwrite");
-				throw new InvalidSettingsException(
-						"File exists, cannot overwrite");
+				throw new InvalidSettingsException("File exists, cannot overwrite");
 			} else {
 				setWarningMessage("File exists and will be over-written");
 			}
@@ -190,8 +185,7 @@ public class WriteVariablesNodeModel extends NodeModel {
 			// Try to create it if not
 			if (!fParent.mkdirs()) {
 				setWarningMessage("Tried to create parent directory - FAILED!");
-				throw new InvalidSettingsException(
-						"Tried to create parent directory - FAILED!");
+				throw new InvalidSettingsException("Tried to create parent directory - FAILED!");
 			}
 		}
 
@@ -210,8 +204,8 @@ public class WriteVariablesNodeModel extends NodeModel {
 	 * @return true, if successful
 	 * @throws Exception
 	 */
-	private static boolean saveStringToPath(String text, String PathToFile,
-			Boolean Overwrite) throws Exception {
+	private static boolean saveStringToPath(String text, String PathToFile, Boolean Overwrite)
+			throws Exception {
 		/*
 		 * Helper function to attempt to save out a string to a file identified
 		 * by a second string. Returns true or false depending on whether the
@@ -223,8 +217,7 @@ public class WriteVariablesNodeModel extends NodeModel {
 			try {
 				f = new File(new URI(PathToFile));
 			} catch (URISyntaxException e) {
-				throw new Exception(
-						"File path looks like URL but unable to create URI");
+				throw new Exception("File path looks like URL but unable to create URI");
 			}
 		} else {
 			f = new File(PathToFile);
@@ -270,8 +263,7 @@ public class WriteVariablesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 
 		m_filename.validateSettings(settings);
 		m_overwrite.validateSettings(settings);
@@ -282,9 +274,8 @@ public class WriteVariablesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 
 	}
 
@@ -292,9 +283,8 @@ public class WriteVariablesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 
 	}
 
