@@ -35,6 +35,12 @@ import org.knime.core.data.image.png.PNGImageContent;
 public class SmartsviewerHelper {
 
 	/**
+	 * The base url for the webservice
+	 */
+	private static final String SMARTSVIEW_SERVICE_ENTRY =
+			"http://smartsview.zbh.uni-hamburg.de/smartsview/auto/";
+
+	/**
 	 * Function to generate a URL for the SMARTSViewer query based on the
 	 * defined options
 	 * 
@@ -49,20 +55,26 @@ public class SmartsviewerHelper {
 	 *            The SMARTS query string
 	 * @return A String containing the query url
 	 */
-	public static String getSMARTSViewerURL(String imageType, String visModus,
-			String Legend, String SMARTS) {
+	public static String getSMARTSViewerURL(String imageType, String visModus, String Legend,
+			String SMARTS) {
 		/*
 		 * Function to build correct SMARTSviewer url from specified user
 		 * options For details see
 		 * smartsview.zbh.uni-hamburg.de/home/auto_retrieving
 		 */
-		String url = "http://www.smartsview.de/smartsview/auto/";
-		url += imageType + "/";
-		url += visModus + "/";
-		url += Legend + "/";
-		url += SMARTS;
-		url = url.replace("#", "%23");
-		return url;
+		StringBuilder sb = new StringBuilder(SMARTSVIEW_SERVICE_ENTRY);
+		sb.append(imageType).append("/");
+		sb.append(visModus).append("/");
+		sb.append(Legend).append("/");
+		sb.append(SMARTS);
+
+		// String url = SMARTSVIEW_SERVICE_ENTRY;
+		// url += imageType + "/";
+		// url += visModus + "/";
+		// url += Legend + "/";
+		// url += SMARTS;
+		// url = url.replace("#", "%23");
+		return sb.toString().replace("#", "%23");
 	}
 
 	/**
@@ -74,15 +86,15 @@ public class SmartsviewerHelper {
 	 * @throws IOException
 	 */
 	public static DataCell toPNGCell(final String urlValue) throws IOException {
-		
+
 		URL url = new URL(urlValue);
-		
-		HttpURLConnection conn = (HttpURLConnection)url.openConnection(); 
+
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
 			throw new IOException(conn.getResponseMessage());
 		}
-		
-		//InputStream in = FileUtil.openStreamWithTimeout(url);
+
+		// InputStream in = FileUtil.openStreamWithTimeout(url);
 		InputStream in = conn.getInputStream();
 		try {
 			PNGImageContent pngImageContent = new PNGImageContent(in);

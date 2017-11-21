@@ -8,7 +8,7 @@
     </shortDescription>
     
     <fullDescription>
-        <intro>Provides a <a href="http://www.smartsview.de/">SMARTSviewer</a> visualisation
+        <intro>Provides a <a href="http://http://smartsview.zbh.uni-hamburg.de/">SMARTSviewer</a> visualisation
         of a column of SMARTs strings 
         using the service provided by the University of Hamburg.  The node performs no validation
         of the SMARTs strings prior to sending to the webservice. For more detailed information 
