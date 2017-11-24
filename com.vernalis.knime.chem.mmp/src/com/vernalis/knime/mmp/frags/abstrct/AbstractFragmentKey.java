@@ -24,6 +24,7 @@ import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
 import org.knime.core.data.def.DoubleCell;
 
+import com.vernalis.knime.chem.speedysmiles.helpers.SmilesHelpers;
 import com.vernalis.knime.mmp.MMPConstants;
 
 /**
@@ -207,38 +208,8 @@ public abstract class AbstractFragmentKey<T> implements Comparable<AbstractFragm
 	 * @return The number of heavy atoms
 	 */
 	private Integer calcHAC() {
-		int cnt = 0;
-		String SMILES = this.getKeyAsString();
-		// NB define length as l as otherwise smiles.length
-		// is re-calculated on each iteration, apparently
-		for (int i = 0, l = SMILES.length(); i < l; i++) {
-			char x = SMILES.charAt(i);
-			if (x == '.')
-				// skip - but keep counting!
-				continue;
-			if (x == '[') {
-				cnt++;
-				// skip to ]
-				while (SMILES.charAt(i) != ']')
-					i++;
-				continue;
-			}
+		return SmilesHelpers.countHAC(this.getKeyAsString());
 
-			// Deal with aromatic atoms without []
-			if (x == 'c' || x == 'o' || x == 'n' || x == 's') {
-				cnt++;
-				continue;
-			}
-
-			// Deal with other atoms
-			if (Character.isUpperCase(x))
-				cnt++;
-		}
-		// Now correct for [H]
-		cnt -= (SMILES.indexOf("[H]") >= 0) ? SMILES.split("\\[H\\]").length - 1 : 0;
-		// And correct for attachment points
-		cnt -= countAttachmentPoints(SMILES);
-		return cnt;
 	}
 
 	/**
@@ -270,28 +241,6 @@ public abstract class AbstractFragmentKey<T> implements Comparable<AbstractFragm
 		// Firstly, we sort in descending order
 		Collections.sort(m_keyComponents, Collections.reverseOrder());
 		return m_keyComponents.get(idx - 1);
-	}
-
-	/**
-	 * Private function to calculate the number of attachment points in the
-	 * object
-	 * 
-	 * @return The number of attachment points
-	 */
-	private Integer countAttachmentPoints(String SMILES) {
-		int result;
-		try {
-			result = SMILES.split("\\[[0-9]*?\\*").length;
-		} catch (Exception e) {
-			try {
-				result = SMILES.split("\\*").length;
-			} catch (Exception e1) {
-				result = 1;
-			}
-		}
-		// Result will hold one more than it should
-		result--;
-		return result;
 	}
 
 	@Override

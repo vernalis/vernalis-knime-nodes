@@ -100,7 +100,7 @@ public class AbstractMatchedPairsFromFragmentsNodeDialog extends DefaultNodeSett
 		// nodemodel#configure enforces both tables to have the same structure
 		super();
 
-		createNewGroup("'Key' Options");
+		createNewGroup("'Key' and 'Value' Options");
 		addDialogComponent(new DialogComponentColumnNameSelection(createFragKeyModel(),
 				"Select the Fragment Key column", 0, new ColumnFilter() {
 
@@ -116,14 +116,9 @@ public class AbstractMatchedPairsFromFragmentsNodeDialog extends DefaultNodeSett
 						return "No SMILES columns with the name starting\"Fragmentation 'Key'\" are present";
 					}
 				}));
-		if (presortTableByKey) {
-			addDialogComponent(
-					new DialogComponentBoolean(createSortedKeysModel(), "Keys are sorted"));
-		}
-		addKeyColOptions();
-		closeCurrentGroup();
 
-		createNewGroup("'Value' Options");
+		addKeyColOptions();
+
 		addDialogComponent(new DialogComponentColumnNameSelection(createFragValueModel(),
 				"Select the Fragment Value column", 0, new ColumnFilter() {
 
@@ -140,6 +135,10 @@ public class AbstractMatchedPairsFromFragmentsNodeDialog extends DefaultNodeSett
 					}
 				}));
 		addValueColOptions();
+		if (presortTableByKey) {
+			addDialogComponent(new DialogComponentBoolean(createSortedKeysModel(),
+					"Incoming table is sorted by Keys and Values?"));
+		}
 		closeCurrentGroup();
 
 		createNewGroup("'ID' and uniqueness Options");

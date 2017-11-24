@@ -35,7 +35,11 @@
 			<p>The input table can contain fragmentations from differing numbers
 				of cuts, in which case this will be reflected in the output table.
 			</p>
-			<p>The table will be pre-sorted by key during execution.
+			<p>The table will be pre-sorted by key followed by value during
+				execution, unless the 'Incoming table is sorted by Keys and Values?'
+				option is selected. If this option is selected and correct sorting
+				is not applied, then pairs may be missed (incorrect keys sorting) or
+				non-canonical in their direction (incorrect values sorting)
 			</p>
 			<p>Incoming columns can be passed through unchanged (Left, Right or
 				both), numeric columns (Integer, Long, Double and Complex
@@ -90,12 +94,12 @@
 		<tab name="Options">
 			<option name="Select the Fragment Key column">Select the column containing the fragment 'keys'
 			</option>
-			<option name="Keys are sorted">Use this option if the keys column is pre-sorted.
-				See above for details
-			</option>
-
 			<option name="Select the Fragment Value column">Select the column containing the fragment
 				'values'
+			</option>
+			<option name="Incoming table is sorted by Keys and Values?">Use this option if the input table is pre-sorted
+				by 'keys', then by 'values'.
+				See above for details
 			</option>
 			<option name="Select the ID column">
 				Select the column containing the parent molecule

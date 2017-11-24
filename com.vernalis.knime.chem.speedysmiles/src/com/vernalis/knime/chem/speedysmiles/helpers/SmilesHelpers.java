@@ -204,6 +204,16 @@ public class SmilesHelpers {
 	}
 
 	/**
+	 * Regex to match hydrogens defined explicitly as their own atoms, e.g. in
+	 * C([H])([H])[H]
+	 */
+	static final Pattern H_PATTERN = Pattern.compile("\\[\\d*H\\+?\\-?\\]");
+	/**
+	 * Regex to match attachment points within []
+	 */
+	static final Pattern AP_PATTERN = Pattern.compile("\\[\\d*\\*");
+
+	/**
 	 * @param smi
 	 *            SMILES string
 	 * @return Heavy atom count
@@ -240,10 +250,13 @@ public class SmilesHelpers {
 			if (Character.isUpperCase(x))
 				cnt++;
 		}
-		// Now correct for explicit [H] - NB this will not catch isotopes,
-		// charged H etc
-		// TODO: Deal with missed cases
-		cnt -= (smi.indexOf("[H]") >= 0) ? smi.split("\\[H\\]").length - 1 : 0;
+		// Now correct for explicit [H]; -ve index in split handles SMILES
+		// ending with [H]
+		cnt -= H_PATTERN.split(smi, -1).length - 1;
+
+		// And for attachment points ('*' outside of [] will not have been
+		// counted, so we only need the [*] cases)
+		cnt -= AP_PATTERN.split(smi, -1).length - 1;
 		return cnt;
 	}
 

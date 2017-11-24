@@ -31,6 +31,7 @@ import org.knime.core.data.vector.bytevector.DenseByteVector;
 import org.knime.core.data.vector.bytevector.DenseByteVectorCell;
 import org.knime.core.data.vector.bytevector.DenseByteVectorCellFactory;
 
+import com.vernalis.knime.chem.speedysmiles.helpers.SmilesHelpers;
 import com.vernalis.knime.mmp.MMPConstants;
 
 /**
@@ -270,37 +271,7 @@ public abstract class AbstractFragmentValue<T> implements Comparable<AbstractFra
 	 * @return
 	 */
 	private Integer calcHAC() {
-		int cnt = 0;
-		// NB define length as l as otherwise smiles.length
-		// is re-calculated on each iteration, apparently
-		for (int i = 0, l = SMILES.length(); i < l; i++) {
-			char x = SMILES.charAt(i);
-			if (x == '.')
-				// skip - but keep counting!
-				continue;
-			if (x == '[') {
-				cnt++;
-				// skip to ]
-				while (SMILES.charAt(i) != ']')
-					i++;
-				continue;
-			}
-
-			// Deal with aromatic atoms without []
-			if (x == 'c' || x == 'o' || x == 'n' || x == 's') {
-				cnt++;
-				continue;
-			}
-
-			// Deal with other atoms
-			if (Character.isUpperCase(x))
-				cnt++;
-		}
-		// Now correct for [H]
-		cnt -= (SMILES.indexOf("[H]") >= 0) ? SMILES.split("\\[H\\]").length - 1 : 0;
-		// And correct for attachment points
-		cnt -= countAttachmentPoints();
-		return cnt;
+		return SmilesHelpers.countHAC(SMILES);
 	}
 
 	/**
@@ -364,10 +335,10 @@ public abstract class AbstractFragmentValue<T> implements Comparable<AbstractFra
 	public Integer countAttachmentPoints() {
 		int result;
 		try {
-			result = SMILES.split("\\[[0-9]*?\\*").length;
+			result = SMILES.split("\\[[0-9]*?\\*", -1).length;
 		} catch (Exception e) {
 			try {
-				result = SMILES.split("\\*").length;
+				result = SMILES.split("\\*", -1).length;
 			} catch (Exception e1) {
 				result = 1;
 			}

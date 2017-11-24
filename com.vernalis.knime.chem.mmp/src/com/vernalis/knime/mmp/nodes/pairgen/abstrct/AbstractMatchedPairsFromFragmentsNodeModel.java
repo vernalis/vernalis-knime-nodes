@@ -47,7 +47,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -323,7 +322,7 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 		ExecutionContext exec1;
 		if (presortTableByKey && !m_keysAreSorted.getBooleanValue()) {
 			tables = new BufferedDataTable[inData.length];
-			exec.setMessage("Pre-Sorting table(s) by fragmentation keys");
+			exec.setMessage("Pre-Sorting table(s) by fragmentation keys / values");
 			for (int i = 0; i < inData.length; i++) {
 				double tableProg = 0.25 / inData.length;
 				ExecutionContext exec0 = exec.createSubExecutionContext(tableProg);
@@ -654,9 +653,11 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 	protected BufferedDataTable getSortedTable(final BufferedDataTable inDataTable,
 			final ExecutionContext exec) throws CanceledExecutionException {
 		exec.setMessage("Pre-Sorting table by Fragment key");
-		BufferedDataTableSorter sorter = new BufferedDataTableSorter(inDataTable,
-				Collections.singleton(m_FragKeyColName.getStringValue()), new boolean[] { true },
-				false);
+		List<String> sortCols = new ArrayList<>();
+		sortCols.add(m_FragKeyColName.getStringValue());
+		sortCols.add(m_FragValColName.getStringValue());
+		BufferedDataTableSorter sorter = new BufferedDataTableSorter(inDataTable, sortCols,
+				new boolean[] { true, true }, false);
 		return sorter.sort(exec);
 	}
 
@@ -1027,10 +1028,10 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 		specs.add(createColSpec("Transformation", MMPConstants.DEFAULT_TRANSFORM_TYPE, null));
 		specs.add(createColSpec("ID (Left)", StringCell.TYPE, null));
 		specs.add(createColSpec("ID (Right)", StringCell.TYPE, null));
-		specs.add(createColSpec("Left Fragment", MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE,
-				null));
-		specs.add(createColSpec("Right Fragment", MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE,
-				null));
+		specs.add(createColSpec("Left Fragment",
+				MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE, null));
+		specs.add(createColSpec("Right Fragment",
+				MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE, null));
 		if (m_includeUnchangingPortions.getBooleanValue()) {
 			if (showBothKeys) {
 				specs.add(createColSpec("Key (Left)",
