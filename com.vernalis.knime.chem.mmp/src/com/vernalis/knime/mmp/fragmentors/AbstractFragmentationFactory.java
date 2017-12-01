@@ -382,8 +382,9 @@ public abstract class AbstractFragmentationFactory<T, U>
 			if (fragment != null) {
 				if (breakingBondColour != null || keyColour != null || valueColour != null) {
 					try {
-						fragment.setRenderingCell(renderFragmentation(Collections.singleton(bond),
-								breakingBondColour, keyColour, valueColour));
+						fragment.setRenderingCell(
+								renderFragmentation(Collections.singleton(bond.getReverse()),
+										breakingBondColour, keyColour, valueColour));
 					} catch (IOException | MoleculeFragmentationException e) {
 						// Leave it as a missing cell - dont think we should be
 						// able to get here
