@@ -505,6 +505,7 @@ public class RWMolFragmentationUtilsFactory
 					throw new ToolkitException(e.message(), e);
 				}
 				RDKFuncs.assignStereochemistry(prodrw, true, true);
+				prodrw.Kekulize();
 				retVal.add(prodrw.MolToSmiles(true, true));
 				prodrw.delete();
 			} else {
