@@ -39,9 +39,9 @@ import org.RDKit.Bond.BondDir;
 import org.RDKit.Bond.BondStereo;
 import org.RDKit.Bond.BondType;
 import org.RDKit.Bond_Vect;
+import org.RDKit.ColourPalette;
 import org.RDKit.ConformerException;
 import org.RDKit.DrawColour;
-import org.RDKit.INT_DRAWCOLOUR_MAP;
 import org.RDKit.Int_Vect;
 import org.RDKit.Match_Vect;
 import org.RDKit.Match_Vect_Vect;
@@ -556,8 +556,8 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	}
 
 	/**
-	 * @param comp the
-	 *            component to find the correct index
+	 * @param comp
+	 *            the component to find the correct index
 	 * @param localGcWave
 	 *            The GC wave for cleanup
 	 * @return The index of the AP atom
@@ -656,7 +656,8 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	protected String renderBondSetToSVGString(Color bondColour, Set<BondIdentifier> bonds)
 			throws ToolkitException {
 		Int_Vect mb = new Int_Vect();
-		INT_DRAWCOLOUR_MAP colMap = new INT_DRAWCOLOUR_MAP();
+		// INT_DRAWCOLOUR_MAP colMap = new INT_DRAWCOLOUR_MAP();
+		ColourPalette colMap = new ColourPalette();
 		float[] rgb = bondColour.getColorComponents(null);
 		float alpha = bondColour.getAlpha() / 255.0f;
 		DrawColour col = new DrawColour(rgb[0], rgb[1], rgb[2]);
@@ -747,10 +748,13 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 		long localGcWave = getGc().getNextWaveIndex();
 		Int_Vect bondsToHighlight = getGc().markForCleanup(new Int_Vect(), localGcWave);
 		Int_Vect atomsToHighlight = getGc().markForCleanup(new Int_Vect(), localGcWave);
-		INT_DRAWCOLOUR_MAP bondColourMap =
-				getGc().markForCleanup(new INT_DRAWCOLOUR_MAP(), localGcWave);
-		INT_DRAWCOLOUR_MAP atomColourMap =
-				getGc().markForCleanup(new INT_DRAWCOLOUR_MAP(), localGcWave);
+		// INT_DRAWCOLOUR_MAP bondColourMap =
+		// getGc().markForCleanup(new INT_DRAWCOLOUR_MAP(), localGcWave);
+		// INT_DRAWCOLOUR_MAP atomColourMap =
+		// getGc().markForCleanup(new INT_DRAWCOLOUR_MAP(), localGcWave);
+
+		ColourPalette bondColourMap = getGc().markForCleanup(new ColourPalette(), localGcWave);
+		ColourPalette atomColourMap = getGc().markForCleanup(new ColourPalette(), localGcWave);
 
 		boolean isBreakAlongBond = false;
 		if (bonds instanceof BondIdentifierSelfpairSet) {

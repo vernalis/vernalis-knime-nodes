@@ -22,6 +22,7 @@ import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentColorChooser;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnFilter2;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
+import org.knime.core.node.defaultnodesettings.DialogComponentLabel;
 import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelColor;
@@ -31,6 +32,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelDoubleBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 
 import com.vernalis.knime.mmp.MMPConstants;
+import com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin;
 import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
 import com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog;
 
@@ -136,6 +138,7 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 
 		if (fragUtilityFactory.getRendererType() != null) {
 			createNewGroup("Fragmentation rendering");
+
 			final SettingsModelBoolean renderFragmentationMdl = createRenderFragmentationModel();
 			final SettingsModelBoolean renderBreakingBondMdl = createRenderBreakingBondModel();
 			final SettingsModelColor breakingBondColourMdl = createBreakingBondColourModel();
@@ -206,6 +209,12 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 				valueColourMdl.setEnabled(false);
 			}
 
+			if (!MatchedPairsMultipleCutsNodePlugin.CAN_RENDER_WITH_NEW_RDKIT_RENDERING) {
+				addDialogComponent(new DialogComponentLabel(
+						"<html><font color=\"red\">You need to update the RDKit plugin "
+								+ "to at least version 3.3.1 in order for the rendering code "
+								+ "to work</font></html>"));
+			}
 			addDialogComponent(
 					new DialogComponentBoolean(renderFragmentationMdl, "Render Fragmentation"));
 			setHorizontalPlacement(true);

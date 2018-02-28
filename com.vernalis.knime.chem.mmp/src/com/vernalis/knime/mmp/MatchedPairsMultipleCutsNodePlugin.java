@@ -46,11 +46,34 @@ public class MatchedPairsMultipleCutsNodePlugin extends AbstractUIPlugin {
 	public static ROMol AP_QUERY_MOL;
 
 	/**
+	 * Constant indicating whether latest version of RDKit rendering is
+	 * available (because the user could have an old version of RDKit plugin and
+	 * a new version of ours)
+	 */
+	public static final boolean CAN_RENDER_WITH_NEW_RDKIT_RENDERING = checkRendering();
+
+	/**
 	 * The constructor.
 	 */
 	public MatchedPairsMultipleCutsNodePlugin() {
 		super();
 		plugin = this;
+	}
+
+	/**
+	 * Helper method to check we have new version of RDKit rendering code
+	 * post-API-break (rdkit 3.3.1 or later)
+	 * 
+	 * @return
+	 */
+	private static boolean checkRendering() {
+		boolean retVal = true;
+		try {
+			Class.forName("org.RDKit.ColourPalette");
+		} catch (ClassNotFoundException e) {
+			retVal = false;
+		}
+		return retVal;
 	}
 
 	/**
