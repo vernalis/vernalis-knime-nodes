@@ -20,7 +20,7 @@ package com.vernalis.pdbconnector.containers;
  */
 public class HeterogenStructureDetails extends AbstractHetDetails
 		implements Comparable<HeterogenStructureDetails> {
-	String StructureID;
+	private final String StructureID;
 
 	public HeterogenStructureDetails(String xml) throws QueryParsingException {
 		super(xml);
@@ -74,10 +74,10 @@ public class HeterogenStructureDetails extends AbstractHetDetails
 	@Override
 	public int compareTo(HeterogenStructureDetails that) {
 		// Sort by HetID then by StructureID - Case-Insensitive
-		if (this.HetID.equalsIgnoreCase(that.HetID)) {
+		if (this.getHetID().equalsIgnoreCase(that.getHetID())) {
 			return this.StructureID.compareToIgnoreCase(that.StructureID);
 		} else {
-			return this.HetID.compareToIgnoreCase(that.HetID);
+			return this.getHetID().compareToIgnoreCase(that.getHetID());
 		}
 	}
 }

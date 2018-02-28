@@ -100,8 +100,8 @@ public class PdbDescribeHetNodeModel extends NodeModel {
 	private SettingsModelBoolean m_InChiKey = PdbDescribeHetNodeDialog.createInchiKeyModel();
 	private SettingsModelBoolean m_InChi = PdbDescribeHetNodeDialog.createInchiModel();
 	private SettingsModelBoolean m_Smiles = PdbDescribeHetNodeDialog.createSmilesModel();
-	private SettingsModelIntegerBounded m_maxUrlLength = PdbDescribeHetNodeDialog
-			.createMaxUrlLengthModel();
+	private SettingsModelIntegerBounded m_maxUrlLength =
+			PdbDescribeHetNodeDialog.createMaxUrlLengthModel();
 
 	private Map<String, DataType> m_newCols;// The added columns and their types
 	private Map<String, HeterogenDetails> m_hetDetails; // The heterogen details
@@ -121,7 +121,7 @@ public class PdbDescribeHetNodeModel extends NodeModel {
 			final ExecutionContext exec) throws Exception {
 
 		ColumnRearranger rearranger = createColumnRearranger(inData[0].getSpec());
-		HashSet<String> hetIds = new HashSet<String>();
+		HashSet<String> hetIds = new HashSet<>();
 		int idColIndex = inData[0].getDataTableSpec().findColumnIndex(m_colName.getStringValue());
 
 		// Parsing the input table is 10% of time
@@ -147,7 +147,7 @@ public class PdbDescribeHetNodeModel extends NodeModel {
 			// Now build the URLs
 			exec0.setProgress(1.0, "Building query URLs");
 			String url = SERVICE_BASE_URL;
-			ArrayList<String> urls = new ArrayList<String>();
+			ArrayList<String> urls = new ArrayList<>();
 			for (String id : hetIds) {
 				url += id;
 				if ((m_maxUrlLength.getIntValue() - url.length()) < 4) {
@@ -165,7 +165,7 @@ public class PdbDescribeHetNodeModel extends NodeModel {
 			}
 
 			// And now actually get the data...
-			m_hetDetails = new HashMap<String, HeterogenDetails>();
+			m_hetDetails = new HashMap<>();
 			int urlCounter = 0;
 			for (String url1 : urls) {
 				exec0 = exec.createSubExecutionContext(0.65 / urls.size()); // Running
@@ -206,7 +206,7 @@ public class PdbDescribeHetNodeModel extends NodeModel {
 		int[] retryDelays = { 0, 1, 5, 10, 30, 60, 300, 600 };
 
 		// The return object
-		HashMap<String, HeterogenDetails> dataReturn = new HashMap<String, HeterogenDetails>();
+		HashMap<String, HeterogenDetails> dataReturn = new HashMap<>();
 		// Another Arraylist to store the individual lines
 		List<String> lines = null;
 
@@ -348,7 +348,7 @@ public class PdbDescribeHetNodeModel extends NodeModel {
 		}
 
 		// Now we need to decide which columns are added
-		m_newCols = new LinkedHashMap<String, DataType>();
+		m_newCols = new LinkedHashMap<>();
 		if (m_type.getBooleanValue()) {
 			m_newCols.put(DataTableSpec.getUniqueColumnName(inSpecs[0], "Type"), StringCell.TYPE);
 		}

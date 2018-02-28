@@ -14,8 +14,6 @@
  ******************************************************************************/
 package com.vernalis.pdbconnector.containers;
 
-
-
 /**
  * A container class to contain the data returned for a given HetID
  * 
@@ -24,22 +22,20 @@ package com.vernalis.pdbconnector.containers;
  */
 public class HeterogenDetails extends AbstractHetDetails implements Comparable<HeterogenDetails> {
 
-
 	/**
 	 * Create the record from the XML string
-	 * @throws QueryParsingException 
+	 * 
+	 * @throws QueryParsingException
 	 */
 	public HeterogenDetails(String xml) throws QueryParsingException {
 		super(xml);
 
 	}
 
-
 	@Override
 	public int compareTo(HeterogenDetails that) {
-		//Compare solely on Heterogen ID
-		return this.HetID.compareToIgnoreCase(that.HetID);
+		// Compare solely on Heterogen ID
+		return getHetID().compareToIgnoreCase(that.getHetID());
 	}
-
 
 }
