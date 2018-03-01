@@ -15,9 +15,11 @@
 package com.vernalis.knime.mmp.nodes.fragutil.render.abstrct;
 
 import org.knime.core.node.defaultnodesettings.DialogComponentColorChooser;
+import org.knime.core.node.defaultnodesettings.DialogComponentLabel;
 import org.knime.core.node.defaultnodesettings.SettingsModelColor;
 
 import com.vernalis.knime.mmp.MMPConstants;
+import com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin;
 import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
 import com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog;
 
@@ -50,6 +52,13 @@ public class AbstractMMPMatchingBondsRenderNodeDialog<T, U>
 		super(fragUtilityFactory, false, false, hasNumCuts, hasTwoCutsToBond);
 		addDialogComponent(
 				new DialogComponentColorChooser(createBondColourModel(), labelText, true));
+		if ("rdkit".equalsIgnoreCase(fragUtilFactory.getToolkitName())
+				&& !MatchedPairsMultipleCutsNodePlugin.CAN_RENDER_WITH_NEW_RDKIT_RENDERING) {
+			addDialogComponent(new DialogComponentLabel(
+					"<html><font color=\"red\">You need to update the RDKit plugin "
+							+ "to at least version 3.3.1 in order for the rendering code "
+							+ "to work</font></html>"));
+		}
 	}
 
 	/**

@@ -209,7 +209,8 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 				valueColourMdl.setEnabled(false);
 			}
 
-			if (!MatchedPairsMultipleCutsNodePlugin.CAN_RENDER_WITH_NEW_RDKIT_RENDERING) {
+			if ("rdkit".equalsIgnoreCase(fragUtilFactory.getToolkitName())
+					&& !MatchedPairsMultipleCutsNodePlugin.CAN_RENDER_WITH_NEW_RDKIT_RENDERING) {
 				addDialogComponent(new DialogComponentLabel(
 						"<html><font color=\"red\">You need to update the RDKit plugin "
 								+ "to at least version 3.3.1 in order for the rendering code "
