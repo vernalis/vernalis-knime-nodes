@@ -48,7 +48,6 @@ import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
-import com.vernalis.pdbconnector.QueryOptionModel;
 import com.vernalis.pdbconnector.config.PdbConnectorConfig;
 import com.vernalis.pdbconnector.config.Properties;
 import com.vernalis.pdbconnector.config.QueryCategory;
@@ -77,10 +76,10 @@ public class PdbConnectorNodeModel extends NodeModel {
 	static final String USE_POST_KEY = "USE_POST";
 	static final String MAX_URL_LENGTH_KEY = "MAX_URL_LENGTH";
 
-	private final List<QueryOptionModel> m_queryModels = new ArrayList<QueryOptionModel>();
-	private final List<ReportFieldModel> m_reportModels = new ArrayList<ReportFieldModel>();
-	private final List<ReportFieldModel> m_hiddenReportModels = new ArrayList<ReportFieldModel>();
-	private final List<ReportField> m_selectedFields = new ArrayList<ReportField>();
+	private final List<QueryOptionModel> m_queryModels = new ArrayList<>();
+	private final List<ReportFieldModel> m_reportModels = new ArrayList<>();
+	private final List<ReportFieldModel> m_hiddenReportModels = new ArrayList<>();
+	private final List<ReportField> m_selectedFields = new ArrayList<>();
 	private ReportField m_primaryCitationSuffix = null;
 	private QueryOptionModel m_simModel = null;
 	private SettingsModelString m_ligandImgSize = null;
@@ -113,8 +112,8 @@ public class PdbConnectorNodeModel extends NodeModel {
 			m_ligandImgOptions = config.getLigandImgOptions();
 			m_ligandImgSize = new SettingsModelString(LIGAND_IMG_SIZE_KEY,
 					m_ligandImgOptions.getDefaultLabel());
-			m_conjunction = new SettingsModelString(CONJUNCTION_KEY,
-					Properties.CONJUNCTION_AND_LABEL);
+			m_conjunction =
+					new SettingsModelString(CONJUNCTION_KEY, Properties.CONJUNCTION_AND_LABEL);
 			m_stdCategories = config.getStandardCategories();
 			m_stdReport = config.getDefaultStandardReport();
 			m_usePOST = new SettingsModelBoolean(USE_POST_KEY, true);
@@ -272,7 +271,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 	 */
 	private void runReportWithGET(ExecutionMonitor exec1, List<String> pdbIds,
 			DataTableSpec outputSpec1, DataContainer container1) throws Exception {
-		Queue<String> toProcess = new LinkedList<String>(pdbIds);
+		Queue<String> toProcess = new LinkedList<>(pdbIds);
 		// determine how many PDB IDs we can process at once without exceeding
 		// MAX_URL_LENGTH
 		// Each PDB ID requires 5 characters, but have to allow for length of
@@ -290,7 +289,7 @@ public class PdbConnectorNodeModel extends NodeModel {
 			double progress = 1.0 - (double) toProcess.size() / (double) pdbIds.size();
 			exec1.setProgress(progress, "Getting custom report (" + toProcess.size() + "/"
 					+ pdbIds.size() + " PDB IDs remaining)");
-			List<String> nextChunk = new ArrayList<String>();
+			List<String> nextChunk = new ArrayList<>();
 			while (!toProcess.isEmpty() && (nextChunk.size() < CHUNK_SIZE)) {
 				nextChunk.add(toProcess.remove());
 			}
@@ -478,7 +477,11 @@ public class PdbConnectorNodeModel extends NodeModel {
 			queryModel.loadValidatedSettingsFrom(settings);
 		}
 		for (ReportFieldModel reportModel : m_reportModels) {
-			reportModel.loadValidatedSettingsFrom(settings);
+			try {
+				reportModel.loadValidatedSettingsFrom(settings);
+			} catch (InvalidSettingsException e) {
+				// Skip...
+			}
 		}
 		if (m_simModel != null) {
 			m_simModel.loadValidatedSettingsFrom(settings);
@@ -531,9 +534,9 @@ public class PdbConnectorNodeModel extends NodeModel {
 		for (QueryOptionModel queryModel : m_queryModels) {
 			queryModel.validateSettings(settings);
 		}
-		for (ReportFieldModel reportModel : m_reportModels) {
-			reportModel.validateSettings(settings);
-		}
+		// for (ReportFieldModel reportModel : m_reportModels) {
+		// reportModel.validateSettings(settings);
+		// }
 		if (m_simModel != null) {
 			m_simModel.validateSettings(settings);
 		}
@@ -601,8 +604,8 @@ public class PdbConnectorNodeModel extends NodeModel {
 		int nCols = PDB_COLUMNS.length;
 		DataColumnSpec[] allColSpecs = new DataColumnSpec[nCols];
 		for (int i = 0; i < nCols; ++i) {
-			allColSpecs[i] = new DataColumnSpecCreator(PDB_COLUMNS[i], StringCell.TYPE)
-					.createSpec();
+			allColSpecs[i] =
+					new DataColumnSpecCreator(PDB_COLUMNS[i], StringCell.TYPE).createSpec();
 		}
 		DataTableSpec retVal = new DataTableSpec(allColSpecs);
 		return retVal;
@@ -616,8 +619,8 @@ public class PdbConnectorNodeModel extends NodeModel {
 	private DataTableSpec createOutputTableSpec1() {
 		// Track selected column names and report URL values, to ensure no
 		// duplicates
-		Set<String> columnNames = new HashSet<String>();
-		Set<String> reportValues = new HashSet<String>();
+		Set<String> columnNames = new HashSet<>();
+		Set<String> reportValues = new HashSet<>();
 		m_selectedFields.clear();
 		m_primaryCitationSuffix = null;
 		m_numNonHidden = 0;

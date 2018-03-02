@@ -48,7 +48,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import com.vernalis.pdbconnector.QueryOptionModel;
 import com.vernalis.pdbconnector.config.Properties;
 import com.vernalis.pdbconnector.config.ReportField;
 import com.vernalis.rest.RestClient;
@@ -91,7 +90,7 @@ public class ModelHelperFunctions {
 	 */
 	public static String getXmlQuery(final List<QueryOptionModel> queryModels,
 			final QueryOptionModel simModel, final String conjunction) {
-		List<QueryOptionModel> simModels = new ArrayList<QueryOptionModel>();
+		List<QueryOptionModel> simModels = new ArrayList<>();
 		simModels.add(simModel);
 		// inner query string is for the selected queries themselves.
 		// outer query string is combined with similarity query (conjunction is
@@ -119,13 +118,13 @@ public class ModelHelperFunctions {
 	public static String getXmlQuery(final String initialQuery,
 			final List<QueryOptionModel> queryModels, final String conjunction) {
 		StringBuffer retVal = new StringBuffer();
-		List<String> queries = new ArrayList<String>();
+		List<String> queries = new ArrayList<>();
 		// Pre-seed with initial query string (if defined)
 		if (!initialQuery.isEmpty()) {
 			queries.add(initialQuery);
 		}
 		// Get list of all selected query models
-		List<QueryOptionModel> selected = new ArrayList<QueryOptionModel>();
+		List<QueryOptionModel> selected = new ArrayList<>();
 		for (QueryOptionModel queryModel : queryModels) {
 			if (queryModel.isSelected()) {
 				selected.add(queryModel);
@@ -295,7 +294,7 @@ public class ModelHelperFunctions {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	public static List<String> postQuery(final String xml) throws IOException {
-		List<String> retVal = new ArrayList<String>();
+		List<String> retVal = new ArrayList<>();
 		URL url = new URL(Properties.SEARCH_LOCATION);
 		String encodedXML = URLEncoder.encode(xml, "UTF-8");
 		InputStream in = RestClient.doPOST(url, encodedXML);
@@ -311,6 +310,10 @@ public class ModelHelperFunctions {
 				retVal.add(line.split(":")[0]);
 			} else if (line.matches("[A-Za-z0-9]{4}")) {
 				retVal.add(line);
+			} else {
+				rd.close();
+				throw new IOException(
+						"PDB RESTful Query Webservice returned response '" + line + "'");
 			}
 		}
 		rd.close();
@@ -342,7 +345,7 @@ public class ModelHelperFunctions {
 	@Deprecated
 	public static List<List<String>> getCustomReportCsv(final List<String> pdbIds,
 			final List<ReportField> selected) throws Exception {
-		List<List<String>> retVal = new ArrayList<List<String>>();
+		List<List<String>> retVal = new ArrayList<>();
 		StringBuffer buf = new StringBuffer(Properties.REPORT_LOCATION);
 		buf.append(ModelHelperFunctions.getPdbIdUrl(pdbIds));
 		buf.append(ModelHelperFunctions.getReportColumnsUrl(selected));
@@ -368,7 +371,7 @@ public class ModelHelperFunctions {
 		boolean isFirst = true;
 		while ((record = tokenizer.nextToken()) != null) {
 			if (!isFirst) {// skip header row
-				List<String> recordVals = new ArrayList<String>();
+				List<String> recordVals = new ArrayList<>();
 				Tokenizer recordTokenizer = new Tokenizer(new StringReader(record));
 				recordTokenizer.setSettings(recordSettings);
 				String fieldValue;
@@ -412,7 +415,7 @@ public class ModelHelperFunctions {
 	@Deprecated
 	public static List<List<String>> getCustomReportXml(final List<String> pdbIds,
 			final List<ReportField> selected) throws Exception {
-		List<List<String>> retVal = new ArrayList<List<String>>();
+		List<List<String>> retVal = new ArrayList<>();
 		StringBuffer buf = new StringBuffer(Properties.REPORT_LOCATION);
 		buf.append(ModelHelperFunctions.getPdbIdUrl(pdbIds));
 		buf.append(ModelHelperFunctions.getReportColumnsUrl(selected));
@@ -444,7 +447,7 @@ public class ModelHelperFunctions {
 				Element record = (Element) records.item(i);
 				NodeList fields = record.getElementsByTagName("*");
 				int numFields = fields.getLength();
-				List<String> recordVals = new ArrayList<String>();
+				List<String> recordVals = new ArrayList<>();
 				for (int j = 0; j < numFields; ++j) {
 					Element field = (Element) fields.item(j);
 					recordVals.add(field.getTextContent());
@@ -506,7 +509,7 @@ public class ModelHelperFunctions {
 		URL url = new URL(Properties.REPORT_LOCATION);
 
 		// And now run the webservice call
-		List<String> report = new ArrayList<String>();
+		List<String> report = new ArrayList<>();
 		InputStream in = RestClient.doPOST(url, postRequestData);
 		BufferedReader rd = new BufferedReader(new InputStreamReader(in));
 		String line;
@@ -583,7 +586,7 @@ public class ModelHelperFunctions {
 	 * @throws IOException
 	 */
 	private static List<List<String>> manuallyParseXML(List<String> report) throws IOException {
-		List<List<String>> retVal = new ArrayList<List<String>>();
+		List<List<String>> retVal = new ArrayList<>();
 		// Manual parsing of xml (we assume one element per line)
 		final String DATASET_START = "<" + Properties.REPORT_XML_ROOT + ">";
 		final String DATASET_END = "</" + Properties.REPORT_XML_ROOT + ">";
@@ -607,7 +610,7 @@ public class ModelHelperFunctions {
 				currentRecord = null;
 				isEndOfDataSet = true;
 			} else if (line.equals(RECORD_START)) {// new record
-				currentRecord = new ArrayList<String>();
+				currentRecord = new ArrayList<>();
 				retVal.add(currentRecord);
 			} else if (line.equals(RECORD_END)) {// end of record
 				currentRecord = null;
