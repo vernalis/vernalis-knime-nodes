@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd, based on earlier PDB Connector work.
+ * Copyright (c) 2016,2018 Vernalis (R&D) Ltd, based on earlier PDB Connector work.
  * 
  * Copyright (c) 2012, 2014 Vernalis (R&D) Ltd and Enspiral Discovery Limited
  * 
@@ -133,10 +133,10 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 	protected static final String XML_QUERY_KEY = "XML_QUERY";
 	public static final String XML_VARNAME_KEY = "XML QUERY VAR NAME";
 
-	protected final List<QueryOptionModel> m_queryModels = new ArrayList<QueryOptionModel>();
-	protected final List<ReportFieldModel2> m_reportModels = new ArrayList<ReportFieldModel2>();
-	protected final List<ReportFieldModel2> m_hiddenReportModels = new ArrayList<ReportFieldModel2>();
-	protected final List<ReportField2> m_selectedFields = new ArrayList<ReportField2>();
+	protected final List<QueryOptionModel> m_queryModels = new ArrayList<>();
+	protected final List<ReportFieldModel2> m_reportModels = new ArrayList<>();
+	protected final List<ReportFieldModel2> m_hiddenReportModels = new ArrayList<>();
+	protected final List<ReportField2> m_selectedFields = new ArrayList<>();
 	protected ReportField2 m_primaryCitationSuffix = null;
 	protected QueryOptionModel m_simModel = null;
 	protected SettingsModelString m_ligandImgSize = null;
@@ -186,8 +186,8 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 			if (hasQueryBuilder) {
 				m_simModel = new QueryOptionModel(config.getSimilarity());
 				createQueryModels(config);
-				m_conjunction = new SettingsModelString(CONJUNCTION_KEY,
-						Properties.CONJUNCTION_AND_LABEL);
+				m_conjunction =
+						new SettingsModelString(CONJUNCTION_KEY, Properties.CONJUNCTION_AND_LABEL);
 
 			} else if (runQuery) {
 				m_xmlQuery = new SettingsModelString(XML_QUERY_KEY, "");
@@ -204,8 +204,8 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 				m_stdCategories = config.getStandardCategories();
 				m_stdReport = config.getDefaultStandardReport();
 				m_usePOST = new SettingsModelBoolean(USE_POST_KEY, true);
-				m_maxQueryLength = new SettingsModelIntegerBounded(MAX_QUERY_LENGTH_KEY, 2000, 1000,
-						100000);
+				m_maxQueryLength =
+						new SettingsModelIntegerBounded(MAX_QUERY_LENGTH_KEY, 2000, 1000, 100000);
 				if (!runQuery) {
 					m_idColumnName = new SettingsModelString(ID_COL_NAME_KEY, null);
 				}
@@ -396,9 +396,9 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 			// We have a query builder, and so that is where the query comes
 			// from
 			// select the appropriate conjunction string (either AND or OR)
-			String conjunction = m_conjunction.getStringValue()
-					.equals(Properties.CONJUNCTION_AND_LABEL) ? Properties.CONJUNCTION_AND
-							: Properties.CONJUNCTION_OR;
+			String conjunction =
+					m_conjunction.getStringValue().equals(Properties.CONJUNCTION_AND_LABEL)
+							? Properties.CONJUNCTION_AND : Properties.CONJUNCTION_OR;
 			// build query
 			xmlQuery = ModelHelperFunctions2.getXmlQuery(m_queryModels, m_simModel, conjunction);
 		} else if (m_runQuery) {
@@ -529,8 +529,8 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 
 		for (DataRow row : currentBlockRows) {
 			int subRowIdx = 0;
-			DataCell[] newCells = new DataCell[container.getTableSpec().getNumColumns()
-					- row.getNumCells()];
+			DataCell[] newCells =
+					new DataCell[container.getTableSpec().getNumColumns() - row.getNumCells()];
 			Arrays.fill(newCells, DataType.getMissingCell());
 
 			DataCell idCell = row.getCell(idColIdx);
@@ -576,8 +576,8 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 						}
 						// Add any errors to the last column in the report table
 						if (problems.size() > 0) {
-							newCells[newCells.length - 1] = CollectionCellFactory
-									.createListCell(problems);
+							newCells[newCells.length - 1] =
+									CollectionCellFactory.createListCell(problems);
 						}
 
 						DataRow outRow = new AppendedColumnRow(row, newCells);
@@ -673,9 +673,10 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 			// selected column field strings.
 			// Only relevant if using GET query
 
-			final int CHUNK_SIZE = (m_maxQueryLength.getIntValue()
-					- Properties.REPORT_LOCATION.length()
-					- ModelHelperFunctions2.getReportColumnsUrl(m_selectedFields).length()) / 5;
+			final int CHUNK_SIZE =
+					(m_maxQueryLength.getIntValue() - Properties.REPORT_LOCATION.length()
+							- ModelHelperFunctions2.getReportColumnsUrl(m_selectedFields).length())
+							/ 5;
 			if (CHUNK_SIZE < 1) {
 				throw new InvalidSettingsException(
 						"Too many report fields selected: MAX_QUERY_LENGTH exceeded");
@@ -709,8 +710,8 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 					throw new InvalidSettingsException("No String column found for IDs");
 				}
 			}
-			int idColIdx = ((DataTableSpec) inSpecs[0])
-					.findColumnIndex(m_idColumnName.getStringValue());
+			int idColIdx =
+					((DataTableSpec) inSpecs[0]).findColumnIndex(m_idColumnName.getStringValue());
 			if (idColIdx < 0) {
 				// Specified column not found
 				throw new InvalidSettingsException(
@@ -801,7 +802,16 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 
 		if (m_runReport) {
 			for (ReportFieldModel2 reportModel : m_reportModels) {
-				reportModel.loadValidatedSettingsFrom(settings);
+				try {
+					reportModel.loadValidatedSettingsFrom(settings);
+				} catch (InvalidSettingsException e) {
+					if (!reportModel.getField().isNew()) {
+						throw e;
+					} else {
+						logger.info("Using default settings for new report field '"
+								+ reportModel.getField().getColName() + "'...");
+					}
+				}
 			}
 			m_ligandImgSize.loadSettingsFrom(settings);
 			m_usePOST.loadSettingsFrom(settings);
@@ -850,7 +860,17 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 
 		if (m_runReport) {
 			for (ReportFieldModel2 reportModel : m_reportModels) {
-				reportModel.validateSettings(settings);
+				try {
+					reportModel.validateSettings(settings);
+				} catch (InvalidSettingsException e) {
+					if (!reportModel.getField().isNew()) {
+						throw e;
+					} else {
+						// New field - just log a warning
+						logger.info("New field '" + reportModel.getField().getColName()
+								+ "' detected - will use default inclusion settings");
+					}
+				}
 			}
 			m_usePOST.validateSettings(settings);
 			m_maxQueryLength.validateSettings(settings);
@@ -902,8 +922,8 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 		int nCols = PDB_COLUMNS.length;
 		DataColumnSpec[] allColSpecs = new DataColumnSpec[nCols];
 		for (int i = 0; i < nCols; ++i) {
-			allColSpecs[i] = new DataColumnSpecCreator(PDB_COLUMNS[i], StringCell.TYPE)
-					.createSpec();
+			allColSpecs[i] =
+					new DataColumnSpecCreator(PDB_COLUMNS[i], StringCell.TYPE).createSpec();
 		}
 		DataTableSpec retVal = new DataTableSpec(allColSpecs);
 		return retVal;
@@ -921,8 +941,8 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 	protected DataTableSpec createReportTableSpec(DataTableSpec querySpec) {
 		// Track selected column names and report URL values, to ensure no
 		// duplicates
-		Set<String> columnNames = new HashSet<String>();
-		Set<String> reportValues = new HashSet<String>();
+		Set<String> columnNames = new HashSet<>();
+		Set<String> reportValues = new HashSet<>();
 		m_selectedFields.clear();
 		m_primaryCitationSuffix = null;
 		m_numNonHidden = 0;

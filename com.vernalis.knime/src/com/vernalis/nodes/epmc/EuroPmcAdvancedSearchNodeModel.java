@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016,2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -13,9 +13,6 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
 package com.vernalis.nodes.epmc;
-
-import static com.vernalis.nodes.epmc.EuroPmcAdvancedSearchNodeDialog.createEmailModel;
-import static com.vernalis.nodes.epmc.EuroPmcAdvancedSearchNodeDialog.createPageSizeModel;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +53,9 @@ import org.knime.core.node.streamable.RowOutput;
 import org.knime.core.node.streamable.StreamableOperator;
 import org.knime.core.node.streamable.StreamableOperatorInternals;
 
+import static com.vernalis.nodes.epmc.EuroPmcAdvancedSearchNodeDialog.createEmailModel;
+import static com.vernalis.nodes.epmc.EuroPmcAdvancedSearchNodeDialog.createPageSizeModel;
+
 /**
  * This is the model implementation of EuroPmcAdvancedSearch. Node to run a
  * reference query on the European Pub Med Central webservice and return the
@@ -65,8 +65,8 @@ import org.knime.core.node.streamable.StreamableOperatorInternals;
  */
 public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	// the logger instance
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(EuroPmcAdvancedSearchNodeModel.class);
+	private static final NodeLogger logger =
+			NodeLogger.getLogger(EuroPmcAdvancedSearchNodeModel.class);
 
 	// Settings models
 	static final String CFG_TITLE = "Title";
@@ -82,8 +82,8 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 
 	private final SettingsModelString m_Title = new SettingsModelString(CFG_TITLE, null);
 	private final SettingsModelString m_Authors = new SettingsModelString(CFG_AUTHORS, null);
-	private final SettingsModelString m_Affiliation = new SettingsModelString(CFG_AFFILIATION,
-			null);
+	private final SettingsModelString m_Affiliation =
+			new SettingsModelString(CFG_AFFILIATION, null);
 	private final SettingsModelString m_From = new SettingsModelString(CFG_YEAR_FROM, null);
 	private final SettingsModelString m_To = new SettingsModelString(CFG_YEAR_TO, null);
 	private final SettingsModelString m_Journals = new SettingsModelString(CFG_JOURNALS, null);
@@ -113,8 +113,8 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 			throws Exception {
 
 		// // Now create a data container for the new output table
-		BufferedDataTableRowOutput output = new BufferedDataTableRowOutput(
-				exec.createDataContainer(spec));
+		BufferedDataTableRowOutput output =
+				new BufferedDataTableRowOutput(exec.createDataContainer(spec));
 		PortObjectOutput fvOutput = new PortObjectOutput();
 		fvOutput.setPortObject(FlowVariablePortObject.INSTANCE);
 		createStreamableOperator(null, null).runFinal(new PortInput[0],
@@ -133,7 +133,8 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	public StreamableOperator createStreamableOperator(PartitionInfo partitionInfo,
 			PortObjectSpec[] inSpecs) throws InvalidSettingsException {
 		return new StreamableOperator() {
-			ServiceResultStreamableOperatorInternals internals = new ServiceResultStreamableOperatorInternals();
+			ServiceResultStreamableOperatorInternals internals =
+					new ServiceResultStreamableOperatorInternals();
 
 			@Override
 			public void runFinal(PortInput[] inputs, PortOutput[] outputs, ExecutionContext exec)
@@ -158,12 +159,12 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 				URL queryURL = EpmcHelpers.buildQueryURL(queryText, m_QueryType.getStringValue(),
 						nextCursor, m_pageSize.getIntValue(), null, m_email.getStringValue());
 				String xmlResult = EpmcHelpers.askEpmc(queryURL, exec);
-				long hitCount = Long
-						.parseLong(EpmcHelpers.getStringFromXmlField(xmlResult, "hitCount"));
+				long hitCount =
+						Long.parseLong(EpmcHelpers.getStringFromXmlField(xmlResult, "hitCount"));
 				String serviceVersion = EpmcHelpers.getStringFromXmlField(xmlResult, "version");
 
 				if (hitCount > 0) {
-					List<DataCell> results = new ArrayList<DataCell>();
+					List<DataCell> results = new ArrayList<>();
 					results = EpmcHelpers.getRecordsFromXml(xmlResult, "result", "result");
 
 					// And now add the results
@@ -279,7 +280,8 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	@Override
 	public void finishStreamableExecution(StreamableOperatorInternals internals,
 			ExecutionContext exec, PortOutput[] output) throws Exception {
-		ServiceResultStreamableOperatorInternals castInt = (ServiceResultStreamableOperatorInternals) internals;
+		ServiceResultStreamableOperatorInternals castInt =
+				(ServiceResultStreamableOperatorInternals) internals;
 		pushFlowVariableInt("hitCount", (int) castInt.getHitCount());
 		pushFlowVariableInt("pageCount", (int) castInt.getPageCount());
 		pushFlowVariableString("queryString", castInt.getQueryString());

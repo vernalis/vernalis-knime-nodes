@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 ==========================================================================
- *  Copyright (C) 2012, Vernalis (R&D) Ltd and Enspiral Discovery Limited
+ *  Copyright (C) 2012,2018 Vernalis (R&D) Ltd and Enspiral Discovery Limited
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -95,7 +95,8 @@
  * <LI>Report table column name (default is same as UI label)</LI>
  * <LI>Default status (selected or unselected)</LI>
  * <LI>Triggers (other report fields, report categories, or standard reports that will trigger the selection of this field)</LI>
- *<LI>deliminator (added SDR 07-Jul-2016) - deliminator for List Cells</LI> 
+ * <LI>deliminator (added SDR 07-Jul-2016) - deliminator for List Cells</LI> 
+ * <LI>new (added SDR 02-Mar-2018) - A new field - skip validation<LI>
  </UL>
  -->
 <!ELEMENT reportField (#PCDATA)>
@@ -106,6 +107,7 @@
 <!ATTLIST reportField default (true|false) "false">
 <!ATTLIST reportField trigger IDREFS #IMPLIED>
 <!ATTLIST reportField deliminator CDATA #IMPLIED> 
+<!ATTLIST reportField new (true|false) "false">
 
 <!--
  * StandardCategory represents a sub-heading in the "Select Report" dropdown of the

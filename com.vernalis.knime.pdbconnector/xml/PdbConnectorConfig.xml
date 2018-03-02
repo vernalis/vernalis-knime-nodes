@@ -1901,7 +1901,7 @@
 			id="EMDB_ID_FIELD"
 			type="String"
 			label="EMDB ID"
-			trigger="EM_STRUCT_STD_REPORT">emdbId</reportField>
+			trigger="EM_STRUCT_STD_REPORT">emdbMap</reportField>
 		<reportField
 			id="EM_RES_FIELD"
 			type="Double"
@@ -1913,7 +1913,8 @@
 			type="Double"
 			label="EM Diffraction Resolution [Å]"
 			colName="EM Diffraction Resolution (A)"
-			trigger="EM_STRUCT_STD_REPORT">emDiffractionResolution</reportField>
+			trigger="EM_STRUCT_STD_REPORT"
+			new="true">emDiffractionResolution</reportField>
 		<reportField
 			id="AGGR_STATE_FIELD"
 			type="String"
@@ -1933,34 +1934,34 @@
 			label="EM Point Symmetry"
 			type="String"
 			id="EM_POINT_SYMMETRY"
-			trigger="EM_STRUCT_STD_REPORT">pointSymmetry</reportField>
+			trigger="EM_STRUCT_STD_REPORT"
+			new="true">pointSymmetry</reportField>
 		<reportField
 			label="EM Embedding"
 			type="String"
 			id="EM_EMBEDDING"
-			trigger="EM_STRUCT_STD_REPORT">embedding</reportField>
+			trigger="EM_STRUCT_STD_REPORT"
+			new="true">embedding</reportField>
 		<reportField
 			label="EM Staining"
 			type="String"
 			id="EM_STAINING"
-			trigger="EM_STRUCT_STD_REPORT">staining</reportField>
+			trigger="EM_STRUCT_STD_REPORT"
+			new="true">staining</reportField>
 		<reportField
 			label="EM Vitrification"
 			type="String"
 			id="EM_VITRIFICATION"
-			trigger="EM_STRUCT_STD_REPORT">vitrification</reportField>
-		<reportField
-			label="EMDB Map"
-			type="String"
-			id="EMDB_MAP"
-			trigger="EM_STRUCT_STD_REPORT">emdbMap</reportField>
+			trigger="EM_STRUCT_STD_REPORT"
+			new="true">vitrification</reportField>
 		<reportField
 			label="EM Additional Map"
 			type="String"
 			id="EM_ADDITIONAL_MAP"
-			trigger="EM_STRUCT_STD_REPORT">additionalMap</reportField>
-		<!-- reportField id="SPECIMEN_FIELD" type="String" label="Specimen Type" 
-			trigger="EM_STRUCT_STD_REPORT">specimenType</reportField -->
+			trigger="EM_STRUCT_STD_REPORT"
+			new="true">additionalMap</reportField>
+		<!-- FIELD REMOVED BY RCSB - REMOVED HERE 02-MAR-2018 SDR reportField id="SPECIMEN_FIELD" 
+			type="String" label="Specimen Type" trigger="EM_STRUCT_STD_REPORT">specimenType</reportField -->
 	</reportCategory>
 	<reportCategory
 		id="PRIMARY_CITATION_REPORT"

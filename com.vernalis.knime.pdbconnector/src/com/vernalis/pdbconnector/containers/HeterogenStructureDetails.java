@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016,2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,18 +14,25 @@
  ******************************************************************************/
 package com.vernalis.pdbconnector.containers;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Implementation of the {@link AbstractHetDetails} class used for SMILES query
  * parsing
  */
 public class HeterogenStructureDetails extends AbstractHetDetails
 		implements Comparable<HeterogenStructureDetails> {
+	private static final Pattern STRUCTURE_ID_PATTERN =
+			Pattern.compile("\\<ligand.*? structureId=\"(.+?)\".*");
 	private final String StructureID;
 
 	public HeterogenStructureDetails(String xml) throws QueryParsingException {
 		super(xml);
-		if (xml.matches("\\<ligand.*? structureId=\"(.*?)\".*")) {
-			this.StructureID = xml.replaceAll("\\<ligand.*? structureId=\"(.*?)\".*", "$1");
+
+		Matcher m = STRUCTURE_ID_PATTERN.matcher(xml);
+		if (m.find()) {
+			this.StructureID = m.group(1);
 		} else {
 			// We must have a structure ID in this case
 			throw new QueryParsingException("No structure ID found in " + xml);

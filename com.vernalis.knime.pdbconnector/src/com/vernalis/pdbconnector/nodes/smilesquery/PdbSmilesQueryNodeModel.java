@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016,2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -66,6 +66,7 @@ import org.knime.core.node.streamable.RowOutput;
 import org.knime.core.node.streamable.StreamableOperator;
 
 import com.vernalis.pdbconnector.containers.HeterogenStructureDetails;
+import com.vernalis.pdbconnector.containers.QueryParsingException;
 import com.vernalis.rest.GetRunner;
 
 ;
@@ -106,8 +107,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 
 	// The SettingsModels
 	private SettingsModelString m_SmilesQuery = PdbSmilesQueryNodeDialog.createSmilesQueryModel();
-	private SettingsModelDoubleBounded m_Similarity = PdbSmilesQueryNodeDialog
-			.createSimilarityQueryModel();
+	private SettingsModelDoubleBounded m_Similarity =
+			PdbSmilesQueryNodeDialog.createSimilarityQueryModel();
 	private SettingsModelString m_QueryType = PdbSmilesQueryNodeDialog.createQueryTypeModel();
 	private SettingsModelBoolean m_type = PdbSmilesQueryNodeDialog.createTypeModel();
 	private SettingsModelBoolean m_MolWt = PdbSmilesQueryNodeDialog.createMolWtModel();
@@ -232,12 +233,12 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 		// // Now write the 3rd table
 		// cont2.close();
 		// BufferedDataTable out2 = cont2.getTable();
-		BufferedDataTableRowOutput out0 = new BufferedDataTableRowOutput(
-				exec.createDataContainer(getSpec0()));
-		BufferedDataTableRowOutput out1 = new BufferedDataTableRowOutput(
-				exec.createDataContainer(getSpec1()));
-		BufferedDataTableRowOutput out2 = new BufferedDataTableRowOutput(
-				exec.createDataContainer(getSpec2()));
+		BufferedDataTableRowOutput out0 =
+				new BufferedDataTableRowOutput(exec.createDataContainer(getSpec0()));
+		BufferedDataTableRowOutput out1 =
+				new BufferedDataTableRowOutput(exec.createDataContainer(getSpec1()));
+		BufferedDataTableRowOutput out2 =
+				new BufferedDataTableRowOutput(exec.createDataContainer(getSpec2()));
 		createStreamableOperator(null, null).runFinal(new PortInput[0],
 				new PortOutput[] { out0, out1, out2 }, exec);
 		return new BufferedDataTable[] { out0.getDataTable(), out1.getDataTable(),
@@ -271,8 +272,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 				logger.info("Query URL: " + url);
 
 				// Sets for the IDs - we use TreeSets to have sorted IDs
-				Set<String> hetIDs = new TreeSet<String>();
-				Set<String> pdbIDs = new TreeSet<String>();
+				Set<String> hetIDs = new TreeSet<>();
+				Set<String> pdbIDs = new TreeSet<>();
 
 				exec.setMessage("Running Query");
 				// Running the query is 50% of time
@@ -378,8 +379,12 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 			i++;
 		}
 		if (m_MolWt.getBooleanValue()) {
-			Double valDbl = entry.getMWt();
-			cells[i] = (valDbl != null) ? new DoubleCell(valDbl) : cells[i];
+			try {
+				Double valDbl = entry.getMWt();
+				cells[i] = (valDbl != null) ? new DoubleCell(valDbl) : cells[i];
+			} catch (QueryParsingException e) {
+				logger.warn(e.getMessage());
+			}
 			i++;
 		}
 		if (m_ChemName.getBooleanValue()) {
@@ -446,7 +451,7 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 		int[] retryDelays = { 0, 1, 5, 10, 30, 60, 300, 600 };
 
 		// The return object
-		ArrayList<HeterogenStructureDetails> dataReturn = new ArrayList<HeterogenStructureDetails>();
+		ArrayList<HeterogenStructureDetails> dataReturn = new ArrayList<>();
 		// Another Arraylist to store the individual lines
 		List<String> lines = null;
 
@@ -560,7 +565,7 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 		}
 
 		// Now we need to decide which columns are added
-		m_newCols = new LinkedHashMap<String, DataType>();
+		m_newCols = new LinkedHashMap<>();
 		m_newCols.put("Ligand ID", StringCell.TYPE);
 		m_newCols.put("Structure ID", StringCell.TYPE);
 		if (m_type.getBooleanValue()) {

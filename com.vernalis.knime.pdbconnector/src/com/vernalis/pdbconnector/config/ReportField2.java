@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd, based on earlier PDB Connector work.
+ * Copyright (c) 2016,2018 Vernalis (R&D) Ltd, based on earlier PDB Connector work.
  * 
  * Copyright (c) 2012, 2014 Vernalis (R&D) Ltd and Enspiral Discovery Limited
  * 
@@ -70,6 +70,12 @@ public class ReportField2 {
 	private static final String XML_ATTR_DELIMINATOR = "deliminator";
 
 	/**
+	 * XML attribute name for ReportField 'new' flag, indicating field was added
+	 * and should not fail settings model validation
+	 */
+	private static final String XML_ATTR_NEW = "new";
+
+	/**
 	 * Enumerated ReportField column types.
 	 */
 	public enum eType {
@@ -100,9 +106,10 @@ public class ReportField2 {
 	private String m_colName;
 	private String m_value;
 	private boolean m_default = false;
-	private Set<String> m_trigger = new HashSet<String>();
+	private Set<String> m_trigger = new HashSet<>();
 	private boolean m_isList = false;
 	private String m_delim = null;
+	private boolean m_new = false;
 
 	/**
 	 * Converts from string to eType enum.
@@ -309,6 +316,13 @@ public class ReportField2 {
 	}
 
 	/**
+	 * @return the m_new
+	 */
+	public boolean isNew() {
+		return m_new;
+	}
+
+	/**
 	 * Initializes from XML node.
 	 *
 	 * @param node
@@ -372,6 +386,11 @@ public class ReportField2 {
 						m_isList = true;
 					}
 
+				}
+				Node isNewAttr = attr.getNamedItem(XML_ATTR_NEW);
+				if (isNewAttr != null) {
+					m_new = isNewAttr.getNodeValue().isEmpty() ? false
+							: Boolean.parseBoolean(isNewAttr.getNodeValue());
 				}
 			}
 		}

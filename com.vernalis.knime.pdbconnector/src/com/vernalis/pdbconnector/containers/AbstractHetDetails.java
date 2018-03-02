@@ -14,6 +14,9 @@
  ******************************************************************************/
 package com.vernalis.pdbconnector.containers;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * An abstract container class to contain the data returned for a given HetID If
  * the primary key is a structure ID, then the AbstractStructDetails class
@@ -26,6 +29,21 @@ package com.vernalis.pdbconnector.containers;
  * 
  */
 public abstract class AbstractHetDetails {
+	private static final Pattern HET_ID_PATTERN =
+			Pattern.compile("\\<ligand.*? chemicalID=\"(.+?)\".*");
+	private static final Pattern SMILES_PATTERN =
+			Pattern.compile(".*\\<smiles\\>(.+?)\\</smiles\\>.*");
+	private static final Pattern INCHI_PATTERN =
+			Pattern.compile(".*\\<InChI\\>(.+?)\\</InChI\\>.*");
+	private static final Pattern INCHIKEY_PATTERN =
+			Pattern.compile(".*\\<InChIKey\\>(.+?)\\</InChIKey\\>.*");
+	private static final Pattern FORMULA_PATTERN =
+			Pattern.compile(".*\\<formula\\>(.+?)\\</formula\\>.*");
+	private static final Pattern CHEMICAL_NAME_PATTERN =
+			Pattern.compile(".*\\<chemicalName\\>(.+?)\\</chemicalName\\>.*");
+	private static final Pattern MWT_PATTERN =
+			Pattern.compile("\\<ligand.*? molecularWeight=\"(.*?)\".*");
+	private static final Pattern LIGAND_PATTERN = Pattern.compile("\\<ligand.*? type=\"(.*?)\".*");
 	private String xml, HetID, Type = null, ChemName = null, Formula = null, InChiKey = null,
 			InChi = null, Smiles = null;
 	private Double MWt = null;
@@ -37,8 +55,9 @@ public abstract class AbstractHetDetails {
 	 */
 	public AbstractHetDetails(String xml) throws QueryParsingException {
 		this.xml = xml;
-		if (xml.matches("\\<ligand.*? chemicalID=\"(.*?)\".*")) {
-			this.HetID = xml.replaceAll("\\<ligand.*? chemicalID=\"(.*?)\".*", "$1");
+		Matcher m = HET_ID_PATTERN.matcher(xml);
+		if (m.find()) {
+			this.HetID = m.group(1);
 		} else {
 			// Without a HetID cannot proceed
 			throw new QueryParsingException("No Ligand ID found");
@@ -62,30 +81,44 @@ public abstract class AbstractHetDetails {
 	 * @return the type
 	 */
 	public String getType() {
-		if (this.Type == null && xml.matches("\\<ligand.*? type=\"(.*?)\".*")) {
-			this.Type = xml.replaceAll("\\<ligand.*? type=\"(.*?)\".*", "$1");
+		if (this.Type == null) {
+			Matcher m = LIGAND_PATTERN.matcher(xml);
+			if (m.find()) {
+				this.Type = m.group(1);
+			}
 		}
 		return Type;
 	}
 
 	/**
 	 * @return the mWt
+	 * @throws QueryParsingException
+	 *             If the value cannot be parser as a number
 	 */
-	public Double getMWt() {
-		if (this.MWt == null && xml.matches("\\<ligand.*? molecularWeight=\"(.*?)\".*")) {
-			this.MWt = Double.parseDouble(
-					xml.replaceAll("\\<ligand.*? molecularWeight=\"(.*?)\".*", "$1").trim());
+	public Double getMWt() throws QueryParsingException {
+		if (this.MWt == null) {
+			Matcher m = MWT_PATTERN.matcher(xml);
+			if (m.find()) {
+				try {
+					this.MWt = Double.parseDouble(m.group(1).trim());
+				} catch (Exception e) {
+					throw new QueryParsingException("Error parsing MWt from " + xml, e);
+				}
+			}
 		}
 		return MWt;
+
 	}
 
 	/**
 	 * @return the chemName
 	 */
 	public String getChemName() {
-		if (this.ChemName == null
-				&& xml.matches(".*\\<chemicalName\\>(.*?)\\</chemicalName\\>.*")) {
-			this.ChemName = xml.replaceAll(".*\\<chemicalName\\>(.*?)\\</chemicalName\\>.*", "$1");
+		if (this.ChemName == null) {
+			Matcher m = CHEMICAL_NAME_PATTERN.matcher(xml);
+			if (m.find()) {
+				this.ChemName = m.group(1);
+			}
 		}
 		return ChemName;
 	}
@@ -94,9 +127,12 @@ public abstract class AbstractHetDetails {
 	 * @return the formula
 	 */
 	public String getFormula() {
-		if (this.Formula == null && xml.matches(".*\\<formula\\>(.*+)\\</formula\\>.*")) {
-			this.Formula = xml.replaceAll(".*\\<formula\\>(.*+)\\</formula\\>.*", "$1");
-			formatFormula();
+		if (this.Formula == null) {
+			Matcher m = FORMULA_PATTERN.matcher(xml);
+			if (m.find()) {
+				this.Formula = m.group(1);
+				formatFormula();
+			}
 		}
 		return Formula;
 
@@ -106,8 +142,11 @@ public abstract class AbstractHetDetails {
 	 * @return the inChiKey
 	 */
 	public String getInChiKey() {
-		if (this.InChiKey == null && xml.matches(".*\\<InChIKey\\>(.*?)\\</InChIKey\\>.*")) {
-			this.InChiKey = xml.replaceAll(".*\\<InChIKey\\>(.*?)\\</InChIKey\\>.*", "$1");
+		if (this.InChiKey == null) {
+			Matcher m = INCHIKEY_PATTERN.matcher(xml);
+			if (m.find()) {
+				this.InChiKey = m.group(1);
+			}
 		}
 		return InChiKey;
 	}
@@ -116,8 +155,11 @@ public abstract class AbstractHetDetails {
 	 * @return the inChi
 	 */
 	public String getInChi() {
-		if (this.InChi == null && xml.matches(".*\\<InChI\\>(.*?)\\</InChI\\>.*")) {
-			this.InChi = xml.replaceAll(".*\\<InChI\\>(.*?)\\</InChI\\>.*", "$1");
+		if (this.InChi == null) {
+			Matcher m = INCHI_PATTERN.matcher(xml);
+			if (m.find()) {
+				this.InChi = m.group(1);
+			}
 		}
 		return InChi;
 	}
@@ -126,8 +168,11 @@ public abstract class AbstractHetDetails {
 	 * @return the smiles
 	 */
 	public String getSmiles() {
-		if (this.Smiles == null && xml.matches(".*\\<smiles\\>(.*?)\\</smiles\\>.*")) {
-			this.Smiles = xml.replaceAll(".*\\<smiles\\>(.*?)\\</smiles\\>.*", "$1");
+		if (this.Smiles == null) {
+			Matcher m = SMILES_PATTERN.matcher(xml);
+			if (m.find()) {
+				this.Smiles = m.group(1);
+			}
 		}
 		return Smiles;
 	}
@@ -135,7 +180,7 @@ public abstract class AbstractHetDetails {
 	private void formatFormula() {
 		assert !this.Formula.isEmpty() : "Formula should never be empty!";
 
-		if (this.Formula.indexOf(" ") >= 0) {
+		if (this.Formula.contains(" ")) {
 			String[] temp = this.Formula.split(" ");
 			this.Formula = "";
 			for (int i = 0, l = temp.length; i < l; i++) {

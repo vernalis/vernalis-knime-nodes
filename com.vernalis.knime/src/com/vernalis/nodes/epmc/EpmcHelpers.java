@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016,2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -116,8 +116,8 @@ public class EpmcHelpers {
 		/*
 		 * This builds a query URL from query string
 		 */
-		StringBuilder url = new StringBuilder(
-				"http://www.ebi.ac.uk/europepmc/webservices/rest/search/query=");
+		StringBuilder url =
+				new StringBuilder("https://www.ebi.ac.uk/europepmc/webservices/rest/search/query=");
 		url.append(queryString.replace(" ", "%20").replace("\"", "%22").replace("[", "%5B")
 				.replace("]", "%5D").replace("+", "%20"));
 		url.append("&resulttype=").append(resultType);
@@ -170,8 +170,8 @@ public class EpmcHelpers {
 		 * Builds the ePMC query string from the query options
 		 */
 		String queryString = " ";
-		queryString += (GeneralQuery != null && !("".equals(GeneralQuery))) ? GeneralQuery + " "
-				: "";
+		queryString +=
+				(GeneralQuery != null && !("".equals(GeneralQuery))) ? GeneralQuery + " " : "";
 		queryString += (Title != null && !("".equals(Title))) ? addField(Title, "TITLE") : "";
 		queryString += (Authors != null && !("".equals(Authors))) ? addField(Authors, "AUTH") : "";
 		queryString += (Affiliations != null && !("".equals(Affiliations)))
@@ -186,8 +186,8 @@ public class EpmcHelpers {
 			queryString += (To != null) ? To : defaultYearTo();
 			queryString += "] ";
 		}
-		queryString += (Journals != null && !("".equals(Journals))) ? addField(Journals, "JOURNAL")
-				: "";
+		queryString +=
+				(Journals != null && !("".equals(Journals))) ? addField(Journals, "JOURNAL") : "";
 		queryString += (MeSHSubjects != null && !("".equals(MeSHSubjects)))
 				? addField(MeSHSubjects, "KW") : "";
 
@@ -285,8 +285,8 @@ public class EpmcHelpers {
 					throw new IOException(conn.getResponseMessage());
 				}
 				StringBuffer retVal = new StringBuffer();
-				BufferedReader rd = new BufferedReader(
-						new InputStreamReader(conn.getInputStream(), "UTF8"));
+				BufferedReader rd =
+						new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF8"));
 				String line;
 				while ((line = rd.readLine()) != null) {
 					retVal.append(line);
@@ -407,7 +407,7 @@ public class EpmcHelpers {
 		// Now we need to extract the xml header from the first entry
 		String xmlHeader = fields[0].split(">")[0] + ">";
 		String newXml;
-		List<DataCell> cells = new ArrayList<DataCell>();
+		List<DataCell> cells = new ArrayList<>();
 		for (int i = 1, length = fields.length; i < length; i++) {
 			if (fields[i].startsWith("<")) {
 				// xml cell - NB needs to be 'good xml'

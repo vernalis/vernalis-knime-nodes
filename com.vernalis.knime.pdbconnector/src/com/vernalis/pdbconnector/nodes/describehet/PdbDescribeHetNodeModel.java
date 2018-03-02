@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016,2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -58,6 +58,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 import com.vernalis.pdbconnector.containers.HeterogenDetails;
+import com.vernalis.pdbconnector.containers.QueryParsingException;
 import com.vernalis.rest.GetRunner;
 
 /**
@@ -423,8 +424,12 @@ public class PdbDescribeHetNodeModel extends NodeModel {
 					currCol++;
 				}
 				if (m_MolWt.getBooleanValue()) {
-					if (het.getMWt() != null) {
-						result[currCol] = new DoubleCell(het.getMWt());
+					try {
+						if (het.getMWt() != null) {
+							result[currCol] = new DoubleCell(het.getMWt());
+						}
+					} catch (QueryParsingException e) {
+						logger.warn(e.getMessage());
 					}
 					currCol++;
 				}
