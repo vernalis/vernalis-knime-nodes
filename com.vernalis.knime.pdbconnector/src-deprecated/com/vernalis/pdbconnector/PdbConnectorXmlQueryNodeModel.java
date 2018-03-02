@@ -80,9 +80,9 @@ public class PdbConnectorXmlQueryNodeModel extends NodeModel {
 	static final String USE_POST_KEY = "USE_POST";
 	static final String MAX_URL_LENGTH_KEY = "MAX_URL_LENGTH";
 
-	private final List<ReportFieldModel> m_reportModels = new ArrayList<ReportFieldModel>();
-	private final List<ReportFieldModel> m_hiddenReportModels = new ArrayList<ReportFieldModel>();
-	private final List<ReportField> m_selectedFields = new ArrayList<ReportField>();
+	private final List<ReportFieldModel> m_reportModels = new ArrayList<>();
+	private final List<ReportFieldModel> m_hiddenReportModels = new ArrayList<>();
+	private final List<ReportField> m_selectedFields = new ArrayList<>();
 	private ReportField m_primaryCitationSuffix = null;
 	private SettingsModelString m_ligandImgSize = null;
 	private SettingsModelString m_xmlQuery = null;
@@ -302,7 +302,7 @@ public class PdbConnectorXmlQueryNodeModel extends NodeModel {
 	 */
 	private void runReportWithGET(ExecutionMonitor exec1, List<String> pdbIds,
 			DataTableSpec outputSpec1, DataContainer container1) throws Exception {
-		Queue<String> toProcess = new LinkedList<String>(pdbIds);
+		Queue<String> toProcess = new LinkedList<>(pdbIds);
 		// determine how many PDB IDs we can process at once without exceeding
 		// MAX_URL_LENGTH
 		// Each PDB ID requires 5 characters, but have to allow for length of
@@ -320,7 +320,7 @@ public class PdbConnectorXmlQueryNodeModel extends NodeModel {
 			double progress = 1.0 - (double) toProcess.size() / (double) pdbIds.size();
 			exec1.setProgress(progress, "Getting custom report (" + toProcess.size() + "/"
 					+ pdbIds.size() + " PDB IDs remaining)");
-			List<String> nextChunk = new ArrayList<String>();
+			List<String> nextChunk = new ArrayList<>();
 			while (!toProcess.isEmpty() && (nextChunk.size() < CHUNK_SIZE)) {
 				nextChunk.add(toProcess.remove());
 			}
@@ -526,7 +526,11 @@ public class PdbConnectorXmlQueryNodeModel extends NodeModel {
 			m_maxUrlLength.loadSettingsFrom(settings);
 		}
 		for (ReportFieldModel reportModel : m_reportModels) {
-			reportModel.loadValidatedSettingsFrom(settings);
+			try {
+				reportModel.loadValidatedSettingsFrom(settings);
+			} catch (InvalidSettingsException e) {
+				// Legacy node - just keep going
+			}
 		}
 		if (m_ligandImgSize != null) {
 			m_ligandImgSize.loadSettingsFrom(settings);
@@ -563,9 +567,9 @@ public class PdbConnectorXmlQueryNodeModel extends NodeModel {
 		if (m_maxUrlLength != null) {
 			m_maxUrlLength.validateSettings(settings);
 		}
-		for (ReportFieldModel reportModel : m_reportModels) {
-			reportModel.validateSettings(settings);
-		}
+		// for (ReportFieldModel reportModel : m_reportModels) {
+		// reportModel.validateSettings(settings);
+		// }
 		if (m_ligandImgSize != null) {
 			m_ligandImgSize.validateSettings(settings);
 		}
@@ -625,8 +629,8 @@ public class PdbConnectorXmlQueryNodeModel extends NodeModel {
 		int nCols = PDB_COLUMNS.length;
 		DataColumnSpec[] allColSpecs = new DataColumnSpec[nCols];
 		for (int i = 0; i < nCols; ++i) {
-			allColSpecs[i] = new DataColumnSpecCreator(PDB_COLUMNS[i], StringCell.TYPE)
-					.createSpec();
+			allColSpecs[i] =
+					new DataColumnSpecCreator(PDB_COLUMNS[i], StringCell.TYPE).createSpec();
 		}
 		DataTableSpec retVal = new DataTableSpec(allColSpecs);
 		return retVal;
@@ -640,8 +644,8 @@ public class PdbConnectorXmlQueryNodeModel extends NodeModel {
 	private DataTableSpec createOutputTableSpec1() {
 		// Track selected column names and report URL values, to ensure no
 		// duplicates
-		Set<String> columnNames = new HashSet<String>();
-		Set<String> reportValues = new HashSet<String>();
+		Set<String> columnNames = new HashSet<>();
+		Set<String> reportValues = new HashSet<>();
 		m_selectedFields.clear();
 		m_primaryCitationSuffix = null;
 		m_numNonHidden = 0;

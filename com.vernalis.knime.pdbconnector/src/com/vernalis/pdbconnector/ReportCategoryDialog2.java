@@ -50,12 +50,15 @@ import com.vernalis.pdbconnector.config.StandardReport;
 /**
  * ReportCategoryDialog class.
  *
- * A ReportCategoryDialog defines the user interface dialog components for a single report category.
- * It contains:
+ * A ReportCategoryDialog defines the user interface dialog components for a
+ * single report category. It contains:
  * <UL>
- * <LI>The report category (and the list of child report fields) that are represented by the dialog</LI>
- * <LI>A checkbox to control selection/deselection of all report fields in the category</LI>
- * <LI>A collection of Boolean dialog components to represent the report fields</LI>
+ * <LI>The report category (and the list of child report fields) that are
+ * represented by the dialog</LI>
+ * <LI>A checkbox to control selection/deselection of all report fields in the
+ * category</LI>
+ * <LI>A collection of Boolean dialog components to represent the report
+ * fields</LI>
  * </UL>
  */
 @SuppressWarnings("serial")
@@ -63,50 +66,55 @@ public class ReportCategoryDialog2 extends JPanel {
 	private final ReportCategory2 m_reportCategory;
 	private JCheckBox m_checkBox;
 	private final List<ReportField2> m_fields;
-	private final List<DialogComponentBoolean> m_dlgs = new ArrayList<DialogComponentBoolean>();
+	private final List<DialogComponentBoolean> m_dlgs = new ArrayList<>();
 
-	/** Locks listener when in use to prevent both listeners firing in sequence. */
+	/**
+	 * Locks listener when in use to prevent both listeners firing in sequence.
+	 */
 	private boolean m_lock = false;
 
 	/**
 	 * Instantiates a new report category dialog for a given report category.
 	 *
-	 * @param reportCategory the report category
+	 * @param reportCategory
+	 *            the report category
 	 */
 	public ReportCategoryDialog2(final ReportCategory2 reportCategory) {
 		m_reportCategory = reportCategory;
 		super.setLayout(new GridBagLayout());
 		super.setBorder(BorderFactory.createEtchedBorder());
-		//create category selection checkbox
+		// create category selection checkbox
 		m_checkBox = new JCheckBox(m_reportCategory.getLabel());
 		m_checkBox.addItemListener(new ItemListener() {
 			@Override
-            public void itemStateChanged(final ItemEvent e) {
+			public void itemStateChanged(final ItemEvent e) {
 				selectFields(m_checkBox.isSelected());
 			}
 		});
 		int iRow = 0;
 		int iCol = 0;
-		//Add checkBox to occupy whole of first column, anchored to the centre left (WEST)
+		// Add checkBox to occupy whole of first column, anchored to the centre
+		// left (WEST)
 		GridBagConstraints cChk = new GridBagConstraints();
-		cChk.fill = GridBagConstraints.NONE;//do not resize component
+		cChk.fill = GridBagConstraints.NONE;// do not resize component
 		cChk.weightx = 1.0;
-		cChk.gridx = iCol;//x cell coord
-		cChk.gridy = iRow;//y cell coord
-		cChk.gridwidth = 1;//occupy one column
-		cChk.gridheight = GridBagConstraints.REMAINDER;//occupy all rows
-		cChk.anchor = GridBagConstraints.WEST;//anchor to centre left
-		//Horizontal padding to fill preferred column width if necessary
-		cChk.ipadx = Math.max(0, Properties.REPORT_LAYOUT_COL_WIDTH - (int)m_checkBox.getPreferredSize().getWidth());
-		super.add(m_checkBox,cChk);
-		//Create boolean dialog components for each field
+		cChk.gridx = iCol;// x cell coord
+		cChk.gridy = iRow;// y cell coord
+		cChk.gridwidth = 1;// occupy one column
+		cChk.gridheight = GridBagConstraints.REMAINDER;// occupy all rows
+		cChk.anchor = GridBagConstraints.WEST;// anchor to centre left
+		// Horizontal padding to fill preferred column width if necessary
+		cChk.ipadx = Math.max(0, Properties.REPORT_LAYOUT_COL_WIDTH
+				- (int) m_checkBox.getPreferredSize().getWidth());
+		super.add(m_checkBox, cChk);
+		// Create boolean dialog components for each field
 		m_fields = m_reportCategory.getReportFields();
 		for (final ReportField2 field : m_fields) {
 			DialogComponentBoolean dlg = ComponentFactory2.createSelectionDialogComponent(field);
 			m_dlgs.add(dlg);
-			((SettingsModelBoolean)dlg.getModel()).addChangeListener(new ChangeListener() {
+			((SettingsModelBoolean) dlg.getModel()).addChangeListener(new ChangeListener() {
 				@Override
-                public void stateChanged(final ChangeEvent e) {
+				public void stateChanged(final ChangeEvent e) {
 					updateCheckBox();
 				}
 			});
@@ -125,9 +133,10 @@ public class ReportCategoryDialog2 extends JPanel {
 			cDlg.gridwidth = 1;
 			cDlg.gridheight = 1;
 			cDlg.anchor = GridBagConstraints.WEST;
-			//Horizontal padding to fill preferred column width if necessary
-			cDlg.ipadx = Math.max(0,Properties.REPORT_LAYOUT_COL_WIDTH - (int)comp.getPreferredSize().getWidth());
-			super.add(comp,cDlg);
+			// Horizontal padding to fill preferred column width if necessary
+			cDlg.ipadx = Math.max(0,
+					Properties.REPORT_LAYOUT_COL_WIDTH - (int) comp.getPreferredSize().getWidth());
+			super.add(comp, cDlg);
 		}
 		updateCheckBox();
 	}
@@ -135,15 +144,19 @@ public class ReportCategoryDialog2 extends JPanel {
 	/**
 	 * Loads dialog settings.
 	 *
-	 * Calls {@link DialogComponent#loadSettingsFrom(NodeSettingsRO, PortObjectSpec[])}
+	 * Calls
+	 * {@link DialogComponent#loadSettingsFrom(NodeSettingsRO, PortObjectSpec[])}
 	 * on each dialog component.
 	 *
-	 * @param settings the settings
-	 * @param specs the specs
-	 * @throws NotConfigurableException the not configurable exception
+	 * @param settings
+	 *            the settings
+	 * @param specs
+	 *            the specs
+	 * @throws NotConfigurableException
+	 *             the not configurable exception
 	 */
-	public final void loadSettingsFrom(final NodeSettingsRO settings,
-			final PortObjectSpec[] specs) throws NotConfigurableException {
+	public final void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
+			throws NotConfigurableException {
 		assert settings != null;
 		assert specs != null;
 		for (DialogComponent comp : m_dlgs) {
@@ -155,13 +168,16 @@ public class ReportCategoryDialog2 extends JPanel {
 	/**
 	 * Saves dialog settings.
 	 *
-	 * Calls {@link DialogComponent#saveSettingsTo(NodeSettingsWO)} on each dialog component.
+	 * Calls {@link DialogComponent#saveSettingsTo(NodeSettingsWO)} on each
+	 * dialog component.
 	 *
-	 * @param settings the settings
-	 * @throws InvalidSettingsException the invalid settings exception
+	 * @param settings
+	 *            the settings
+	 * @throws InvalidSettingsException
+	 *             the invalid settings exception
 	 */
 	public final void saveSettingsTo(final NodeSettingsWO settings)
-	throws InvalidSettingsException {
+			throws InvalidSettingsException {
 		for (DialogComponent comp : m_dlgs) {
 			comp.saveSettingsTo(settings);
 		}
@@ -170,10 +186,11 @@ public class ReportCategoryDialog2 extends JPanel {
 	/**
 	 * Applies a standard report to the report field selection.
 	 *
-	 * The selection state of each report field is updated to reflect
-	 * the standard report that is applied.
+	 * The selection state of each report field is updated to reflect the
+	 * standard report that is applied.
 	 *
-	 * @param stdReport the standard report to apply
+	 * @param stdReport
+	 *            the standard report to apply
 	 */
 	public void applyStandardReport(final StandardReport stdReport) {
 		if (!m_lock && (stdReport != null)) {
@@ -184,13 +201,15 @@ public class ReportCategoryDialog2 extends JPanel {
 			while (fieldIter.hasNext() && dlgIter.hasNext()) {
 				final ReportField2 field = fieldIter.next();
 				final DialogComponentBoolean dlg = dlgIter.next();
-				final SettingsModelBoolean model = (SettingsModelBoolean)dlg.getModel();
-				//1) Update field selections if this is not a customizable table
+				final SettingsModelBoolean model = (SettingsModelBoolean) dlg.getModel();
+				// 1) Update field selections if this is not a customizable
+				// table
 				if (!isCustomTable) {
 					model.setBooleanValue(field.isTriggered(stdReport));
 				}
-				//2) Set enabled state of field selection checkboxes.
-				//(greyed out for standard report; enabled for customizable table)
+				// 2) Set enabled state of field selection checkboxes.
+				// (greyed out for standard report; enabled for customizable
+				// table)
 				model.setEnabled(isCustomTable);
 				final JPanel dlgPanel = dlg.getComponentPanel();
 				dlgPanel.setEnabled(isCustomTable);
@@ -198,7 +217,7 @@ public class ReportCategoryDialog2 extends JPanel {
 					comp.setEnabled(isCustomTable);
 				}
 			}
-			m_lock=false;
+			m_lock = false;
 			updateCheckBox();
 			m_checkBox.setEnabled(isCustomTable);
 		}
@@ -207,7 +226,8 @@ public class ReportCategoryDialog2 extends JPanel {
 	/**
 	 * Updates state of report category check box.
 	 *
-	 * Checkbox is selected if all child fields are selected, else is not selected.
+	 * Checkbox is selected if all child fields are selected, else is not
+	 * selected.
 	 *
 	 */
 	public void updateCheckBox() {
@@ -228,13 +248,14 @@ public class ReportCategoryDialog2 extends JPanel {
 	/**
 	 * Sets the selection state of all report fields.
 	 *
-	 * @param isSelected the selection state to set
+	 * @param isSelected
+	 *            the selection state to set
 	 */
 	public void selectFields(final boolean isSelected) {
 		if (!m_lock) {
 			m_lock = true;
 			for (DialogComponentBoolean dlg : m_dlgs) {
-				final SettingsModelBoolean model = (SettingsModelBoolean)dlg.getModel();
+				final SettingsModelBoolean model = (SettingsModelBoolean) dlg.getModel();
 				model.setBooleanValue(isSelected);
 			}
 			m_lock = false;

@@ -48,11 +48,14 @@ import org.xml.sax.SAXException;
 /**
  * Manages the dialog options for PDB Connector KNIME Node.
  *
- * <P>Singleton class to define the query and report options presented in
- * {@link com.vernalis.internal.pdbconnector.PdbConnectorNodeDialog2} and used by {@link com.vernalis.internal.pdbconnector.PdbConnectorNodeModel2}.
- * The configuration is loaded dynamically from an external <code>xml/PdbConnectorConfig.xml/dtd</code>
- * file at run time, to allow for updates to the supported PDB query and report options without the need
- * for code modification.
+ * <P>
+ * Singleton class to define the query and report options presented in
+ * {@link com.vernalis.internal.pdbconnector.PdbConnectorNodeDialog2} and used
+ * by {@link com.vernalis.internal.pdbconnector.PdbConnectorNodeModel2}. The
+ * configuration is loaded dynamically from an external
+ * <code>xml/PdbConnectorConfig.xml/dtd</code> file at run time, to allow for
+ * updates to the supported PDB query and report options without the need for
+ * code modification.
  *
  * @author dmorley
  * @see com.vernalis.pdbconnector.PdbConnectorNodeDialog2
@@ -62,40 +65,44 @@ public class PdbConnectorConfig2 {
 	/** Singleton logger instance. */
 	static final NodeLogger logger = NodeLogger.getLogger(PdbConnectorConfig2.class);
 
-	/** Path to the configuration xml file (relative to plugin bundle directory). */
-	public static final String XML_PATH="xml/PdbConnectorConfig.xml";
+	/**
+	 * Path to the configuration xml file (relative to plugin bundle directory).
+	 */
+	public static final String XML_PATH = "xml/PdbConnectorConfig.xml";
 
-	/** Path to the configuration dtd file (relative to plugin bundle directory). */
-	public static final String DTD_PATH="xml/PdbConnectorConfig.dtd";
+	/**
+	 * Path to the configuration dtd file (relative to plugin bundle directory).
+	 */
+	public static final String DTD_PATH = "xml/PdbConnectorConfig.dtd";
 
 	/** Root XML element name in config file. */
-	public static final String XML_ELEMENT="pdbConnectorOptions";
+	public static final String XML_ELEMENT = "pdbConnectorOptions";
 
 	/** XML element name for ligand image options. */
-	public static final String XML_LIGAND_IMG_ELEMENT="ligandImage";
+	public static final String XML_LIGAND_IMG_ELEMENT = "ligandImage";
 
 	/** XML element name for property collection. */
-	public static final String XML_PROPERTIES_ELEMENT="properties";
+	public static final String XML_PROPERTIES_ELEMENT = "properties";
 
 	/** XML element name for each property. */
-	public static final String XML_PROPERTY_ELEMENT="property";
+	public static final String XML_PROPERTY_ELEMENT = "property";
 
 	/** XML attribute name for property name (key). */
-	public static final String XML_PROPERTY_KEY_ATTR="key";
+	public static final String XML_PROPERTY_KEY_ATTR = "key";
 
 	/** XML element name for similarity options. */
-	public static final String XML_SIM_ELEMENT="similarity";
+	public static final String XML_SIM_ELEMENT = "similarity";
 
 	private static PdbConnectorConfig2 theInstance = null;
-	private List<QueryCategory> m_queryCategories = new ArrayList<QueryCategory>();
-	private List<ReportCategory2> m_reportCategories = new ArrayList<ReportCategory2>();
-	private List<StandardCategory> m_standardCategories = new ArrayList<StandardCategory>();
+	private List<QueryCategory> m_queryCategories = new ArrayList<>();
+	private List<ReportCategory2> m_reportCategories = new ArrayList<>();
+	private List<StandardCategory> m_standardCategories = new ArrayList<>();
 	private StandardReport m_defaultStandardReport = null;
 	private StandardReport m_customStandardReport = null;
 	private QueryOption m_similarity = null;
 	private ConfigException m_lastError = null;
 	private Values m_ligandImgOptions = null;
-	private final Map<String,String> m_properties = new HashMap<String,String>();
+	private final Map<String, String> m_properties = new HashMap<>();
 
 	/**
 	 * Gets the single instance of PdbConnectorConfig.
@@ -112,10 +119,12 @@ public class PdbConnectorConfig2 {
 	/**
 	 * Default constructor, initialising configuration from XML file.
 	 *
-	 * <P>Configuration is loaded by {@link #initFromXML()}. In the event the XML or DTD files are not
-	 * found (or are invalid), all configuration attributes are cleared and the last {@link ConfigException}
-	 * error is stored. The error condition can be detected by {@link #isOK()} and the last error retrieved by
-	 * {@link #getLastErrorMessage()}.
+	 * <P>
+	 * Configuration is loaded by {@link #initFromXML()}. In the event the XML
+	 * or DTD files are not found (or are invalid), all configuration attributes
+	 * are cleared and the last {@link ConfigException} error is stored. The
+	 * error condition can be detected by {@link #isOK()} and the last error
+	 * retrieved by {@link #getLastErrorMessage()}.
 	 *
 	 * @see #isOK()
 	 * @see #getLastErrorMessage()
@@ -155,10 +164,12 @@ public class PdbConnectorConfig2 {
 	 * Gets the report categories.
 	 *
 	 * Each ReportCategory contains a collection of related ReportField objects
-	 * and is displayed on a single named subpanel of the node Report Options dialog tab.
+	 * and is displayed on a single named subpanel of the node Report Options
+	 * dialog tab.
 	 *
-	 * Report categories are useful in the Customizable Table report dialog to facilitate
-	 * selection (or deselection) of all report fields in that category.
+	 * Report categories are useful in the Customizable Table report dialog to
+	 * facilitate selection (or deselection) of all report fields in that
+	 * category.
 	 *
 	 * @return the report categories
 	 * @see ReportField2
@@ -172,11 +183,13 @@ public class PdbConnectorConfig2 {
 	/**
 	 * Gets the standard categories.
 	 *
-	 * Each StandardCategory contains a collection of related StandardReport objects
-	 * and represents a heading in the Select Report dropdown of the Report Options dialog tab.
+	 * Each StandardCategory contains a collection of related StandardReport
+	 * objects and represents a heading in the Select Report dropdown of the
+	 * Report Options dialog tab.
 	 *
-	 * Note that a StandardReport (for example Ligand) may not select all of the report fields
-	 * in the ReportCategory of the same name, and may include fields from other report categories.
+	 * Note that a StandardReport (for example Ligand) may not select all of the
+	 * report fields in the ReportCategory of the same name, and may include
+	 * fields from other report categories.
 	 *
 	 * @return the standard categories
 	 */
@@ -205,7 +218,8 @@ public class PdbConnectorConfig2 {
 	/**
 	 * Gets the similarity filter query option.
 	 *
-	 * The similarity filter query option is displayed on the main Query Options tab.
+	 * The similarity filter query option is displayed on the main Query Options
+	 * tab.
 	 *
 	 * @return the similarity filter query option.
 	 */
@@ -225,7 +239,8 @@ public class PdbConnectorConfig2 {
 	/**
 	 * Checks if a named property exists.
 	 *
-	 * @param key the key
+	 * @param key
+	 *            the key
 	 * @return true, if named property exists
 	 */
 	public final boolean isPropertyExists(final String key) {
@@ -237,16 +252,17 @@ public class PdbConnectorConfig2 {
 	 *
 	 * Returns the specified default value if the property key does not exist.
 	 *
-	 * @param key the key
-	 * @param defaultVal the default value
+	 * @param key
+	 *            the key
+	 * @param defaultVal
+	 *            the default value
 	 * @return the property value
 	 */
 	public final String getProperty(final String key, final String defaultVal) {
 		String retVal = defaultVal;
 		if (!isPropertyExists(key)) {
 			logger.warn("Property " + key + " not found - initializing from internal default");
-		}
-		else {
+		} else {
 			retVal = m_properties.get(key);
 		}
 		logger.info("String property " + key + " = " + retVal);
@@ -256,19 +272,20 @@ public class PdbConnectorConfig2 {
 	/**
 	 * Gets the named property value as an integer.
 	 *
-	 * Returns the specified default value if the property key does not exist, or if the value
-	 * is not a valid integer.
+	 * Returns the specified default value if the property key does not exist,
+	 * or if the value is not a valid integer.
 	 *
-	 * @param key the key
-	 * @param defaultVal the default value
+	 * @param key
+	 *            the key
+	 * @param defaultVal
+	 *            the default value
 	 * @return the property value as an integer
 	 */
 	public final int getPropertyAsInt(final String key, final int defaultVal) {
 		int retVal = defaultVal;
 		if (!isPropertyExists(key)) {
 			logger.warn("Property " + key + " not found - initializing from internal default");
-		}
-		else {
+		} else {
 			String strVal = m_properties.get(key);
 			try {
 				retVal = Integer.parseInt(strVal);
@@ -303,20 +320,20 @@ public class PdbConnectorConfig2 {
 	/**
 	 * Initializes the configuration from XML file.
 	 *
-	 * @throws ConfigException if any load or parse errors.
+	 * @throws ConfigException
+	 *             if any load or parse errors.
 	 */
 	private void initFromXML() throws ConfigException {
 		Document doc = loadDocument(XML_PATH, DTD_PATH);
 		Element root = doc.getDocumentElement();
 		if (root == null) {
 			throw new ConfigException("Null " + XML_ELEMENT + " node");
-		}
-		else if (XML_ELEMENT != root.getNodeName()) {
-			throw new ConfigException("Invalid " + XML_ELEMENT + " root (" + root.getNodeName() + ")");
-		}
-		else {
+		} else if (XML_ELEMENT != root.getNodeName()) {
+			throw new ConfigException(
+					"Invalid " + XML_ELEMENT + " root (" + root.getNodeName() + ")");
+		} else {
 			NodeList queryCategories = root.getElementsByTagName(QueryCategory.XML_ELEMENT);
-			for (int i = 0, length = queryCategories.getLength() ; i < length; ++i) {
+			for (int i = 0, length = queryCategories.getLength(); i < length; ++i) {
 				m_queryCategories.add(new QueryCategory(queryCategories.item(i)));
 			}
 			NodeList reportCategories = root.getElementsByTagName(ReportCategory2.XML_ELEMENT);
@@ -327,21 +344,23 @@ public class PdbConnectorConfig2 {
 			for (int i = 0, length = standardCategories.getLength(); i < length; ++i) {
 				m_standardCategories.add(new StandardCategory(standardCategories.item(i)));
 			}
-			//Find and store the first default standard report
+			// Find and store the first default standard report
 			Iterator<StandardCategory> iter = m_standardCategories.iterator();
 			while (iter.hasNext() && (m_defaultStandardReport == null)) {
 				m_defaultStandardReport = iter.next().getDefaultReport();
 			}
 			if (m_defaultStandardReport == null) {
-				throw new ConfigException("Default " + StandardReport.XML_ELEMENT + " node not found");
+				throw new ConfigException(
+						"Default " + StandardReport.XML_ELEMENT + " node not found");
 			}
-			//Find and store the custom standard report
+			// Find and store the custom standard report
 			iter = m_standardCategories.iterator();
 			while (iter.hasNext() && (m_customStandardReport == null)) {
 				m_customStandardReport = iter.next().getCustomReport();
 			}
 			if (m_customStandardReport == null) {
-				throw new ConfigException("Custom " + StandardReport.XML_ELEMENT + " node not found");
+				throw new ConfigException(
+						"Custom " + StandardReport.XML_ELEMENT + " node not found");
 			}
 			m_similarity = createSingletonQuery(root, XML_SIM_ELEMENT);
 			loadLigandImageOptions(root);
@@ -354,16 +373,22 @@ public class PdbConnectorConfig2 {
 	 *
 	 * Singleton expectations:
 	 * <OL>
-	 * <LI>XML root element contains one and only one child element called elementName</LI>
-	 * <LI>XML elementName element contains one and only one child element, which is a valid QueryOption</LI>
+	 * <LI>XML root element contains one and only one child element called
+	 * elementName</LI>
+	 * <LI>XML elementName element contains one and only one child element,
+	 * which is a valid QueryOption</LI>
 	 * </OL>
 	 *
-	 * @param root the root XML element
-	 * @param elementName the child element name
+	 * @param root
+	 *            the root XML element
+	 * @param elementName
+	 *            the child element name
 	 * @return the singleton QueryOption
-	 * @throws ConfigException if singleton expectations are violated.
+	 * @throws ConfigException
+	 *             if singleton expectations are violated.
 	 */
-	private QueryOption createSingletonQuery(final Element root, final String elementName) throws ConfigException {
+	private QueryOption createSingletonQuery(final Element root, final String elementName)
+			throws ConfigException {
 		QueryOption retVal = null;
 		NodeList elements = root.getElementsByTagName(elementName);
 		switch (elements.getLength()) {
@@ -373,12 +398,14 @@ public class PdbConnectorConfig2 {
 			NodeList children = elements.item(0).getChildNodes();
 			switch (children.getLength()) {
 			case 0:
-				throw new ConfigException("Missing " + QueryOption.XML_ELEMENT + " child of " + elementName + " element");
+				throw new ConfigException("Missing " + QueryOption.XML_ELEMENT + " child of "
+						+ elementName + " element");
 			case 1:
 				retVal = new QueryOption(children.item(0));
 				break;
 			default:
-				throw new ConfigException("Multiple " + QueryOption.XML_ELEMENT + " children of " + elementName + " element");
+				throw new ConfigException("Multiple " + QueryOption.XML_ELEMENT + " children of "
+						+ elementName + " element");
 			}
 			break;
 		default:
@@ -390,8 +417,10 @@ public class PdbConnectorConfig2 {
 	/**
 	 * Loads ligand image size options.
 	 *
-	 * @param root the root XML element
-	 * @throws ConfigException if ligand image size XML element is missing or invalid.
+	 * @param root
+	 *            the root XML element
+	 * @throws ConfigException
+	 *             if ligand image size XML element is missing or invalid.
 	 */
 	private void loadLigandImageOptions(final Element root) throws ConfigException {
 		m_ligandImgOptions = null;
@@ -403,7 +432,8 @@ public class PdbConnectorConfig2 {
 			Node node = elements.item(0);
 			m_ligandImgOptions = new Values(node.getChildNodes());
 			if (m_ligandImgOptions.getLabels().isEmpty()) {
-				throw new ConfigException("Missing " + Values.XML_ELEMENT + " elements in " + XML_LIGAND_IMG_ELEMENT);
+				throw new ConfigException(
+						"Missing " + Values.XML_ELEMENT + " elements in " + XML_LIGAND_IMG_ELEMENT);
 			}
 			break;
 		default:
@@ -414,8 +444,10 @@ public class PdbConnectorConfig2 {
 	/**
 	 * Loads named properties.
 	 *
-	 * @param root the root XML element
-	 * @throws ConfigException if properties XML element is missing or invalid.
+	 * @param root
+	 *            the root XML element
+	 * @throws ConfigException
+	 *             if properties XML element is missing or invalid.
 	 */
 	private void loadProperties(final Element root) throws ConfigException {
 		m_properties.clear();
@@ -432,9 +464,9 @@ public class PdbConnectorConfig2 {
 					NamedNodeMap childAttr = child.getAttributes();
 					Node keyAttr = childAttr.getNamedItem(XML_PROPERTY_KEY_ATTR);
 					if (keyAttr == null) {
-						throw new ConfigException("Missing " + XML_PROPERTY_KEY_ATTR + " attribute in " + XML_PROPERTY_ELEMENT);
-					}
-					else {
+						throw new ConfigException("Missing " + XML_PROPERTY_KEY_ATTR
+								+ " attribute in " + XML_PROPERTY_ELEMENT);
+					} else {
 						String key = keyAttr.getNodeValue();
 						String value = child.getTextContent();
 						m_properties.put(key, value);
@@ -450,10 +482,15 @@ public class PdbConnectorConfig2 {
 	/**
 	 * Loads configuration XML document.
 	 *
-	 * @param xml the XML file name to load (relative to plugin bundle directory)
-	 * @param dtd the DTD file name to load (relative to plugin bundle directory)
+	 * @param xml
+	 *            the XML file name to load (relative to plugin bundle
+	 *            directory)
+	 * @param dtd
+	 *            the DTD file name to load (relative to plugin bundle
+	 *            directory)
 	 * @return the XML document
-	 * @throws ConfigException if any load or parse errors.
+	 * @throws ConfigException
+	 *             if any load or parse errors.
 	 */
 	private Document loadDocument(final String xml, final String dtd) throws ConfigException {
 		Document retVal = null;
@@ -461,12 +498,11 @@ public class PdbConnectorConfig2 {
 			Bundle bundle = FrameworkUtil.getBundle(getClass());
 			IPath xmlPath = new Path(xml);
 			IPath dtdPath = new Path(dtd);
-			final URL XML = FileLocator.find(bundle,xmlPath,null);
-			final URL DTD = FileLocator.find(bundle,dtdPath,null);
+			final URL XML = FileLocator.find(bundle, xmlPath, null);
+			final URL DTD = FileLocator.find(bundle, dtdPath, null);
 			if (XML == null) {
 				throw new ConfigException("Error finding path to " + xml);
-			}
-			else if (DTD == null) {
+			} else if (DTD == null) {
 				throw new ConfigException("Error finding path to " + dtd);
 			}
 			logger.debug("URL for " + xml + ": " + XML.toExternalForm());
@@ -483,9 +519,8 @@ public class PdbConnectorConfig2 {
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			db.setEntityResolver(new EntityResolver() {
 				@Override
-                public InputSource resolveEntity(
-						final String publicId, final String systemId)
-				throws SAXException, IOException {
+				public InputSource resolveEntity(final String publicId, final String systemId)
+						throws SAXException, IOException {
 					InputStream is = DTD.openStream();
 					return new InputSource(is);
 				}

@@ -68,11 +68,9 @@ public abstract class AbstractPdbConnectorNodeFactory
 			AbstractPdbConnectorNodeModel nodeModel) {
 		if (m_hasQueryBuilder || m_runQuery) {
 			if (viewIndex == 0) {
-				return new AbstractXMLAdvancedQueryNodeView<AbstractPdbConnectorNodeModel>(
-						nodeModel);
+				return new AbstractXMLAdvancedQueryNodeView<>(nodeModel);
 			} else if (viewIndex == 1) {
-				return new AbstractXMLAdvancedQueryLogicalNodeView<AbstractPdbConnectorNodeModel>(
-						nodeModel);
+				return new AbstractXMLAdvancedQueryLogicalNodeView<>(nodeModel);
 			}
 		}
 		return null;

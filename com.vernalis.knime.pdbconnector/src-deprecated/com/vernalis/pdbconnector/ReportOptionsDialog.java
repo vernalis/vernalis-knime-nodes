@@ -39,7 +39,6 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.port.PortObjectSpec;
 
-import com.vernalis.pdbconnector.ReportOptionsDialog2;
 import com.vernalis.pdbconnector.config.PdbConnectorConfig;
 import com.vernalis.pdbconnector.config.ReportCategory;
 import com.vernalis.pdbconnector.config.StandardCategory;
@@ -54,7 +53,7 @@ import com.vernalis.pdbconnector.config.StandardReport;
 @SuppressWarnings("serial")
 public class ReportOptionsDialog extends JPanel {
 	static final NodeLogger logger = NodeLogger.getLogger(ReportOptionsDialog.class);
-	private final List<ReportCategoryDialog> m_reportDlgs = new ArrayList<ReportCategoryDialog>();
+	private final List<ReportCategoryDialog> m_reportDlgs = new ArrayList<>();
 	@SuppressWarnings("rawtypes")
 	private JComboBox m_comboBox = null;
 	private JButton m_selectAllButton = null;

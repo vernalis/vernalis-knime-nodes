@@ -53,7 +53,7 @@ import com.vernalis.pdbconnector.nodes.pdbconnector.AbstractPdbConnectorNodeMode
 @SuppressWarnings("serial")
 public class ReportOptionsDialog2 extends JPanel {
 	static final NodeLogger logger = NodeLogger.getLogger(ReportOptionsDialog2.class);
-	private final List<ReportCategoryDialog2> m_reportDlgs = new ArrayList<ReportCategoryDialog2>();
+	private final List<ReportCategoryDialog2> m_reportDlgs = new ArrayList<>();
 	@SuppressWarnings("rawtypes")
 	private JComboBox m_comboBox = null;
 	private JButton m_selectAllButton = null;

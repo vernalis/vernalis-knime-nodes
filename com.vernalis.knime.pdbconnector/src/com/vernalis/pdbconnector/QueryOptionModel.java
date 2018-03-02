@@ -57,7 +57,7 @@ public class QueryOptionModel {
 	 * Inner list contains the settings models for a single query param. Outer
 	 * list is for each query param in m_params.
 	 */
-	private final List<List<SettingsModel>> m_models = new ArrayList<List<SettingsModel>>();
+	private final List<List<SettingsModel>> m_models = new ArrayList<>();
 
 	/**
 	 * Instantiates a new query option model for a given query option.

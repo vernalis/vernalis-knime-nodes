@@ -160,7 +160,7 @@ public class ComponentFactory2 {
 	 * @return the list of settings model(s)
 	 */
 	public static List<SettingsModel> createSettingsModels(QueryParam param, boolean isEnabled) {
-		List<SettingsModel> retVal = new ArrayList<SettingsModel>();
+		List<SettingsModel> retVal = new ArrayList<>();
 		if (param != null) {
 			switch (param.getType()) {
 			case STRING:
@@ -244,7 +244,7 @@ public class ComponentFactory2 {
 	 */
 	public static List<DialogComponent> createDialogComponents(QueryParam param,
 			boolean isEnabled) {
-		List<DialogComponent> retVal = new ArrayList<DialogComponent>();
+		List<DialogComponent> retVal = new ArrayList<>();
 		if (param != null) {
 			List<SettingsModel> models = createSettingsModels(param, isEnabled);
 			switch (param.getType()) {
@@ -288,9 +288,9 @@ public class ComponentFactory2 {
 			case DATE:
 				// Separate bounded integer fields for YYYY-MM-DD
 				assert models.size() == 3;
-				DialogComponentNumber yearDlg = new DialogComponentNumber(
-						(SettingsModelIntegerBounded) models.get(0), param.getLabel() + ": YYYY",
-						1);
+				DialogComponentNumber yearDlg =
+						new DialogComponentNumber((SettingsModelIntegerBounded) models.get(0),
+								param.getLabel() + ": YYYY", 1);
 				DialogComponentNumber monthDlg = new DialogComponentNumber(
 						(SettingsModelIntegerBounded) models.get(1), "MM", 1);
 				DialogComponentNumber dayDlg = new DialogComponentNumber(
@@ -415,7 +415,7 @@ public class ComponentFactory2 {
 	 */
 	public static List<Component> getAllSubComponents(Container container, List<Component> retVal) {
 		if (retVal == null) {
-			retVal = new ArrayList<Component>();
+			retVal = new ArrayList<>();
 		}
 		for (final Component com : container.getComponents()) {
 			retVal.add(com);

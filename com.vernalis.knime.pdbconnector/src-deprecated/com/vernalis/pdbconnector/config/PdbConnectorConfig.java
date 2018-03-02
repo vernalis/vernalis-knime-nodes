@@ -43,24 +43,14 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import com.vernalis.pdbconnector.config.ConfigException;
-import com.vernalis.pdbconnector.config.PdbConnectorConfig2;
-import com.vernalis.pdbconnector.config.QueryCategory;
-import com.vernalis.pdbconnector.config.QueryOption;
-import com.vernalis.pdbconnector.config.ReportCategory2;
-import com.vernalis.pdbconnector.config.ReportField2;
-import com.vernalis.pdbconnector.config.StandardCategory;
-import com.vernalis.pdbconnector.config.StandardReport;
-import com.vernalis.pdbconnector.config.Values;
-
 /**
  * Manages the dialog options for PDB Connector KNIME Node.
  *
  * <P>
  * Singleton class to define the query and report options presented in
- * {@link com.vernalis.internal.pdbconnector.PdbConnectorNodeDialog2} and used by
- * {@link com.vernalis.internal.pdbconnector.PdbConnectorNodeModel2}. The configuration
- * is loaded dynamically from an external
+ * {@link com.vernalis.internal.pdbconnector.PdbConnectorNodeDialog2} and used
+ * by {@link com.vernalis.internal.pdbconnector.PdbConnectorNodeModel2}. The
+ * configuration is loaded dynamically from an external
  * <code>xml/PdbConnectorConfig.xml/dtd</code> file at run time, to allow for
  * updates to the supported PDB query and report options without the need for
  * code modification.
@@ -104,15 +94,15 @@ public class PdbConnectorConfig {
 	public static final String XML_SIM_ELEMENT = "similarity";
 
 	private static PdbConnectorConfig theInstance = null;
-	private List<QueryCategory> m_queryCategories = new ArrayList<QueryCategory>();
-	private List<ReportCategory> m_reportCategories = new ArrayList<ReportCategory>();
-	private List<StandardCategory> m_standardCategories = new ArrayList<StandardCategory>();
+	private List<QueryCategory> m_queryCategories = new ArrayList<>();
+	private List<ReportCategory> m_reportCategories = new ArrayList<>();
+	private List<StandardCategory> m_standardCategories = new ArrayList<>();
 	private StandardReport m_defaultStandardReport = null;
 	private StandardReport m_customStandardReport = null;
 	private QueryOption m_similarity = null;
 	private ConfigException m_lastError = null;
 	private Values m_ligandImgOptions = null;
-	private final Map<String, String> m_properties = new HashMap<String, String>();
+	private final Map<String, String> m_properties = new HashMap<>();
 
 	/**
 	 * Gets the single instance of PdbConnectorConfig.

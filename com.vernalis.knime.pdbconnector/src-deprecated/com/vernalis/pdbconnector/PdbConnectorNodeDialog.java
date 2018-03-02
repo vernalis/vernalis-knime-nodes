@@ -55,8 +55,6 @@ import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObjectSpec;
 
-import com.vernalis.pdbconnector.QueryOptionDialog;
-import com.vernalis.pdbconnector.QueryOptionModel;
 import com.vernalis.pdbconnector.config.PdbConnectorConfig;
 import com.vernalis.pdbconnector.config.Properties;
 import com.vernalis.pdbconnector.config.QueryCategory;
@@ -70,7 +68,7 @@ import com.vernalis.pdbconnector.config.QueryOption;
 @Deprecated
 public class PdbConnectorNodeDialog extends NodeDialogPane {
 	private static final NodeLogger logger = NodeLogger.getLogger(PdbConnectorNodeDialog.class);
-	private final List<QueryOptionDialog> m_queryDlgs = new ArrayList<QueryOptionDialog>();
+	private final List<QueryOptionDialog> m_queryDlgs = new ArrayList<>();
 	private QueryOptionDialog m_simDlg = null;// similarity dialog
 	private JButton m_testButton = null;
 	private JTextField m_resultCount = null;
@@ -423,7 +421,7 @@ public class PdbConnectorNodeDialog extends NodeDialogPane {
 				EventQueue.invokeLater(new UpdateTextField(m_queryString, ""));
 				// Copy current dialog settings to temporary QueryOptionModels
 				NodeSettings tmpSettings = new NodeSettings("DO_TEST_QUERY");
-				List<QueryOptionModel> queryModels = new ArrayList<QueryOptionModel>();
+				List<QueryOptionModel> queryModels = new ArrayList<>();
 				QueryOptionModel simModel = null;
 				for (QueryOptionDialog dlg : m_queryDlgs) {
 					dlg.saveSettingsTo(tmpSettings);
@@ -439,8 +437,8 @@ public class PdbConnectorNodeDialog extends NodeDialogPane {
 						.getStringValue().equals(Properties.CONJUNCTION_AND_LABEL)
 								? Properties.CONJUNCTION_AND : Properties.CONJUNCTION_OR;
 				// Get the xml query string and display it.
-				String xmlQuery = ModelHelperFunctions.getXmlQuery(queryModels, simModel,
-						conjunction);
+				String xmlQuery =
+						ModelHelperFunctions.getXmlQuery(queryModels, simModel, conjunction);
 				EventQueue.invokeLater(new UpdateTextField(m_queryString, xmlQuery));
 				// Execute the query!
 				List<String> pdbIds = ModelHelperFunctions.postQuery(xmlQuery);

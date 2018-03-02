@@ -76,9 +76,9 @@ import com.vernalis.pdbconnector.config.QueryOption;
  * 
  */
 public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(AbstractPdbConnectorNodeDialog.class);
-	private final List<QueryOptionDialog> m_queryDlgs = new ArrayList<QueryOptionDialog>();
+	private static final NodeLogger logger =
+			NodeLogger.getLogger(AbstractPdbConnectorNodeDialog.class);
+	private final List<QueryOptionDialog> m_queryDlgs = new ArrayList<>();
 	private QueryOptionDialog m_simDlg = null;// similarity dialog
 	private JButton m_testButton = null;
 	private JTextArea m_feedbackString = null;
@@ -346,7 +346,7 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 						// builder first
 						try {
 							NodeSettings tmpSettings = new NodeSettings("DO_TEST_QUERY");
-							List<QueryOptionModel> queryModels = new ArrayList<QueryOptionModel>();
+							List<QueryOptionModel> queryModels = new ArrayList<>();
 							QueryOptionModel simModel = null;
 							for (QueryOptionDialog dlg : m_queryDlgs) {
 								dlg.saveSettingsTo(tmpSettings);
@@ -583,7 +583,7 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 					// QueryOptionModels
 
 					NodeSettings tmpSettings = new NodeSettings("DO_TEST_QUERY");
-					List<QueryOptionModel> queryModels = new ArrayList<QueryOptionModel>();
+					List<QueryOptionModel> queryModels = new ArrayList<>();
 					QueryOptionModel simModel = null;
 					for (QueryOptionDialog dlg : m_queryDlgs) {
 						dlg.saveSettingsTo(tmpSettings);
@@ -600,8 +600,8 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 							.getStringValue().equals(Properties.CONJUNCTION_AND_LABEL)
 									? Properties.CONJUNCTION_AND : Properties.CONJUNCTION_OR;
 					// Get the xml query string and display it.
-					String xmlQuery = ModelHelperFunctions2.getXmlQuery(queryModels, simModel,
-							conjunction);
+					String xmlQuery =
+							ModelHelperFunctions2.getXmlQuery(queryModels, simModel, conjunction);
 					EventQueue.invokeLater(
 							new UpdateTextField(m_queryString, XMLFormatter.indentXML(xmlQuery)));
 					// Execute the query!

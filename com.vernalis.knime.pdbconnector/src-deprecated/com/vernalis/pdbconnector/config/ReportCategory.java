@@ -22,8 +22,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.vernalis.pdbconnector.config.ConfigException;
-
 /**
  * ReportCategory class.
  * 
@@ -47,7 +45,7 @@ public class ReportCategory {
 
 	private String m_id;
 	private String m_label;
-	private List<ReportField> m_reportFields = new ArrayList<ReportField>();
+	private List<ReportField> m_reportFields = new ArrayList<>();
 
 	/**
 	 * Instantiates a new report category from an XML node.

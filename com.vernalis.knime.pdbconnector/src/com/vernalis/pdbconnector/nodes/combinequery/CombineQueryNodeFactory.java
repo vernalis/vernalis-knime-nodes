@@ -47,9 +47,9 @@ public class CombineQueryNodeFactory extends NodeFactory<CombineQueryNodeModel> 
 	public NodeView<CombineQueryNodeModel> createNodeView(int viewIndex,
 			CombineQueryNodeModel nodeModel) {
 		if (viewIndex == 0) {
-			return new AbstractXMLAdvancedQueryNodeView<CombineQueryNodeModel>(nodeModel);
+			return new AbstractXMLAdvancedQueryNodeView<>(nodeModel);
 		} else if (viewIndex == 1) {
-			return new AbstractXMLAdvancedQueryLogicalNodeView<CombineQueryNodeModel>(nodeModel);
+			return new AbstractXMLAdvancedQueryLogicalNodeView<>(nodeModel);
 		}
 		return null;
 	}

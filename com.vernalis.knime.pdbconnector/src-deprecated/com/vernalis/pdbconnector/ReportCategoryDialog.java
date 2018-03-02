@@ -40,8 +40,6 @@ import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.port.PortObjectSpec;
 
-import com.vernalis.pdbconnector.ComponentFactory2;
-import com.vernalis.pdbconnector.ReportCategoryDialog2;
 import com.vernalis.pdbconnector.config.Properties;
 import com.vernalis.pdbconnector.config.ReportCategory;
 import com.vernalis.pdbconnector.config.ReportField;
@@ -69,7 +67,7 @@ public class ReportCategoryDialog extends JPanel {
 	private final ReportCategory m_reportCategory;
 	private JCheckBox m_checkBox;
 	private final List<ReportField> m_fields;
-	private final List<DialogComponentBoolean> m_dlgs = new ArrayList<DialogComponentBoolean>();
+	private final List<DialogComponentBoolean> m_dlgs = new ArrayList<>();
 
 	/**
 	 * Locks listener when in use to prevent both listeners firing in sequence.

@@ -48,9 +48,9 @@ public class Values {
 	static final String XML_ATTR_DEFAULT = "default";
 
 	/** The list of labels in the order they are added. */
-	private final List<String> m_labels = new ArrayList<String>();
+	private final List<String> m_labels = new ArrayList<>();
 	/** Lookup map of {key=label, value=value}. */
-	private final Map<String, String> m_values = new HashMap<String, String>();
+	private final Map<String, String> m_values = new HashMap<>();
 
 	/** The label of the default value. */
 	private String m_defaultLabel = "";

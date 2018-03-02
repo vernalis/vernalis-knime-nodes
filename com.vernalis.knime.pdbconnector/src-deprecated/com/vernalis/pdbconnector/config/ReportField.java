@@ -21,10 +21,6 @@ import java.util.Set;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-import com.vernalis.pdbconnector.config.ConfigException;
-import com.vernalis.pdbconnector.config.ReportCategory2;
-import com.vernalis.pdbconnector.config.StandardReport;
-
 /**
  * ReportField class.
  *
@@ -101,7 +97,7 @@ public class ReportField {
 	private String m_colName;
 	private String m_value;
 	private boolean m_default = false;
-	private Set<String> m_trigger = new HashSet<String>();
+	private Set<String> m_trigger = new HashSet<>();
 
 	/**
 	 * Converts from string to eType enum.

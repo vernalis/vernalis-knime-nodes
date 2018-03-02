@@ -29,15 +29,16 @@ import org.w3c.dom.NodeList;
 /**
  * StandardCategory class.
  * 
- * A StandardCategory represents a sub-heading in the "Select Report" dropdown of the Report Options dialog tab,
- * and contains a collection of related StandardReport objects.
+ * A StandardCategory represents a sub-heading in the "Select Report" dropdown
+ * of the Report Options dialog tab, and contains a collection of related
+ * StandardReport objects.
  * 
  * @see StandardReport
  */
 public class StandardCategory {
 
 	/** XML element name for StandardCategory definition. */
-	static final String XML_ELEMENT="standardCategory";
+	static final String XML_ELEMENT = "standardCategory";
 
 	/** XML attribute name for StandardCategory ID. */
 	static final String XML_ATTR_ID = "id";
@@ -47,19 +48,26 @@ public class StandardCategory {
 
 	private String m_id;
 	private String m_label;
-	private final List<StandardReport> m_standardReports = new ArrayList<StandardReport>();
+	private final List<StandardReport> m_standardReports = new ArrayList<>();
 	/** lookup table by key=ID. */
-	private final Map<String,StandardReport> m_lookup = new HashMap<String,StandardReport>();
-	/** Default report. May be null if there is no default report in this category. */
+	private final Map<String, StandardReport> m_lookup = new HashMap<>();
+	/**
+	 * Default report. May be null if there is no default report in this
+	 * category.
+	 */
 	private StandardReport m_defaultReport = null;
-	/** Custom report. May be null if there is no custom report in this category. */
+	/**
+	 * Custom report. May be null if there is no custom report in this category.
+	 */
 	private StandardReport m_customReport = null;
 
 	/**
 	 * Instantiates a new standard category from an XML node.
 	 *
-	 * @param node the XML node.
-	 * @throws ConfigException if any parse errors.
+	 * @param node
+	 *            the XML node.
+	 * @throws ConfigException
+	 *             if any parse errors.
 	 */
 	public StandardCategory(Node node) throws ConfigException {
 		initFromXML(node);
@@ -95,7 +103,8 @@ public class StandardCategory {
 	/**
 	 * Gets the standard report for a given report id.
 	 *
-	 * @param reportId the report id to lookup
+	 * @param reportId
+	 *            the report id to lookup
 	 * @return the standard report for this id (or null if id not found)
 	 */
 	public final StandardReport getStandardReport(String reportId) {
@@ -105,7 +114,8 @@ public class StandardCategory {
 	/**
 	 * Gets the default report.
 	 *
-	 * @return the default report (or null if there is no default report in this category)
+	 * @return the default report (or null if there is no default report in this
+	 *         category)
 	 */
 	public final StandardReport getDefaultReport() {
 		return m_defaultReport;
@@ -114,7 +124,8 @@ public class StandardCategory {
 	/**
 	 * Gets the custom report.
 	 *
-	 * @return the custom report (or null if there is no default report in this category)
+	 * @return the custom report (or null if there is no default report in this
+	 *         category)
 	 */
 	public final StandardReport getCustomReport() {
 		return m_customReport;
@@ -123,8 +134,10 @@ public class StandardCategory {
 	/**
 	 * Initializes from XML node.
 	 *
-	 * @param node the XML node.
-	 * @throws ConfigException if any parse errors.
+	 * @param node
+	 *            the XML node.
+	 * @throws ConfigException
+	 *             if any parse errors.
 	 */
 	private void initFromXML(Node node) throws ConfigException {
 		m_standardReports.clear();
@@ -133,21 +146,20 @@ public class StandardCategory {
 		m_customReport = null;
 		if (node == null) {
 			throw new ConfigException("Null " + XML_ELEMENT + " node");
-		}
-		else if (XML_ELEMENT != node.getNodeName()) {
-			throw new ConfigException("Invalid " + XML_ELEMENT + " node (" + node.getNodeName() + ")");
-		}
-		else {
+		} else if (XML_ELEMENT != node.getNodeName()) {
+			throw new ConfigException(
+					"Invalid " + XML_ELEMENT + " node (" + node.getNodeName() + ")");
+		} else {
 			NamedNodeMap attr = node.getAttributes();
 			Node id = attr.getNamedItem(XML_ATTR_ID);
 			Node label = attr.getNamedItem(XML_ATTR_LABEL);
 			if (id == null) {
-				throw new ConfigException("Missing " + XML_ATTR_ID + " attribute in " + XML_ELEMENT);
-			}
-			else if (label == null) {
-				throw new ConfigException("Missing " + XML_ATTR_LABEL + " attribute in " + XML_ELEMENT);
-			}
-			else {
+				throw new ConfigException(
+						"Missing " + XML_ATTR_ID + " attribute in " + XML_ELEMENT);
+			} else if (label == null) {
+				throw new ConfigException(
+						"Missing " + XML_ATTR_LABEL + " attribute in " + XML_ELEMENT);
+			} else {
 				m_id = id.getNodeValue();
 				m_label = label.getNodeValue();
 				NodeList children = node.getChildNodes();
@@ -155,13 +167,13 @@ public class StandardCategory {
 				for (int i = 0; i < numChildren; ++i) {
 					StandardReport report = new StandardReport(children.item(i));
 					m_standardReports.add(report);
-					m_lookup.put(report.getId(), report);//index by report ID
-					//store first default report found (if any)
-					if ( (m_defaultReport == null) && report.isDefault()) {
+					m_lookup.put(report.getId(), report);// index by report ID
+					// store first default report found (if any)
+					if ((m_defaultReport == null) && report.isDefault()) {
 						m_defaultReport = report;
 					}
-					//store first custom report found (if any)
-					if ( (m_customReport == null) && report.isCustom()) {
+					// store first custom report found (if any)
+					if ((m_customReport == null) && report.isCustom()) {
 						m_customReport = report;
 					}
 				}

@@ -27,36 +27,38 @@ import org.w3c.dom.NodeList;
 /**
  * ReportCategory class.
  * 
- * A ReportCategory represents a single named subpanel of the Report Options dialog tab,
- * and contains a collection of related ReportField objects.
+ * A ReportCategory represents a single named subpanel of the Report Options
+ * dialog tab, and contains a collection of related ReportField objects.
  * 
  * @see ReportField2
  */
 public class ReportCategory2 {
-	
+
 	/** XML element name for ReportCategory definition. */
-	static final String XML_ELEMENT="reportCategory";
-	
+	static final String XML_ELEMENT = "reportCategory";
+
 	/** XML attribute name for ReportCategory ID. */
 	static final String XML_ATTR_ID = "id";
-	
+
 	/** XML attribute name for ReportCategory label. */
 	static final String XML_ATTR_LABEL = "label";
 
 	private String m_id;
 	private String m_label;
-	private List<ReportField2> m_reportFields = new ArrayList<ReportField2>();
-	
+	private List<ReportField2> m_reportFields = new ArrayList<>();
+
 	/**
 	 * Instantiates a new report category from an XML node.
 	 *
-	 * @param node the XML node.
-	 * @throws ConfigException if any parse errors.
+	 * @param node
+	 *            the XML node.
+	 * @throws ConfigException
+	 *             if any parse errors.
 	 */
 	public ReportCategory2(Node node) throws ConfigException {
 		initFromXML(node);
 	}
-		
+
 	/**
 	 * Gets the id.
 	 *
@@ -65,14 +67,14 @@ public class ReportCategory2 {
 	public final String getId() {
 		return m_id;
 	}
-	
+
 	/**
 	 * Checks if this is the hidden report category.
 	 * 
-	 * The hidden report category is defined by the special name "HIDDEN".
-	 * This category contains those fields that are added to the report
-	 * automatically depending on which other fields are selected, and
-	 * should not be user-selectable in the UI.
+	 * The hidden report category is defined by the special name "HIDDEN". This
+	 * category contains those fields that are added to the report automatically
+	 * depending on which other fields are selected, and should not be
+	 * user-selectable in the UI.
 	 * 
 	 * For example:
 	 * <UL>
@@ -85,7 +87,7 @@ public class ReportCategory2 {
 	public final boolean isHidden() {
 		return m_id.equals("HIDDEN");
 	}
-	
+
 	/**
 	 * Gets the label.
 	 *
@@ -94,7 +96,7 @@ public class ReportCategory2 {
 	public final String getLabel() {
 		return m_label;
 	}
-	
+
 	/**
 	 * Gets the report fields.
 	 *
@@ -107,34 +109,35 @@ public class ReportCategory2 {
 	/**
 	 * Initializes from XML node.
 	 *
-	 * @param node the XML node.
-	 * @throws ConfigException if any parse errors.
+	 * @param node
+	 *            the XML node.
+	 * @throws ConfigException
+	 *             if any parse errors.
 	 */
 	private void initFromXML(Node node) throws ConfigException {
 		m_reportFields.clear();
 		if (node == null) {
 			throw new ConfigException("Null " + XML_ELEMENT + " node");
-		}
-		else if (XML_ELEMENT != node.getNodeName()) {
-			throw new ConfigException("Invalid " + XML_ELEMENT + " node (" + node.getNodeName() + ")");
-		}
-		else {
+		} else if (XML_ELEMENT != node.getNodeName()) {
+			throw new ConfigException(
+					"Invalid " + XML_ELEMENT + " node (" + node.getNodeName() + ")");
+		} else {
 			NamedNodeMap attr = node.getAttributes();
 			Node id = attr.getNamedItem(XML_ATTR_ID);
 			Node label = attr.getNamedItem(XML_ATTR_LABEL);
 			if (id == null) {
-				throw new ConfigException("Missing " + XML_ATTR_ID + " attribute in " + XML_ELEMENT);
-			}
-			else if (label == null) {
-				throw new ConfigException("Missing " + XML_ATTR_LABEL + " attribute in " + XML_ELEMENT);
-			}
-			else {
+				throw new ConfigException(
+						"Missing " + XML_ATTR_ID + " attribute in " + XML_ELEMENT);
+			} else if (label == null) {
+				throw new ConfigException(
+						"Missing " + XML_ATTR_LABEL + " attribute in " + XML_ELEMENT);
+			} else {
 				m_id = id.getNodeValue();
 				m_label = label.getNodeValue();
 				NodeList children = node.getChildNodes();
 				int numChildren = children.getLength();
 				for (int i = 0; i < numChildren; ++i) {
-					m_reportFields.add(new ReportField2(this,children.item(i)));
+					m_reportFields.add(new ReportField2(this, children.item(i)));
 				}
 			}
 		}

@@ -55,7 +55,6 @@ import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeLogger;
 
-import com.vernalis.pdbconnector.ModelHelperFunctions;
 import com.vernalis.pdbconnector.config.Properties;
 import com.vernalis.pdbconnector.config.ReportField2;
 import com.vernalis.pdbconnector.config.ReportOverflowException;
@@ -117,7 +116,7 @@ public class ModelHelperFunctions2 {
 	 */
 	public static String getXmlQuery(final List<QueryOptionModel> queryModels,
 			final QueryOptionModel simModel, final String conjunction) {
-		List<QueryOptionModel> simModels = new ArrayList<QueryOptionModel>();
+		List<QueryOptionModel> simModels = new ArrayList<>();
 		simModels.add(simModel);
 		// inner query string is for the selected queries themselves.
 		// outer query string is combined with similarity query (conjunction is
@@ -145,13 +144,13 @@ public class ModelHelperFunctions2 {
 	public static String getXmlQuery(final String initialQuery,
 			final List<QueryOptionModel> queryModels, final String conjunction) {
 		StringBuffer retVal = new StringBuffer();
-		List<String> queries = new ArrayList<String>();
+		List<String> queries = new ArrayList<>();
 		// Pre-seed with initial query string (if defined)
 		if (!initialQuery.isEmpty()) {
 			queries.add(initialQuery);
 		}
 		// Get list of all selected query models
-		List<QueryOptionModel> selected = new ArrayList<QueryOptionModel>();
+		List<QueryOptionModel> selected = new ArrayList<>();
 		for (QueryOptionModel queryModel : queryModels) {
 			if (queryModel.isSelected()) {
 				selected.add(queryModel);
@@ -472,7 +471,7 @@ public class ModelHelperFunctions2 {
 	 */
 	@Deprecated
 	public static List<String> postQuery(final String xml) throws IOException {
-		List<String> retVal = new ArrayList<String>();
+		List<String> retVal = new ArrayList<>();
 		URL url = new URL(Properties.SEARCH_LOCATION);
 		String encodedXML = URLEncoder.encode(xml, "UTF-8");
 		InputStream in = RestClient.doPOST(url, encodedXML);
@@ -620,7 +619,7 @@ public class ModelHelperFunctions2 {
 		URL url = new URL(Properties.REPORT_LOCATION);
 
 		// And now run the webservice call
-		List<String> report = new ArrayList<String>();
+		List<String> report = new ArrayList<>();
 
 		// Now send the request in a separate thread, waiting for it to complete
 		ExecutorService pool = Executors.newSingleThreadExecutor();
@@ -766,7 +765,7 @@ public class ModelHelperFunctions2 {
 				currentRecord = null;
 				isEndOfDataSet = true;
 			} else if (line.equals(RECORD_START)) {// new record
-				currentRecord = new ArrayList<String>();
+				currentRecord = new ArrayList<>();
 				// retVal.add(currentRecord);
 			} else if (line.equals(RECORD_END)) {// end of record
 				String id = currentRecord.get(0);
