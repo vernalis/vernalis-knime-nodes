@@ -44,9 +44,9 @@
             factory-class="com.vernalis.knime.flowcontrol.nodes.fv.varvalifswitch.FlowVarFvvalIfSwitchNodeFactory2">
       </node>
       <node category-path="/community/vernalis/flowcontrol" 
-            factory-class="com.vernalis.knime.flowcontrol.nodes.bdt.varvalifswitch.FvvalIfSwitchNodeFactory">
-      </node>
-            <node category-path="/community/vernalis/flowcontrol" 
+            factory-class="com.vernalis.knime.flowcontrol.nodes.bdt.varvalifswitch.FvvalIfSwitchNodeFactory"
+            deprecated="true" />
+      <node category-path="/community/vernalis/flowcontrol" 
             factory-class="com.vernalis.knime.flowcontrol.nodes.bdt.varvalifswitch.FvvalIfSwitchNodeFactory2">
       </node>
       <node after="DatabaseIfSwitchNodeFactory"
