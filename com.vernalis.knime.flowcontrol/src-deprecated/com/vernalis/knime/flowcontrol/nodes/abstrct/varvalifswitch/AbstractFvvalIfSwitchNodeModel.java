@@ -115,6 +115,8 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 	 *            The value to be used in the comparison
 	 * @return The {@link boolean} result of the comparison
 	 */
+	// Selector does not allow missing case
+	@SuppressWarnings("incomplete-switch")
 	private boolean compareVariableValue(String varName, String comparitor, String compValue) {
 		FlowVariable fvar = getAvailableFlowVariables().get(varName);
 		Double comparisonValue = null;

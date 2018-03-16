@@ -33,6 +33,7 @@ import com.vernalis.knime.mmp.MMPConstants;
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
+@Deprecated
 public class Frag2Pair2NodeDialog extends DefaultNodeSettingsPane {
 
 	private final SettingsModelBoolean m_areSorted, m_checkSorted;
@@ -45,9 +46,8 @@ public class Frag2Pair2NodeDialog extends DefaultNodeSettingsPane {
 		super();
 
 		createNewGroup("'Key' Options");
-		addDialogComponent(new DialogComponentColumnNameSelection(
-				createFragKeyModel(), "Select the Fragment Key column", 0,
-				SmilesValue.class));
+		addDialogComponent(new DialogComponentColumnNameSelection(createFragKeyModel(),
+				"Select the Fragment Key column", 0, SmilesValue.class));
 
 		m_areSorted = createSortedKeysModel();
 		m_areSorted.addChangeListener(new ChangeListener() {
@@ -60,53 +60,47 @@ public class Frag2Pair2NodeDialog extends DefaultNodeSettingsPane {
 		});
 		m_checkSorted = createCheckSortedModel();
 
-		addDialogComponent(new DialogComponentBoolean(m_areSorted,
-				"Keys are sorted"));
+		addDialogComponent(new DialogComponentBoolean(m_areSorted, "Keys are sorted"));
 
-		addDialogComponent(new DialogComponentBoolean(m_checkSorted,
-				"Check keys are sorted"));
+		addDialogComponent(new DialogComponentBoolean(m_checkSorted, "Check keys are sorted"));
 
 		closeCurrentGroup();
 
 		createNewGroup("'Value' Options");
-		addDialogComponent(new DialogComponentColumnNameSelection(
-				createFragValueModel(), "Select the Fragment Value column", 0,
-				SmilesValue.class));
+		addDialogComponent(new DialogComponentColumnNameSelection(createFragValueModel(),
+				"Select the Fragment Value column", 0, SmilesValue.class));
 
 		closeCurrentGroup();
 
 		createNewGroup("'ID' and uniqueness Options");
-		addDialogComponent(new DialogComponentColumnNameSelection(
-				createIDModel(), "Select the ID column", 0, StringValue.class));
+		addDialogComponent(new DialogComponentColumnNameSelection(createIDModel(),
+				"Select the ID column", 0, StringValue.class));
 
 		addDialogComponent(new DialogComponentBoolean(createIgnoreIDsModel(),
 				"Ignore Molecule IDs when checking for uniqueness"));
 
-		addDialogComponent(new DialogComponentBoolean(
-				createAllowSelfTransformsModel(), "Allow self-transforms"));
+		addDialogComponent(new DialogComponentBoolean(createAllowSelfTransformsModel(),
+				"Allow self-transforms"));
 
 		closeCurrentGroup();
 
 		createNewTab("Output Settings");
-		addDialogComponent(new DialogComponentBoolean(createStripHModel(),
-				"Remove Explicit H's from output"));
+		addDialogComponent(
+				new DialogComponentBoolean(createStripHModel(), "Remove Explicit H's from output"));
 
-		addDialogComponent(new DialogComponentBoolean(createOutputKeyModel(),
-				"Show unchanging portion"));
+		addDialogComponent(
+				new DialogComponentBoolean(createOutputKeyModel(), "Show unchanging portion"));
 
-		addDialogComponent(new DialogComponentBoolean(
-				createOutputChangingHACountsModel(),
+		addDialogComponent(new DialogComponentBoolean(createOutputChangingHACountsModel(),
 				"Show number of changing atoms"));
-		addDialogComponent(new DialogComponentBoolean(
-				createOutputHARatiosModel(),
+		addDialogComponent(new DialogComponentBoolean(createOutputHARatiosModel(),
 				"Show ratio of constant / changing heavy atoms"));
 
-		addDialogComponent(new DialogComponentBoolean(
-				createShowReverseTransformsModel(),
+		addDialogComponent(new DialogComponentBoolean(createShowReverseTransformsModel(),
 				"Show reverse-direction transforms"));
 
-		addDialogComponent(new DialogComponentBoolean(
-				createShowSmartsTransformsModel(), "Include Reaction SMARTS"));
+		addDialogComponent(new DialogComponentBoolean(createShowSmartsTransformsModel(),
+				"Include Reaction SMARTS"));
 	}
 
 	/** Create model to allow self-transforms */
@@ -141,8 +135,7 @@ public class Frag2Pair2NodeDialog extends DefaultNodeSettingsPane {
 
 	/** Create model for sorted keys */
 	protected static SettingsModelBoolean createSortedKeysModel() {
-		return new SettingsModelBoolean("Sorted keys",
-				MMPConstants.DEFAULT_HAS_SORTED_KEYS);
+		return new SettingsModelBoolean("Sorted keys", MMPConstants.DEFAULT_HAS_SORTED_KEYS);
 	}
 
 	/** Create model for fragment value column */
@@ -180,8 +173,7 @@ public class Frag2Pair2NodeDialog extends DefaultNodeSettingsPane {
 
 	/** Create the settings model for the output HAC ratio key model */
 	protected static SettingsModelBoolean createOutputHARatiosModel() {
-		return new SettingsModelBoolean(
-				"Output changing / unchanging HA ratios",
+		return new SettingsModelBoolean("Output changing / unchanging HA ratios",
 				MMPConstants.DEFAULT_OUTPUT_CHANGING_UNCHANGING_HAC_RATIOS);
 	}
 }

@@ -32,9 +32,9 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 
 import com.vernalis.exceptions.RowExecutionException;
-import com.vernalis.knime.mmp.RDKitBondIdentifier;
 import com.vernalis.knime.mmp.CombinationFinder;
 import com.vernalis.knime.mmp.MulticomponentSmilesFragmentParser;
+import com.vernalis.knime.mmp.RDKitBondIdentifier;
 import com.vernalis.knime.mmp.RDKitFragmentationUtils;
 import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationFactory;
 import com.vernalis.knime.mmp.fragmentors.ROMolFragmentFactory;
@@ -47,6 +47,7 @@ import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
+@Deprecated
 public class MultipleCutParallelRdkitMMPFragment3NodeModel
 		extends AbstractParallelRdkitMMPFragment3NodeModel {
 
@@ -201,8 +202,8 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 
 		// Identify all the matching bonds (NB - Cuttable combos are picked
 		// later
-		Set<RDKitBondIdentifier> cuttableBonds = RDKitFragmentationUtils.identifyAllMatchingBonds(roMol,
-				bondMatch);
+		Set<RDKitBondIdentifier> cuttableBonds =
+				RDKitFragmentationUtils.identifyAllMatchingBonds(roMol, bondMatch);
 
 		// Deal with 1 cut
 		MoleculeFragmentationFactory fragFactory;
@@ -251,7 +252,8 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 		// graphs of invalid triplets where appropriate
 		// Why doesnt this take cuttableBonds as an argument? - Because cuttable
 		// bonds change with number of cuts!
-		Set<Set<RDKitBondIdentifier>> bondCombos = generateCuttableBondCombos(roMol, bondMatch, numCuts);
+		Set<Set<RDKitBondIdentifier>> bondCombos =
+				generateCuttableBondCombos(roMol, bondMatch, numCuts);
 		fragmentations.addAll(breakMoleculeAlongBondCombos(fragFactory, bondCombos,
 				prochiralAsChiral, exec, logger, verboseLogging));
 
@@ -305,16 +307,16 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 		Collection<RDKitBondIdentifier> cuttableBonds;
 		// Generate the combinations of upto numCuts bonds. NB we start at 2 as
 		// 1 is handled separately
-		Set<Set<RDKitBondIdentifier>> bondCombos = new LinkedHashSet<Set<RDKitBondIdentifier>>();
+		Set<Set<RDKitBondIdentifier>> bondCombos = new LinkedHashSet<>();
 		Set<Set<RDKitBondIdentifier>> invalidTriplets = new LinkedHashSet<>();// Will
-																			// hold
-																			// valid
-																			// triplets
+																				// hold
+																				// valid
+																				// triplets
 		// once 3 or more cuts made
 		for (int i = 2; i <= numCuts; i++) {
 			cuttableBonds = RDKitFragmentationUtils.identifyAllCuttableBonds(roMol, bondMatch, i);
-			Set<Set<RDKitBondIdentifier>> newBondCombos = CombinationFinder
-					.getCombinationsFor(cuttableBonds, i);
+			Set<Set<RDKitBondIdentifier>> newBondCombos =
+					CombinationFinder.getCombinationsFor(cuttableBonds, i);
 			if (i == 3) {
 				Iterator<Set<RDKitBondIdentifier>> iter = newBondCombos.iterator();
 				while (iter.hasNext()) {

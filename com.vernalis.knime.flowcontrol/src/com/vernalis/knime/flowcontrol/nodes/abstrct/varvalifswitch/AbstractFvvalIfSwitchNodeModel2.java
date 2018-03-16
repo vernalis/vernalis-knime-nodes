@@ -113,11 +113,13 @@ public class AbstractFvvalIfSwitchNodeModel2 extends NodeModel {
 	 *            The value to be used in the comparison
 	 * @return The {@link boolean} result of the comparison
 	 */
+	@SuppressWarnings("incomplete-switch")
 	private boolean compareVariableValue(String varName, String comparitor, String compValue) {
 		FlowVariable fvar = getAvailableFlowVariables().get(varName);
 		Double comparisonValue = null;
 		Integer comparisonIntValue = null;
 
+		// Missing case cannot be selected in dialog
 		switch (fvar.getType()) {
 		case STRING:
 			// Do string comparison

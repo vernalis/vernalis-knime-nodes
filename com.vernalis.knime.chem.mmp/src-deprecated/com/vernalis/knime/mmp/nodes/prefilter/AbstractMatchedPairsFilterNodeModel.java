@@ -14,14 +14,6 @@
  *******************************************************************************/
 package com.vernalis.knime.mmp.nodes.prefilter;
 
-import static com.vernalis.knime.mmp.MolFormats.isColTypeRDKitCompatible;
-import static com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeDialog.createAddHModel;
-import static com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeDialog.createAllowTwoCutsToBondValueModel;
-import static com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeDialog.createCustomSMARTSModel;
-import static com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeDialog.createCutsModel;
-import static com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeDialog.createMolColumnSettingsModel;
-import static com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeDialog.createSMIRKSModel;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -69,6 +61,14 @@ import com.vernalis.knime.mmp.RDKitFragmentationUtils;
 import com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage;
 import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
 
+import static com.vernalis.knime.mmp.MolFormats.isColTypeRDKitCompatible;
+import static com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeDialog.createAddHModel;
+import static com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeDialog.createAllowTwoCutsToBondValueModel;
+import static com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeDialog.createCustomSMARTSModel;
+import static com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeDialog.createCutsModel;
+import static com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeDialog.createMolColumnSettingsModel;
+import static com.vernalis.knime.mmp.nodes.prefilter.MmpPrefilterNodeDialog.createSMIRKSModel;
+
 /**
  * Abstract Class for filtering by fragmentability according to a specified
  * fragmentation Schema. The class can be subclassed to give either filter (1
@@ -77,6 +77,7 @@ import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
+@Deprecated
 public class AbstractMatchedPairsFilterNodeModel extends NodeModel {
 	/** The node logger Needs to be initialised in subclasses. */
 	protected NodeLogger m_Logger = NodeLogger.getLogger(this.getClass());
@@ -89,7 +90,8 @@ public class AbstractMatchedPairsFilterNodeModel extends NodeModel {
 	protected final SettingsModelString m_customSmarts = createCustomSMARTSModel();
 	protected final SettingsModelIntegerBounded m_numCuts = createCutsModel();
 	protected final SettingsModelBoolean m_AddHs = createAddHModel();
-	protected final SettingsModelBoolean m_allowTwoCutsToBondValue = createAllowTwoCutsToBondValueModel();
+	protected final SettingsModelBoolean m_allowTwoCutsToBondValue =
+			createAllowTwoCutsToBondValueModel();
 
 	/** The number of output ports */
 	int numOutPorts;
@@ -132,8 +134,8 @@ public class AbstractMatchedPairsFilterNodeModel extends NodeModel {
 			public void propertyChange(PropertyChangeEvent event) {
 
 				// Re-load the settings
-				m_verboseLogging = prefStore
-						.getBoolean(MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING);
+				m_verboseLogging =
+						prefStore.getBoolean(MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING);
 				queueSize = MatchedPairPreferencePage.getQueueSize();
 				numThreads = MatchedPairPreferencePage.getThreadsCount();
 			}
@@ -192,43 +194,43 @@ public class AbstractMatchedPairsFilterNodeModel extends NodeModel {
 		// Only add H's is numCuts ==1 and addH's flag set
 		final boolean addHs = (numCuts == 1) ? m_AddHs.getBooleanValue() : false;
 
-		final boolean allow2Cuts = (numCuts == 2) ? m_allowTwoCutsToBondValue.getBooleanValue()
-				: false;
+		final boolean allow2Cuts =
+				(numCuts == 2) ? m_allowTwoCutsToBondValue.getBooleanValue() : false;
 
 		long rowCnt = 0;
 		final AtomicLong keptRowCnt = new AtomicLong(0);
 
-		MultiThreadWorker<DataRow, Boolean> processor = new MultiThreadWorker<DataRow, Boolean>(
-				queueSize, numThreads) {
+		MultiThreadWorker<DataRow, Boolean> processor =
+				new MultiThreadWorker<DataRow, Boolean>(queueSize, numThreads) {
 
-			@Override
-			protected Boolean compute(DataRow in, long index) throws Exception {
-				return processRow(in, molIdx, m_SWIGGC, index + 1, m_Logger, addHs, bondMatch,
-						numCuts, allow2Cuts, m_verboseLogging);
-			}
+					@Override
+					protected Boolean compute(DataRow in, long index) throws Exception {
+						return processRow(in, molIdx, m_SWIGGC, index + 1, m_Logger, addHs,
+								bondMatch, numCuts, allow2Cuts, m_verboseLogging);
+					}
 
-			@Override
-			protected void processFinished(ComputationTask task)
-					throws ExecutionException, CancellationException, InterruptedException {
-				long r = task.getIndex();
-				DataRow row = task.getInput();
+					@Override
+					protected void processFinished(ComputationTask task)
+							throws ExecutionException, CancellationException, InterruptedException {
+						long r = task.getIndex();
+						DataRow row = task.getInput();
 
-				if (task.get()) {
-					dc_pass.addRowToTable(row);
-					keptRowCnt.incrementAndGet();
-				} else if (dc_fail != null) {
-					dc_fail.addRowToTable(row);
-				}
-				m_SWIGGC.cleanupMarkedObjects((int) (r + 1));
-				exec.setProgress((r + 1.0) / numRows, "Processed row " + (r + 1) + " of " + numRows
-						+ "; Kept " + keptRowCnt + " rows");
-				try {
-					exec.checkCanceled();
-				} catch (CanceledExecutionException e) {
-					throw new CancellationException();
-				}
-			}
-		};
+						if (task.get()) {
+							dc_pass.addRowToTable(row);
+							keptRowCnt.incrementAndGet();
+						} else if (dc_fail != null) {
+							dc_fail.addRowToTable(row);
+						}
+						m_SWIGGC.cleanupMarkedObjects((int) (r + 1));
+						exec.setProgress((r + 1.0) / numRows, "Processed row " + (r + 1) + " of "
+								+ numRows + "; Kept " + keptRowCnt + " rows");
+						try {
+							exec.checkCanceled();
+						} catch (CanceledExecutionException e) {
+							throw new CancellationException();
+						}
+					}
+				};
 		processor.run(table);
 
 		dc_pass.close();
@@ -408,8 +410,8 @@ public class AbstractMatchedPairsFilterNodeModel extends NodeModel {
 				throw new InvalidSettingsException("A reaction SMARTS string must be provided "
 						+ "for user-defined fragmentation patterns");
 			}
-			String rSMARTSCheck = RDKitFragmentationUtils
-					.validateReactionSmarts(m_customSmarts.getStringValue());
+			String rSMARTSCheck =
+					RDKitFragmentationUtils.validateReactionSmarts(m_customSmarts.getStringValue());
 			if (rSMARTSCheck != null) {
 				m_Logger.error("Error parsing rSMARTS: " + rSMARTSCheck);
 				throw new InvalidSettingsException("Error parsing rSMARTS: " + rSMARTSCheck);

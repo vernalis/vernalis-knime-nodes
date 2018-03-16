@@ -71,8 +71,7 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 	private final JList<String> m_fileList;
 	private final JComboBox<String> m_fileHistoryComboBox;
 	private final DefaultListModel<String> m_fileListModel;
-	private final JButton m_addButton, m_deleteButton, m_addFromHistoryButton,
-			m_deleteAllButton;
+	private final JButton m_addButton, m_deleteButton, m_addFromHistoryButton, m_deleteAllButton;
 	private final JLabel m_label;
 	private final StringHistory m_fileHistory; // Not sure if we will need!
 	private final Border m_border;
@@ -123,13 +122,12 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 	 *            dropdown. Entries containing more than one extension separated
 	 *            by '|' will appear as a single entry in the dropdown
 	 */
-	public DialogComponentListFilesSelector(
-			SettingsModelStringArrayFlowVarReplacable stringModel,
+	public DialogComponentListFilesSelector(SettingsModelStringArrayFlowVarReplacable stringModel,
 			final String title, final boolean hasBorder, final String label,
-			final String fileHistoryID, final int dialogType,
-			final FlowVariableModel fvm, final String... validExtensions) {
-		this(stringModel, title, hasBorder, label, fileHistoryID, 350, 12,
-				dialogType, fvm, validExtensions);
+			final String fileHistoryID, final int dialogType, final FlowVariableModel fvm,
+			final String... validExtensions) {
+		this(stringModel, title, hasBorder, label, fileHistoryID, 350, 12, dialogType, fvm,
+				validExtensions);
 	}
 
 	/**
@@ -177,8 +175,8 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 	 *            dropdown. Entries containing more than one extension separated
 	 *            by '|' will appear as a single entry in the dropdown
 	 */
-	public DialogComponentListFilesSelector(
-			SettingsModelStringArrayFlowVarReplacable stringModel,
+	@SuppressWarnings("unchecked")
+	public DialogComponentListFilesSelector(SettingsModelStringArrayFlowVarReplacable stringModel,
 			final String title, final boolean hasBorder, final String label,
 			final String fileHistoryID, final int selectedFileListWidth,
 			final int selectedFileListVisibleRows, final int dialogType,
@@ -240,8 +238,7 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 
 		m_fileListModel = new DefaultListModel<>();
 		m_fileList = new JList<>(m_fileListModel);
-		m_fileList
-				.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		m_fileList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		m_fileList.setLayoutOrientation(JList.VERTICAL);
 		m_fileList.setVisibleRowCount(selectedFileListVisibleRows);
 		m_fileList.setToolTipText("Selected files");
@@ -257,10 +254,10 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (!e.getValueIsAdjusting()) {
-					m_deleteButton.setEnabled(getModel().isEnabled()
-							&& m_fileList.getSelectedIndices().length != 0);
-					m_deleteAllButton.setEnabled(getModel().isEnabled()
-							&& m_fileListModel.size() != 0);
+					m_deleteButton.setEnabled(
+							getModel().isEnabled() && m_fileList.getSelectedIndices().length != 0);
+					m_deleteAllButton
+							.setEnabled(getModel().isEnabled() && m_fileListModel.size() != 0);
 				}
 			}
 		});
@@ -321,29 +318,25 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 		// Initialise the history dropdown
 		JPanel historyPanel = new JPanel();
 		historyPanel.setLayout(new FlowLayout());
-		historyPanel
-				.setBorder(BorderFactory.createTitledBorder("File History"));
+		historyPanel.setBorder(BorderFactory.createTitledBorder("File History"));
 		historyPanel.add(new JLabel("Select file:"));
 
 		m_fileHistory = StringHistory.getInstance(fileHistoryID);
 		m_fileHistoryComboBox = new JComboBox<>();
-		m_fileHistoryComboBox.setPreferredSize(new Dimension(300,
-				m_fileHistoryComboBox.getPreferredSize().height));
+		m_fileHistoryComboBox.setPreferredSize(
+				new Dimension(300, m_fileHistoryComboBox.getPreferredSize().height));
 		m_fileHistoryComboBox.setRenderer(new ConvenientComboBoxRenderer());
 		m_fileHistoryComboBox.setEditable(false);
 		for (final String fName : m_fileHistory.getHistory()) {
 			m_fileHistoryComboBox.addItem(fName);
 		}
-		m_fileHistoryComboBox
-				.setToolTipText("Select previously used file from dropdown");
-
+		m_fileHistoryComboBox.setToolTipText("Select previously used file from dropdown");
 
 		historyPanel.add(m_fileHistoryComboBox);
 
 		// The add from History button
 		m_addFromHistoryButton = new JButton("Add from history");
-		m_addButton
-				.setToolTipText("Add selected file from history to selected files panel");
+		m_addButton.setToolTipText("Add selected file from history to selected files panel");
 		historyPanel.add(m_addFromHistoryButton);
 
 		// Now add the history panel on a new row, taking full width
@@ -375,8 +368,7 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (m_addFromHistoryButton.isEnabled()) {
-					addFileToList((String) m_fileHistoryComboBox
-							.getSelectedItem());
+					addFileToList((String) m_fileHistoryComboBox.getSelectedItem());
 				}
 			}
 		});
@@ -387,12 +379,10 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 			public void actionPerformed(ActionEvent e) {
 				// If there is a file selected in the list, then we start there
 				String selectedFile = m_fileList.getSelectedValue();
-				if (selectedFile == null
-						&& m_fileHistoryComboBox.getSelectedIndex() > -1) {
+				if (selectedFile == null && m_fileHistoryComboBox.getSelectedIndex() > -1) {
 					// If not, and there is something in the dropdown, then we
 					// start there instead
-					selectedFile = (String) m_fileHistoryComboBox
-							.getSelectedItem();
+					selectedFile = (String) m_fileHistoryComboBox.getSelectedItem();
 				}
 				final JFileChooser fChooser = new JFileChooser(selectedFile);
 				fChooser.setDialogType(dialogType);
@@ -406,8 +396,7 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 				}
 				fChooser.setMultiSelectionEnabled(true);
 
-				final int returnVal = fChooser.showDialog(getComponentPanel()
-						.getParent(), null);
+				final int returnVal = fChooser.showDialog(getComponentPanel().getParent(), null);
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					// Need to add all selected files
 					ArrayList<File> filesToAdd = new ArrayList<>();
@@ -417,8 +406,7 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 							// Check that the user added the extension
 							boolean hasExtension = false;
 							for (SimpleFileFilter filter : m_fileFilter) {
-								String[] extensions = filter
-										.getValidExtensions();
+								String[] extensions = filter.getValidExtensions();
 								for (String ext : extensions) {
 									if (pathToF.endsWith(ext)) {
 										hasExtension = true;
@@ -431,10 +419,8 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 							}
 							if (!hasExtension) {
 								FileFilter fFilter = fChooser.getFileFilter();
-								if (fFilter != null
-										&& fFilter instanceof SimpleFileFilter) {
-									pathToF += ((SimpleFileFilter) fFilter)
-											.getValidExtensions()[0];
+								if (fFilter != null && fFilter instanceof SimpleFileFilter) {
+									pathToF += ((SimpleFileFilter) fFilter).getValidExtensions()[0];
 								}
 							}
 						}
@@ -503,7 +489,7 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 		});
 	}
 
-		protected void deleteAllFiles() {
+	protected void deleteAllFiles() {
 		m_fileListModel.removeAllElements();
 		try {
 			updateModel(true);
@@ -513,7 +499,7 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 		getComponentPanel().revalidate();
 	}
 
-		protected void deleteSelectedFiles() {
+	protected void deleteSelectedFiles() {
 		for (String fName : m_fileList.getSelectedValuesList()) {
 			while (m_fileListModel.removeElement(fName)) {
 				// Make sure every copy is gone - just in case we managed to add
@@ -560,8 +546,7 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 			newSel[i++] = m_fileListModel.getSize() - 1;
 		}
 		m_fileList.setSelectedIndices(newSel);
-		m_fileHistoryComboBox.setSelectedIndex(m_fileHistoryComboBox
-				.getItemCount() - 1);
+		m_fileHistoryComboBox.setSelectedIndex(m_fileHistoryComboBox.getItemCount() - 1);
 		try {
 			updateModel(true);
 		} catch (InvalidSettingsException e) {
@@ -582,8 +567,7 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 				newSel[i++] = m_fileListModel.getSize() - 1;
 			}
 			m_fileList.setSelectedIndices(newSel);
-			m_fileHistoryComboBox.setSelectedIndex(m_fileHistoryComboBox
-					.getItemCount() - 1);
+			m_fileHistoryComboBox.setSelectedIndex(m_fileHistoryComboBox.getItemCount() - 1);
 			try {
 				updateModel(true);
 			} catch (InvalidSettingsException e) {
@@ -597,16 +581,14 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 	 * @throws InvalidSettingsException
 	 * 
 	 */
-	protected void updateModel(boolean noColouring)
-			throws InvalidSettingsException {
+	protected void updateModel(boolean noColouring) throws InvalidSettingsException {
 		String[] files = new String[m_fileListModel.toArray().length];
 		for (int i = 0; i < files.length; i++) {
 			files[i] = (String) m_fileListModel.toArray()[i];
 		}
 		if (files != null && files.length > 0) {
 			try {
-				((SettingsModelStringArrayFlowVarReplacable) getModel())
-						.setStringArrayValue(files);
+				((SettingsModelStringArrayFlowVarReplacable) getModel()).setStringArrayValue(files);
 			} catch (RuntimeException e) {
 				if (!noColouring) {
 					showError(m_fileList);
@@ -617,8 +599,7 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 			if (!noColouring) {
 				showError(m_fileList);
 			}
-			throw new InvalidSettingsException(
-					"At least one file needs to be specified");
+			throw new InvalidSettingsException("At least one file needs to be specified");
 		}
 	}
 
@@ -683,7 +664,8 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 		clearError(m_fileList);
 
 		// update only if model and component are out of sync
-		final SettingsModelStringArrayFlowVarReplacable model = (SettingsModelStringArrayFlowVarReplacable) getModel();
+		final SettingsModelStringArrayFlowVarReplacable model =
+				(SettingsModelStringArrayFlowVarReplacable) getModel();
 		String[] modelValue = model.getStringArrayValue();
 		Object[] componentValue = m_fileListModel.toArray();
 		boolean update;
@@ -771,9 +753,8 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.knime.core.node.defaultnodesettings.DialogComponent#setEnabledComponents
-	 * (boolean)
+	 * @see org.knime.core.node.defaultnodesettings.DialogComponent#
+	 * setEnabledComponents (boolean)
 	 */
 	@Override
 	protected void setEnabledComponents(boolean enabled) {
@@ -800,9 +781,9 @@ public class DialogComponentListFilesSelector extends DialogComponent {
 
 	}
 
-		private void updateAddFromHistoryButtonStatus() {
-		m_addFromHistoryButton.setEnabled(getModel().isEnabled()
-				&& m_fileHistoryComboBox.getSelectedIndex() != -1);
+	private void updateAddFromHistoryButtonStatus() {
+		m_addFromHistoryButton.setEnabled(
+				getModel().isEnabled() && m_fileHistoryComboBox.getSelectedIndex() != -1);
 	}
 
 }

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.RDKit.RDKFuncs;
 import org.RDKit.ROMol;
@@ -54,7 +54,7 @@ import org.knime.core.node.port.PortType;
 import org.rdkit.knime.types.RDKitMolValue;
 
 import com.vernalis.knime.chem.pmi.util.misc.PmiUtils;
-import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
+import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector2WaveSupplier;
 
 /**
  * <p>
@@ -121,13 +121,14 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 	/**
 	 * Garbage collector for RDKit SWIG Objects
 	 */
-	protected SWIGObjectGarbageCollector gc = new SWIGObjectGarbageCollector();
+	protected SWIGObjectGarbageCollector2WaveSupplier gc =
+			new SWIGObjectGarbageCollector2WaveSupplier();
 
 	/**
 	 * The wave index for GC. As we plan to run in parallelisation, we need this
 	 * to be atomic. It starts at 1 as wave 0 is reserved for non-assigned waves
 	 */
-	protected final AtomicInteger gcWave = new AtomicInteger(1);
+	protected final AtomicLong gcWave = new AtomicLong(1);
 
 	/**
 	 * Map of the result columns. Keys are the column names, and values the
@@ -249,7 +250,7 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 				if (molCell.isMissing()) {
 					return retVal;
 				}
-				int currentWaveID = gcWave.getAndIncrement();
+				long currentWaveID = gcWave.getAndIncrement();
 
 				ROMol mol = gc.markForCleanup(getMolFromCell(molCell), currentWaveID);
 				if (mol != null) {
@@ -276,16 +277,16 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 				};
 				rearranger.replace(scf, molColIdx);
 
-				AbstractCellFactory newCellFact = new AbstractCellFactory(
-						cellFact.isParallelProcessing(), Arrays.copyOfRange(
+				AbstractCellFactory newCellFact =
+						new AbstractCellFactory(cellFact.isParallelProcessing(), Arrays.copyOfRange(
 								cellFact.getColumnSpecs(), 1, cellFact.getColumnSpecs().length)) {
 
-					@Override
-					public DataCell[] getCells(DataRow row) {
-						return Arrays.copyOfRange(cellFact.getCells(row), 1,
-								cellFact.getColumnSpecs().length);
-					}
-				};
+							@Override
+							public DataCell[] getCells(DataRow row) {
+								return Arrays.copyOfRange(cellFact.getCells(row), 1,
+										cellFact.getColumnSpecs().length);
+							}
+						};
 				rearranger.append(newCellFact);
 			} else {
 				rearranger.replace(cellFact, molColIdx);
@@ -322,8 +323,8 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 			if (type.isCompatible(RDKitMolValue.class)) {
 				mol = ((RDKitMolValue) molCell).readMoleculeValue();
 			} else if (type.isCompatible(SmilesValue.class)) {
-				RWMol rwMol = RWMol.MolFromSmiles(((SmilesValue) molCell).getSmilesValue(), 0,
-						false);
+				RWMol rwMol =
+						RWMol.MolFromSmiles(((SmilesValue) molCell).getSmilesValue(), 0, false);
 				RDKFuncs.sanitizeMol(rwMol);
 				mol = rwMol;
 			} else if (type.isCompatible(MolValue.class)) {
@@ -369,8 +370,9 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 	}
 
 	/**
-	 * Method to remove all registered output columns * @see
-	 * {@link AbstractVerRDKitRearrangerNodeModel#registerResultColumn(String, DataType)
+	 * Method to remove all registered output columns * @see {@link
+	 * AbstractVerRDKitRearrangerNodeModel#registerResultColumn(String,
+	 * DataType)
 	 */
 	protected void resetResultColumns() {
 		resultColumns = new LinkedHashMap<>();

@@ -14,13 +14,6 @@
  *******************************************************************************/
 package com.vernalis.knime.mmp.nodes.maxcuts;
 
-import static com.vernalis.knime.mmp.MolFormats.isColTypeRDKitCompatible;
-import static com.vernalis.knime.mmp.nodes.maxcuts.MmpMaxCutsNodeDialog.createAddHModel;
-import static com.vernalis.knime.mmp.nodes.maxcuts.MmpMaxCutsNodeDialog.createAllowTwoCutsToBondValueModel;
-import static com.vernalis.knime.mmp.nodes.maxcuts.MmpMaxCutsNodeDialog.createCustomSMARTSModel;
-import static com.vernalis.knime.mmp.nodes.maxcuts.MmpMaxCutsNodeDialog.createMolColumnSettingsModel;
-import static com.vernalis.knime.mmp.nodes.maxcuts.MmpMaxCutsNodeDialog.createSMIRKSModel;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -66,12 +59,20 @@ import com.vernalis.knime.mmp.RDKitFragmentationUtils;
 import com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage;
 import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
 
+import static com.vernalis.knime.mmp.MolFormats.isColTypeRDKitCompatible;
+import static com.vernalis.knime.mmp.nodes.maxcuts.MmpMaxCutsNodeDialog.createAddHModel;
+import static com.vernalis.knime.mmp.nodes.maxcuts.MmpMaxCutsNodeDialog.createAllowTwoCutsToBondValueModel;
+import static com.vernalis.knime.mmp.nodes.maxcuts.MmpMaxCutsNodeDialog.createCustomSMARTSModel;
+import static com.vernalis.knime.mmp.nodes.maxcuts.MmpMaxCutsNodeDialog.createMolColumnSettingsModel;
+import static com.vernalis.knime.mmp.nodes.maxcuts.MmpMaxCutsNodeDialog.createSMIRKSModel;
+
 /**
  * Node model for the Max Number of cuts node
  * 
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
+@Deprecated
 public class MmpMaxCutsNodeModel extends NodeModel {
 
 	/** The node logger */
@@ -84,7 +85,8 @@ public class MmpMaxCutsNodeModel extends NodeModel {
 	protected final SettingsModelString m_fragSMIRKS = createSMIRKSModel();
 	protected final SettingsModelString m_customSmarts = createCustomSMARTSModel();
 	protected final SettingsModelBoolean m_AddHs = createAddHModel();
-	protected final SettingsModelBoolean m_allowTwoCutsBondValue = createAllowTwoCutsToBondValueModel();
+	protected final SettingsModelBoolean m_allowTwoCutsBondValue =
+			createAllowTwoCutsToBondValueModel();
 
 	/**
 	 * The wave index for GC. As we plan to run in parallelisation, we need this
@@ -118,8 +120,8 @@ public class MmpMaxCutsNodeModel extends NodeModel {
 			public void propertyChange(PropertyChangeEvent event) {
 
 				// Re-load the settings
-				verboseLogging = prefStore
-						.getBoolean(MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING);
+				verboseLogging =
+						prefStore.getBoolean(MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING);
 				queueSize = MatchedPairPreferencePage.getQueueSize();
 				numThreads = MatchedPairPreferencePage.getThreadsCount();
 
@@ -297,8 +299,8 @@ public class MmpMaxCutsNodeModel extends NodeModel {
 				throw new InvalidSettingsException("A reaction SMARTS string must be provided "
 						+ "for user-defined fragmentation patterns");
 			}
-			String rSMARTSCheck = RDKitFragmentationUtils
-					.validateReactionSmarts(m_customSmarts.getStringValue());
+			String rSMARTSCheck =
+					RDKitFragmentationUtils.validateReactionSmarts(m_customSmarts.getStringValue());
 			if (rSMARTSCheck != null) {
 				m_Logger.error("Error parsing rSMARTS: " + rSMARTSCheck);
 				throw new InvalidSettingsException("Error parsing rSMARTS: " + rSMARTSCheck);

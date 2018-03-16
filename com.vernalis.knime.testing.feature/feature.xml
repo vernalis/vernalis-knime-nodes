@@ -2,7 +2,7 @@
 <feature
       id="com.vernalis.knime.testing.feature"
       label="Vernalis Testing feature"
-      version="1.12.7.qualifier"
+      version="1.12.8.qualifier"
       provider-name="Vernalis">
 
    <description>

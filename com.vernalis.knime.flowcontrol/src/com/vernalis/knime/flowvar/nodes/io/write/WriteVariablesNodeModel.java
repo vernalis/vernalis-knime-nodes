@@ -39,6 +39,7 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.FlowVariable;
+import org.knime.core.node.workflow.FlowVariable.Type;
 
 import static com.vernalis.knime.flowvar.nodes.io.write.WriteVariablesNodeDialog.createFilenameModel;
 import static com.vernalis.knime.flowvar.nodes.io.write.WriteVariablesNodeDialog.createOverwriteModel;
@@ -85,6 +86,10 @@ public class WriteVariablesNodeModel extends NodeModel {
 				continue;
 			}
 			String fvVal = ent.getValue().getValueAsString();
+			if (ent.getValue().getType() == Type.CREDENTIALS) {
+				// Credentials variable - skip
+				continue;
+			}
 			String fvType = ent.getValue().getType().name();
 			fvXML.add("<flowvar name=\"" + fvName + "\" type=\"" + fvType + "\">" + fvVal
 					+ "</flowvar>");

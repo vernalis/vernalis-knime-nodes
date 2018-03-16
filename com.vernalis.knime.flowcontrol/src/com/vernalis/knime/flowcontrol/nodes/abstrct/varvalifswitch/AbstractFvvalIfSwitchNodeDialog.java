@@ -80,6 +80,8 @@ public class AbstractFvvalIfSwitchNodeDialog extends DefaultNodeSettingsPane {
 
 		m_fvname1.addChangeListener(new ChangeListener() {
 
+			// Dialog doesnt allow selection of missing type
+			@SuppressWarnings("incomplete-switch")
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				try {

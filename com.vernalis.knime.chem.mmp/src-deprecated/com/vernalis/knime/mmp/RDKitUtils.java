@@ -43,9 +43,8 @@ public class RDKitUtils {
 	 * Convertor for RDKit {@link ExplicitBitVect} to KNIME
 	 * {@link SparseBitVector}
 	 */
-	public static SparseBitVector rdkitFpToSparseBitVector(ExplicitBitVect rdkitFingerprint){
-		SparseBitVector retVal = new SparseBitVector(
-				rdkitFingerprint.getNumBits());
+	public static SparseBitVector rdkitFpToSparseBitVector(ExplicitBitVect rdkitFingerprint) {
+		SparseBitVector retVal = new SparseBitVector(rdkitFingerprint.getNumBits());
 		for (int bit : intVectToListOfInts(rdkitFingerprint.getOnBits())) {
 			retVal.set(bit, true);
 		}
@@ -56,19 +55,19 @@ public class RDKitUtils {
 	 * Convertor for RDKit {@link ExplicitBitVect} to KNIME
 	 * {@link DenseBitVector}
 	 */
-	public static DenseBitVector rdkitFpToDenseBitVector(
-			ExplicitBitVect rdkitFingerprint) {
-		DenseBitVector retVal = new DenseBitVector(
-				rdkitFingerprint.getNumBits());
+	public static DenseBitVector rdkitFpToDenseBitVector(ExplicitBitVect rdkitFingerprint) {
+		DenseBitVector retVal = new DenseBitVector(rdkitFingerprint.getNumBits());
 		for (int bit : intVectToListOfInts(rdkitFingerprint.getOnBits())) {
 			retVal.set(bit, true);
 		}
 		return retVal;
 	}
 
-	/** Convertor for RDKit {@link Int_Vect} to <code>List&lt;Integer&gt;</code> */
+	/**
+	 * Convertor for RDKit {@link Int_Vect} to <code>List&lt;Integer&gt;</code>
+	 */
 	public static List<Integer> intVectToListOfInts(Int_Vect intVect) {
-		List<Integer> retVal = new ArrayList<Integer>();
+		List<Integer> retVal = new ArrayList<>();
 		for (int i = 0; i < intVect.size(); i++) {
 			retVal.add(intVect.get(i));
 		}
@@ -166,12 +165,9 @@ public class RDKitUtils {
 		// finally, check the same indices occur on both sides.
 		if ((rctMapId_0 != prodMapId_0 && rctMapId_0 != prodMapId_1)
 				|| (rctMapId_1 != prodMapId_0 && rctMapId_1 != prodMapId_1)) {
-			return "rSMARTS mapping indices need to be the same for reactants (Here: "
-					+ rctMapId_0
-					+ ", "
-					+ rctMapId_1
-					+ ") and products (Here: "
-					+ prodMapId_0 + ", " + prodMapId_1 + ")";
+			return "rSMARTS mapping indices need to be the same for reactants (Here: " + rctMapId_0
+					+ ", " + rctMapId_1 + ") and products (Here: " + prodMapId_0 + ", "
+					+ prodMapId_1 + ")";
 		}
 
 		// We got there!

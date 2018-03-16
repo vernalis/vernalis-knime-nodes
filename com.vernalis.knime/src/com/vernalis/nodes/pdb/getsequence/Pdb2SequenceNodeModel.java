@@ -78,8 +78,8 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 	static final String CFG_COORDS3 = "Extract_Co-ords_3-letter_Sequences";
 	static final String CFG_INC_HETATM = "Include_HETATM_in_Co-ords";
 
-	private final SettingsModelString m_PdbColName = new SettingsModelString(CFG_PDB_COL_NAME,
-			null);
+	private final SettingsModelString m_PdbColName =
+			new SettingsModelString(CFG_PDB_COL_NAME, null);
 	private final SettingsModelBoolean m_DelPdb = new SettingsModelBoolean(CFG_PDB_DEL, false);
 	private final SettingsModelBoolean m_Seq1 = new SettingsModelBoolean(CFG_SEQRES1, true);
 	private final SettingsModelBoolean m_Seq3 = new SettingsModelBoolean(CFG_SEQRES3, false);
@@ -106,15 +106,15 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 
 		final BufferedDataTable table = inData[0];
 		final boolean removePdbCol = m_DelPdb.getBooleanValue();
-		Set<String> newColNames = Pdb2SeqHelpers.ColumnNames(m_Seq1.getBooleanValue(),
-				m_Seq3.getBooleanValue(), m_Coord1.getBooleanValue(), m_Coord3.getBooleanValue(),
-				m_IgnMod);
+		Set<String> newColNames =
+				Pdb2SeqHelpers.ColumnNames(m_Seq1.getBooleanValue(), m_Seq3.getBooleanValue(),
+						m_Coord1.getBooleanValue(), m_Coord3.getBooleanValue(), m_IgnMod);
 
 		// Create the new output table spec and a Buffered Data Container for it
 		final DataTableSpec newSpec = createTableSpec(table.getDataTableSpec(),
 				m_PdbColName.getStringValue(), removePdbCol, newColNames);
-		BufferedDataTableRowOutput output = new BufferedDataTableRowOutput(
-				exec.createDataContainer(newSpec));
+		BufferedDataTableRowOutput output =
+				new BufferedDataTableRowOutput(exec.createDataContainer(newSpec));
 		RowInput input = new DataTableRowInput(table);
 
 		final int colIdx = table.getSpec().findColumnIndex(m_PdbColName.getStringValue());
@@ -124,7 +124,7 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 		int newColCnt = newColNames.size();
 
 		// And an ArrayList of empty cells for missing PDB Cells
-		List<DataCell> empties = new ArrayList<DataCell>();
+		List<DataCell> empties = new ArrayList<>();
 		for (int i = 0; i < newColCnt; i++) {
 			empties.add(DataType.getMissingCell());
 		}
@@ -150,8 +150,8 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 
 			// Firstly, deal with the possibility of an empty PDB sell
 			if (c.isMissing()) {
-				final DefaultRow newRow = createClone(row.getKey(), row, colIdx, removePdbCol,
-						empties);
+				final DefaultRow newRow =
+						createClone(row.getKey(), row, colIdx, removePdbCol, empties);
 				out.push(newRow);
 				continue;
 			}
@@ -169,8 +169,8 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 			// Now deal with the possibility that the PCB cell couldnt be parsed
 			// properly
 			if (newCells == null) {
-				final DefaultRow newRow = createClone(row.getKey(), row, colIdx, removePdbCol,
-						empties);
+				final DefaultRow newRow =
+						createClone(row.getKey(), row, colIdx, removePdbCol, empties);
 				out.push(newRow);
 				// skip to the next row
 				continue;
@@ -179,8 +179,8 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 			// Deal with the possibility that the PDB cell didnt contain any
 			// sequence info and retain the row
 			if (newCells.size() == 0) {
-				final DefaultRow newRow = createClone(row.getKey(), row, colIdx, removePdbCol,
-						empties);
+				final DefaultRow newRow =
+						createClone(row.getKey(), row, colIdx, removePdbCol, empties);
 				out.push(newRow);
 				logger.info("Row " + row.getKey() + " returned no sequences...");
 				// skip to the next row
@@ -195,8 +195,8 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 				final RowKey oldKey = row.getKey();
 				final RowKey newKey = new RowKey(oldKey.getString() + "_" + counter++);
 
-				final DefaultRow newRow = createClone(newKey, row, colIdx, removePdbCol,
-						iter.next());
+				final DefaultRow newRow =
+						createClone(newKey, row, colIdx, removePdbCol, iter.next());
 				out.push(newRow);
 			}
 		}
@@ -208,15 +208,15 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 	public StreamableOperator createStreamableOperator(final PartitionInfo partitionInfo,
 			final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
 		final boolean removePdbCol = m_DelPdb.getBooleanValue();
-		Set<String> newColNames = Pdb2SeqHelpers.ColumnNames(m_Seq1.getBooleanValue(),
-				m_Seq3.getBooleanValue(), m_Coord1.getBooleanValue(), m_Coord3.getBooleanValue(),
-				m_IgnMod);
-		final int colIdx = ((DataTableSpec) inSpecs[0])
-				.findColumnIndex(m_PdbColName.getStringValue());
+		Set<String> newColNames =
+				Pdb2SeqHelpers.ColumnNames(m_Seq1.getBooleanValue(), m_Seq3.getBooleanValue(),
+						m_Coord1.getBooleanValue(), m_Coord3.getBooleanValue(), m_IgnMod);
+		final int colIdx =
+				((DataTableSpec) inSpecs[0]).findColumnIndex(m_PdbColName.getStringValue());
 		int newColCnt = newColNames.size();
 
 		// And an ArrayList of empty cells for missing PDB Cells
-		List<DataCell> empties = new ArrayList<DataCell>();
+		List<DataCell> empties = new ArrayList<>();
 		for (int i = 0; i < newColCnt; i++) {
 			empties.add(DataType.getMissingCell());
 		}
@@ -301,9 +301,9 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 			}
 		}
 
-		Set<String> newColNames = Pdb2SeqHelpers.ColumnNames(m_Seq1.getBooleanValue(),
-				m_Seq3.getBooleanValue(), m_Coord1.getBooleanValue(), m_Coord3.getBooleanValue(),
-				m_IgnMod);
+		Set<String> newColNames =
+				Pdb2SeqHelpers.ColumnNames(m_Seq1.getBooleanValue(), m_Seq3.getBooleanValue(),
+						m_Coord1.getBooleanValue(), m_Coord3.getBooleanValue(), m_IgnMod);
 
 		// Ensure at least one column will be added to the output
 		if (newColNames.size() < 1) {
@@ -346,7 +346,7 @@ public class Pdb2SequenceNodeModel extends NodeModel {
 		final DataColumnSpec colSpec = spec.getColumnSpec(index);
 
 		// create a collection to put the existing columns into
-		final Collection<DataColumnSpec> specs = new LinkedList<DataColumnSpec>();
+		final Collection<DataColumnSpec> specs = new LinkedList<>();
 		final int noOfCols = spec.getNumColumns();
 		for (int i = 0; i < noOfCols; i++) {
 			final DataColumnSpec currentSpec = spec.getColumnSpec(i);

@@ -43,7 +43,7 @@ public class Pdb2SeqHelpers {
 	private static final Map<String, String> AAA_TO_A = createMap();
 
 	private static Map<String, String> createMap() {
-		Map<String, String> result = new HashMap<String, String>();
+		Map<String, String> result = new HashMap<>();
 
 		// Start with standard amino acids
 		result.put("ALA", "A");
@@ -115,7 +115,7 @@ public class Pdb2SeqHelpers {
 	private static final Map<String, String> XXX_TO_A = createMap2();
 
 	private static Map<String, String> createMap2() {
-		Map<String, String> result = new HashMap<String, String>();
+		Map<String, String> result = new HashMap<>();
 
 		// Start with standard D-amino acids
 		result.put("DAL", "ALA");
@@ -195,7 +195,7 @@ public class Pdb2SeqHelpers {
 	 * @return A hashmap of the PTM to standard residue replacements
 	 */
 	public static Map<String, String> getPtmMap(String PDB) {
-		Map<String, String> ModRes = new HashMap<String, String>();
+		Map<String, String> ModRes = new HashMap<>();
 		for (String line : PDB.split("\\n")) {
 			if (line.startsWith("MODRES ")) {
 				ModRes.put(line.substring(12, 15), line.substring(24, 27));
@@ -213,7 +213,7 @@ public class Pdb2SeqHelpers {
 	 *         Values
 	 */
 	public static Map<String, String> getSequence(String PDB) {
-		Map<String, String> Seqs = new HashMap<String, String>();
+		Map<String, String> Seqs = new HashMap<>();
 
 		// Some temporary objects for building sequences
 		String curChain = "";
@@ -230,9 +230,8 @@ public class Pdb2SeqHelpers {
 				// NB SEQRES can have a ' ' if there is only 1 chain, so in this
 				// Case, we need to look up the first ATOM record to find the
 				// chain
-				Seqs.put(
-						(" ".equals(curChain)) ? PDB.split("ATOM   ")[1]
-								.substring(14, 15) : curChain, curSeq.trim());
+				Seqs.put((" ".equals(curChain)) ? PDB.split("ATOM   ")[1].substring(14, 15)
+						: curChain, curSeq.trim());
 			}
 		}
 		return Seqs;
@@ -251,16 +250,16 @@ public class Pdb2SeqHelpers {
 	 * @return The sequence(s) as a Map of Chain/Sequence pairs - sequences are
 	 *         the 3-letter pdb-specified component codes or heterogen IDs
 	 */
-	public static Map<String, String> getCoordSequence(String PDB,
-			Boolean includeHETATM, Boolean ignoreMODEL) throws Exception {
+	public static Map<String, String> getCoordSequence(String PDB, Boolean includeHETATM,
+			Boolean ignoreMODEL) throws Exception {
 		/** Map object containing the chain as keys and sequences as values */
-		Map<String, String> Seqs = new HashMap<String, String>();
+		Map<String, String> Seqs = new HashMap<>();
 
 		/**
 		 * Map object containing the chain as keys and last residue ids as
 		 * values
 		 */
-		Map<String, Integer> lastIDs = new HashMap<String, Integer>();
+		Map<String, Integer> lastIDs = new HashMap<>();
 
 		try {
 			Integer.parseInt(PDB.split("NUMMDL")[1].split("\\n")[0].trim());
@@ -281,12 +280,10 @@ public class Pdb2SeqHelpers {
 			}
 
 			// Now check if it is some sort of co-ordinate
-			if (line.startsWith("ATOM   ")
-					|| (line.startsWith("HETATM ") && includeHETATM)) {
+			if (line.startsWith("ATOM   ") || (line.startsWith("HETATM ") && includeHETATM)) {
 				// Get the chain and residue ID
 				curChain = line.substring(21, 22);
-				ChainIDKey = (ignoreMODEL) ? curChain : curChain + "("
-						+ modelID + ")";
+				ChainIDKey = (ignoreMODEL) ? curChain : curChain + "(" + modelID + ")";
 				curResID = Integer.parseInt(line.substring(22, 26).trim());
 
 				int deltaResID;
@@ -304,10 +301,8 @@ public class Pdb2SeqHelpers {
 						// (=ResidueName)>> - then sort by resiID, and process
 						String ResName = line.substring(17, 20);
 						if (!"HOH".equals(ResName)) {
-							Seqs.put(ChainIDKey, Seqs.get(ChainIDKey)
-									+ resDelim
-									+ ((deltaResID > 1) ? "?" + resDelim : "")
-									+ ResName);
+							Seqs.put(ChainIDKey, Seqs.get(ChainIDKey) + resDelim
+									+ ((deltaResID > 1) ? "?" + resDelim : "") + ResName);
 							// Update the pointer to the current residue ID
 							lastIDs.put(ChainIDKey, curResID);
 						}
@@ -337,8 +332,7 @@ public class Pdb2SeqHelpers {
 	 * @return The sequence(s) as a Map of Chain/Sequence pairs - sequences are
 	 *         the 3-letter pdb-specified component codes or heterogen IDs
 	 */
-	public static Map<String, String> getCoordSequence(String PDB)
-			throws Exception {
+	public static Map<String, String> getCoordSequence(String PDB) throws Exception {
 		return getCoordSequence(PDB, false, false);
 	}
 
@@ -353,8 +347,7 @@ public class Pdb2SeqHelpers {
 	 *            - Map of replacements from MODRES records
 	 * @return - a string with the sequence replaced with standard residues
 	 */
-	public static String standardizeSequence(String Sequence,
-			Map<String, String> PTMMap) {
+	public static String standardizeSequence(String Sequence, Map<String, String> PTMMap) {
 		for (Map.Entry<String, String> entry : PTMMap.entrySet()) {
 			Sequence = Sequence.replace(entry.getKey(), entry.getValue());
 		}
@@ -371,12 +364,11 @@ public class Pdb2SeqHelpers {
 	 *            Map of replacements from MODRES records
 	 * @return - a map with the sequences replaced with standard residues
 	 */
-	public static Map<String, String> standardizeSequences(
-			Map<String, String> Sequences, Map<String, String> PTMMap) {
-		Map<String, String> Seqs = new HashMap<String, String>();
+	public static Map<String, String> standardizeSequences(Map<String, String> Sequences,
+			Map<String, String> PTMMap) {
+		Map<String, String> Seqs = new HashMap<>();
 		for (Map.Entry<String, String> entry : Sequences.entrySet()) {
-			Seqs.put(entry.getKey(),
-					standardizeSequence(entry.getValue(), PTMMap));
+			Seqs.put(entry.getKey(), standardizeSequence(entry.getValue(), PTMMap));
 		}
 		return Seqs;
 	}
@@ -409,9 +401,8 @@ public class Pdb2SeqHelpers {
 	 *            Map of chain/sequence pairs (ideally standardised)
 	 * @return - Map with sequences converted to 1-letter sequences
 	 */
-	public static Map<String, String> convertAAAtoAs(
-			Map<String, String> Sequences) {
-		Map<String, String> Seqs = new HashMap<String, String>();
+	public static Map<String, String> convertAAAtoAs(Map<String, String> Sequences) {
+		Map<String, String> Seqs = new HashMap<>();
 		for (Map.Entry<String, String> entry : Sequences.entrySet()) {
 			Seqs.put(entry.getKey(), convertAAAtoA(entry.getValue()));
 		}
@@ -440,27 +431,24 @@ public class Pdb2SeqHelpers {
 	 *         specified
 	 * @throws Exception
 	 */
-	public static ArrayList<ArrayList<DataCell>> getResults(String PDB,
-			Boolean getSeqres1, Boolean getSeqres3, Boolean getAtom1,
-			Boolean getAtom3, Boolean incHetAtom, Boolean ignMod)
-			throws Exception {
+	public static ArrayList<ArrayList<DataCell>> getResults(String PDB, Boolean getSeqres1,
+			Boolean getSeqres3, Boolean getAtom1, Boolean getAtom3, Boolean incHetAtom,
+			Boolean ignMod) throws Exception {
 
 		// This List is for the result
-		ArrayList<ArrayList<DataCell>> result = new ArrayList<ArrayList<DataCell>>();
+		ArrayList<ArrayList<DataCell>> result = new ArrayList<>();
 
 		// This is a set to contain all the chains for the result
-		SortedSet<String> Chains = new TreeSet<String>();
+		SortedSet<String> Chains = new TreeSet<>();
 
 		// Fetch all the sequences
 		Map<String, String> seqres3 = getSequence(PDB);
-		Map<String, String> seqres1 = convertAAAtoAs(standardizeSequences(
-				seqres3, getPtmMap(PDB)));
+		Map<String, String> seqres1 = convertAAAtoAs(standardizeSequences(seqres3, getPtmMap(PDB)));
 
 		Map<String, String> atom3 = getCoordSequence(PDB, incHetAtom, ignMod);
 		// Here we standardise using the dictionary in case MODRES records are
 		// not included
-		Map<String, String> atom1 = convertAAAtoAs(standardizeSequences(atom3,
-				XXX_TO_A));
+		Map<String, String> atom1 = convertAAAtoAs(standardizeSequences(atom3, XXX_TO_A));
 
 		// Now we need do list the chains based on what is to be included
 		if (getSeqres1 || getSeqres3) {
@@ -483,8 +471,7 @@ public class Pdb2SeqHelpers {
 		// Calculate the number of models
 		int numModels;
 		try {
-			numModels = Integer.parseInt(PDB.split("NUMMDL")[1].split("\\n")[0]
-					.trim());
+			numModels = Integer.parseInt(PDB.split("NUMMDL")[1].split("\\n")[0].trim());
 		} catch (Exception e) {
 			numModels = 1;
 		}
@@ -500,20 +487,18 @@ public class Pdb2SeqHelpers {
 			Iterator<String> iter1 = Chains.iterator();
 			while (iter1.hasNext()) {
 				String curChain = iter1.next();
-				ArrayList<DataCell> outVals = new ArrayList<DataCell>();
+				ArrayList<DataCell> outVals = new ArrayList<>();
 				// the first column in the output will always be the chain
 				// which will always exist!
 				outVals.add(new StringCell(curChain));
 
 				if (getSeqres1) {
 					temp = seqres1.get(curChain);
-					outVals.add((temp == null) ? DataType.getMissingCell()
-							: new StringCell(temp));
+					outVals.add((temp == null) ? DataType.getMissingCell() : new StringCell(temp));
 				}
 				if (getSeqres3) {
 					temp = seqres3.get(curChain);
-					outVals.add((temp == null) ? DataType.getMissingCell()
-							: new StringCell(temp));
+					outVals.add((temp == null) ? DataType.getMissingCell() : new StringCell(temp));
 				}
 
 				// If we are not ignoring chains, and are retrieving a co-ords
@@ -528,8 +513,7 @@ public class Pdb2SeqHelpers {
 					} else {
 						temp = atom1.get(curChain + "(" + modelID + ")");
 					}
-					outVals.add((temp == null) ? DataType.getMissingCell()
-							: new StringCell(temp));
+					outVals.add((temp == null) ? DataType.getMissingCell() : new StringCell(temp));
 				}
 				if (getAtom3) {
 					if (ignMod) {
@@ -537,8 +521,7 @@ public class Pdb2SeqHelpers {
 					} else {
 						temp = atom3.get(curChain + "(" + modelID + ")");
 					}
-					outVals.add((temp == null) ? DataType.getMissingCell()
-							: new StringCell(temp));
+					outVals.add((temp == null) ? DataType.getMissingCell() : new StringCell(temp));
 				}
 
 				// Add the results to the return list
@@ -564,10 +547,9 @@ public class Pdb2SeqHelpers {
 	 *            Should MODELS be ignored?
 	 * @return Set of the added column names
 	 */
-	public static Set<String> ColumnNames(Boolean getSeqres1,
-			Boolean getSeqres3, Boolean getCoord1, Boolean getCoord3,
-			Boolean ignMods) {
-		Set<String> ColumnNames = new LinkedHashSet<String>();
+	public static Set<String> ColumnNames(Boolean getSeqres1, Boolean getSeqres3, Boolean getCoord1,
+			Boolean getCoord3, Boolean ignMods) {
+		Set<String> ColumnNames = new LinkedHashSet<>();
 		ColumnNames.add("Chain");
 		if (getSeqres1) {
 			ColumnNames.add("SEQRES 1-letter Sequence");

@@ -80,7 +80,7 @@ public class AbstractSpeedySmilesEnumBasedCountNodeFactory<T extends Enum<T> & C
 	 */
 	@Override
 	public NodeDialogPane createNodeDialogPane() {
-		return new AbstractSpeedySmilesEnumBasedCountNodeDialog<T, Integer>(elements);
+		return new AbstractSpeedySmilesEnumBasedCountNodeDialog<>(elements);
 	}
 
 }

@@ -26,7 +26,7 @@ import org.knime.core.data.def.DoubleCell;
  * A simple class to hold the fragment key as an ArrayList, which is then sorted
  * and concatenated to a multicomponent SMILES
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @author "Stephen Roughley knime@vernalis.com"
  * @deprecated Implementations should use {@link RDKitFragmentKey}
  */
 @Deprecated
@@ -37,7 +37,7 @@ public class FragmentKey implements Comparable<FragmentKey> {
 	 * Constructor - initialises an empty key
 	 */
 	public FragmentKey() {
-		m_keyComponents = new ArrayList<String>();
+		m_keyComponents = new ArrayList<>();
 	}
 
 	/**
@@ -47,8 +47,7 @@ public class FragmentKey implements Comparable<FragmentKey> {
 	 *            The existing object
 	 */
 	public FragmentKey(FragmentKey existingKey) {
-		this.m_keyComponents = new ArrayList<String>(
-				existingKey.m_keyComponents);
+		this.m_keyComponents = new ArrayList<>(existingKey.m_keyComponents);
 	}
 
 	/**
@@ -60,13 +59,12 @@ public class FragmentKey implements Comparable<FragmentKey> {
 	 */
 	public FragmentKey(String keyAsString) {
 		if (keyAsString == null) {
-			m_keyComponents = new ArrayList<String>();
+			m_keyComponents = new ArrayList<>();
 		} else if (keyAsString.indexOf(".") < 0) {
-			m_keyComponents = new ArrayList<String>();
+			m_keyComponents = new ArrayList<>();
 			m_keyComponents.add(keyAsString);
 		} else {
-			m_keyComponents = new ArrayList<String>(Arrays.asList(keyAsString
-					.split("\\.")));
+			m_keyComponents = new ArrayList<>(Arrays.asList(keyAsString.split("\\.")));
 		}
 	}
 
@@ -79,8 +77,7 @@ public class FragmentKey implements Comparable<FragmentKey> {
 	 */
 	public void addComponent(String smiles) {
 		if (smiles == null) {
-			throw new IllegalArgumentException(
-					"A non-null string must be supplied");
+			throw new IllegalArgumentException("A non-null string must be supplied");
 		}
 		if (smiles.indexOf(".") < 0) {
 			m_keyComponents.add(smiles);
@@ -189,8 +186,7 @@ public class FragmentKey implements Comparable<FragmentKey> {
 				cnt++;
 		}
 		// Now correct for [H]
-		cnt -= (SMILES.indexOf("[H]") >= 0) ? SMILES.split("\\[H\\]").length - 1
-				: 0;
+		cnt -= (SMILES.indexOf("[H]") >= 0) ? SMILES.split("\\[H\\]").length - 1 : 0;
 		// And correct for attachment points
 		cnt -= countAttachmentPoints(SMILES);
 		return cnt;
@@ -202,8 +198,7 @@ public class FragmentKey implements Comparable<FragmentKey> {
 	 * heavy atoms
 	 */
 	public double getConstantToVaryingAtomRatio(FragmentValue value) {
-		return (double) this.calcHAC()
-				/ (double) value.getNumberChangingAtoms();
+		return (double) this.calcHAC() / (double) value.getNumberChangingAtoms();
 	}
 
 	/**
@@ -251,10 +246,8 @@ public class FragmentKey implements Comparable<FragmentKey> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime
-				* result
-				+ ((m_keyComponents == null) ? 0 : (this.getKeyAsString(false))
-						.hashCode());
+		result = prime * result
+				+ ((m_keyComponents == null) ? 0 : (this.getKeyAsString(false)).hashCode());
 		return result;
 	}
 
@@ -275,8 +268,7 @@ public class FragmentKey implements Comparable<FragmentKey> {
 		if (m_keyComponents == null) {
 			if (other.m_keyComponents != null)
 				return false;
-		} else if (!this.getKeyAsString(false).equals(
-				other.getKeyAsString(false)))
+		} else if (!this.getKeyAsString(false).equals(other.getKeyAsString(false)))
 			// We compare the actual ordered strings, as the internal order does
 			// not matter
 			return false;

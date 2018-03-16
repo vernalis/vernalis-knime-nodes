@@ -22,6 +22,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.PortTypeRegistry;
 import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
 
@@ -33,7 +34,7 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObjectSpec;
  * {@link PortObjectSpec}s to allow their use in both
  * {@link org.knime.core.node.NodeModel}#configure and #execute methods
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @author "Stephen Roughley knime@vernalis.com"
  * 
  */
 public class FlowControlHelpers {
@@ -46,10 +47,9 @@ public class FlowControlHelpers {
 	 * @return {@link ArrayList} containing the port indices of the active ports
 	 */
 	public static List<Integer> listActivePortIds(PortObject[] inPorts) {
-		List<Integer> activePorts = new ArrayList<Integer>();
+		List<Integer> activePorts = new ArrayList<>();
 		for (int i = 0, l = inPorts.length; i < l; i++) {
-			if (inPorts[i] != null
-					&& !(inPorts[i] instanceof InactiveBranchPortObject)) {
+			if (inPorts[i] != null && !(inPorts[i] instanceof InactiveBranchPortObject)) {
 				activePorts.add(i);
 			}
 		}
@@ -65,10 +65,9 @@ public class FlowControlHelpers {
 	 * @return {@link ArrayList} containing the port indices of the active ports
 	 */
 	public static List<Integer> listActivePortIds(PortObjectSpec[] inSpecs) {
-		List<Integer> activePorts = new ArrayList<Integer>();
+		List<Integer> activePorts = new ArrayList<>();
 		for (int i = 0, l = inSpecs.length; i < l; i++) {
-			if (inSpecs[i] != null
-					&& !(inSpecs[i] instanceof InactiveBranchPortObjectSpec)) {
+			if (inSpecs[i] != null && !(inSpecs[i] instanceof InactiveBranchPortObjectSpec)) {
 				activePorts.add(i);
 			}
 		}
@@ -110,8 +109,7 @@ public class FlowControlHelpers {
 	 */
 	public static int getFirstActivePortId(PortObject[] inPorts) {
 		for (int i = 0, l = inPorts.length; i < l; i++) {
-			if (inPorts[i] != null
-					&& !(inPorts[i] instanceof InactiveBranchPortObject)) {
+			if (inPorts[i] != null && !(inPorts[i] instanceof InactiveBranchPortObject)) {
 				return i;
 			}
 		}
@@ -129,8 +127,7 @@ public class FlowControlHelpers {
 	 */
 	public static int getFirstActivePortId(PortObjectSpec[] inSpecs) {
 		for (int i = 0, l = inSpecs.length; i < l; i++) {
-			if (inSpecs[i] != null
-					&& !(inSpecs[i] instanceof InactiveBranchPortObjectSpec)) {
+			if (inSpecs[i] != null && !(inSpecs[i] instanceof InactiveBranchPortObjectSpec)) {
 				return i;
 			}
 		}
@@ -148,8 +145,7 @@ public class FlowControlHelpers {
 	 */
 	public static PortObject getFirstActivePortObject(PortObject[] inPorts) {
 		for (int i = 0, l = inPorts.length; i < l; i++) {
-			if (inPorts[i] != null
-					&& !(inPorts[i] instanceof InactiveBranchPortObject)) {
+			if (inPorts[i] != null && !(inPorts[i] instanceof InactiveBranchPortObject)) {
 				return inPorts[i];
 			}
 		}
@@ -165,11 +161,9 @@ public class FlowControlHelpers {
 	 *            {@link PortObjectSpec} Array of inPorts
 	 * @return {@link PortObjectSpec} of the first active in port
 	 */
-	public static PortObjectSpec getFirstActivePortObjectSpec(
-			PortObjectSpec[] inSpecs) {
+	public static PortObjectSpec getFirstActivePortObjectSpec(PortObjectSpec[] inSpecs) {
 		for (int i = 0, l = inSpecs.length; i < l; i++) {
-			if (inSpecs[i] != null
-					&& !(inSpecs[i] instanceof InactiveBranchPortObjectSpec)) {
+			if (inSpecs[i] != null && !(inSpecs[i] instanceof InactiveBranchPortObjectSpec)) {
 				return inSpecs[i];
 			}
 		}
@@ -187,8 +181,7 @@ public class FlowControlHelpers {
 	 */
 	public static int getLastActivePortId(PortObject[] inPorts) {
 		for (int i = inPorts.length - 1; i >= 0; i--) {
-			if (inPorts[i] != null
-					&& !(inPorts[i] instanceof InactiveBranchPortObject)) {
+			if (inPorts[i] != null && !(inPorts[i] instanceof InactiveBranchPortObject)) {
 				return i;
 			}
 		}
@@ -206,8 +199,7 @@ public class FlowControlHelpers {
 	 */
 	public static int getLastActivePortId(PortObjectSpec[] inSpecs) {
 		for (int i = inSpecs.length - 1; i >= 0; i--) {
-			if (inSpecs[i] != null
-					&& !(inSpecs[i] instanceof InactiveBranchPortObjectSpec)) {
+			if (inSpecs[i] != null && !(inSpecs[i] instanceof InactiveBranchPortObjectSpec)) {
 				return i;
 			}
 		}
@@ -225,8 +217,7 @@ public class FlowControlHelpers {
 	 */
 	public static PortObject getLastActivePortObject(PortObject[] inPorts) {
 		for (int i = inPorts.length - 1; i >= 0; i--) {
-			if (inPorts[i] != null
-					&& !(inPorts[i] instanceof InactiveBranchPortObject)) {
+			if (inPorts[i] != null && !(inPorts[i] instanceof InactiveBranchPortObject)) {
 				return inPorts[i];
 			}
 		}
@@ -242,11 +233,9 @@ public class FlowControlHelpers {
 	 *            {@link PortObjectSpec} Array of inPort specs
 	 * @return {@link PortObjectSpec} of the first active in port
 	 */
-	public static PortObjectSpec getLastActivePortObjectSpec(
-			PortObjectSpec[] inSpecs) {
+	public static PortObjectSpec getLastActivePortObjectSpec(PortObjectSpec[] inSpecs) {
 		for (int i = inSpecs.length - 1; i >= 0; i--) {
-			if (inSpecs[i] != null
-					&& !(inSpecs[i] instanceof InactiveBranchPortObjectSpec)) {
+			if (inSpecs[i] != null && !(inSpecs[i] instanceof InactiveBranchPortObjectSpec)) {
 				return inSpecs[i];
 			}
 		}
@@ -287,8 +276,7 @@ public class FlowControlHelpers {
 	 */
 	public static boolean hasInactivePort(PortObject[] inPorts) {
 		for (int port = 0, l = inPorts.length; port < l; port++) {
-			if (inPorts[port] != null
-					&& inPorts[port] instanceof InactiveBranchPortObject) {
+			if (inPorts[port] != null && inPorts[port] instanceof InactiveBranchPortObject) {
 				return true;
 			}
 		}
@@ -305,8 +293,7 @@ public class FlowControlHelpers {
 	 */
 	public static boolean hasInactivePort(PortObjectSpec[] inSpecs) {
 		for (int port = 0, l = inSpecs.length; port < l; port++) {
-			if (inSpecs[port] != null
-					&& inSpecs[port] instanceof InactiveBranchPortObjectSpec) {
+			if (inSpecs[port] != null && inSpecs[port] instanceof InactiveBranchPortObjectSpec) {
 				return true;
 			}
 		}
@@ -331,13 +318,14 @@ public class FlowControlHelpers {
 		portCount = (portCount < 2) ? 2 : portCount;
 		PortType[] inPorts = new PortType[portCount];
 		// Fill it with optional ports
-		Arrays.fill(inPorts, new PortType(type.getPortObjectClass(), true));
+		Arrays.fill(inPorts,
+				PortTypeRegistry.getInstance().getPortType(type.getPortObjectClass(), true));
 
 		// The first port is never optional!
-		inPorts[0] = new PortType(type.getPortObjectClass());
+		inPorts[0] = PortTypeRegistry.getInstance().getPortType(type.getPortObjectClass());
 		if (portCount <= 2) {
 			// If two ports, then neither are optional!
-			inPorts[1] = new PortType(type.getPortObjectClass());
+			inPorts[1] = PortTypeRegistry.getInstance().getPortType(type.getPortObjectClass());
 		}
 		return inPorts;
 	}
@@ -355,17 +343,16 @@ public class FlowControlHelpers {
 	 *            The number of input ports to be created
 	 * @return
 	 */
-	public static PortType[] createEndInPorts(Class<? extends PortObject> type,
-			int portCount) {
+	public static PortType[] createEndInPorts(Class<? extends PortObject> type, int portCount) {
 		// Make sure at least two ports are required
 		portCount = (portCount < 2) ? 2 : portCount;
 		PortType[] inPorts = new PortType[portCount];
 
-		Arrays.fill(inPorts, new PortType(type, true));
+		Arrays.fill(inPorts, PortTypeRegistry.getInstance().getPortType(type, true));
 		// The first port is never optional!
-		inPorts[0] = new PortType(type);
+		inPorts[0] = PortTypeRegistry.getInstance().getPortType(type);
 		if (portCount <= 2) {
-			inPorts[1] = new PortType(type);
+			inPorts[1] = PortTypeRegistry.getInstance().getPortType(type);
 		}
 		return inPorts;
 	}
@@ -379,7 +366,7 @@ public class FlowControlHelpers {
 	 */
 	public static PortType[] createEndOutPort(PortType type) {
 		PortType[] outPort = new PortType[1];
-		outPort[0] = new PortType(type.getPortObjectClass());
+		outPort[0] = PortTypeRegistry.getInstance().getPortType(type.getPortObjectClass());
 		return outPort;
 	}
 
@@ -392,7 +379,7 @@ public class FlowControlHelpers {
 	 */
 	public static PortType[] createEndOutPort(Class<? extends PortObject> type) {
 		PortType[] outPort = new PortType[1];
-		outPort[0] = new PortType(type);
+		outPort[0] = PortTypeRegistry.getInstance().getPortType(type);
 		return outPort;
 	}
 
@@ -411,7 +398,8 @@ public class FlowControlHelpers {
 		// Make sure at least two ports are required
 		portCount = (portCount < 2) ? 2 : portCount;
 		PortType[] outPorts = new PortType[portCount];
-		Arrays.fill(outPorts, new PortType(type.getPortObjectClass()));
+		Arrays.fill(outPorts,
+				PortTypeRegistry.getInstance().getPortType(type.getPortObjectClass()));
 		return outPorts;
 	}
 
@@ -426,12 +414,11 @@ public class FlowControlHelpers {
 	 *            The number of input ports to be created
 	 * @return
 	 */
-	public static PortType[] createStartOutPorts(
-			Class<? extends PortObject> type, int portCount) {
+	public static PortType[] createStartOutPorts(Class<? extends PortObject> type, int portCount) {
 		// Make sure at least two ports are required
 		portCount = (portCount < 2) ? 2 : portCount;
 		PortType[] outPorts = new PortType[portCount];
-		Arrays.fill(outPorts, new PortType(type));
+		Arrays.fill(outPorts, PortTypeRegistry.getInstance().getPortType(type));
 		return outPorts;
 	}
 
@@ -444,7 +431,7 @@ public class FlowControlHelpers {
 	 */
 	public static PortType[] createStartInPort(PortType type) {
 		PortType[] inPort = new PortType[1];
-		inPort[0] = new PortType(type.getPortObjectClass());
+		inPort[0] = PortTypeRegistry.getInstance().getPortType(type.getPortObjectClass());
 		return inPort;
 	}
 
@@ -457,7 +444,7 @@ public class FlowControlHelpers {
 	 */
 	public static PortType[] createStartInPort(Class<? extends PortObject> type) {
 		PortType[] inPort = new PortType[1];
-		inPort[0] = new PortType(type);
+		inPort[0] = PortTypeRegistry.getInstance().getPortType(type);
 		return inPort;
 	}
 
@@ -477,14 +464,12 @@ public class FlowControlHelpers {
 	 *             Thrown if the active port ID < 0 or >= the number of output
 	 *             ports
 	 */
-	public static PortObjectSpec[] createStartOutputPortObjectSpec(
-			PortObjectSpec[] inSpecs, int numPorts, int activePortIdx)
-			throws InvalidSettingsException {
+	public static PortObjectSpec[] createStartOutputPortObjectSpec(PortObjectSpec[] inSpecs,
+			int numPorts, int activePortIdx) throws InvalidSettingsException {
 		if (activePortIdx < 0 || activePortIdx >= numPorts) {
 			// Nonsense settings
 			throw new InvalidSettingsException(
-					"You must select an active port in the range 0 - "
-							+ (numPorts - 1));
+					"You must select an active port in the range 0 - " + (numPorts - 1));
 		}
 
 		PortObjectSpec[] outSpecs = new PortObjectSpec[numPorts];
@@ -511,13 +496,12 @@ public class FlowControlHelpers {
 	 *             Thrown if the active port ID < 0 or >= the number of output
 	 *             ports
 	 */
-	public static PortObject[] createStartOutputPortObject(PortObject[] inData,
-			int numPorts, int activePortIdx) throws InvalidSettingsException {
+	public static PortObject[] createStartOutputPortObject(PortObject[] inData, int numPorts,
+			int activePortIdx) throws InvalidSettingsException {
 		if (activePortIdx < 0 || activePortIdx >= numPorts) {
 			// Nonsense settings
 			throw new InvalidSettingsException(
-					"You must select an active port in the range 0 - "
-							+ (numPorts - 1));
+					"You must select an active port in the range 0 - " + (numPorts - 1));
 		}
 
 		PortObject[] outData = new PortObject[numPorts];

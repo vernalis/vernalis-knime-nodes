@@ -317,7 +317,6 @@ public class RWMolFragmentationUtilsFactory
 		return RDKIT_RENDERER_CELLTYPE;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Class<? extends DataValue>[] getInputColumnTypes() {
 		return MolFormats.m_RDKitmolFormats.toArray(new Class[0]);

@@ -52,13 +52,13 @@ public class FASTAHelperFunctions_2 {
 	 *            If true, then the sequence is included as a new column
 	 * @return A LinkedHashSet of the column names to be added
 	 */
-	public static Set<String> ColumnNames(String FASTA_Type,
-			boolean IncludeHeader, boolean extractSequence) {
+	public static Set<String> ColumnNames(String FASTA_Type, boolean IncludeHeader,
+			boolean extractSequence) {
 
 		// Use a set to simplify the default case in the switch of adding the
 		// header row if nothing else specified
 		// LinkedHashSet retains the order added
-		Set<String> ColumnNames = new LinkedHashSet<String>();
+		Set<String> ColumnNames = new LinkedHashSet<>();
 
 		if (IncludeHeader) {
 			ColumnNames.add("Header");
@@ -132,11 +132,11 @@ public class FASTAHelperFunctions_2 {
 	 * @return An ArrayList containing the DataCells according to the specified
 	 *         options
 	 */
-	public static DataCell[] ColumnValues(String FASTA, String FASTA_Type,
-			boolean IncludeHeader, boolean extractSequence) {
+	public static DataCell[] ColumnValues(String FASTA, String FASTA_Type, boolean IncludeHeader,
+			boolean extractSequence) {
 
 		String FASTAHeader = getHeader(FASTA);
-		List<String> ColumnValues = new ArrayList<String>();
+		List<String> ColumnValues = new ArrayList<>();
 		String temp = FASTA_Type.toLowerCase();
 		if ("".equals(FASTAHeader) || FASTAHeader == null) {
 			if (IncludeHeader) {
@@ -151,19 +151,16 @@ public class FASTAHelperFunctions_2 {
 				ColumnValues.add(null);
 			} else if ("swiss-prot".equals(temp) || "patents".equals(temp)
 					|| "general database identifier".equals(temp)
-					|| "ncbi reference sequence".equals(temp)
-					|| "pdb".equals(temp)) {
+					|| "ncbi reference sequence".equals(temp) || "pdb".equals(temp)) {
 				// These only have 2
 				ColumnValues.add(null);
 				ColumnValues.add(null);
-			} else if ("nbrf".equals(temp)
-					|| "protein research foundation".equals(temp)
+			} else if ("nbrf".equals(temp) || "protein research foundation".equals(temp)
 					|| "geninfo backbone id".equals(temp)
 					|| "local sequence identifier".equals(temp)) {
 				// And these only have 1
 				ColumnValues.add(null);
-			} else if (!"other (no fields extracted from header)".equals(temp)
-					&& !IncludeHeader) {
+			} else if (!"other (no fields extracted from header)".equals(temp) && !IncludeHeader) {
 				// If somehow we dont have one of the presets, then we just add
 				// the header - but only once - so only if we've not added it at
 				// the beginning!
@@ -195,8 +192,7 @@ public class FASTAHelperFunctions_2 {
 				} catch (Exception e) {
 					ColumnValues.add(null);
 				}
-			} else if ("nbrf".equals(temp)
-					|| "protein research foundation".equals(temp)) {
+			} else if ("nbrf".equals(temp) || "protein research foundation".equals(temp)) {
 				try {
 					ColumnValues.add(FASTAHeader.split("\\|")[2]);
 				} catch (Exception e) {
@@ -247,8 +243,7 @@ public class FASTAHelperFunctions_2 {
 						ColumnValues.add(null);
 					}
 				}
-			} else if (!"other (no fields extracted from header)".equals(temp)
-					&& !IncludeHeader) {
+			} else if (!"other (no fields extracted from header)".equals(temp) && !IncludeHeader) {
 				// If somehow we dont have one of the presets, then we just add
 				// the header but only once - so only if we've not added it at
 				// the beginning!
@@ -270,8 +265,8 @@ public class FASTAHelperFunctions_2 {
 		int i = 0;
 		while (itr.hasNext()) {
 			CellString = itr.next();
-			ColCells[i++] = (CellString == null || "".equals(CellString)) ? DataType
-					.getMissingCell() : new StringCell(CellString);
+			ColCells[i++] = (CellString == null || "".equals(CellString))
+					? DataType.getMissingCell() : new StringCell(CellString);
 		}
 		return ColCells;
 	}

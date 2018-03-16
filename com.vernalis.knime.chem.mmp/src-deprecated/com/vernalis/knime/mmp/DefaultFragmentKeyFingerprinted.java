@@ -89,8 +89,7 @@ public abstract class DefaultFragmentKeyFingerprinted extends FragmentKey
 	 *            The attachment point index
 	 * @return The rooted fingerprint for the component
 	 */
-	protected abstract ExplicitBitVect getAttachmentPointFingerprint(RWMol mol,
-			UInt_Vect apIdx);
+	protected abstract ExplicitBitVect getAttachmentPointFingerprint(RWMol mol, UInt_Vect apIdx);
 
 	/** {@inheritDoc} */
 	@Override
@@ -104,8 +103,7 @@ public abstract class DefaultFragmentKeyFingerprinted extends FragmentKey
 				RDKFuncs.sanitizeMol(mol);
 				// Get the atom ID of the attachment point
 				UInt_Vect apIdx = new UInt_Vect();
-				apIdx.add(mol.getSubstructMatch(AP_QUERY_MOL).get(0)
-						.getSecond());
+				apIdx.add(mol.getSubstructMatch(AP_QUERY_MOL).get(0).getSecond());
 
 				ExplicitBitVect fp = getAttachmentPointFingerprint(mol, apIdx);
 				mol.delete();
@@ -134,8 +132,7 @@ public abstract class DefaultFragmentKeyFingerprinted extends FragmentKey
 		super.mergeKeys(otherKey);
 		if (this.getClass() == otherKey.getClass()) {
 			// The two objects are the same type, so can copy FPs
-			m_apEnvironments
-					.putAll(((DefaultFragmentKeyFingerprinted) otherKey).m_apEnvironments);
+			m_apEnvironments.putAll(((DefaultFragmentKeyFingerprinted) otherKey).m_apEnvironments);
 		} else {
 			calculateAttPointEnvironments(otherKey.m_keyComponents);
 		}
@@ -157,8 +154,8 @@ public abstract class DefaultFragmentKeyFingerprinted extends FragmentKey
 		if (ebv == null) {
 			return DataType.getMissingCell();
 		} else {
-			return new DenseBitVectorCellFactory(
-					RDKitUtils.rdkitFpToDenseBitVector(ebv)).createDataCell();
+			return new DenseBitVectorCellFactory(RDKitUtils.rdkitFpToDenseBitVector(ebv))
+					.createDataCell();
 		}
 	}
 
@@ -178,8 +175,8 @@ public abstract class DefaultFragmentKeyFingerprinted extends FragmentKey
 		if (ebv == null) {
 			return DataType.getMissingCell();
 		} else {
-			return new SparseBitVectorCellFactory(
-					RDKitUtils.rdkitFpToSparseBitVector(ebv)).createDataCell();
+			return new SparseBitVectorCellFactory(RDKitUtils.rdkitFpToSparseBitVector(ebv))
+					.createDataCell();
 		}
 	}
 
@@ -195,7 +192,7 @@ public abstract class DefaultFragmentKeyFingerprinted extends FragmentKey
 	 */
 	@Override
 	public List<DataCell> getAttachmentPointFingerprintsDenseCellCollection() {
-		ArrayList<DataCell> retVal = new ArrayList<DataCell>();
+		ArrayList<DataCell> retVal = new ArrayList<>();
 		int idx = 1;
 		int numFound = 0;
 		// Countdown to avoid infinite loops if the SMILES components are badly
@@ -209,8 +206,8 @@ public abstract class DefaultFragmentKeyFingerprinted extends FragmentKey
 				// Incrememnt the counter
 				numFound++;
 				// And add the fp to the output
-				retVal.add(new DenseBitVectorCellFactory(RDKitUtils
-						.rdkitFpToDenseBitVector(ebv)).createDataCell());
+				retVal.add(new DenseBitVectorCellFactory(RDKitUtils.rdkitFpToDenseBitVector(ebv))
+						.createDataCell());
 			} else {
 				// We already have found some, but this one is missing
 				retVal.add(DataType.getMissingCell());
@@ -232,7 +229,7 @@ public abstract class DefaultFragmentKeyFingerprinted extends FragmentKey
 	 */
 	@Override
 	public List<DataCell> getAttachmentPointFingerprintsSparseCellCollection() {
-		ArrayList<DataCell> retVal = new ArrayList<DataCell>();
+		ArrayList<DataCell> retVal = new ArrayList<>();
 		int idx = 1;
 		int numFound = 0;
 		ExplicitBitVect ebv = null;
@@ -243,8 +240,8 @@ public abstract class DefaultFragmentKeyFingerprinted extends FragmentKey
 				// Incrememnt the counter
 				numFound++;
 				// And add the fp to the output
-				retVal.add(new SparseBitVectorCellFactory(RDKitUtils
-						.rdkitFpToSparseBitVector(ebv)).createDataCell());
+				retVal.add(new SparseBitVectorCellFactory(RDKitUtils.rdkitFpToSparseBitVector(ebv))
+						.createDataCell());
 			} else {
 				// this one is missing
 				retVal.add(DataType.getMissingCell());
@@ -272,9 +269,9 @@ public abstract class DefaultFragmentKeyFingerprinted extends FragmentKey
 		for (int idx = 1; idx <= numCuts; idx++) {
 			ExplicitBitVect ebv = getAttachmentPointExplicitBitVectorFingerprint(idx);
 			if (ebv != null) {
-				retVal[idx - 1] = new SparseBitVectorCellFactory(
-						RDKitUtils.rdkitFpToSparseBitVector(ebv))
-						.createDataCell();
+				retVal[idx - 1] =
+						new SparseBitVectorCellFactory(RDKitUtils.rdkitFpToSparseBitVector(ebv))
+								.createDataCell();
 			}
 			ebv.delete();
 		}
@@ -299,9 +296,9 @@ public abstract class DefaultFragmentKeyFingerprinted extends FragmentKey
 		for (int idx = 1; idx <= numCuts; idx++) {
 			ExplicitBitVect ebv = getAttachmentPointExplicitBitVectorFingerprint(idx);
 			if (ebv != null) {
-				retVal[idx - 1] = new DenseBitVectorCellFactory(
-						RDKitUtils.rdkitFpToDenseBitVector(ebv))
-						.createDataCell();
+				retVal[idx - 1] =
+						new DenseBitVectorCellFactory(RDKitUtils.rdkitFpToDenseBitVector(ebv))
+								.createDataCell();
 			}
 			ebv.delete();
 		}
@@ -319,8 +316,7 @@ public abstract class DefaultFragmentKeyFingerprinted extends FragmentKey
 	 *         index
 	 */
 	@Override
-	public ExplicitBitVect getAttachmentPointExplicitBitVectorFingerprint(
-			int idx) {
+	public ExplicitBitVect getAttachmentPointExplicitBitVectorFingerprint(int idx) {
 		ExplicitBitVect ebv = null;
 		for (Entry<String, ExplicitBitVect> ent : m_apEnvironments.entrySet()) {
 			if (ent.getKey().indexOf("[" + idx + "*") >= 0) {

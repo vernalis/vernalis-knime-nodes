@@ -6,102 +6,83 @@
       <node
             category-path="/community/vernalis/local.pdb"
             factory-class="com.vernalis.nodes.io.pdb.loadlocal.LocalPDBLoadNodeFactory2"
-            id="LocalPDBLoadNodeFactory2">
-      </node>
+            />
       <node
             after="LocalPDBLoadNodeFactory2"
             category-path="/community/vernalis/local.pdb"
             factory-class="com.vernalis.nodes.io.pdb.savelocal.SavePDBLocalNodeFactory"
-            id="SavePDBLocalNodeFactory">
-      </node>
+            />
       <node
             category-path="/community/vernalis/sequence"
            factory-class="com.vernalis.nodes.fasta.FASTASequenceNodeFactory_2"
-            id="FASTASequenceNodeFactory_2">
-      </node>
+            />
       <node
             after="SavePDBLocalNodeFactory"
             category-path="/community/vernalis/local.pdb"
             factory-class="com.vernalis.nodes.pdb.props.PdbPropertiesNodeFactory"
-            id="PdbPropertiesNodeFactory">
-      </node>
+            />
       <node
             category-path="/community/vernalis/misc"
             factory-class="com.vernalis.nodes.smartsviewer.SmartsViewer2NodeFactory"
-            id="SmartsViewer2NodeFactory">
-      </node>
+            />
       <node
             category-path="/community/vernalis/misc"
             factory-class="com.vernalis.nodes.misc.randomnos.RandomNumbers2NodeFactory"
-            id="RandomNumbers2NodeFactory">
-      </node>
+            />
       <node
             category-path="/community/vernalis/misc"
             factory-class="com.vernalis.nodes.io.listdirs2.ListDirs2NodeFactory"
-            id="ListDirs2NodeFactory">
-      </node>
+            />
       <node
             category-path="/community/vernalis/misc/txt.IO"
             factory-class="com.vernalis.nodes.io.txt.LoadTxtNodeFactory"
-            id="LoadTxtNodeFactory">
-      </node>
+            />
       <node
             category-path="/community/vernalis/misc/txt.IO"
             factory-class="com.vernalis.nodes.io.txt.SaveTxtLocalNodeFactory"
-            id="SaveTxtLocalNodeFactory">
-      </node>
+           />
       <node
             category-path="/community/vernalis/ePMC"
            factory-class="com.vernalis.nodes.epmc.EuroPmcAdvancedSearchNodeFactory"
-            id="EuroPmcAdvancedSearchNodeFactory">
-      </node>
+           />
       <node
             category-path="/community/vernalis/sequence"
             factory-class="com.vernalis.nodes.pdb.getsequence.Pdb2SequenceNodeFactory"
-            id="Pdb2SequenceNodeFactory">
-      </node>
+            />
       <node
             category-path="/community/vernalis/fps"
             deprecated="true"
             factory-class="com.vernalis.nodes.fingerprint.properties.FpPropsNodeFactory"
-            id="FpPropsNodeFactory">
-      </node>
+            />
       <node
             deprecated="true"
             factory-class="com.vernalis.flowcontrol.nodes.fv.caseselect.FVarFVCaseSelectNodeFactory"
-            id="FVarFVCaseSelectNodeFactory">
-      </node>
+            />
       <node
             deprecated="true"
             factory-class="com.vernalis.nodes.smartsviewer.SmartsViewerNodeFactory"
-            id="SmartsViewerNodeFactory">
-      </node>
+            />
       <node
             deprecated="true"
             factory-class="com.vernalis.flowcontrol.nodes.fv.varvalifswitch.FlowVarFvvalIfSwitchNodeFactory"
-            id="FlowVarFvvalIfSwitchNodeFactory">
-      </node>
+            />
       <node
             deprecated="true"
             factory-class="com.vernalis.flowcontrol.nodes.fv.ifswitch.FVarIfSwitchNodeFactory"
-            id="FVarIfSwitchNodeFactory">
-      </node>
+            />
       <node
             deprecated="true"
             factory-class="com.vernalis.flowcontrol.nodes.fv.endif.FlowVarEndIfNodeFactory"
-            id="FlowVarEndIfNodeFactory">
-      </node>
+            />
       <node
             deprecated="true"
             factory-class="com.vernalis.flowcontrol.nodes.fv.endcase.FlowVarEndCaseNodeFactory"
-            id="FlowVarEndCaseNodeFactory">
-      </node>
+            />
       <node
             category-path="/community/vernalis/misc"
             deprecated="true"
             factory-class="com.vernalis.nodes.misc.randomnos.RandomNumbersNodeFactory"
-            id="RandomNumbersNodeFactory">
-      </node>
+           />
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">

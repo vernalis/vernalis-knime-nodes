@@ -74,7 +74,7 @@ public class RandomNumbers {
 		}
 
 		// Now populate the set
-		Set<Integer> Numbers = new LinkedHashSet<Integer>();
+		Set<Integer> Numbers = new LinkedHashSet<>();
 		Random rand = new Random();
 		Integer RandomNum;
 		while (Numbers.size() < n) {
@@ -119,7 +119,7 @@ public class RandomNumbers {
 		}
 
 		// Now populate the set
-		Set<Integer> Numbers = new HashSet<Integer>();
+		Set<Integer> Numbers = new HashSet<>();
 		long numbersAdded = 0;
 		Random rand = new Random();
 		Integer RandomNum;
@@ -168,7 +168,7 @@ public class RandomNumbers {
 		}
 
 		// Now populate the set
-		Set<Integer> Numbers = new HashSet<Integer>();
+		Set<Integer> Numbers = new HashSet<>();
 		long numbersAdded = 0;
 		Random rand = new Random();
 		Integer RandomNum;
@@ -208,7 +208,7 @@ public class RandomNumbers {
 		}
 
 		// Now populate the set
-		List<Integer> Numbers = new ArrayList<Integer>();
+		List<Integer> Numbers = new ArrayList<>();
 		Random rand = new Random();
 		Integer RandomNum;
 		while (Numbers.size() < n) {
@@ -320,7 +320,7 @@ public class RandomNumbers {
 		}
 
 		// Now populate the set
-		Set<Double> Numbers = new LinkedHashSet<Double>();
+		Set<Double> Numbers = new LinkedHashSet<>();
 		Double RandomNum;
 		while (Numbers.size() < n) {
 			RandomNum = min + (Math.random() * ((max - min) + 1));
@@ -357,7 +357,7 @@ public class RandomNumbers {
 		}
 
 		// Now populate the set
-		Set<Double> Numbers = new HashSet<Double>();
+		Set<Double> Numbers = new HashSet<>();
 		long numbersAdded = 0;
 		Double RandomNum;
 		while (numbersAdded < n) {
@@ -400,7 +400,7 @@ public class RandomNumbers {
 		}
 
 		// Now populate the set
-		Set<Double> Numbers = new HashSet<Double>();
+		Set<Double> Numbers = new HashSet<>();
 		long numbersAdded = 0;
 		Double RandomNum;
 		while (numbersAdded < n) {
@@ -440,7 +440,7 @@ public class RandomNumbers {
 		}
 
 		// Now populate the set
-		List<Double> Numbers = new ArrayList<Double>();
+		List<Double> Numbers = new ArrayList<>();
 		Double RandomNum;
 		while (Numbers.size() < n) {
 			RandomNum = min + (Math.random() * ((max - min) + 1));

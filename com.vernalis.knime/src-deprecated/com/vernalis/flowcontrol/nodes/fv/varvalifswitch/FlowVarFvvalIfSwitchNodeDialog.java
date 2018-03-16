@@ -36,8 +36,8 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.workflow.FlowVariable;
 
 public class FlowVarFvvalIfSwitchNodeDialog extends DefaultNodeSettingsPane {
-	private static final NodeLogger LOGGER = NodeLogger
-			.getLogger(FlowVarFvvalIfSwitchNodeModel.class);
+	private static final NodeLogger LOGGER =
+			NodeLogger.getLogger(FlowVarFvvalIfSwitchNodeModel.class);
 	private SettingsModelString m_fvname1;
 	private SettingsModelBoolean m_ignCase, m_ignWhiteSpace;
 	private SettingsModelDouble m_dblTol;
@@ -59,14 +59,14 @@ public class FlowVarFvvalIfSwitchNodeDialog extends DefaultNodeSettingsPane {
 		m_ignCase.setEnabled(false);
 		m_ignWhiteSpace.setEnabled(false);
 		m_dblTol.setEnabled(false);
-		
-		m_fvname1.addChangeListener(new ChangeListener() {
 
+		m_fvname1.addChangeListener(new ChangeListener() {
+			// Only the types listed can be selected from the dialog
+			@SuppressWarnings("incomplete-switch")
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				try {
-					switch (getAvailableFlowVariables().get(
-							m_fvname1.getStringValue()).getType()) {
+					switch (getAvailableFlowVariables().get(m_fvname1.getStringValue()).getType()) {
 					case STRING:
 						m_ignCase.setEnabled(true);
 						m_ignWhiteSpace.setEnabled(true);
@@ -92,21 +92,19 @@ public class FlowVarFvvalIfSwitchNodeDialog extends DefaultNodeSettingsPane {
 		});
 		addDialogComponent(m_fvs1);
 
-		addDialogComponent(new DialogComponentStringSelection(
-				createComparatorSelectionModel(), "", new String[] { "=", "<",
-						"<=", ">", ">=", "!=" }));
+		addDialogComponent(new DialogComponentStringSelection(createComparatorSelectionModel(), "",
+				new String[] { "=", "<", "<=", ">", ">=", "!=" }));
 
 		addDialogComponent(new DialogComponentString(createPropertyModel(), ""));
 
 		createNewGroup("String Comparison settings");
 		setHorizontalPlacement(true);
 		addDialogComponent(new DialogComponentBoolean(m_ignCase, "Ignore case"));
-		addDialogComponent(new DialogComponentBoolean(m_ignWhiteSpace,
-				"Ignore leading/trailing whitespace"));
+		addDialogComponent(
+				new DialogComponentBoolean(m_ignWhiteSpace, "Ignore leading/trailing whitespace"));
 
 		createNewGroup("Double Comparison settings");
-		addDialogComponent(new DialogComponentNumberEdit(m_dblTol,
-				"Equality tolerance:"));
+		addDialogComponent(new DialogComponentNumberEdit(m_dblTol, "Equality tolerance:"));
 	}
 
 	static SettingsModelString createFirstFlowVarSelectionModel() {
@@ -148,11 +146,10 @@ public class FlowVarFvvalIfSwitchNodeDialog extends DefaultNodeSettingsPane {
 		// check for selected value
 		String flowVar = "";
 		try {
-			flowVar = ((SettingsModelString) m_fvname1
-					.createCloneWithValidatedValue(settings)).getStringValue();
+			flowVar = ((SettingsModelString) m_fvname1.createCloneWithValidatedValue(settings))
+					.getStringValue();
 		} catch (InvalidSettingsException e) {
-			LOGGER.debug("Settings model could not be cloned with given "
-					+ "settings!");
+			LOGGER.debug("Settings model could not be cloned with given " + "settings!");
 		} finally {
 			m_fvs1.replaceListItems(flowVars.values(), flowVar);
 		}

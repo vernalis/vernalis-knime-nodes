@@ -29,7 +29,6 @@ import com.vernalis.knime.mmp.FragmentationTypes;
 import com.vernalis.knime.mmp.MMPConstants;
 import com.vernalis.knime.mmp.MolFormats;
 
-
 /**
  * The node dialog pane for the maximum cuts node
  * 
@@ -43,12 +42,10 @@ public class MmpMaxCutsNodeDialog extends DefaultNodeSettingsPane {
 	/**
 	 * Constructor for the node dialog pane
 	 */
-	@SuppressWarnings("unchecked")
 	public MmpMaxCutsNodeDialog() {
 		super();
-		addDialogComponent(new DialogComponentColumnNameSelection(
-				createMolColumnSettingsModel(), "Select Molecule column", 0,
-				MolFormats.m_RDKitmolFormats.toArray(new Class[0])));
+		addDialogComponent(new DialogComponentColumnNameSelection(createMolColumnSettingsModel(),
+				"Select Molecule column", 0, MolFormats.m_RDKitmolFormats.toArray(new Class[0])));
 
 		m_fragmentationType = createSMIRKSModel();
 		m_customRSMARTS = createCustomSMARTSModel();
@@ -56,29 +53,25 @@ public class MmpMaxCutsNodeDialog extends DefaultNodeSettingsPane {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				m_customRSMARTS.setEnabled(FragmentationTypes
-						.valueOf(m_fragmentationType.getStringValue()) == FragmentationTypes.USER_DEFINED);
+				m_customRSMARTS.setEnabled(FragmentationTypes.valueOf(
+						m_fragmentationType.getStringValue()) == FragmentationTypes.USER_DEFINED);
 			}
 		});
 
-		m_customRSMARTS
-				.setEnabled(FragmentationTypes.valueOf(m_fragmentationType
-						.getStringValue()) == FragmentationTypes.USER_DEFINED);
+		m_customRSMARTS.setEnabled(FragmentationTypes
+				.valueOf(m_fragmentationType.getStringValue()) == FragmentationTypes.USER_DEFINED);
 
 		createNewGroup("Select the fragmentation type");
-		addDialogComponent(new DialogComponentButtonGroup(m_fragmentationType,
-				null, true, FragmentationTypes.values()));
-		addDialogComponent(new DialogComponentString(m_customRSMARTS,
-				"User rSMARTS:"));
+		addDialogComponent(new DialogComponentButtonGroup(m_fragmentationType, null, true,
+				FragmentationTypes.values()));
+		addDialogComponent(new DialogComponentString(m_customRSMARTS, "User rSMARTS:"));
 		closeCurrentGroup();
 
-		addDialogComponent(new DialogComponentBoolean(
-				createAllowTwoCutsToBondValueModel(),
+		addDialogComponent(new DialogComponentBoolean(createAllowTwoCutsToBondValueModel(),
 				"Allow 2 cuts along single bond giving a single bond as 'value'?"));
 
 		m_AddHs = createAddHModel();
-		addDialogComponent(new DialogComponentBoolean(m_AddHs,
-				"Add H's for n=1?"));
+		addDialogComponent(new DialogComponentBoolean(m_AddHs, "Add H's for n=1?"));
 	}
 
 	/*

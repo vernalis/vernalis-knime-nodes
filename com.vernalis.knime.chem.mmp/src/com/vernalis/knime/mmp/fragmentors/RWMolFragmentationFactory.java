@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -691,9 +692,12 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 				svg = svg.replaceAll("(<(svg:)?path .*?stroke-width:[\\d]+px;stroke-linecap:).*?;",
 						"$1round;");
 				// Apply transparency
+				// Locale.ROOT keeps '.' as decimal as required by SVG standard
+				// - see
+				// https://forum.knime.com/t/mmp-molecule-fragment-node-output-svg-cells-and-system-locale/10315
 				svg = svg.replaceAll(
 						"(<(svg:)?path .*?stroke-width:[013456789][\\d]*px;.*?stroke-opacity:)1",
-						"$1" + String.format("%.2f", alpha));
+						"$1" + String.format(Locale.ROOT, "%.2f", alpha));
 			}
 		} catch (ConformerException e) {
 			throw new ToolkitException(e.message(), e);
@@ -878,7 +882,10 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 						"$1round;");
 				// Lazy qualifier before <svg:path gets us first matching which
 				// is in the highlights as they come before the bonds
-				String radius = String.format("%.4f",
+				// Locale.ROOT keeps '.' as decimal as required by SVG standard
+				// - see
+				// https://forum.knime.com/t/mmp-molecule-fragment-node-output-svg-cells-and-system-locale/10315
+				String radius = String.format(Locale.ROOT, "%.4f",
 						BREAK_ATOM_END_RADIUS_SCALE * Integer.parseInt(svg.replaceAll(
 								"(?s).*?<svg:path.*?;stroke:#(?!000000)[0-9A-F]{6};stroke-width:(\\d+)px;.*",
 								"$1")) / 2.0);

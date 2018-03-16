@@ -24,8 +24,9 @@ import org.knime.core.node.NodeView;
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
-public class ParallelRdkitMMPFragment3NodeFactory extends
-		NodeFactory<ParallelRdkitMMPFragment3NodeModel> {
+@Deprecated
+public class ParallelRdkitMMPFragment3NodeFactory
+		extends NodeFactory<ParallelRdkitMMPFragment3NodeModel> {
 
 	/*
 	 * (non-Javadoc)
@@ -54,8 +55,8 @@ public class ParallelRdkitMMPFragment3NodeFactory extends
 	 * org.knime.core.node.NodeModel)
 	 */
 	@Override
-	public NodeView<ParallelRdkitMMPFragment3NodeModel> createNodeView(
-			int viewIndex, ParallelRdkitMMPFragment3NodeModel nodeModel) {
+	public NodeView<ParallelRdkitMMPFragment3NodeModel> createNodeView(int viewIndex,
+			ParallelRdkitMMPFragment3NodeModel nodeModel) {
 		return null;
 	}
 

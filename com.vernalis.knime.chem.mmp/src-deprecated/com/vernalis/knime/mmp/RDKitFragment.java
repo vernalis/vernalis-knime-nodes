@@ -35,7 +35,7 @@ import org.knime.core.node.NodeModel;
  * preferred entry point is
  * {@link #doRDKitFragmentation(ROMol, String, int, String, boolean, ExecutionContext)}
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @author "Stephen Roughley knime@vernalis.com"
  * @deprecated All methods are inefficient and replaced with methods in the
  *             {@link RDKitFragmentationUtils} class
  */
@@ -67,22 +67,20 @@ public class RDKitFragment {
 	 *         {@link TreeSet} of {@link FragmentValue}s
 	 * @throws CanceledExecutionException
 	 */
-	public static HashMap<FragmentKey, TreeSet<FragmentValue>> doRDKitFragmentation(
-			ROMol roMol, String ID, int numFragmentations, String fragSMIRKS,
-			boolean trackCutConnectivity, ExecutionContext exec)
-			throws CanceledExecutionException {
+	public static HashMap<FragmentKey, TreeSet<FragmentValue>> doRDKitFragmentation(ROMol roMol,
+			String ID, int numFragmentations, String fragSMIRKS, boolean trackCutConnectivity,
+			ExecutionContext exec) throws CanceledExecutionException {
 
 		// Load up the ROMol and ID into the relevant formats
-		HashMap<FragmentKey, TreeSet<FragmentValue>> tmp = new HashMap<FragmentKey, TreeSet<FragmentValue>>();
+		HashMap<FragmentKey, TreeSet<FragmentValue>> tmp = new HashMap<>();
 		FragmentKey key = new FragmentKey();
 		FragmentValue val = new FragmentValue(roMol.MolToSmiles(true), ID);
-		TreeSet<FragmentValue> valSet = new TreeSet<FragmentValue>();
+		TreeSet<FragmentValue> valSet = new TreeSet<>();
 		valSet.add(val);
 		tmp.put(key, valSet);
 
 		// Send to the recursive method
-		return doRDKitFragmentation(tmp, numFragmentations, fragSMIRKS,
-				trackCutConnectivity, exec);
+		return doRDKitFragmentation(tmp, numFragmentations, fragSMIRKS, trackCutConnectivity, exec);
 
 	}
 
@@ -113,28 +111,25 @@ public class RDKitFragment {
 	 *      for preferred entry point
 	 */
 	public static HashMap<FragmentKey, TreeSet<FragmentValue>> doRDKitFragmentation(
-			HashMap<FragmentKey, TreeSet<FragmentValue>> fragments,
-			int numFragmentations, String fragSMIRKS,
-			boolean trackCutConnectivity, ExecutionContext exec)
+			HashMap<FragmentKey, TreeSet<FragmentValue>> fragments, int numFragmentations,
+			String fragSMIRKS, boolean trackCutConnectivity, ExecutionContext exec)
 			throws CanceledExecutionException {
 		if (numFragmentations == 0) {
 			return fragments;
 		} else {
-			HashMap<FragmentKey, TreeSet<FragmentValue>> tmp = new HashMap<FragmentKey, TreeSet<FragmentValue>>();
+			HashMap<FragmentKey, TreeSet<FragmentValue>> tmp = new HashMap<>();
 			// Fragment
-			for (Entry<FragmentKey, TreeSet<FragmentValue>> ent : fragments
-					.entrySet()) {
+			for (Entry<FragmentKey, TreeSet<FragmentValue>> ent : fragments.entrySet()) {
 				// We only fragment the values
 				for (FragmentValue fragVal : ent.getValue()) {
 					ROMol roMol = fragVal.getROMol();
 
-					HashMap<FragmentKey, TreeSet<FragmentValue>> frags = runRDKitFragment(
-							roMol, fragVal.getID(), fragSMIRKS,
-							numFragmentations, trackCutConnectivity, exec);
+					HashMap<FragmentKey, TreeSet<FragmentValue>> frags =
+							runRDKitFragment(roMol, fragVal.getID(), fragSMIRKS, numFragmentations,
+									trackCutConnectivity, exec);
 
 					// Now we need to add the result to the retVal
-					for (Entry<FragmentKey, TreeSet<FragmentValue>> ent1 : frags
-							.entrySet()) {
+					for (Entry<FragmentKey, TreeSet<FragmentValue>> ent1 : frags.entrySet()) {
 						FragmentKey newKey = new FragmentKey(ent.getKey());
 						newKey.mergeKeys(ent1.getKey());
 						if (!tmp.containsKey(newKey)) {
@@ -150,9 +145,8 @@ public class RDKitFragment {
 			}
 
 			// And supply the result to recursion
-			HashMap<FragmentKey, TreeSet<FragmentValue>> retVal = doRDKitFragmentation(
-					tmp, numFragmentations - 1, fragSMIRKS,
-					trackCutConnectivity, exec);
+			HashMap<FragmentKey, TreeSet<FragmentValue>> retVal = doRDKitFragmentation(tmp,
+					numFragmentations - 1, fragSMIRKS, trackCutConnectivity, exec);
 			return retVal;
 		}
 	}
@@ -167,24 +161,23 @@ public class RDKitFragment {
 	 * 
 	 * @see #doRDKitFragmentation(HashMap, int, String, boolean)
 	 */
-	private static HashMap<FragmentKey, TreeSet<FragmentValue>> runRDKitFragment(
-			ROMol roMol, String id, String fragSMIRKS, Integer cutIndex,
-			boolean trackCutConnectivity, ExecutionContext exec)
-			throws CanceledExecutionException {
+	private static HashMap<FragmentKey, TreeSet<FragmentValue>> runRDKitFragment(ROMol roMol,
+			String id, String fragSMIRKS, Integer cutIndex, boolean trackCutConnectivity,
+			ExecutionContext exec) throws CanceledExecutionException {
 
 		ChemicalReaction rxn;
 		if (trackCutConnectivity) {
 			// Atom index labels, e.g. [*:1] are lost, but isotopic labels are
 			// preserved, e.g. [1*] during RDKit reaction
-			rxn = ChemicalReaction.ReactionFromSmarts(fragSMIRKS.replace("[*]",
-					"[" + cutIndex.intValue() + "*]"));
+			rxn = ChemicalReaction.ReactionFromSmarts(
+					fragSMIRKS.replace("[*]", "[" + cutIndex.intValue() + "*]"));
 		} else {
 			rxn = ChemicalReaction.ReactionFromSmarts(fragSMIRKS);
 		}
 		ROMol_Vect rxnSubstrate = new ROMol_Vect(1);
 		ROMol_Vect_Vect rxnProds = null;
 		rxnSubstrate.set(0, roMol);
-		HashMap<FragmentKey, TreeSet<FragmentValue>> retVal = new HashMap<FragmentKey, TreeSet<FragmentValue>>();
+		HashMap<FragmentKey, TreeSet<FragmentValue>> retVal = new HashMap<>();
 
 		try {
 			rxnProds = rxn.runReactants(rxnSubstrate);
@@ -238,34 +231,29 @@ public class RDKitFragment {
 	 *            If true, then the number of changing heavy atoms are added for
 	 *            each fragment
 	 * @param showReverseTransforms
-	 *            If
-	 *            <code>true<code>, then the output includes transformations in both directions
+	 *            If <code>true<code>, then the output includes transformations
+	 *            in both directions
 	 * @return An {@link ArrayList} of {@link DataCell}s for each new transform
 	 *         to be added derived from the {@link TreeSet} of
 	 *         {@link FragmentValue}s
 	 * @see #getTransforms(TreeSet, FragmentKey, int, boolean, boolean, boolean,
 	 *      boolean)
 	 */
-	public static ArrayList<DataCell[]> getTransforms(
-			TreeSet<FragmentValue> fragmentValues, int numNewCols,
-			boolean removeExplicitHs, boolean includeNumChangingHAs,
+	public static ArrayList<DataCell[]> getTransforms(TreeSet<FragmentValue> fragmentValues,
+			int numNewCols, boolean removeExplicitHs, boolean includeNumChangingHAs,
 			boolean showReverseTransforms) {
 
-		ArrayList<DataCell[]> retVal = new ArrayList<DataCell[]>();
-		TreeSet<FragmentValue> orderedFrags = new TreeSet<FragmentValue>(
-				fragmentValues);
+		ArrayList<DataCell[]> retVal = new ArrayList<>();
+		TreeSet<FragmentValue> orderedFrags = new TreeSet<>(fragmentValues);
 		for (FragmentValue leftFrag : orderedFrags) {
-			for (FragmentValue rightFrag : orderedFrags
-					.tailSet(leftFrag, false)) {
+			for (FragmentValue rightFrag : orderedFrags.tailSet(leftFrag, false)) {
 				if (!leftFrag.getID().equals(rightFrag.getID())) {
-					DataCell[] transform = buildSimpleTransform(numNewCols,
-							removeExplicitHs, includeNumChangingHAs, leftFrag,
-							rightFrag);
+					DataCell[] transform = buildSimpleTransform(numNewCols, removeExplicitHs,
+							includeNumChangingHAs, leftFrag, rightFrag);
 					retVal.add(transform);
 					if (showReverseTransforms) {
-						transform = buildSimpleTransform(numNewCols,
-								removeExplicitHs, includeNumChangingHAs,
-								rightFrag, leftFrag);
+						transform = buildSimpleTransform(numNewCols, removeExplicitHs,
+								includeNumChangingHAs, rightFrag, leftFrag);
 						retVal.add(transform);
 					}
 				}
@@ -295,13 +283,12 @@ public class RDKitFragment {
 	 *            The {@link FragmentValue} for the 'Right' molecule
 	 * @return The {@link DataCell}s for the new row representing the tranform
 	 */
-	private static DataCell[] buildSimpleTransform(int numNewCols,
-			boolean removeExplicitHs, boolean includeNumChangingHAs,
-			FragmentValue leftFrag, FragmentValue rightFrag) {
+	private static DataCell[] buildSimpleTransform(int numNewCols, boolean removeExplicitHs,
+			boolean includeNumChangingHAs, FragmentValue leftFrag, FragmentValue rightFrag) {
 		DataCell[] retVal = new DataCell[numNewCols];
 		int i = 0;
-		retVal[i++] = new SmilesCell(leftFrag.getSMILES(removeExplicitHs)
-				+ ">>" + rightFrag.getSMILES(removeExplicitHs));
+		retVal[i++] = new SmilesCell(leftFrag.getSMILES(removeExplicitHs) + ">>"
+				+ rightFrag.getSMILES(removeExplicitHs));
 		retVal[i++] = leftFrag.getIDCell();
 		retVal[i++] = rightFrag.getIDCell();
 		retVal[i++] = leftFrag.getSMILESCell(removeExplicitHs);
@@ -339,36 +326,31 @@ public class RDKitFragment {
 	 *            If true, then the rations of changing / unchanging heavy atoms
 	 *            are added for each transformation
 	 * @param showReverseTransforms
-	 *            If
-	 *            <code>true<code>, then the output includes transformations in both directions
+	 *            If <code>true<code>, then the output includes transformations
+	 *            in both directions
 	 * @return An {@link ArrayList} of {@link DataCell}s for each new transform
 	 *         to be added derived from the {@link TreeSet} of
 	 *         {@link FragmentValue}s
 	 * @see #getTransforms(TreeSet, int, boolean, boolean)
 	 */
-	public static ArrayList<DataCell[]> getTransforms(
-			TreeSet<FragmentValue> fragmentValues, FragmentKey fragmentKey,
-			int numNewCols, boolean removeExplicitHs, boolean includeKeySMILES,
-			boolean includeNumChangingHAs, boolean includeRatioHAs,
+	public static ArrayList<DataCell[]> getTransforms(TreeSet<FragmentValue> fragmentValues,
+			FragmentKey fragmentKey, int numNewCols, boolean removeExplicitHs,
+			boolean includeKeySMILES, boolean includeNumChangingHAs, boolean includeRatioHAs,
 			boolean showReverseTransforms) {
 
-		ArrayList<DataCell[]> retVal = new ArrayList<DataCell[]>();
-		TreeSet<FragmentValue> orderedFrags = new TreeSet<FragmentValue>(
-				fragmentValues);
+		ArrayList<DataCell[]> retVal = new ArrayList<>();
+		TreeSet<FragmentValue> orderedFrags = new TreeSet<>(fragmentValues);
 		for (FragmentValue leftFrag : orderedFrags) {
-			for (FragmentValue rightFrag : orderedFrags
-					.tailSet(leftFrag, false)) {
+			for (FragmentValue rightFrag : orderedFrags.tailSet(leftFrag, false)) {
 				if (!leftFrag.getID().equals(rightFrag.getID())) {
-					DataCell[] transform = buildTransform(fragmentKey,
-							removeExplicitHs, includeKeySMILES,
-							includeNumChangingHAs, includeRatioHAs, leftFrag,
+					DataCell[] transform = buildTransform(fragmentKey, removeExplicitHs,
+							includeKeySMILES, includeNumChangingHAs, includeRatioHAs, leftFrag,
 							rightFrag, numNewCols);
 					retVal.add(transform);
 					if (showReverseTransforms) {
-						transform = buildTransform(fragmentKey,
-								removeExplicitHs, includeKeySMILES,
-								includeNumChangingHAs, includeRatioHAs,
-								rightFrag, leftFrag, numNewCols);
+						transform = buildTransform(fragmentKey, removeExplicitHs, includeKeySMILES,
+								includeNumChangingHAs, includeRatioHAs, rightFrag, leftFrag,
+								numNewCols);
 						retVal.add(transform);
 					}
 				}
@@ -399,19 +381,18 @@ public class RDKitFragment {
 	 *            The {@link FragmentValue} for the 'Right' molecule
 	 * @param numNewCols
 	 *            The number of new columns - supplied so only calculated once
-	 *            during the {@link NodeModel} <code>#configure</code> method. * @return
-	 *            The {@link DataCell}s for the new row representing the
-	 *            tranform
+	 *            during the {@link NodeModel} <code>#configure</code> method.
+	 *            * @return The {@link DataCell}s for the new row representing
+	 *            the tranform
 	 */
-	private static DataCell[] buildTransform(FragmentKey fragmentKey,
-			boolean removeExplicitHs, boolean includeKeySMILES,
-			boolean includeNumChangingHAs, boolean includeRatioHAs,
+	private static DataCell[] buildTransform(FragmentKey fragmentKey, boolean removeExplicitHs,
+			boolean includeKeySMILES, boolean includeNumChangingHAs, boolean includeRatioHAs,
 			FragmentValue leftFrag, FragmentValue rightFrag, int numNewCols) {
 		DataCell[] retVal = new DataCell[numNewCols];
 
 		int i = 0;
-		retVal[i++] = new SmilesCell(leftFrag.getSMILES(removeExplicitHs)
-				+ ">>" + rightFrag.getSMILES(removeExplicitHs));
+		retVal[i++] = new SmilesCell(leftFrag.getSMILES(removeExplicitHs) + ">>"
+				+ rightFrag.getSMILES(removeExplicitHs));
 		retVal[i++] = leftFrag.getIDCell();
 		retVal[i++] = rightFrag.getIDCell();
 		retVal[i++] = leftFrag.getSMILESCell(removeExplicitHs);
@@ -424,10 +405,8 @@ public class RDKitFragment {
 			retVal[i++] = rightFrag.getNumberChangingAtomsCell();
 		}
 		if (includeRatioHAs) {
-			retVal[i++] = fragmentKey
-					.getConstantToVaryingAtomRatioCell(leftFrag);
-			retVal[i++] = fragmentKey
-					.getConstantToVaryingAtomRatioCell(rightFrag);
+			retVal[i++] = fragmentKey.getConstantToVaryingAtomRatioCell(leftFrag);
+			retVal[i++] = fragmentKey.getConstantToVaryingAtomRatioCell(rightFrag);
 		}
 		return retVal;
 	}
@@ -446,27 +425,26 @@ public class RDKitFragment {
 	 * @return The filtered list of fragments
 	 */
 	public static HashMap<FragmentKey, TreeSet<FragmentValue>> filterFragments(
-			HashMap<FragmentKey, TreeSet<FragmentValue>> fragments,
-			Integer maxNumVarAtoms, Double minCnstToVarAtmRatio) {
+			HashMap<FragmentKey, TreeSet<FragmentValue>> fragments, Integer maxNumVarAtoms,
+			Double minCnstToVarAtmRatio) {
 
 		if (maxNumVarAtoms == null && minCnstToVarAtmRatio == null) {
 			// No filtering applied
 			return fragments;
 		}
 
-		HashMap<FragmentKey, TreeSet<FragmentValue>> retVal = new HashMap<FragmentKey, TreeSet<FragmentValue>>();
-		for (Entry<FragmentKey, TreeSet<FragmentValue>> ent : fragments
-				.entrySet()) {
-			TreeSet<FragmentValue> keptVals = new TreeSet<FragmentValue>();
+		HashMap<FragmentKey, TreeSet<FragmentValue>> retVal = new HashMap<>();
+		for (Entry<FragmentKey, TreeSet<FragmentValue>> ent : fragments.entrySet()) {
+			TreeSet<FragmentValue> keptVals = new TreeSet<>();
 			for (FragmentValue val : ent.getValue()) {
 				boolean keepVal = true;
-				if (maxNumVarAtoms != null
-						&& val.getNumberChangingAtoms() > maxNumVarAtoms) {
+				if (maxNumVarAtoms != null && val.getNumberChangingAtoms() > maxNumVarAtoms) {
 					keepVal = false;
 				}
 				if (minCnstToVarAtmRatio != null && keepVal) {
 					// Only check if the val is still 'in'
-					keepVal = ent.getKey().getConstantToVaryingAtomRatio(val) >= minCnstToVarAtmRatio;
+					keepVal =
+							ent.getKey().getConstantToVaryingAtomRatio(val) >= minCnstToVarAtmRatio;
 				}
 				if (keepVal) {
 					keptVals.add(val);
@@ -490,10 +468,10 @@ public class RDKitFragment {
 			ROMol roMol, String ID, int numFragmentations, ChemicalReaction rxn) {
 
 		// Load up the ROMol and ID into the relevant formats
-		HashMap<FragmentKey, TreeSet<FragmentValue>> tmp = new HashMap<FragmentKey, TreeSet<FragmentValue>>();
+		HashMap<FragmentKey, TreeSet<FragmentValue>> tmp = new HashMap<>();
 		FragmentKey key = new FragmentKey();
 		FragmentValue val = new FragmentValue(roMol.MolToSmiles(true), ID);
-		TreeSet<FragmentValue> valSet = new TreeSet<FragmentValue>();
+		TreeSet<FragmentValue> valSet = new TreeSet<>();
 		valSet.add(val);
 		tmp.put(key, valSet);
 
@@ -510,25 +488,23 @@ public class RDKitFragment {
 	 */
 	@Deprecated
 	public static HashMap<FragmentKey, TreeSet<FragmentValue>> doRDKitFragmentationFromRxn(
-			HashMap<FragmentKey, TreeSet<FragmentValue>> fragments,
-			int numFragmentations, ChemicalReaction rxn) {
+			HashMap<FragmentKey, TreeSet<FragmentValue>> fragments, int numFragmentations,
+			ChemicalReaction rxn) {
 		if (numFragmentations == 0) {
 			return fragments;
 		} else {
-			HashMap<FragmentKey, TreeSet<FragmentValue>> tmp = new HashMap<FragmentKey, TreeSet<FragmentValue>>();
+			HashMap<FragmentKey, TreeSet<FragmentValue>> tmp = new HashMap<>();
 			// Fragment
-			for (Entry<FragmentKey, TreeSet<FragmentValue>> ent : fragments
-					.entrySet()) {
+			for (Entry<FragmentKey, TreeSet<FragmentValue>> ent : fragments.entrySet()) {
 				// We only fragment the values
 				for (FragmentValue fragVal : ent.getValue()) {
 					ROMol roMol = fragVal.getROMol();
 
-					HashMap<FragmentKey, TreeSet<FragmentValue>> frags = runRDKitFragmentFromRxn(
-							roMol, fragVal.getID(), rxn, numFragmentations);
+					HashMap<FragmentKey, TreeSet<FragmentValue>> frags =
+							runRDKitFragmentFromRxn(roMol, fragVal.getID(), rxn, numFragmentations);
 
 					// Now we need to add the result to the retVal
-					for (Entry<FragmentKey, TreeSet<FragmentValue>> ent1 : frags
-							.entrySet()) {
+					for (Entry<FragmentKey, TreeSet<FragmentValue>> ent1 : frags.entrySet()) {
 						FragmentKey newKey = new FragmentKey(ent.getKey());
 						newKey.mergeKeys(ent1.getKey());
 						if (!tmp.containsKey(newKey)) {
@@ -540,8 +516,8 @@ public class RDKitFragment {
 			}
 
 			// And supply the result to recursion
-			HashMap<FragmentKey, TreeSet<FragmentValue>> retVal = doRDKitFragmentationFromRxn(
-					tmp, numFragmentations - 1, rxn);
+			HashMap<FragmentKey, TreeSet<FragmentValue>> retVal =
+					doRDKitFragmentationFromRxn(tmp, numFragmentations - 1, rxn);
 			return retVal;
 		}
 	}
@@ -553,13 +529,13 @@ public class RDKitFragment {
 	 * @see #runRDKitFragment(ROMol, String, String, Integer, boolean)
 	 */
 	@Deprecated
-	public static HashMap<FragmentKey, TreeSet<FragmentValue>> runRDKitFragmentFromRxn(
-			ROMol roMol, String id, ChemicalReaction rxn, Integer cutIndex) {
+	public static HashMap<FragmentKey, TreeSet<FragmentValue>> runRDKitFragmentFromRxn(ROMol roMol,
+			String id, ChemicalReaction rxn, Integer cutIndex) {
 
 		ROMol_Vect rxnSubstrate = new ROMol_Vect(1);
 		ROMol_Vect_Vect rxnProds = null;
 		rxnSubstrate.set(0, roMol);
-		HashMap<FragmentKey, TreeSet<FragmentValue>> retVal = new HashMap<FragmentKey, TreeSet<FragmentValue>>();
+		HashMap<FragmentKey, TreeSet<FragmentValue>> retVal = new HashMap<>();
 
 		try {
 			// TODO: runReactants Loses mapping indices present on starting

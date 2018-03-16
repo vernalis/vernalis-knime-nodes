@@ -35,16 +35,15 @@ import org.rdkit.knime.types.RDKitMolCellFactory;
 public abstract class MolFormats {
 	/** The acceptable molecule input formats */
 	@SuppressWarnings("unchecked")
-	public static final ArrayList<Class<? extends DataValue>> m_molFormats = new ArrayList<Class<? extends DataValue>>(
-			(Collection<? extends Class<? extends DataValue>>) Arrays
-					.asList(new Class[] { SmilesValue.class, SdfValue.class,
-							MolValue.class }));
+	public static final ArrayList<Class<? extends DataValue>> m_molFormats =
+			new ArrayList<>((Collection<? extends Class<? extends DataValue>>) Arrays
+					.asList(new Class[] { SmilesValue.class, SdfValue.class, MolValue.class }));
 
 	@SuppressWarnings("unchecked")
-	public static final ArrayList<Class<? extends DataValue>> m_RDKitmolFormats = new ArrayList<Class<? extends DataValue>>(
-			(Collection<? extends Class<? extends DataValue>>) Arrays
-					.asList(new Class[] { SmilesValue.class, SdfValue.class,
-							MolValue.class, RDKitMolCellFactory.class }));
+	public static final ArrayList<Class<? extends DataValue>> m_RDKitmolFormats =
+			new ArrayList<>((Collection<? extends Class<? extends DataValue>>) Arrays
+					.asList(new Class[] { SmilesValue.class, SdfValue.class, MolValue.class,
+							RDKitMolCellFactory.class }));
 
 	/**
 	 * Check whether the column type is compatible with any of the acceptable

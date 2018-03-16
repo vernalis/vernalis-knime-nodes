@@ -31,9 +31,9 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 
 import com.vernalis.exceptions.RowExecutionException;
-import com.vernalis.knime.mmp.RDKitBondIdentifier;
 import com.vernalis.knime.mmp.CombinationFinder;
 import com.vernalis.knime.mmp.MulticomponentSmilesFragmentParser;
+import com.vernalis.knime.mmp.RDKitBondIdentifier;
 import com.vernalis.knime.mmp.RDKitFragmentationUtils;
 import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationFactory;
 import com.vernalis.knime.mmp.fragmentors.ROMolFragmentFactory;
@@ -46,6 +46,7 @@ import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
+@Deprecated
 public class ParallelRdkitMMPFragment3NodeModel extends AbstractParallelRdkitMMPFragment3NodeModel {
 
 	/**
@@ -227,7 +228,8 @@ public class ParallelRdkitMMPFragment3NodeModel extends AbstractParallelRdkitMMP
 
 		// Now generate the combinations of bonds to cut, removing higher
 		// graphs of invalid triplets where appropriate
-		Set<Set<RDKitBondIdentifier>> bondCombos = generateCuttableBondCombos(roMol, bondMatch, numCuts);
+		Set<Set<RDKitBondIdentifier>> bondCombos =
+				generateCuttableBondCombos(roMol, bondMatch, numCuts);
 
 		/*
 		 * Now actually do some bond breaking

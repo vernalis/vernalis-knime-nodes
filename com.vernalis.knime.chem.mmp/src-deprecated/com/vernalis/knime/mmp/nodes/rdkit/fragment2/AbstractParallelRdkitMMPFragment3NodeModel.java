@@ -14,29 +14,6 @@
  *******************************************************************************/
 package com.vernalis.knime.mmp.nodes.rdkit.fragment2;
 
-import static com.vernalis.knime.mmp.MolFormats.isColTypeRDKitCompatible;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createAddFailReasonModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createAddHModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createAllowTwoCutsToBondValueModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createApFingerprintsModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createCustomSMARTSModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createCutsModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createFpLengthModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createFpUseBondTypesModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createFpUseChiralityModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createHasHARatioFilterModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createHasMaxChangingAtomsModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createIDColumnSettingsModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createMaxChangingAtomsModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createMolColumnSettingsModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createMorganRadiusModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createOutputChangingHACountsModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createOutputHARatiosModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createProchiralModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createRatioModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createSMIRKSModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createStripHModel;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -91,12 +68,12 @@ import org.knime.core.util.MultiThreadWorker;
 import org.rdkit.knime.types.RDKitMolValue;
 
 import com.vernalis.exceptions.RowExecutionException;
-import com.vernalis.knime.mmp.RDKitBondIdentifier;
 import com.vernalis.knime.mmp.FragmentKey2;
 import com.vernalis.knime.mmp.FragmentationTypes;
 import com.vernalis.knime.mmp.Leaf;
 import com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin;
 import com.vernalis.knime.mmp.MulticomponentSmilesFragmentParser;
+import com.vernalis.knime.mmp.RDKitBondIdentifier;
 import com.vernalis.knime.mmp.RDKitFragmentationUtils;
 import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationException;
 import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationFactory;
@@ -105,12 +82,36 @@ import com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage;
 import com.vernalis.knime.parallel.MultiTableParallelResult;
 import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
 
+import static com.vernalis.knime.mmp.MolFormats.isColTypeRDKitCompatible;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createAddFailReasonModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createAddHModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createAllowTwoCutsToBondValueModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createApFingerprintsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createCustomSMARTSModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createCutsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createFpLengthModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createFpUseBondTypesModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createFpUseChiralityModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createHasHARatioFilterModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createHasMaxChangingAtomsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createIDColumnSettingsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createMaxChangingAtomsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createMolColumnSettingsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createMorganRadiusModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createOutputChangingHACountsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createOutputHARatiosModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createProchiralModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createRatioModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createSMIRKSModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRdkitMMPFragment3NodeDialog.createStripHModel;
+
 /**
  * The {@link NodeModel} implementation for the MMP Molecule Fragment node
  * 
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
+@Deprecated
 public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeModel {
 
 	/** The node logger instance */
@@ -124,7 +125,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	protected final SettingsModelString m_fragSMIRKS = createSMIRKSModel();
 	protected final SettingsModelString m_customSmarts = createCustomSMARTSModel();
 	protected final SettingsModelIntegerBounded m_numCuts = createCutsModel();
-	protected final SettingsModelBoolean m_allowTwoCutsToBondValue = createAllowTwoCutsToBondValueModel();
+	protected final SettingsModelBoolean m_allowTwoCutsToBondValue =
+			createAllowTwoCutsToBondValueModel();
 	protected final SettingsModelBoolean m_AddHs = createAddHModel();
 	protected final SettingsModelBoolean m_hasChangingAtoms = createHasMaxChangingAtomsModel();
 	protected final SettingsModelBoolean m_hasHARatioFilter = createHasHARatioFilterModel();
@@ -191,8 +193,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 			public void propertyChange(PropertyChangeEvent event) {
 
 				// Re-load the settings
-				verboseLogging = prefStore
-						.getBoolean(MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING);
+				verboseLogging =
+						prefStore.getBoolean(MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING);
 				queueSize = MatchedPairPreferencePage.getQueueSize();
 				numThreads = MatchedPairPreferencePage.getThreadsCount();
 
@@ -283,8 +285,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 				throw new InvalidSettingsException("A reaction SMARTS string must be provided "
 						+ "for user-defined fragmentation patterns");
 			}
-			String rSMARTSCheck = RDKitFragmentationUtils
-					.validateReactionSmarts(m_customSmarts.getStringValue());
+			String rSMARTSCheck =
+					RDKitFragmentationUtils.validateReactionSmarts(m_customSmarts.getStringValue());
 			if (rSMARTSCheck != null) {
 				m_Logger.error("Error parsing rSMARTS: " + rSMARTSCheck);
 				throw new InvalidSettingsException("Error parsing rSMARTS: " + rSMARTSCheck);
@@ -333,8 +335,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 			specs[i++] = createColSpec("Changing Heavy Atoms", IntCell.TYPE);
 		}
 		if (m_outputHARatio.getBooleanValue()) {
-			specs[i++] = createColSpec("Ratio of Changing / Unchanging Heavy Atoms",
-					DoubleCell.TYPE);
+			specs[i++] =
+					createColSpec("Ratio of Changing / Unchanging Heavy Atoms", DoubleCell.TYPE);
 		}
 		if (m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue()) {
 			for (int fpIdx = 1; fpIdx <= m_numCuts.getIntValue(); fpIdx++) {
@@ -426,10 +428,10 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 				: (numCuts == 1) ? m_AddHs.getBooleanValue() : false;
 
 		// These two can both be null
-		final Integer maxNumVarAtm = (m_hasChangingAtoms.getBooleanValue())
-				? m_maxChangingAtoms.getIntValue() : null;
-		final Double minCnstToVarAtmRatio = (m_hasHARatioFilter.getBooleanValue())
-				? m_minHARatioFilter.getDoubleValue() : null;
+		final Integer maxNumVarAtm =
+				(m_hasChangingAtoms.getBooleanValue()) ? m_maxChangingAtoms.getIntValue() : null;
+		final Double minCnstToVarAtmRatio =
+				(m_hasHARatioFilter.getBooleanValue()) ? m_minHARatioFilter.getDoubleValue() : null;
 
 		final boolean stripHsAtEnd = m_stripHsAtEnd.isEnabled() && m_stripHsAtEnd.getBooleanValue();
 
@@ -438,9 +440,9 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 		m_Logger.info("Using " + numThreads + " threads and " + queueSize
 				+ " queue items to parallel process...");
 
-		MultiThreadWorker<DataRow, MultiTableParallelResult> processor = getMultithreadWorker(exec,
-				molIdx, idIdx, numRows, dc_0, dc_1, bondMatch, numCuts, addHs, maxNumVarAtm,
-				minCnstToVarAtmRatio, stripHsAtEnd);
+		MultiThreadWorker<DataRow, MultiTableParallelResult> processor =
+				getMultithreadWorker(exec, molIdx, idIdx, numRows, dc_0, dc_1, bondMatch, numCuts,
+						addHs, maxNumVarAtm, minCnstToVarAtmRatio, stripHsAtEnd);
 
 		try {
 			processor.run(table);
@@ -528,8 +530,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 							if (tblId > 0 && numRows == 1) {
 								dc_1.addRowToTable(row);
 							} else {
-								DataRow row2 = new DefaultRow(new RowKey(inKey + "_" + subIdx++),
-										row);
+								DataRow row2 =
+										new DefaultRow(new RowKey(inKey + "_" + subIdx++), row);
 								dc_0.addRowToTable(row2);
 
 							}
@@ -704,8 +706,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 * is added to the fragment output table.
 	 * 
 	 * @param bondCombos
-	 *            A {@link Set} of {@link Set}s of {@link RDKitBondIdentifier}. Each
-	 *            inner set is a combination of matching bonds to cut.
+	 *            A {@link Set} of {@link Set}s of {@link RDKitBondIdentifier}.
+	 *            Each inner set is a combination of matching bonds to cut.
 	 * @param prochiralAsChiral
 	 *            Should prochiral centres be assigned chirality if there are no
 	 *            known or unknown centres?
@@ -790,8 +792,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 * is added to the fragment output table.
 	 * 
 	 * @param bonds
-	 *            A {@link Set} of {@link Set}s of {@link RDKitBondIdentifier}. Each
-	 *            inner set is a combination of matching bonds to cut.
+	 *            A {@link Set} of {@link Set}s of {@link RDKitBondIdentifier}.
+	 *            Each inner set is a combination of matching bonds to cut.
 	 * @param prochiralAsChiral
 	 *            Should prochiral centres be assigned chirality if there are no
 	 *            known or unknown centres?
@@ -979,8 +981,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 			cells[colIdx++] = smiParser.getValue().getNumberChangingAtomsCell();
 		}
 		if (outputHARatio) {
-			cells[colIdx++] = smiParser.getKey()
-					.getConstantToVaryingAtomRatioCell(smiParser.getValue());
+			cells[colIdx++] =
+					smiParser.getKey().getConstantToVaryingAtomRatioCell(smiParser.getValue());
 		}
 		if (addFingerprints) {
 			for (int i = 0; i < smiParser.getNumCuts(); i++) {

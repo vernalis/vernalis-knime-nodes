@@ -14,13 +14,6 @@
  *******************************************************************************/
 package com.vernalis.knime.mmp.nodes.rdkit.multicut;
 
-import static com.vernalis.knime.mmp.RDKitFragment.doRDKitFragmentation;
-import static com.vernalis.knime.mmp.RDKitFragment.filterFragments;
-import static com.vernalis.knime.mmp.RDKitFragment.getTransforms;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createOutputKeyModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createShowReverseTransformsModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createShowSmartsTransformsModel;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -59,12 +52,20 @@ import com.vernalis.knime.mmp.FragmentationTypes;
 import com.vernalis.knime.mmp.RDKitUtils;
 import com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeModel;
 
+import static com.vernalis.knime.mmp.RDKitFragment.doRDKitFragmentation;
+import static com.vernalis.knime.mmp.RDKitFragment.filterFragments;
+import static com.vernalis.knime.mmp.RDKitFragment.getTransforms;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createOutputKeyModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createShowReverseTransformsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createShowSmartsTransformsModel;
+
 /**
  * {@link NodeModel} implementation for the MMP node
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @author "Stephen Roughley knime@vernalis.com"
  * 
  */
+@Deprecated
 public class RdkitMatchedPairsNodeModel extends AbstractRdkitMatchedPairsMultipleCutsNodeModel {
 
 	protected final SettingsModelBoolean m_outputKey = createOutputKeyModel();
@@ -117,16 +118,17 @@ public class RdkitMatchedPairsNodeModel extends AbstractRdkitMatchedPairsMultipl
 		boolean addHs = (numCuts == 1) ? m_AddHs.getBooleanValue() : false;
 
 		// These two can both be null
-		Integer maxNumVarAtm = (m_hasChangingAtoms.getBooleanValue())
-				? m_maxChangingAtoms.getIntValue() : null;
-		Double minCnstToVarAtmRatio = (m_hasHARatioFilter.getBooleanValue())
-				? m_minHARatioFilter.getDoubleValue() : null;
+		Integer maxNumVarAtm =
+				(m_hasChangingAtoms.getBooleanValue()) ? m_maxChangingAtoms.getIntValue() : null;
+		Double minCnstToVarAtmRatio =
+				(m_hasHARatioFilter.getBooleanValue()) ? m_minHARatioFilter.getDoubleValue() : null;
 
-		boolean trackCutConnectivity = m_trackCutConnectivity.isEnabled()
-				&& m_trackCutConnectivity.getBooleanValue();
+		boolean trackCutConnectivity =
+				m_trackCutConnectivity.isEnabled() && m_trackCutConnectivity.getBooleanValue();
 
 		// Container for the fragmentations
-		HashMap<FragmentKey, TreeSet<FragmentValue>> frags = new HashMap<FragmentKey, TreeSet<FragmentValue>>();
+		HashMap<FragmentKey, TreeSet<FragmentValue>> frags =
+				new HashMap<>();
 
 		m_Logger.info("Starting fragmentation");
 		m_Logger.info("Fragmentation SMIRKS: " + fragSMIRKS + " (" + numCuts + " cuts)");
@@ -271,8 +273,8 @@ public class RdkitMatchedPairsNodeModel extends AbstractRdkitMatchedPairsMultipl
 	private DataCell[] addReactionSmartsCell(DataCell[] cells) {
 		cells[cells.length - 1
 				- (m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue()
-						? m_numCuts.getIntValue() : 0)] = new SmartsCell(
-								RDKitUtils.convertSmirksToReactionSmarts(
+						? m_numCuts.getIntValue() : 0)] =
+								new SmartsCell(RDKitUtils.convertSmirksToReactionSmarts(
 										((SmilesValue) cells[0]).getSmilesValue()));
 		return cells;
 	}

@@ -75,8 +75,8 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 	static final String CFG_SEQUENCE = "Extract_Sequence";
 
 	// Name of the column of FASTA sequences
-	private final SettingsModelString m_FASTAcolName = new SettingsModelString(CFG_FASTA_COL_NAME,
-			null);
+	private final SettingsModelString m_FASTAcolName =
+			new SettingsModelString(CFG_FASTA_COL_NAME, null);
 
 	// Extract the Header Row? (The chain and sequence are always extracted!)
 	private final SettingsModelBoolean m_HEADER = new SettingsModelBoolean(CFG_HEADER, false);
@@ -88,8 +88,8 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 	private final SettingsModelBoolean m_Overwrite = new SettingsModelBoolean(CFG_OVERWRITE, false);
 
 	// Extract the actual sequence
-	private final SettingsModelBoolean m_ExtractSequence = new SettingsModelBoolean(CFG_SEQUENCE,
-			true);
+	private final SettingsModelBoolean m_ExtractSequence =
+			new SettingsModelBoolean(CFG_SEQUENCE, true);
 
 	/**
 	 * Constructor for the node model.
@@ -111,13 +111,13 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 		final boolean addHeader = m_HEADER.getBooleanValue();
 
 		// Create the new output table spec and a Buffered Data Container for it
-		final DataTableSpec newSpec = createTableSpec(table.getSpec(),
-				m_FASTAcolName.getStringValue(), removeFastaCol,
-				FASTAHelperFunctions_2.ColumnNames(m_FASTAType.getStringValue(), addHeader,
-						m_ExtractSequence.getBooleanValue()));
+		final DataTableSpec newSpec =
+				createTableSpec(table.getSpec(), m_FASTAcolName.getStringValue(), removeFastaCol,
+						FASTAHelperFunctions_2.ColumnNames(m_FASTAType.getStringValue(), addHeader,
+								m_ExtractSequence.getBooleanValue()));
 
-		BufferedDataTableRowOutput output = new BufferedDataTableRowOutput(
-				exec.createDataContainer(newSpec));
+		BufferedDataTableRowOutput output =
+				new BufferedDataTableRowOutput(exec.createDataContainer(newSpec));
 		RowInput input = new DataTableRowInput(table);
 
 		final int colIdx = table.getSpec().findColumnIndex(m_FASTAcolName.getStringValue());
@@ -174,9 +174,9 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 
 				// Extract the properties to be added
 
-				DataCell[] newCells = FASTAHelperFunctions_2.ColumnValues(FASTA,
-						m_FASTAType.getStringValue(), addHeader,
-						m_ExtractSequence.getBooleanValue());
+				DataCell[] newCells =
+						FASTAHelperFunctions_2.ColumnValues(FASTA, m_FASTAType.getStringValue(),
+								addHeader, m_ExtractSequence.getBooleanValue());
 
 				final DataRow newRow = createClone(newKey, row, colIdx, removeFastaCol, newCells);
 				out.push(newRow);
@@ -188,8 +188,8 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 	@Override
 	public StreamableOperator createStreamableOperator(final PartitionInfo partitionInfo,
 			final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-		final int colIdx = ((DataTableSpec) inSpecs[0])
-				.findColumnIndex(m_FASTAcolName.getStringValue());
+		final int colIdx =
+				((DataTableSpec) inSpecs[0]).findColumnIndex(m_FASTAcolName.getStringValue());
 		final boolean removeFastaCol = m_Overwrite.getBooleanValue();
 		final boolean addHeader = m_HEADER.getBooleanValue();
 
@@ -245,8 +245,8 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 
 		// now add the new cells
 		for (int i = 0, length = newCells.length; i < length; i++) {
-			newRowCells[cellIdx++] = (newCells[i] == null) ? DataType.getMissingCell()
-					: newCells[i];
+			newRowCells[cellIdx++] =
+					(newCells[i] == null) ? DataType.getMissingCell() : newCells[i];
 		}
 
 		return new DefaultRow(newKey, newRowCells);
@@ -352,7 +352,7 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 		final DataColumnSpec colSpec = spec.getColumnSpec(index);
 
 		// create a collection to put the existing columns into
-		final Collection<DataColumnSpec> specs = new LinkedList<DataColumnSpec>();
+		final Collection<DataColumnSpec> specs = new LinkedList<>();
 		final int noOfCols = spec.getNumColumns();
 		for (int i = 0; i < noOfCols; i++) {
 			final DataColumnSpec currentSpec = spec.getColumnSpec(i);

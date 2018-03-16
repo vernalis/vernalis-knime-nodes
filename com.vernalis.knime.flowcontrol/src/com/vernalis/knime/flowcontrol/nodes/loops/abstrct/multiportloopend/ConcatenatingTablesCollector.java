@@ -109,7 +109,7 @@ public class ConcatenatingTablesCollector {
 		m_tolerateChangingSpecs = tolerateChangingSpecs;
 		m_allowVaryingTypes = allowVaryingTypes;
 		m_portIndex = portIndex;
-		m_tables = new ArrayList<BufferedDataContainer>();
+		m_tables = new ArrayList<>();
 		if (optRowKeyPolicy.isPresent()) {
 			switch (optRowKeyPolicy.get()) {
 			case APPEND_SUFFIX:
@@ -364,10 +364,10 @@ public class ConcatenatingTablesCollector {
 		int colcnt0 = dataTableSpec0.getNumColumns();
 		int colcnt1 = dataTableSpec1.getNumColumns();
 
-		ArrayList<String> colNames0 = new ArrayList<String>(
-				Arrays.asList(dataTableSpec0.getColumnNames()));
-		ArrayList<String> colNames1 = new ArrayList<String>(
-				Arrays.asList(dataTableSpec1.getColumnNames()));
+		ArrayList<String> colNames0 =
+				new ArrayList<>(Arrays.asList(dataTableSpec0.getColumnNames()));
+		ArrayList<String> colNames1 =
+				new ArrayList<>(Arrays.asList(dataTableSpec1.getColumnNames()));
 
 		if (m_allowVaryingTypes) {
 			// just compare the names - they just need to be the same

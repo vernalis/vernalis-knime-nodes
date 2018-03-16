@@ -14,20 +14,6 @@
  *******************************************************************************/
 package com.vernalis.knime.mmp.nodes.frag2pair2;
 
-import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createAllowSelfTransformsModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createCheckSortedModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createFragKeyModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createFragValueModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createIDModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createIgnoreIDsModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createOutputChangingHACountsModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createOutputHARatiosModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createOutputKeyModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createShowReverseTransformsModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createShowSmartsTransformsModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createSortedKeysModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createStripHModel;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,12 +58,27 @@ import com.vernalis.knime.mmp.FragmentKey2;
 import com.vernalis.knime.mmp.FragmentValue2;
 import com.vernalis.knime.mmp.RDKitFragmentationUtils;
 
+import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createAllowSelfTransformsModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createCheckSortedModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createFragKeyModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createFragValueModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createIDModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createIgnoreIDsModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createOutputChangingHACountsModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createOutputHARatiosModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createOutputKeyModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createShowReverseTransformsModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createShowSmartsTransformsModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createSortedKeysModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair2.Frag2Pair2NodeDialog.createStripHModel;
+
 /**
  * {@link NodeModel} for the Fragment to MMP node
  * 
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
+@Deprecated
 public class Frag2Pair2NodeModel extends NodeModel {
 
 	private final SettingsModelString m_FragKeyColName = createFragKeyModel();
@@ -260,7 +261,7 @@ public class Frag2Pair2NodeModel extends NodeModel {
 		} else {
 			// We have to load the entire table into memory and then process
 			// Container for the fragmentations
-			Map<FragmentKey2, TreeSet<FragmentValue2>> frags = new HashMap<FragmentKey2, TreeSet<FragmentValue2>>();
+			Map<FragmentKey2, TreeSet<FragmentValue2>> frags = new HashMap<>();
 			// And for the fingerprints
 			Map<FragmentKey2, DataCell[]> keyFps = new HashMap<>();
 

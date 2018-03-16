@@ -18,16 +18,14 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
-
-
 /**
  * Node Factory class for the MMP prefilter node factory
  * 
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
-public class MmpPrefilterNodeFactory extends
-		NodeFactory<AbstractMatchedPairsFilterNodeModel> {
+@Deprecated
+public class MmpPrefilterNodeFactory extends NodeFactory<AbstractMatchedPairsFilterNodeModel> {
 
 	/*
 	 * (non-Javadoc)
@@ -56,8 +54,8 @@ public class MmpPrefilterNodeFactory extends
 	 * org.knime.core.node.NodeModel)
 	 */
 	@Override
-	public NodeView<AbstractMatchedPairsFilterNodeModel> createNodeView(
-			int viewIndex, AbstractMatchedPairsFilterNodeModel nodeModel) {
+	public NodeView<AbstractMatchedPairsFilterNodeModel> createNodeView(int viewIndex,
+			AbstractMatchedPairsFilterNodeModel nodeModel) {
 		return null;
 	}
 

@@ -14,20 +14,6 @@
  *******************************************************************************/
 package com.vernalis.knime.mmp.nodes.frag2pair;
 
-import static com.vernalis.knime.mmp.RDKitFragment.getTransforms;
-import static com.vernalis.knime.mmp.RDKitUtils.convertSmirksToReactionSmarts;
-import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createCheckSortedModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createFragKeyModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createFragValueModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createIDModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createOutputChangingHACountsModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createOutputHARatiosModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createOutputKeyModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createShowReverseTransformsModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createShowSmartsTransformsModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createSortedKeysModel;
-import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createStripHModel;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,12 +54,27 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import com.vernalis.knime.mmp.FragmentKey;
 import com.vernalis.knime.mmp.FragmentValue;
 
+import static com.vernalis.knime.mmp.RDKitFragment.getTransforms;
+import static com.vernalis.knime.mmp.RDKitUtils.convertSmirksToReactionSmarts;
+import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createCheckSortedModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createFragKeyModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createFragValueModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createIDModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createOutputChangingHACountsModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createOutputHARatiosModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createOutputKeyModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createShowReverseTransformsModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createShowSmartsTransformsModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createSortedKeysModel;
+import static com.vernalis.knime.mmp.nodes.frag2pair.Frag2PairNodeDialog.createStripHModel;
+
 /**
  * {@link NodeModel} for the Fragment to MMP node
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @author "Stephen Roughley knime@vernalis.com"
  * 
  */
+@Deprecated
 public class Frag2PairNodeModel extends NodeModel {
 
 	private final SettingsModelString m_FragKeyColName = createFragKeyModel();
@@ -89,8 +90,7 @@ public class Frag2PairNodeModel extends NodeModel {
 	private final SettingsModelBoolean m_includeReactionSMARTS = createShowSmartsTransformsModel();
 
 	/** The NodeLogger Instance */
-	static final NodeLogger m_logger = NodeLogger
-			.getLogger(Frag2PairNodeModel.class);
+	static final NodeLogger m_logger = NodeLogger.getLogger(Frag2PairNodeModel.class);
 
 	/** The output table spec */
 	private DataTableSpec m_spec;
@@ -110,13 +110,12 @@ public class Frag2PairNodeModel extends NodeModel {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.knime.core.node.NodeModel#execute(org.knime.core.node.BufferedDataTable
-	 * [], org.knime.core.node.ExecutionContext)
+	 * @see org.knime.core.node.NodeModel#execute(org.knime.core.node.
+	 * BufferedDataTable [], org.knime.core.node.ExecutionContext)
 	 */
 	@Override
-	protected BufferedDataTable[] execute(BufferedDataTable[] inData,
-			ExecutionContext exec) throws Exception {
+	protected BufferedDataTable[] execute(BufferedDataTable[] inData, ExecutionContext exec)
+			throws Exception {
 
 		// Do some generic stuff
 		// Buffered datacontainer
@@ -131,35 +130,30 @@ public class Frag2PairNodeModel extends NodeModel {
 
 		// Col IDxs
 		DataTableSpec inSpec = inData[0].getDataTableSpec();
-		final int keyColIdx = inSpec.findColumnIndex(m_FragKeyColName
-				.getStringValue());
-		final int valColIdx = inSpec.findColumnIndex(m_FragValColName
-				.getStringValue());
-		final int idColIdx = inSpec.findColumnIndex(m_IDColName
-				.getStringValue());
+		final int keyColIdx = inSpec.findColumnIndex(m_FragKeyColName.getStringValue());
+		final int valColIdx = inSpec.findColumnIndex(m_FragValColName.getStringValue());
+		final int idColIdx = inSpec.findColumnIndex(m_IDColName.getStringValue());
 
 		if (m_SortedFragKey.getBooleanValue()) {
 			// Load until key changes
 			double progress = 0.0;
 			int inRow = 0;
 			int outRow = 0;
-			HashSet<FragmentKey> keys = new HashSet<FragmentKey>();
+			HashSet<FragmentKey> keys = new HashSet<>();
 			FragmentKey currentKey = null;
-			TreeSet<FragmentValue> vals = new TreeSet<FragmentValue>();
+			TreeSet<FragmentValue> vals = new TreeSet<>();
 			DataCell[] fpCells = null;
 			for (final DataRow row : inData[0]) {
 				DataCell keyCell = row.getCell(keyColIdx);
 				DataCell valCell = row.getCell(valColIdx);
 				DataCell idCell = row.getCell(idColIdx);
 				inRow++;
-				if (keyCell.isMissing() || valCell.isMissing()
-						|| idCell.isMissing()) {
+				if (keyCell.isMissing() || valCell.isMissing() || idCell.isMissing()) {
 					// Skip rows with missing keys or values
 					continue;
 				}
 				String ID = ((StringValue) idCell).getStringValue();
-				FragmentKey newKey = new FragmentKey(
-						((SmilesValue) keyCell).getSmilesValue());
+				FragmentKey newKey = new FragmentKey(((SmilesValue) keyCell).getSmilesValue());
 				if (!newKey.equals(currentKey)) {
 					// We have a new key
 					if (m_CheckSortedKeys.getBooleanValue()) {
@@ -196,11 +190,8 @@ public class Frag2PairNodeModel extends NodeModel {
 								m_includeHARatio.getBooleanValue(),
 								m_showReverseTransforms.getBooleanValue());
 					} else {
-						newRows = getTransforms(
-								vals,
-								numCols,
-								m_stripHsAtEnd.isEnabled()
-										&& m_stripHsAtEnd.getBooleanValue(),
+						newRows = getTransforms(vals, numCols,
+								m_stripHsAtEnd.isEnabled() && m_stripHsAtEnd.getBooleanValue(),
 								m_includeHACount.getBooleanValue(),
 								m_showReverseTransforms.getBooleanValue());
 					}
@@ -220,13 +211,12 @@ public class Frag2PairNodeModel extends NodeModel {
 				}
 
 				// Now we need to add the current value to the list of values
-				vals.add(new FragmentValue(((SmilesValue) valCell)
-						.getSmilesValue(), ID));
+				vals.add(new FragmentValue(((SmilesValue) valCell).getSmilesValue(), ID));
 
 				exec.checkCanceled();
 				progress = inRow / numRows;
-				exec.setProgress(progress, "Processed " + inRow + " of "
-						+ numRows + ". Created " + outRow + " Matched pairs");
+				exec.setProgress(progress, "Processed " + inRow + " of " + numRows + ". Created "
+						+ outRow + " Matched pairs");
 			}
 			// After the final row we need to output the last round of MMPs
 			exec.setMessage("Adding matched molecular pairs to output");
@@ -236,18 +226,13 @@ public class Frag2PairNodeModel extends NodeModel {
 			if (m_includeUnchangingPortion.getBooleanValue()
 					|| m_includeHARatio.getBooleanValue()) {
 				// Need the overloaded method with key and value
-				newRows = getTransforms(vals, currentKey, numCols,
-						m_stripHsAtEnd.getBooleanValue(),
+				newRows = getTransforms(vals, currentKey, numCols, m_stripHsAtEnd.getBooleanValue(),
 						m_includeUnchangingPortion.getBooleanValue(),
-						m_includeHACount.getBooleanValue(),
-						m_includeHARatio.getBooleanValue(),
+						m_includeHACount.getBooleanValue(), m_includeHARatio.getBooleanValue(),
 						m_showReverseTransforms.getBooleanValue());
 			} else {
-				newRows = getTransforms(
-						vals,
-						numCols,
-						m_stripHsAtEnd.isEnabled()
-								&& m_stripHsAtEnd.getBooleanValue(),
+				newRows = getTransforms(vals, numCols,
+						m_stripHsAtEnd.isEnabled() && m_stripHsAtEnd.getBooleanValue(),
 						m_includeHACount.getBooleanValue(),
 						m_showReverseTransforms.getBooleanValue());
 			}
@@ -263,7 +248,7 @@ public class Frag2PairNodeModel extends NodeModel {
 		} else {
 			// We have to load the entire table into memory and then process
 			// Container for the fragmentations
-			HashMap<FragmentKey, TreeSet<FragmentValue>> frags = new HashMap<FragmentKey, TreeSet<FragmentValue>>();
+			HashMap<FragmentKey, TreeSet<FragmentValue>> frags = new HashMap<>();
 			// And for the fingerprints
 			HashMap<FragmentKey, DataCell[]> keyFps = new HashMap<>();
 
@@ -280,20 +265,18 @@ public class Frag2PairNodeModel extends NodeModel {
 				DataCell valCell = row.getCell(valColIdx);
 				DataCell idCell = row.getCell(idColIdx);
 
-				if (keyCell.isMissing() || valCell.isMissing()
-						|| idCell.isMissing()) {
+				if (keyCell.isMissing() || valCell.isMissing() || idCell.isMissing()) {
 					// Skip rows with missing keys or values
 					continue;
 				}
 
 				String ID = ((StringValue) idCell).getStringValue();
-				FragmentKey key = new FragmentKey(
-						((SmilesValue) keyCell).getSmilesValue());
+				FragmentKey key = new FragmentKey(((SmilesValue) keyCell).getSmilesValue());
 				if (!frags.containsKey(key)) {
 					frags.put(key, new TreeSet<FragmentValue>());
 				}
-				FragmentValue value = new FragmentValue(
-						((SmilesValue) valCell).getSmilesValue(), ID);
+				FragmentValue value =
+						new FragmentValue(((SmilesValue) valCell).getSmilesValue(), ID);
 				frags.get(key).add(value);
 				if (!keyFps.containsKey(key)) {
 					// Take a copy of any fingerprint columns - they will only
@@ -307,12 +290,11 @@ public class Frag2PairNodeModel extends NodeModel {
 				}
 				exec_0.checkCanceled();
 				progress = (double) rowCnt++ / (double) numRows;
-				exec_0.setProgress(progress, "Processed " + rowCnt + " of "
-						+ numRows + " key-value pairs");
+				exec_0.setProgress(progress,
+						"Processed " + rowCnt + " of " + numRows + " key-value pairs");
 			}
 			int numKeys = frags.size();
-			m_logger.info("Fragment dictionary compiled. " + numKeys
-					+ " unique keys found");
+			m_logger.info("Fragment dictionary compiled. " + numKeys + " unique keys found");
 
 			// Now generate the output
 			exec.setMessage("Generating MMP transforms");
@@ -320,45 +302,38 @@ public class Frag2PairNodeModel extends NodeModel {
 			progress = 0.0;
 			int rowIdx = 0;
 			int keyCnt = 0;
-			if (m_includeUnchangingPortion.getBooleanValue()
-					|| m_includeHARatio.getBooleanValue()
+			if (m_includeUnchangingPortion.getBooleanValue() || m_includeHARatio.getBooleanValue()
 					|| m_fpColIdx.size() > 0) {
 				// We need the overloaded method with the full paramter list,
 				// and to
 				// iterate through the entrySet()
-				for (Entry<FragmentKey, TreeSet<FragmentValue>> kv : frags
-						.entrySet()) {
-					ArrayList<DataCell[]> newRows = getTransforms(
-							kv.getValue(), kv.getKey(), numCols,
-							m_stripHsAtEnd.getBooleanValue(),
+				for (Entry<FragmentKey, TreeSet<FragmentValue>> kv : frags.entrySet()) {
+					ArrayList<DataCell[]> newRows = getTransforms(kv.getValue(), kv.getKey(),
+							numCols, m_stripHsAtEnd.getBooleanValue(),
 							m_includeUnchangingPortion.getBooleanValue(),
-							m_includeHACount.getBooleanValue(),
-							m_includeHARatio.getBooleanValue(),
+							m_includeHACount.getBooleanValue(), m_includeHARatio.getBooleanValue(),
 							m_showReverseTransforms.getBooleanValue());
 					for (DataCell[] cells : newRows) {
 						// Deal with need for rSMARTS
 						if (m_includeReactionSMARTS.getBooleanValue()) {
 							cells = addReactionSmartsCell(cells);
 						}
-						cells = applyFingerprintCells(cells,
-								keyFps.get(kv.getKey()));
+						cells = applyFingerprintCells(cells, keyFps.get(kv.getKey()));
 						RowKey rowKey = new RowKey("Row_" + rowIdx++);
 						dc0.addRowToTable(new DefaultRow(rowKey, cells));
 					}
 					progress = (double) keyCnt++ / (double) numKeys;
 					exec_0.checkCanceled();
-					exec_0.setProgress(progress, "Processed Key " + keyCnt
-							+ " of " + numKeys + ".  " + rowIdx
-							+ " transforms generated.");
+					exec_0.setProgress(progress, "Processed Key " + keyCnt + " of " + numKeys
+							+ ".  " + rowIdx + " transforms generated.");
 				}
 
 			} else {
 				// We can use the method with fewer arguments and only iterate
 				// through the values
 				for (TreeSet<FragmentValue> vals : frags.values()) {
-					ArrayList<DataCell[]> newRows = getTransforms(vals,
-							numCols, m_stripHsAtEnd.isEnabled()
-									&& m_stripHsAtEnd.getBooleanValue(),
+					ArrayList<DataCell[]> newRows = getTransforms(vals, numCols,
+							m_stripHsAtEnd.isEnabled() && m_stripHsAtEnd.getBooleanValue(),
 							m_includeHACount.getBooleanValue(),
 							m_showReverseTransforms.getBooleanValue());
 
@@ -372,9 +347,8 @@ public class Frag2PairNodeModel extends NodeModel {
 					}
 					progress = (double) keyCnt++ / (double) numKeys;
 					exec.checkCanceled();
-					exec_0.setProgress(progress, "Processed Key " + keyCnt
-							+ " of " + numKeys + ".  " + rowIdx
-							+ " transforms generated.");
+					exec_0.setProgress(progress, "Processed Key " + keyCnt + " of " + numKeys
+							+ ".  " + rowIdx + " transforms generated.");
 				}
 			}
 
@@ -393,8 +367,7 @@ public class Frag2PairNodeModel extends NodeModel {
 	 *            The fingerprint cells
 	 * @return The DataCell[] for the row
 	 */
-	private DataCell[] applyFingerprintCells(DataCell[] cells,
-			DataCell[] fpCells) {
+	private DataCell[] applyFingerprintCells(DataCell[] cells, DataCell[] fpCells) {
 		for (int i = 0; i < fpCells.length; i++) {
 			cells[cells.length - fpCells.length + i] = fpCells[i];
 		}
@@ -423,31 +396,27 @@ public class Frag2PairNodeModel extends NodeModel {
 	 * [])
 	 */
 	@Override
-	protected DataTableSpec[] configure(DataTableSpec[] inSpecs)
-			throws InvalidSettingsException {
+	protected DataTableSpec[] configure(DataTableSpec[] inSpecs) throws InvalidSettingsException {
 
 		// Try autoguessing the 3 column names and validating selection
-		m_FragKeyColName.setStringValue(guessColumnName(inSpecs[0],
-				m_FragKeyColName.getStringValue(), SmilesCell.TYPE, "'Key'",
-				inSpecs[0].getNumColumns() - 1));
-		m_IDColName.setStringValue(guessColumnName(inSpecs[0],
-				m_IDColName.getStringValue(), StringCell.TYPE, "ID",
-				inSpecs[0].getNumColumns() - 1));
+		m_FragKeyColName
+				.setStringValue(guessColumnName(inSpecs[0], m_FragKeyColName.getStringValue(),
+						SmilesCell.TYPE, "'Key'", inSpecs[0].getNumColumns() - 1));
+		m_IDColName.setStringValue(guessColumnName(inSpecs[0], m_IDColName.getStringValue(),
+				StringCell.TYPE, "ID", inSpecs[0].getNumColumns() - 1));
 
 		// Start looking from the fragment before
-		m_FragValColName.setStringValue(guessColumnName(inSpecs[0],
-				m_FragValColName.getStringValue(), SmilesCell.TYPE, "'Value'",
-				inSpecs[0].getNumColumns() - 1));
+		m_FragValColName
+				.setStringValue(guessColumnName(inSpecs[0], m_FragValColName.getStringValue(),
+						SmilesCell.TYPE, "'Value'", inSpecs[0].getNumColumns() - 1));
 
 		// Now check the 2 SMILES columns are different
-		if (m_FragKeyColName.getStringValue().equals(
-				m_FragValColName.getStringValue())) {
+		if (m_FragKeyColName.getStringValue().equals(m_FragValColName.getStringValue())) {
 			// If they are not, then try looking from column before the key for
 			// a new value
 			m_FragValColName.setStringValue(guessColumnName(inSpecs[0],
-					m_FragValColName.getStringValue(), SmilesCell.TYPE,
-					"'Value'", inSpecs[0].findColumnIndex(m_FragKeyColName
-							.getStringValue()) - 1));
+					m_FragValColName.getStringValue(), SmilesCell.TYPE, "'Value'",
+					inSpecs[0].findColumnIndex(m_FragKeyColName.getStringValue()) - 1));
 		}
 
 		m_spec = createOutSpec(inSpecs[0]);
@@ -490,26 +459,20 @@ public class Frag2PairNodeModel extends NodeModel {
 		specs[i++] = createColSpec("Left Fragment", SmilesCell.TYPE);
 		specs[i++] = createColSpec("Right Fragment", SmilesCell.TYPE);
 		if (m_includeUnchangingPortion.getBooleanValue()) {
-			specs[i++] = createColSpec("Unchanging fragment(s)",
-					SmilesCell.TYPE);
+			specs[i++] = createColSpec("Unchanging fragment(s)", SmilesCell.TYPE);
 		}
 		if (m_includeHACount.getBooleanValue()) {
-			specs[i++] = createColSpec("Changing Heavy Atoms (Left)",
-					IntCell.TYPE);
-			specs[i++] = createColSpec("Changing Heavy Atoms (Right)",
-					IntCell.TYPE);
+			specs[i++] = createColSpec("Changing Heavy Atoms (Left)", IntCell.TYPE);
+			specs[i++] = createColSpec("Changing Heavy Atoms (Right)", IntCell.TYPE);
 		}
 		if (m_includeHARatio.getBooleanValue()) {
-			specs[i++] = createColSpec(
-					"Ratio of Changing / Unchanging Heavy Atoms (Left)",
+			specs[i++] = createColSpec("Ratio of Changing / Unchanging Heavy Atoms (Left)",
 					DoubleCell.TYPE);
-			specs[i++] = createColSpec(
-					"Ratio of Changing / Unchanging Heavy Atoms (Right)",
+			specs[i++] = createColSpec("Ratio of Changing / Unchanging Heavy Atoms (Right)",
 					DoubleCell.TYPE);
 		}
 		if (m_includeReactionSMARTS.getBooleanValue()) {
-			specs[i++] = createColSpec("Transformation Reaction SMARTS",
-					SmartsCell.TYPE);
+			specs[i++] = createColSpec("Transformation Reaction SMARTS", SmartsCell.TYPE);
 		}
 
 		for (String fpColName : fpColNames) {
@@ -528,8 +491,7 @@ public class Frag2PairNodeModel extends NodeModel {
 	 *            The column {@link DataType}
 	 * @return A {@link DataColumnSpec}
 	 */
-	protected final DataColumnSpec createColSpec(String colName,
-			DataType colType) {
+	protected final DataColumnSpec createColSpec(String colName, DataType colType) {
 		return (new DataColumnSpecCreator(colName, colType)).createSpec();
 	}
 
@@ -552,9 +514,8 @@ public class Frag2PairNodeModel extends NodeModel {
 	 *         model, or a guessed name of the correct type
 	 * @throws InvalidSettingsException
 	 */
-	protected String guessColumnName(DataTableSpec spec,
-			String nameFromSettingsModel, DataType type, String substringMatch,
-			int startColIdx) throws InvalidSettingsException {
+	protected String guessColumnName(DataTableSpec spec, String nameFromSettingsModel,
+			DataType type, String substringMatch, int startColIdx) throws InvalidSettingsException {
 		DataColumnSpec colSpec = spec.getColumnSpec(nameFromSettingsModel);
 		String retVal = nameFromSettingsModel;
 		if (colSpec == null) {
@@ -568,22 +529,19 @@ public class Frag2PairNodeModel extends NodeModel {
 			// No column selected, or selected column not found - autoguess!
 			for (int i = startColIdx; i >= 0; i--) {
 				// Reverse order to select most recently added
-				if (spec.getColumnSpec(i).getType()
-						.isCompatible(type.getPreferredValueClass())
-						&& (substringMatch == null || spec.getColumnSpec(i)
-								.getName().indexOf(substringMatch) >= 0)) {
+				if (spec.getColumnSpec(i).getType().isCompatible(type.getPreferredValueClass())
+						&& (substringMatch == null
+								|| spec.getColumnSpec(i).getName().indexOf(substringMatch) >= 0)) {
 					retVal = (spec.getColumnSpec(i).getName());
-					m_logger.warn("No column selected. " + retVal
-							+ " auto-selected.");
+					m_logger.warn("No column selected. " + retVal + " auto-selected.");
 					break;
 				}
 				// If we are here when i = 0, then no suitable column found
 				if (i == 0) {
-					m_logger.error("No molecule column of the accepted"
-							+ " input formats was found.");
+					m_logger.error(
+							"No molecule column of the accepted" + " input formats was found.");
 					throw new InvalidSettingsException(
-							"No molecule column of the accepted"
-									+ " input formats was found.");
+							"No molecule column of the accepted" + " input formats was found.");
 				}
 			}
 
@@ -591,10 +549,10 @@ public class Frag2PairNodeModel extends NodeModel {
 			// We had a selected column, now lets see if it is a compatible type
 			if (!colSpec.getType().isCompatible(type.getPreferredValueClass())) {
 				// The column is not compatible with one of the accepted types
-				m_logger.error("The column " + retVal
-						+ " is not one of the accepted" + " input formats");
-				throw new InvalidSettingsException("The column " + retVal
-						+ " is not one of the accepted" + " input formats");
+				m_logger.error(
+						"The column " + retVal + " is not one of the accepted" + " input formats");
+				throw new InvalidSettingsException(
+						"The column " + retVal + " is not one of the accepted" + " input formats");
 			}
 		}
 		return retVal;
@@ -654,8 +612,7 @@ public class Frag2PairNodeModel extends NodeModel {
 	 * NodeSettingsRO)
 	 */
 	@Override
-	protected void validateSettings(NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
 		m_FragKeyColName.validateSettings(settings);
 		m_SortedFragKey.validateSettings(settings);
 		m_CheckSortedKeys.validateSettings(settings);

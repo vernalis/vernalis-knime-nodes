@@ -18,16 +18,18 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
-
 /**
  * Node Factory class for the Max Number of Cuts node
  * 
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
+@Deprecated
 public class MmpMaxCutsNodeFactory extends NodeFactory<MmpMaxCutsNodeModel> {
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.knime.core.node.NodeFactory#createNodeModel()
 	 */
 	@Override
@@ -35,7 +37,9 @@ public class MmpMaxCutsNodeFactory extends NodeFactory<MmpMaxCutsNodeModel> {
 		return new MmpMaxCutsNodeModel();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.knime.core.node.NodeFactory#getNrNodeViews()
 	 */
 	@Override
@@ -43,8 +47,11 @@ public class MmpMaxCutsNodeFactory extends NodeFactory<MmpMaxCutsNodeModel> {
 		return 0;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.knime.core.node.NodeFactory#createNodeView(int, org.knime.core.node.NodeModel)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.knime.core.node.NodeFactory#createNodeView(int,
+	 * org.knime.core.node.NodeModel)
 	 */
 	@Override
 	public NodeView<MmpMaxCutsNodeModel> createNodeView(int viewIndex,
@@ -52,7 +59,9 @@ public class MmpMaxCutsNodeFactory extends NodeFactory<MmpMaxCutsNodeModel> {
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.knime.core.node.NodeFactory#hasDialog()
 	 */
 	@Override
@@ -60,7 +69,9 @@ public class MmpMaxCutsNodeFactory extends NodeFactory<MmpMaxCutsNodeModel> {
 		return true;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.knime.core.node.NodeFactory#createNodeDialogPane()
 	 */
 	@Override

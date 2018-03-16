@@ -24,9 +24,12 @@ import org.knime.core.node.NodeView;
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
+@Deprecated
 public class Frag2Pair2NodeFactory extends NodeFactory<Frag2Pair2NodeModel> {
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.knime.core.node.NodeFactory#createNodeModel()
 	 */
 	@Override
@@ -34,7 +37,9 @@ public class Frag2Pair2NodeFactory extends NodeFactory<Frag2Pair2NodeModel> {
 		return new Frag2Pair2NodeModel();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.knime.core.node.NodeFactory#getNrNodeViews()
 	 */
 	@Override
@@ -42,8 +47,11 @@ public class Frag2Pair2NodeFactory extends NodeFactory<Frag2Pair2NodeModel> {
 		return 0;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.knime.core.node.NodeFactory#createNodeView(int, org.knime.core.node.NodeModel)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.knime.core.node.NodeFactory#createNodeView(int,
+	 * org.knime.core.node.NodeModel)
 	 */
 	@Override
 	public NodeView<Frag2Pair2NodeModel> createNodeView(int viewIndex,
@@ -51,7 +59,9 @@ public class Frag2Pair2NodeFactory extends NodeFactory<Frag2Pair2NodeModel> {
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.knime.core.node.NodeFactory#hasDialog()
 	 */
 	@Override
@@ -59,7 +69,9 @@ public class Frag2Pair2NodeFactory extends NodeFactory<Frag2Pair2NodeModel> {
 		return true;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.knime.core.node.NodeFactory#createNodeDialogPane()
 	 */
 	@Override

@@ -72,16 +72,16 @@ public class ListDirs2NodeModel extends NodeModel {
 
 	private final SettingsModelBoolean m_subDirs = new SettingsModelBoolean(CFG_SUB_DIRS, false);
 
-	private final SettingsModelBoolean m_ctgDirPath = new SettingsModelBoolean(CFG_INCL_CTG_PATH,
-			true);
+	private final SettingsModelBoolean m_ctgDirPath =
+			new SettingsModelBoolean(CFG_INCL_CTG_PATH, true);
 
-	private final SettingsModelBoolean m_folderName = new SettingsModelBoolean(CFG_FOLDER_NAME,
-			true);
+	private final SettingsModelBoolean m_folderName =
+			new SettingsModelBoolean(CFG_FOLDER_NAME, true);
 
 	private final SettingsModelBoolean m_isVisible = new SettingsModelBoolean(CFG_IS_VIS, true);
 
-	private final SettingsModelBoolean m_lastModified = new SettingsModelBoolean(CFG_LAST_MOD,
-			true);
+	private final SettingsModelBoolean m_lastModified =
+			new SettingsModelBoolean(CFG_LAST_MOD, true);
 
 	private BufferedDataContainer m_dc;
 
@@ -187,8 +187,8 @@ public class ListDirs2NodeModel extends NodeModel {
 							if (m_isVisible.getBooleanValue()) {
 								// NB we return opposite result of "isHidden" as
 								// we are asking "isVisible"
-								row[colIndex++] = (loc.isHidden()) ? BooleanCell.FALSE
-										: BooleanCell.TRUE;
+								row[colIndex++] =
+										(loc.isHidden()) ? BooleanCell.FALSE : BooleanCell.TRUE;
 							}
 
 							if (m_lastModified.getBooleanValue()) {
@@ -232,7 +232,7 @@ public class ListDirs2NodeModel extends NodeModel {
 		// Use an array list as saves counting columns via if statements and
 		// then
 		// Counting through them all again
-		ArrayList<DataColumnSpec> dcs = new ArrayList<DataColumnSpec>();
+		ArrayList<DataColumnSpec> dcs = new ArrayList<>();
 
 		dcs.add(new DataColumnSpecCreator("Location", StringCell.TYPE).createSpec());
 		dcs.add(new DataColumnSpecCreator("URL", StringCell.TYPE).createSpec());

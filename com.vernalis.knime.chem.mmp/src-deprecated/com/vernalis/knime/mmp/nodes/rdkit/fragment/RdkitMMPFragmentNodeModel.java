@@ -14,9 +14,6 @@
  *******************************************************************************/
 package com.vernalis.knime.mmp.nodes.rdkit.fragment;
 
-import static com.vernalis.knime.mmp.RDKitFragment.doRDKitFragmentation;
-import static com.vernalis.knime.mmp.RDKitFragment.filterFragments;
-
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeSet;
@@ -46,12 +43,16 @@ import com.vernalis.knime.mmp.FragmentValue;
 import com.vernalis.knime.mmp.FragmentationTypes;
 import com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeModel;
 
+import static com.vernalis.knime.mmp.RDKitFragment.doRDKitFragmentation;
+import static com.vernalis.knime.mmp.RDKitFragment.filterFragments;
+
 /**
  * The {@link NodeModel} implementation for the MMP Molecule Fragment node
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @author "Stephen Roughley knime@vernalis.com"
  * 
  */
+@Deprecated
 public class RdkitMMPFragmentNodeModel extends AbstractRdkitMatchedPairsMultipleCutsNodeModel {
 
 	/**
@@ -100,13 +101,13 @@ public class RdkitMMPFragmentNodeModel extends AbstractRdkitMatchedPairsMultiple
 		boolean addHs = (numCuts == 1) ? m_AddHs.getBooleanValue() : false;
 
 		// These two can both be null
-		Integer maxNumVarAtm = (m_hasChangingAtoms.getBooleanValue())
-				? m_maxChangingAtoms.getIntValue() : null;
-		Double minCnstToVarAtmRatio = (m_hasHARatioFilter.getBooleanValue())
-				? m_minHARatioFilter.getDoubleValue() : null;
+		Integer maxNumVarAtm =
+				(m_hasChangingAtoms.getBooleanValue()) ? m_maxChangingAtoms.getIntValue() : null;
+		Double minCnstToVarAtmRatio =
+				(m_hasHARatioFilter.getBooleanValue()) ? m_minHARatioFilter.getDoubleValue() : null;
 
-		boolean trackCutConnectivity = m_trackCutConnectivity.isEnabled()
-				&& m_trackCutConnectivity.getBooleanValue();
+		boolean trackCutConnectivity =
+				m_trackCutConnectivity.isEnabled() && m_trackCutConnectivity.getBooleanValue();
 
 		m_Logger.info("Starting fragmentation");
 		m_Logger.info("Fragmentation SMIRKS: " + fragSMIRKS + " (" + numCuts + " cuts)");
@@ -165,8 +166,8 @@ public class RdkitMMPFragmentNodeModel extends AbstractRdkitMatchedPairsMultiple
 			// Now, add the new fragments to the table
 			for (Entry<FragmentKey, TreeSet<FragmentValue>> ent : newFrags.entrySet()) {
 
-				DataCell keySmiles = ent.getKey()
-						.getKeyAsDataCell(m_stripHsAtEnd.getBooleanValue());
+				DataCell keySmiles =
+						ent.getKey().getKeyAsDataCell(m_stripHsAtEnd.getBooleanValue());
 
 				for (FragmentValue fVal : ent.getValue()) {
 					RowKey rowId = new RowKey("Row_" + newRowCnt++);
@@ -223,8 +224,8 @@ public class RdkitMMPFragmentNodeModel extends AbstractRdkitMatchedPairsMultiple
 			specs[i++] = createColSpec("Changing Heavy Atoms", IntCell.TYPE);
 		}
 		if (m_outputHARatio.getBooleanValue()) {
-			specs[i++] = createColSpec("Ratio of Changing / Unchanging Heavy Atoms",
-					DoubleCell.TYPE);
+			specs[i++] =
+					createColSpec("Ratio of Changing / Unchanging Heavy Atoms", DoubleCell.TYPE);
 		}
 
 		return new DataTableSpec(specs);

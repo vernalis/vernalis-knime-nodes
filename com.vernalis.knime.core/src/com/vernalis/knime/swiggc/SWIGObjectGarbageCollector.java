@@ -42,11 +42,11 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>> {
 
 	Map<Object, Integer> refCount = new HashMap<>();
 
-		private static final long serialVersionUID = 3403451572751057864L;
+	private static final long serialVersionUID = 3403451572751057864L;
 
 	/** The logger instance. */
-	protected static final NodeLogger LOGGER = NodeLogger
-			.getLogger(SWIGObjectGarbageCollector.class);
+	protected static final NodeLogger LOGGER =
+			NodeLogger.getLogger(SWIGObjectGarbageCollector.class);
 
 	//
 	// Constructors
@@ -133,7 +133,7 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>> {
 				// Loop through all waves to find the object - we create a
 				// copy here, because
 				// we may remove empty wave lists which may blow up our iterator
-				for (final int waveExisting : new HashSet<Integer>(keySet())) {
+				for (final int waveExisting : new HashSet<>(keySet())) {
 					final List<Object> list = get(waveExisting);
 
 					if (list.remove(object)) {
@@ -155,7 +155,7 @@ public class SWIGObjectGarbageCollector extends HashMap<Integer, List<Object>> {
 
 			// Create a wave list, if not found yet
 			if (list == null) {
-				list = new ArrayList<Object>();
+				list = new ArrayList<>();
 				put(wave, list);
 			}
 

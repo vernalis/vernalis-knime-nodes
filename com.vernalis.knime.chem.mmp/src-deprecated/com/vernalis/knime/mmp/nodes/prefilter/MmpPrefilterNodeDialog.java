@@ -37,6 +37,7 @@ import com.vernalis.knime.mmp.MolFormats;
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
+@Deprecated
 public class MmpPrefilterNodeDialog extends DefaultNodeSettingsPane {
 	SettingsModelBoolean m_AddHs, m_allowTwoCutsToBond;
 	SettingsModelIntegerBounded m_NumCuts;
@@ -45,12 +46,10 @@ public class MmpPrefilterNodeDialog extends DefaultNodeSettingsPane {
 	/**
 	 * Constructor for the dialog pane
 	 */
-	@SuppressWarnings("unchecked")
 	public MmpPrefilterNodeDialog() {
 		super();
-		addDialogComponent(new DialogComponentColumnNameSelection(
-				createMolColumnSettingsModel(), "Select Molecule column", 0,
-				MolFormats.m_RDKitmolFormats.toArray(new Class[0])));
+		addDialogComponent(new DialogComponentColumnNameSelection(createMolColumnSettingsModel(),
+				"Select Molecule column", 0, MolFormats.m_RDKitmolFormats.toArray(new Class[0])));
 
 		m_fragmentationType = createSMIRKSModel();
 		m_customRSMARTS = createCustomSMARTSModel();
@@ -58,20 +57,18 @@ public class MmpPrefilterNodeDialog extends DefaultNodeSettingsPane {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				m_customRSMARTS.setEnabled(FragmentationTypes
-						.valueOf(m_fragmentationType.getStringValue()) == FragmentationTypes.USER_DEFINED);
+				m_customRSMARTS.setEnabled(FragmentationTypes.valueOf(
+						m_fragmentationType.getStringValue()) == FragmentationTypes.USER_DEFINED);
 			}
 		});
 
-		m_customRSMARTS
-				.setEnabled(FragmentationTypes.valueOf(m_fragmentationType
-						.getStringValue()) == FragmentationTypes.USER_DEFINED);
+		m_customRSMARTS.setEnabled(FragmentationTypes
+				.valueOf(m_fragmentationType.getStringValue()) == FragmentationTypes.USER_DEFINED);
 
 		createNewGroup("Select the fragmentation type");
-		addDialogComponent(new DialogComponentButtonGroup(m_fragmentationType,
-				null, true, FragmentationTypes.values()));
-		addDialogComponent(new DialogComponentString(m_customRSMARTS,
-				"User rSMARTS:"));
+		addDialogComponent(new DialogComponentButtonGroup(m_fragmentationType, null, true,
+				FragmentationTypes.values()));
+		addDialogComponent(new DialogComponentString(m_customRSMARTS, "User rSMARTS:"));
 		closeCurrentGroup();
 
 		m_NumCuts = createCutsModel();
@@ -83,8 +80,7 @@ public class MmpPrefilterNodeDialog extends DefaultNodeSettingsPane {
 			}
 		});
 
-		addDialogComponent(new DialogComponentNumber(m_NumCuts,
-				"Number of cuts", 1));
+		addDialogComponent(new DialogComponentNumber(m_NumCuts, "Number of cuts", 1));
 
 		m_AddHs = createAddHModel();
 		addDialogComponent(new DialogComponentBoolean(m_AddHs,
@@ -128,10 +124,8 @@ public class MmpPrefilterNodeDialog extends DefaultNodeSettingsPane {
 	 * Create the settings model for the number of cuts
 	 */
 	public static SettingsModelIntegerBounded createCutsModel() {
-		return new SettingsModelIntegerBounded("Number of cuts",
-				MMPConstants.DEFAULT_NUM_CUTS,
-				MMPConstants.MINIMUM_NUMBER_OF_CUTS,
-				MMPConstants.MAXIMUM_NUMBER_OF_CUTS);
+		return new SettingsModelIntegerBounded("Number of cuts", MMPConstants.DEFAULT_NUM_CUTS,
+				MMPConstants.MINIMUM_NUMBER_OF_CUTS, MMPConstants.MAXIMUM_NUMBER_OF_CUTS);
 	}
 
 	/**

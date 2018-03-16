@@ -18,6 +18,13 @@ import java.io.File;
 import java.io.IOException;
 
 import org.knime.core.node.CanceledExecutionException;
+import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.ExecutionMonitor;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
+import org.knime.core.node.NodeModel;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelDouble;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
@@ -26,13 +33,6 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.FlowVariable;
-import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.ExecutionMonitor;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeLogger;
-import org.knime.core.node.NodeModel;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 
 import com.vernalis.flowcontrol.FlowControlHelpers;
 
@@ -45,23 +45,23 @@ import com.vernalis.flowcontrol.FlowControlHelpers;
 public class FlowVarFvvalIfSwitchNodeModel extends NodeModel {
 
 	// the logger instance
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(FlowVarFvvalIfSwitchNodeModel.class);
+	private static final NodeLogger logger =
+			NodeLogger.getLogger(FlowVarFvvalIfSwitchNodeModel.class);
 	private static final int m_outPorts = 2;
 	private static final PortType m_portType = FlowVariablePortObject.TYPE;
 
-	private final SettingsModelString m_fvname1 = FlowVarFvvalIfSwitchNodeDialog
-			.createFirstFlowVarSelectionModel();
-	private final SettingsModelString m_property = FlowVarFvvalIfSwitchNodeDialog
-			.createPropertyModel();
-	private final SettingsModelString m_Comp = FlowVarFvvalIfSwitchNodeDialog
-			.createComparatorSelectionModel();
-	private final SettingsModelBoolean m_ignCase = FlowVarFvvalIfSwitchNodeDialog
-			.createIgnoreCaseModel();
-	private final SettingsModelBoolean m_ignWhiteSpace = FlowVarFvvalIfSwitchNodeDialog
-			.createIgnoreWhiteSpaceModel();
-	private final SettingsModelDouble m_dblTol = FlowVarFvvalIfSwitchNodeDialog
-			.createDoubleToleranceModel();
+	private final SettingsModelString m_fvname1 =
+			FlowVarFvvalIfSwitchNodeDialog.createFirstFlowVarSelectionModel();
+	private final SettingsModelString m_property =
+			FlowVarFvvalIfSwitchNodeDialog.createPropertyModel();
+	private final SettingsModelString m_Comp =
+			FlowVarFvvalIfSwitchNodeDialog.createComparatorSelectionModel();
+	private final SettingsModelBoolean m_ignCase =
+			FlowVarFvvalIfSwitchNodeDialog.createIgnoreCaseModel();
+	private final SettingsModelBoolean m_ignWhiteSpace =
+			FlowVarFvvalIfSwitchNodeDialog.createIgnoreWhiteSpaceModel();
+	private final SettingsModelDouble m_dblTol =
+			FlowVarFvvalIfSwitchNodeDialog.createDoubleToleranceModel();
 
 	/**
 	 * Constructor for the node model.
@@ -77,20 +77,20 @@ public class FlowVarFvvalIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData,
-			final ExecutionContext exec) throws Exception {
+	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
+			throws Exception {
 		// The validity of performing the comparison has already been checked in
 		// the #configure method, so now we just need to pass the input port to
 		// the active output port based on the comparison
 		// If the comparison is true the top port is active
 		int activeOutPort = (compareVariableValue(m_fvname1.getStringValue(),
 				m_Comp.getStringValue(), m_property.getStringValue())) ? 0 : 1;
-		return FlowControlHelpers.createStartOutputPortObject(inData,
-				m_outPorts, activeOutPort);
+		return FlowControlHelpers.createStartOutputPortObject(inData, m_outPorts, activeOutPort);
 	}
 
-	private boolean compareVariableValue(String varName, String comparitor,
-			String compValue) {
+	// Only the types listed can be selected from the dialog
+	@SuppressWarnings("incomplete-switch")
+	private boolean compareVariableValue(String varName, String comparitor, String compValue) {
 		FlowVariable fvar = getAvailableFlowVariables().get(varName);
 		Double comparisonValue = null;
 		Integer comparisonIntValue = null;
@@ -146,8 +146,7 @@ public class FlowVarFvvalIfSwitchNodeModel extends NodeModel {
 		} else {
 			// Do the Double comparison, accounting for the tolerance
 			double tolerance = m_dblTol.getDoubleValue();
-			if ("=".equals(comparitor)
-					&& Math.abs(comparisonValue) <= tolerance) {
+			if ("=".equals(comparitor) && Math.abs(comparisonValue) <= tolerance) {
 				return true;
 			}
 			if (">".equals(comparitor) && comparisonValue < 0.0) {
@@ -157,8 +156,7 @@ public class FlowVarFvvalIfSwitchNodeModel extends NodeModel {
 					&& (comparisonValue <= 0.0 || Math.abs(comparisonValue) <= tolerance)) {
 				return true;
 			}
-			if ("!=".equals(comparitor)
-					&& Math.abs(comparisonValue) > tolerance) {
+			if ("!=".equals(comparitor) && Math.abs(comparisonValue) > tolerance) {
 				return true;
 			}
 			if ("<".equals(comparitor) && comparisonValue > 0.0) {
@@ -191,12 +189,12 @@ public class FlowVarFvvalIfSwitchNodeModel extends NodeModel {
 
 		// Start by checking a variable has been selected
 
-		if (getAvailableFlowVariables().get(m_fvname1.getStringValue())==null){
+		if (getAvailableFlowVariables().get(m_fvname1.getStringValue()) == null) {
 			logger.warn("No valid variable selected");
 			throw new InvalidSettingsException("No valid variable selected");
 		}
 
-		//Now check a meaningful comparison is possible
+		// Now check a meaningful comparison is possible
 		if (getAvailableFlowVariables().get(m_fvname1.getStringValue())
 				.getType() != FlowVariable.Type.STRING) {
 
@@ -232,8 +230,9 @@ public class FlowVarFvvalIfSwitchNodeModel extends NodeModel {
 					throw new InvalidSettingsException(
 							"Remove trailing '.0' for integer comparison");
 				} else {
-					logger.warn("Cannot convert comparison value to numeric integer value for comparison."
-							+ "  Ensure there is no decimal point.");
+					logger.warn(
+							"Cannot convert comparison value to numeric integer value for comparison."
+									+ "  Ensure there is no decimal point.");
 					throw new InvalidSettingsException(
 							"Cannot convert comparison value to numeric integer value for comparison."
 									+ "  Ensure there is no decimal point.");
@@ -245,8 +244,8 @@ public class FlowVarFvvalIfSwitchNodeModel extends NodeModel {
 		// If the comparison is true the top port is active
 		int activeOutPort = (compareVariableValue(m_fvname1.getStringValue(),
 				m_Comp.getStringValue(), m_property.getStringValue())) ? 0 : 1;
-		return FlowControlHelpers.createStartOutputPortObjectSpec(inSpecs,
-				m_outPorts, activeOutPort);
+		return FlowControlHelpers.createStartOutputPortObjectSpec(inSpecs, m_outPorts,
+				activeOutPort);
 	}
 
 	/**
@@ -281,8 +280,7 @@ public class FlowVarFvvalIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 
 		m_Comp.validateSettings(settings);
 		m_fvname1.validateSettings(settings);
@@ -296,9 +294,8 @@ public class FlowVarFvvalIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 
 	}
 
@@ -306,9 +303,8 @@ public class FlowVarFvvalIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 
 	}
 

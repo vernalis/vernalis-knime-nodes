@@ -27,10 +27,10 @@ import com.vernalis.knime.flowcontrol.nodes.abstrct.varvalifswitch.AbstractFvval
  * <code>NodeFactory</code> for the "FlowVarIfSwitch" Node.
  * 
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @author "Stephen Roughley knime@vernalis.com"
  */
-public class FlowVarFvvalIfSwitchNodeFactory extends
-		NodeFactory<AbstractFvvalIfSwitchNodeModel> {
+@Deprecated
+public class FlowVarFvvalIfSwitchNodeFactory extends NodeFactory<AbstractFvvalIfSwitchNodeModel> {
 
 	/** The port type. */
 	PortType m_port = FlowVariablePortObject.TYPE;
@@ -55,8 +55,8 @@ public class FlowVarFvvalIfSwitchNodeFactory extends
 	 * {@inheritDoc}
 	 */
 	@Override
-	public NodeView<AbstractFvvalIfSwitchNodeModel> createNodeView(
-			final int viewIndex, final AbstractFvvalIfSwitchNodeModel nodeModel) {
+	public NodeView<AbstractFvvalIfSwitchNodeModel> createNodeView(final int viewIndex,
+			final AbstractFvvalIfSwitchNodeModel nodeModel) {
 		return null;
 	}
 

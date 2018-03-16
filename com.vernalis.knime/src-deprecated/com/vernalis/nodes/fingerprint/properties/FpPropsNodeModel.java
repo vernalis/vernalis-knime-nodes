@@ -57,8 +57,8 @@ public class FpPropsNodeModel extends SimpleStreamableFunctionNodeModel {
 	private SettingsModelString m_fpColName = new SettingsModelString(CFG_FPCOL, null);
 	private SettingsModelBoolean m_fpType = new SettingsModelBoolean(CFG_FPTYPE, true);
 	private SettingsModelBoolean m_fpLen = new SettingsModelBoolean(CFG_FPLENGTH, true);
-	private SettingsModelBoolean m_fpCardinality = new SettingsModelBoolean(CFG_FPCARDINALITY,
-			true);
+	private SettingsModelBoolean m_fpCardinality =
+			new SettingsModelBoolean(CFG_FPCARDINALITY, true);
 
 	private DataTableSpec m_Spec_0; // The datatable spec
 	private Map<String, DataType> m_NewColNames_0;
@@ -118,7 +118,7 @@ public class FpPropsNodeModel extends SimpleStreamableFunctionNodeModel {
 
 		// Now we need to build the output table spec
 		String suffix = " (" + m_fpColName.getStringValue() + ")";
-		m_NewColNames_0 = new LinkedHashMap<String, DataType>();
+		m_NewColNames_0 = new LinkedHashMap<>();
 		if (m_fpType.getBooleanValue()) {
 			m_NewColNames_0.put(
 					DataTableSpec.getUniqueColumnName(inSpecs[0], "Fingerprint Type" + suffix),
@@ -152,8 +152,8 @@ public class FpPropsNodeModel extends SimpleStreamableFunctionNodeModel {
 		DataColumnSpec[] colSpecs = new DataColumnSpec[m_NewColNames_0.size()];
 		int colind = 0;
 		for (Entry<String, DataType> col : m_NewColNames_0.entrySet()) {
-			colSpecs[colind++] = new DataColumnSpecCreator(col.getKey(), col.getValue())
-					.createSpec();
+			colSpecs[colind++] =
+					new DataColumnSpecCreator(col.getKey(), col.getValue()).createSpec();
 		}
 
 		// Find the Fingerprint column and Type

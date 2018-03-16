@@ -14,28 +14,6 @@
  *******************************************************************************/
 package com.vernalis.knime.mmp.nodes.rdkit.abstrct;
 
-import static com.vernalis.knime.mmp.MolFormats.isColTypeRDKitCompatible;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createAddFailReasonModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createAddHModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createApFingerprintsModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createCustomSMARTSModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createCutsModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createFpLengthModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createFpUseBondTypesModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createFpUseChiralityModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createHasHARatioFilterModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createHasMaxChangingAtomsModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createIDColumnSettingsModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createMaxChangingAtomsModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createMolColumnSettingsModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createMorganRadiusModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createOutputChangingHACountsModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createOutputHARatiosModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createRatioModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createSMIRKSModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createStripHModel;
-import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createTrackCutConnectivityModel;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -76,6 +54,28 @@ import com.vernalis.knime.mmp.FragmentKeyMorganFP;
 import com.vernalis.knime.mmp.FragmentationTypes;
 import com.vernalis.knime.mmp.RDKitUtils;
 
+import static com.vernalis.knime.mmp.MolFormats.isColTypeRDKitCompatible;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createAddFailReasonModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createAddHModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createApFingerprintsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createCustomSMARTSModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createCutsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createFpLengthModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createFpUseBondTypesModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createFpUseChiralityModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createHasHARatioFilterModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createHasMaxChangingAtomsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createIDColumnSettingsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createMaxChangingAtomsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createMolColumnSettingsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createMorganRadiusModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createOutputChangingHACountsModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createOutputHARatiosModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createRatioModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createSMIRKSModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createStripHModel;
+import static com.vernalis.knime.mmp.nodes.rdkit.abstrct.AbstractRdkitMatchedPairsMultipleCutsNodeDialog.createTrackCutConnectivityModel;
+
 /**
  * Abstract class for the shared code for the MMP and Molecule fragment nodes.
  * Provides methods to retrieve the molecule from the input cell as an ROMol
@@ -83,9 +83,10 @@ import com.vernalis.knime.mmp.RDKitUtils;
  * {@link #configure(DataTableSpec[])} implementation. Subclasses must intialise
  * the {@link #m_Logger}.
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @author "Stephen Roughley knime@vernalis.com"
  * 
  */
+@Deprecated
 public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends NodeModel {
 
 	/** The node logger Needs to be initialised in subclasses. */
@@ -222,8 +223,8 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends Nod
 				throw new InvalidSettingsException("A reaction SMARTS string must be provided "
 						+ "for user-defined fragmentation patterns");
 			}
-			String rSMARTSCheck = RDKitUtils
-					.validateReactionSmarts(m_customSmarts.getStringValue());
+			String rSMARTSCheck =
+					RDKitUtils.validateReactionSmarts(m_customSmarts.getStringValue());
 			if (rSMARTSCheck != null) {
 				m_Logger.error("Error parsing rSMARTS: " + rSMARTSCheck);
 				throw new InvalidSettingsException("Error parsing rSMARTS: " + rSMARTSCheck);
@@ -491,9 +492,9 @@ public abstract class AbstractRdkitMatchedPairsMultipleCutsNodeModel extends Nod
 	 * @return
 	 */
 	protected DataCell[] addAPFPs(DataCell[] cells, FragmentKey key) {
-		FragmentKeyMorganFP fpKey = new FragmentKeyMorganFP(key, m_morganRadius.getIntValue(),
-				m_fpLength.getIntValue(), m_useChirality.getBooleanValue(),
-				m_useBondTypes.getBooleanValue());
+		FragmentKeyMorganFP fpKey =
+				new FragmentKeyMorganFP(key, m_morganRadius.getIntValue(), m_fpLength.getIntValue(),
+						m_useChirality.getBooleanValue(), m_useBondTypes.getBooleanValue());
 		DataCell[] fpCells = fpKey.getDenseAttachmentPointFingerprints(m_numCuts.getIntValue());
 		for (int i = 0; i < m_numCuts.getIntValue(); i++) {
 			cells[cells.length - m_numCuts.getIntValue() + i] = fpCells[i];

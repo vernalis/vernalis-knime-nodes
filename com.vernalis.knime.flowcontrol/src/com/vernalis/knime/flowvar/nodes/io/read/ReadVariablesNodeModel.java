@@ -202,7 +202,10 @@ public class ReadVariablesNodeModel extends NodeModel {
 	 * @param fvVal
 	 *            the fv val
 	 */
+	@SuppressWarnings("incomplete-switch")
 	private void writeVariable(String fvName, Type fvType, String fvVal) {
+		assert fvType != Type.CREDENTIALS : "Flow variable type should noy be Credentials";
+
 		switch (fvType) {
 		case INTEGER:
 			try {

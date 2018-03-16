@@ -36,16 +36,14 @@ import com.vernalis.knime.mmp.MolFormats;
 /**
  * Node Dialog implementation for the MMP and Fragmentation nodes.
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @author "Stephen Roughley knime@vernalis.com"
  * 
  */
-public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
-		DefaultNodeSettingsPane {
-	SettingsModelBoolean m_hasChangingAtoms, m_hasHARatioFilter, m_AddHs,
-			m_stripHsAtEnd, m_trackCutConnectivity, m_apFingerprints,
-			m_fpUseBondTypes, m_fpUseChirality;
-	SettingsModelIntegerBounded m_maxChangingAtoms, m_NumCuts, m_morganRadius,
-			m_fpLength;
+@Deprecated
+public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends DefaultNodeSettingsPane {
+	SettingsModelBoolean m_hasChangingAtoms, m_hasHARatioFilter, m_AddHs, m_stripHsAtEnd,
+			m_trackCutConnectivity, m_apFingerprints, m_fpUseBondTypes, m_fpUseChirality;
+	SettingsModelIntegerBounded m_maxChangingAtoms, m_NumCuts, m_morganRadius, m_fpLength;
 	SettingsModelDoubleBounded m_minHARatioFilter;
 	SettingsModelString m_fragmentationType, m_customRSMARTS;
 
@@ -57,16 +55,13 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 	 *            option, and options relating to transform output
 	 */
 	@SuppressWarnings("unchecked")
-	public AbstractRdkitMatchedPairsMultipleCutsNodeDialog(
-			boolean includeMMPGenerationOptions) {
+	public AbstractRdkitMatchedPairsMultipleCutsNodeDialog(boolean includeMMPGenerationOptions) {
 
-		addDialogComponent(new DialogComponentColumnNameSelection(
-				createMolColumnSettingsModel(), "Select Molecule column", 0,
-				MolFormats.m_RDKitmolFormats.toArray(new Class[0])));
+		addDialogComponent(new DialogComponentColumnNameSelection(createMolColumnSettingsModel(),
+				"Select Molecule column", 0, MolFormats.m_RDKitmolFormats.toArray(new Class[0])));
 
-		addDialogComponent(new DialogComponentColumnNameSelection(
-				createIDColumnSettingsModel(), "Select Molecule IDs column", 0,
-				StringValue.class));
+		addDialogComponent(new DialogComponentColumnNameSelection(createIDColumnSettingsModel(),
+				"Select Molecule IDs column", 0, StringValue.class));
 
 		m_fragmentationType = createSMIRKSModel();
 		m_customRSMARTS = createCustomSMARTSModel();
@@ -74,20 +69,17 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				m_customRSMARTS.setEnabled(FragmentationTypes
-						.valueOf(m_fragmentationType.getStringValue()) == FragmentationTypes.USER_DEFINED);
+				m_customRSMARTS.setEnabled(FragmentationTypes.valueOf(
+						m_fragmentationType.getStringValue()) == FragmentationTypes.USER_DEFINED);
 			}
 		});
 
-		m_customRSMARTS
-				.setEnabled(FragmentationTypes.valueOf(m_fragmentationType
-						.getStringValue()) == FragmentationTypes.USER_DEFINED);
+		m_customRSMARTS.setEnabled(FragmentationTypes
+				.valueOf(m_fragmentationType.getStringValue()) == FragmentationTypes.USER_DEFINED);
 
 		addDialogComponent(new DialogComponentButtonGroup(m_fragmentationType,
-				"Select the fragmentation type", true,
-				FragmentationTypes.values()));
-		addDialogComponent(new DialogComponentString(m_customRSMARTS,
-				"User rSMARTS:"));
+				"Select the fragmentation type", true, FragmentationTypes.values()));
+		addDialogComponent(new DialogComponentString(m_customRSMARTS, "User rSMARTS:"));
 
 		m_NumCuts = createCutsModel();
 		m_trackCutConnectivity = createTrackCutConnectivityModel();
@@ -108,14 +100,13 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 			}
 		});
 
-		addDialogComponent(new DialogComponentNumber(m_NumCuts,
-				"Number of cuts", 1));
-		addDialogComponent(new DialogComponentBoolean(m_trackCutConnectivity,
-				"Track connectivity?"));
+		addDialogComponent(new DialogComponentNumber(m_NumCuts, "Number of cuts", 1));
+		addDialogComponent(
+				new DialogComponentBoolean(m_trackCutConnectivity, "Track connectivity?"));
 
 		/*
+		 * ***************************** * The ADVANCED SETTINGS TAB *
 		 * *****************************
-		 * * The ADVANCED SETTINGS TAB * *****************************
 		 */
 		createNewTab("Advanced Settings");
 		m_AddHs = createAddHModel();
@@ -130,8 +121,8 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 		});
 		addDialogComponent(new DialogComponentBoolean(m_AddHs,
 				"Add H's prior to fragmentation (Recommended for n=1)"));
-		addDialogComponent(new DialogComponentBoolean(m_stripHsAtEnd,
-				"Remove Explicit H's from output"));
+		addDialogComponent(
+				new DialogComponentBoolean(m_stripHsAtEnd, "Remove Explicit H's from output"));
 
 		createNewGroup("Variable Heavy Atom filter");
 		m_hasChangingAtoms = createHasMaxChangingAtomsModel();
@@ -167,32 +158,27 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 				"Minimum ratio of changing to unchanging heavy atoms", 0.1));
 
 		/*
+		 * *************************** * The OUTPUT SETTINGS tab *
 		 * ***************************
-		 * * The OUTPUT SETTINGS tab * ***************************
 		 */
 		createNewTab("Output Settings");
 		if (includeMMPGenerationOptions) {
-			addDialogComponent(new DialogComponentBoolean(
-					createOutputKeyModel(), "Show unchanging portion"));
+			addDialogComponent(
+					new DialogComponentBoolean(createOutputKeyModel(), "Show unchanging portion"));
 		}
-		addDialogComponent(new DialogComponentBoolean(
-				createOutputChangingHACountsModel(),
+		addDialogComponent(new DialogComponentBoolean(createOutputChangingHACountsModel(),
 				"Show number of changing atoms"));
-		addDialogComponent(new DialogComponentBoolean(
-				createOutputHARatiosModel(),
+		addDialogComponent(new DialogComponentBoolean(createOutputHARatiosModel(),
 				"Show ratio of constant / changing heavy atoms"));
 		if (includeMMPGenerationOptions) {
-			addDialogComponent(new DialogComponentBoolean(
-					createShowReverseTransformsModel(),
+			addDialogComponent(new DialogComponentBoolean(createShowReverseTransformsModel(),
 					"Show reverse-direction transforms"));
 
-			addDialogComponent(new DialogComponentBoolean(
-					createShowSmartsTransformsModel(),
+			addDialogComponent(new DialogComponentBoolean(createShowSmartsTransformsModel(),
 					"Include Reaction SMARTS"));
 		}
 
-		addDialogComponent(new DialogComponentBoolean(
-				createAddFailReasonModel(),
+		addDialogComponent(new DialogComponentBoolean(createAddFailReasonModel(),
 				"Add failure reasons to 2nd output table"));
 
 		/*
@@ -212,36 +198,31 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 			}
 		});
 		updateFingerprintEnabled();
-		addDialogComponent(new DialogComponentBoolean(m_apFingerprints,
-				"Add Attachment Point Fingerprints"));
-		addDialogComponent(new DialogComponentNumber(m_fpLength,
-				"Fingerprint Length", 128));
-		addDialogComponent(new DialogComponentNumber(m_morganRadius,
-				"Morgan Radius", 1));
-		addDialogComponent(new DialogComponentBoolean(m_fpUseBondTypes,
-				"Use Bond Types"));
-		addDialogComponent(new DialogComponentBoolean(m_fpUseChirality,
-				"Use chirality"));
+		addDialogComponent(
+				new DialogComponentBoolean(m_apFingerprints, "Add Attachment Point Fingerprints"));
+		addDialogComponent(new DialogComponentNumber(m_fpLength, "Fingerprint Length", 128));
+		addDialogComponent(new DialogComponentNumber(m_morganRadius, "Morgan Radius", 1));
+		addDialogComponent(new DialogComponentBoolean(m_fpUseBondTypes, "Use Bond Types"));
+		addDialogComponent(new DialogComponentBoolean(m_fpUseChirality, "Use chirality"));
 	}
 
-		protected void updateCanFp() {
-		m_apFingerprints.setEnabled(m_NumCuts.getIntValue() == 1
-				|| m_trackCutConnectivity.getBooleanValue());
+	protected void updateCanFp() {
+		m_apFingerprints.setEnabled(
+				m_NumCuts.getIntValue() == 1 || m_trackCutConnectivity.getBooleanValue());
 		updateFingerprintEnabled();
 	}
 
 	/*
 	 * Methods for the change listeners
 	 */
-		protected void updateFingerprintEnabled() {
-		m_fpUseBondTypes.setEnabled(m_apFingerprints.isEnabled()
-				&& m_apFingerprints.getBooleanValue());
-		m_fpLength.setEnabled(m_apFingerprints.isEnabled()
-				&& m_apFingerprints.getBooleanValue());
-		m_fpUseChirality.setEnabled(m_apFingerprints.isEnabled()
-				&& m_apFingerprints.getBooleanValue());
-		m_morganRadius.setEnabled(m_apFingerprints.isEnabled()
-				&& m_apFingerprints.getBooleanValue());
+	protected void updateFingerprintEnabled() {
+		m_fpUseBondTypes
+				.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
+		m_fpLength.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
+		m_fpUseChirality
+				.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
+		m_morganRadius
+				.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
 	}
 
 	protected void updateHARatio() {
@@ -251,15 +232,13 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 	protected void updateNumCuts() {
 		// We can only add Hs in the RDKit node if numCuts = 1
 		m_AddHs.setEnabled(m_NumCuts.getIntValue() == 1);
-		m_stripHsAtEnd.setEnabled(m_NumCuts.getIntValue() == 1
-				&& m_AddHs.getBooleanValue());
+		m_stripHsAtEnd.setEnabled(m_NumCuts.getIntValue() == 1 && m_AddHs.getBooleanValue());
 		// We only worry about tracking cuts for multiple cuts
 		m_trackCutConnectivity.setEnabled(m_NumCuts.getIntValue() > 1);
 	}
 
 	protected void updateStripHs() {
-		m_stripHsAtEnd.setEnabled(m_NumCuts.getIntValue() == 1
-				&& m_AddHs.getBooleanValue());
+		m_stripHsAtEnd.setEnabled(m_NumCuts.getIntValue() == 1 && m_AddHs.getBooleanValue());
 	}
 
 	protected void updateChangingAtoms() {
@@ -273,15 +252,13 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 	/** Create Settings Model for Morgan FP Length */
 	public static SettingsModelIntegerBounded createFpLengthModel() {
 		return new SettingsModelIntegerBounded("FP Length",
-				(int) FragmentKeyMorganFP.DEFAULT_FP_LENGTH, 64,
-				Integer.MAX_VALUE);
+				(int) FragmentKeyMorganFP.DEFAULT_FP_LENGTH, 64, Integer.MAX_VALUE);
 	}
 
 	/** Create Settings Model for Morgan FP Radius */
 	public static SettingsModelIntegerBounded createMorganRadiusModel() {
 		return new SettingsModelIntegerBounded("FP Morgan Radius",
-				(int) FragmentKeyMorganFP.DEFAULT_FP_RADIUS, 1,
-				Integer.MAX_VALUE);
+				(int) FragmentKeyMorganFP.DEFAULT_FP_RADIUS, 1, Integer.MAX_VALUE);
 	}
 
 	/** Create Settings Model for use of chirality in FP generation */
@@ -333,8 +310,8 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 	 * Create Settings model for the maximum number of changing atoms
 	 */
 	public static SettingsModelIntegerBounded createMaxChangingAtomsModel() {
-		return new SettingsModelIntegerBounded("Max Changing Heavy Atoms", 12,
-				0, Integer.MAX_VALUE);
+		return new SettingsModelIntegerBounded("Max Changing Heavy Atoms", 12, 0,
+				Integer.MAX_VALUE);
 	}
 
 	/**
@@ -342,9 +319,8 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 	 * atoms
 	 */
 	public static SettingsModelDoubleBounded createRatioModel() {
-		return new SettingsModelDoubleBounded(
-				"Max ratio of unchanging to changing heavy atoms", 1.0, 0.0001,
-				Double.MAX_VALUE);
+		return new SettingsModelDoubleBounded("Max ratio of unchanging to changing heavy atoms",
+				1.0, 0.0001, Double.MAX_VALUE);
 	}
 
 	/**
@@ -358,8 +334,7 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 	 * Create the settings model for the has atom ratio filter
 	 */
 	public static SettingsModelBoolean createHasHARatioFilterModel() {
-		return new SettingsModelBoolean("Has Max Changing Atoms Ratio Filter",
-				true);
+		return new SettingsModelBoolean("Has Max Changing Atoms Ratio Filter", true);
 	}
 
 	/**
@@ -411,7 +386,6 @@ public class AbstractRdkitMatchedPairsMultipleCutsNodeDialog extends
 
 	/** Create the SM for outputting the HAC ratios */
 	public static SettingsModelBoolean createOutputHARatiosModel() {
-		return new SettingsModelBoolean(
-				"Output changing / unchanging HA ratios", false);
+		return new SettingsModelBoolean("Output changing / unchanging HA ratios", false);
 	}
 }

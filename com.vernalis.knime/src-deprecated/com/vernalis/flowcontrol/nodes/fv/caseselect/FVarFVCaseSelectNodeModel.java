@@ -21,7 +21,6 @@ import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -30,6 +29,7 @@ import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+
 import com.vernalis.flowcontrol.FlowControlHelpers;
 
 /**
@@ -39,14 +39,10 @@ import com.vernalis.flowcontrol.FlowControlHelpers;
  * @author S. D. Roughley
  */
 public class FVarFVCaseSelectNodeModel extends NodeModel {
-	// the logger instance
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(FVarFVCaseSelectNodeModel.class);
 	static final int m_OutPorts = 3;
 	private static final PortType m_portType = FlowVariablePortObject.TYPE;
 
-	private final SettingsModelInteger m_port = FVarFVCaseSelectNodeDialog
-			.createSettingsModel();
+	private final SettingsModelInteger m_port = FVarFVCaseSelectNodeDialog.createSettingsModel();
 
 	/**
 	 * Constructor for the node model.
@@ -62,10 +58,10 @@ public class FVarFVCaseSelectNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData,
-			final ExecutionContext exec) throws Exception {
-		return FlowControlHelpers.createStartOutputPortObject(inData,
-				m_OutPorts, m_port.getIntValue());
+	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
+			throws Exception {
+		return FlowControlHelpers.createStartOutputPortObject(inData, m_OutPorts,
+				m_port.getIntValue());
 	}
 
 	/**
@@ -82,8 +78,8 @@ public class FVarFVCaseSelectNodeModel extends NodeModel {
 	protected PortObjectSpec[] configure(final PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
 
-		return FlowControlHelpers.createStartOutputPortObjectSpec(inSpecs,
-				m_OutPorts, m_port.getIntValue());
+		return FlowControlHelpers.createStartOutputPortObjectSpec(inSpecs, m_OutPorts,
+				m_port.getIntValue());
 
 	}
 
@@ -108,8 +104,7 @@ public class FVarFVCaseSelectNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 		m_port.validateSettings(settings);
 	}
 
@@ -117,9 +112,8 @@ public class FVarFVCaseSelectNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 
 	}
 
@@ -127,9 +121,8 @@ public class FVarFVCaseSelectNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 
 	}
 

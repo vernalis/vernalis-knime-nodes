@@ -21,7 +21,6 @@ import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -42,14 +41,10 @@ import com.vernalis.flowcontrol.FlowControlHelpers;
  * @author S. D. Roughley
  */
 public class FVarIfSwitchNodeModel extends NodeModel {
-	// the logger instance
-	private static final NodeLogger logger = NodeLogger
-			.getLogger(FVarIfSwitchNodeModel.class);
 	private static final int m_OutPorts = 2;
 	private static final PortType m_portType = FlowVariablePortObject.TYPE;
 
-	private final SettingsModelString m_port = FVarIfSwitchNodeDialog
-			.createSettingsModel();
+	private final SettingsModelString m_port = FVarIfSwitchNodeDialog.createSettingsModel();
 
 	/**
 	 * Constructor for the node model.
@@ -65,8 +60,8 @@ public class FVarIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData,
-			final ExecutionContext exec) throws Exception {
+	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
+			throws Exception {
 
 		if (m_port.getStringValue().equals("both")) {
 			return new PortObject[] { FlowVariablePortObject.INSTANCE,
@@ -95,14 +90,11 @@ public class FVarIfSwitchNodeModel extends NodeModel {
 			throws InvalidSettingsException {
 
 		if (m_port.getStringValue().equals("both")) {
-			return new PortObjectSpec[] { inSpecs[0]	,
-					inSpecs[0] };
+			return new PortObjectSpec[] { inSpecs[0], inSpecs[0] };
 		} else if (m_port.getStringValue().equals("top")) {
-			return new PortObjectSpec[] { inSpecs[0],
-					InactiveBranchPortObjectSpec.INSTANCE };
+			return new PortObjectSpec[] { inSpecs[0], InactiveBranchPortObjectSpec.INSTANCE };
 		} else if (m_port.getStringValue().equals("bottom")) {
-			return new PortObjectSpec[] { 
-					InactiveBranchPortObjectSpec.INSTANCE, inSpecs[0] };
+			return new PortObjectSpec[] { InactiveBranchPortObjectSpec.INSTANCE, inSpecs[0] };
 		}
 		// Otherwise the settings are broken
 		throw new InvalidSettingsException("Select the active port(s) - top, bottom or both");
@@ -129,8 +121,7 @@ public class FVarIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
 		m_port.validateSettings(settings);
 	}
 
@@ -138,9 +129,8 @@ public class FVarIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 
 	}
 
@@ -148,9 +138,8 @@ public class FVarIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir,
-			final ExecutionMonitor exec) throws IOException,
-			CanceledExecutionException {
+	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 
 	}
 
