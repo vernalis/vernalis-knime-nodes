@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2015, 2018, Vernalis (R&D) Ltd
  * This program is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License, Version 3, as 
  * published by the Free Software Foundation.
@@ -711,18 +711,20 @@ public class RDKitFragmentationUtils {
 		// Add a dummy atom to the start
 		Atom at0 = swigGC.markForCleanup(new Atom(0), gcWrapLayer);
 		at0.setIsotope(index);
-		mol.addAtom(at0, true);
-		mol.addBond(swigGC.markForCleanup(mol.getAtomWithIdx(bond.getStartIdx()), gcWrapLayer),
-				swigGC.markForCleanup(mol.getAtomWithIdx(newAtmIdx++), gcWrapLayer),
-				BondType.SINGLE);
+		// SDR 20-Apr-2018
+		// As of RDKit v 3.3.1, addAtom(Atom, boolean) is removed, so add
+		// default 'takeOwnership Argument'
+		mol.addAtom(at0, true, false);
+		// SDR 20-Apr-2018
+		// As of RDKit v 3.3.1, addBond(Atom, Atom, BondType) is removed, so use
+		// much simpler addBond(long, long, BondType)
+		mol.addBond(bond.getStartIdx(), newAtmIdx++, BondType.SINGLE);
 
 		// Add a dummy atom to the end
 		Atom at1 = swigGC.markForCleanup(new Atom(0), gcWrapLayer);
 		at1.setIsotope(index);
-		mol.addAtom(at1);
-		mol.addBond(swigGC.markForCleanup(mol.getAtomWithIdx(bond.getEndIdx()), gcWrapLayer),
-				swigGC.markForCleanup(mol.getAtomWithIdx(newAtmIdx++), gcWrapLayer),
-				BondType.SINGLE);
+		mol.addAtom(at1, true, false);
+		mol.addBond(bond.getEndIdx(), newAtmIdx++, BondType.SINGLE);
 
 		// TODO: DOES THIS BREAK IT???
 		// RDKFuncs.cleanUp(mol);
@@ -779,32 +781,26 @@ public class RDKitFragmentationUtils {
 		// Add a dummy atom to the start
 		Atom at0 = swigGC.markForCleanup(new Atom(0), gcWrapLayer);
 		at0.setIsotope(index);
-		mol.addAtom(at0, true);
+		mol.addAtom(at0, true, false);
 
-		mol.addBond(swigGC.markForCleanup(mol.getAtomWithIdx(bond.getStartIdx()), gcWrapLayer),
-				swigGC.markForCleanup(mol.getAtomWithIdx(newAtmIdx++), gcWrapLayer),
-				BondType.SINGLE);
+		mol.addBond(bond.getStartIdx(), newAtmIdx++, BondType.SINGLE);
 
 		// Add a dummy atom to the end - with an incremented index
 		Atom at1 = swigGC.markForCleanup(new Atom(0), gcWrapLayer);
 		at1.setIsotope(index + 1);
-		mol.addAtom(at1);
-		mol.addBond(swigGC.markForCleanup(mol.getAtomWithIdx(bond.getEndIdx()), gcWrapLayer),
-				swigGC.markForCleanup(mol.getAtomWithIdx(newAtmIdx++), gcWrapLayer),
-				BondType.SINGLE);
+		mol.addAtom(at1, true, false);
+		mol.addBond(bond.getEndIdx(), newAtmIdx++, BondType.SINGLE);
 
 		// Now we need to add two further atoms and bond them together too
 		Atom at2 = swigGC.markForCleanup(new Atom(0), gcWrapLayer);
 		at2.setIsotope(index);
-		mol.addAtom(at2, true);
+		mol.addAtom(at2, true, false);
 
 		Atom at3 = swigGC.markForCleanup(new Atom(0), gcWrapLayer);
 		at3.setIsotope(index + 1);
-		mol.addAtom(at3, true);
+		mol.addAtom(at3, true, false);
 
-		mol.addBond(swigGC.markForCleanup(mol.getAtomWithIdx(newAtmIdx++), gcWrapLayer),
-				swigGC.markForCleanup(mol.getAtomWithIdx(newAtmIdx++), gcWrapLayer),
-				BondType.SINGLE);
+		mol.addBond(newAtmIdx++, newAtmIdx++, BondType.SINGLE);
 		return mol;
 	}
 
