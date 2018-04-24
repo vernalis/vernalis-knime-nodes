@@ -10,8 +10,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.knime.workbench.core,
  org.knime.workbench.repository,
- org.knime.base,
- org.knime.product;bundle-version="2.9.3"
+ org.knime.base
 Bundle-ActivationPolicy: lazy
 Export-Package: com.vernalis.exceptions,
  com.vernalis.io,
