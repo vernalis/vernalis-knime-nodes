@@ -20,12 +20,14 @@ import java.util.Arrays;
 
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
+import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentButton;
 import org.knime.core.node.defaultnodesettings.DialogComponentLabel;
 import org.knime.core.node.defaultnodesettings.DialogComponentMultiLineString;
 import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
@@ -42,6 +44,8 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
  * @author SDR
  */
 public class EuroPmcAdvancedSearchNodeDialog extends DefaultNodeSettingsPane {
+	private static final String RETURN_ONLY_OPEN_ACCESS_ARTICLES =
+			"Return only Open Access Articles";
 	// The objects for the updateable text fields
 	private DialogComponentLabel hitCount;
 	private DialogComponentMultiLineString queryString;
@@ -57,6 +61,7 @@ public class EuroPmcAdvancedSearchNodeDialog extends DefaultNodeSettingsPane {
 	private DialogComponentString GenQuery;
 	private DialogComponentStringSelection QType;
 	private DialogComponentStringSelection Sort;
+	private DialogComponentBoolean onlyOA;
 
 	/**
 	 * New pane for configuring the EuroPmcAdvancedSearch node.
@@ -109,6 +114,9 @@ public class EuroPmcAdvancedSearchNodeDialog extends DefaultNodeSettingsPane {
 				"General Query:");
 		addDialogComponent(GenQuery);
 
+		onlyOA = new DialogComponentBoolean(createOAOnlyModel(), RETURN_ONLY_OPEN_ACCESS_ARTICLES);
+		addDialogComponent(onlyOA);
+
 		createNewGroup("Query Options");
 		QType = new DialogComponentStringSelection(
 				new SettingsModelString(EuroPmcAdvancedSearchNodeModel.CFG_QUERY_TYPE, "Core"),
@@ -159,10 +167,14 @@ public class EuroPmcAdvancedSearchNodeDialog extends DefaultNodeSettingsPane {
 		// multi-line text
 		m_queryString = new SettingsModelString("queryString", "\n\n\n");
 		m_queryString.setEnabled(false);
-		queryString = new DialogComponentMultiLineString(m_queryString,
-				"Query (as parsed by ePubMed):");
+		queryString =
+				new DialogComponentMultiLineString(m_queryString, "Query (as parsed by ePubMed):");
 		addDialogComponent(queryString);
 
+	}
+
+	static SettingsModelBoolean createOAOnlyModel() {
+		return new SettingsModelBoolean(RETURN_ONLY_OPEN_ACCESS_ARTICLES, false);
 	}
 
 	protected void doTestQuery() {
@@ -180,7 +192,8 @@ public class EuroPmcAdvancedSearchNodeDialog extends DefaultNodeSettingsPane {
 				((SettingsModelString) To.getModel()).getStringValue(),
 				((SettingsModelString) Journal.getModel()).getStringValue(),
 				((SettingsModelString) MeSH.getModel()).getStringValue(),
-				((SettingsModelString) GenQuery.getModel()).getStringValue(), sortDate);
+				((SettingsModelString) GenQuery.getModel()).getStringValue(), sortDate,
+				((SettingsModelBoolean) onlyOA.getModel()).getBooleanValue());
 
 		// Now Run it
 		String xmlResult;

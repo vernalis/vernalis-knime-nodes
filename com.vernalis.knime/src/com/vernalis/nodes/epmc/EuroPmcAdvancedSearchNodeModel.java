@@ -35,6 +35,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
@@ -54,6 +55,7 @@ import org.knime.core.node.streamable.StreamableOperator;
 import org.knime.core.node.streamable.StreamableOperatorInternals;
 
 import static com.vernalis.nodes.epmc.EuroPmcAdvancedSearchNodeDialog.createEmailModel;
+import static com.vernalis.nodes.epmc.EuroPmcAdvancedSearchNodeDialog.createOAOnlyModel;
 import static com.vernalis.nodes.epmc.EuroPmcAdvancedSearchNodeDialog.createPageSizeModel;
 
 /**
@@ -93,6 +95,7 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	private final SettingsModelString m_SortOrder = new SettingsModelString(CFG_SORT_ORDER, "Date");
 	private final SettingsModelIntegerBounded m_pageSize = createPageSizeModel();
 	private final SettingsModelString m_email = createEmailModel();
+	private final SettingsModelBoolean m_openAccess = createOAOnlyModel();
 
 	// Data table Spec
 	private static final DataTableSpec spec = new DataTableSpec(createDataColumnSpec());
@@ -149,7 +152,8 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 				String queryText = EpmcHelpers.buildQueryString(m_Title.getStringValue(),
 						m_Authors.getStringValue(), m_Affiliation.getStringValue(),
 						m_From.getStringValue(), m_To.getStringValue(), m_Journals.getStringValue(),
-						m_MeSH.getStringValue(), m_Gnl.getStringValue(), sortDate);
+						m_MeSH.getStringValue(), m_Gnl.getStringValue(), sortDate,
+						m_openAccess.getBooleanValue());
 
 				// Inform the user of progress...
 				logger.info("Query string used: " + queryText);
@@ -332,6 +336,7 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 		m_To.saveSettingsTo(settings);
 		m_pageSize.saveSettingsTo(settings);
 		m_email.saveSettingsTo(settings);
+		m_openAccess.saveSettingsTo(settings);
 	}
 
 	/**
@@ -360,6 +365,11 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 			m_email.loadSettingsFrom(settings);
 		} catch (InvalidSettingsException e) {
 			m_email.setStringValue(null);
+		}
+		try {
+			m_openAccess.loadSettingsFrom(settings);
+		} catch (InvalidSettingsException e) {
+			m_openAccess.setBooleanValue(false);
 		}
 	}
 

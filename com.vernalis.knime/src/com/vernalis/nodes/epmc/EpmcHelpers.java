@@ -41,9 +41,19 @@ import org.knime.core.node.NodeLogger;
  *
  */
 public class EpmcHelpers {
+	private static final String SORT_DATE_Y = " SORT_DATE:y";
 	/*
 	 * Helper functions for the ePubMedCentral query nodes
 	 */
+
+	private static final String PUB_YEAR = "PUB_YEAR:[";
+	private static final String KW = "KW";
+	private static final String JOURNAL = "JOURNAL";
+	private static final String AFFILIATIONS = "AFF";
+	private static final String AUTH = "AUTH";
+	private static final String OPEN_ACCESS = "OPEN_ACCESS";
+	private static final String EPMC_QUERY_SERVICE_BASE =
+			"https://www.ebi.ac.uk/europepmc/webservices/rest/search/query=";
 
 	/**
 	 * Function to build correct format url object for ePMC RESTful query
@@ -116,8 +126,7 @@ public class EpmcHelpers {
 		/*
 		 * This builds a query URL from query string
 		 */
-		StringBuilder url =
-				new StringBuilder("https://www.ebi.ac.uk/europepmc/webservices/rest/search/query=");
+		StringBuilder url = new StringBuilder(EPMC_QUERY_SERVICE_BASE);
 		url.append(queryString.replace(" ", "%20").replace("\"", "%22").replace("[", "%5B")
 				.replace("]", "%5D").replace("+", "%20"));
 		url.append("&resulttype=").append(resultType);
@@ -161,40 +170,56 @@ public class EpmcHelpers {
 	 *            identifiers
 	 * @param sortDate
 	 *            Sort by date?
+	 * @param openAccessOnly
+	 *            only return Open Access Articles
 	 * @return Query string for the full query based on the options specified
 	 */
 	public static String buildQueryString(String Title, String Authors, String Affiliations,
 			String From, String To, String Journals, String MeSHSubjects, String GeneralQuery,
-			boolean sortDate) {
+			boolean sortDate, boolean openAccessOnly) {
 		/*
 		 * Builds the ePMC query string from the query options
 		 */
-		String queryString = " ";
-		queryString +=
-				(GeneralQuery != null && !("".equals(GeneralQuery))) ? GeneralQuery + " " : "";
-		queryString += (Title != null && !("".equals(Title))) ? addField(Title, "TITLE") : "";
-		queryString += (Authors != null && !("".equals(Authors))) ? addField(Authors, "AUTH") : "";
-		queryString += (Affiliations != null && !("".equals(Affiliations)))
-				? addField(Affiliations, "AFF") : "";
-		if ((To != null && !("".equals(To))) || (From != null && !("".equals(From)))) {
-			// Deal with dates in query
-			queryString += "PUB_YEAR:[";
-			// Default start year is '0'
-			queryString += (From != null) ? From : "0";
-			queryString += " TO ";
-			// Default end year is now+2
-			queryString += (To != null) ? To : defaultYearTo();
-			queryString += "] ";
+		StringBuilder queryString = new StringBuilder(" ");
+		if (GeneralQuery != null && !GeneralQuery.isEmpty()) {
+			queryString.append(GeneralQuery).append(" ");
 		}
-		queryString +=
-				(Journals != null && !("".equals(Journals))) ? addField(Journals, "JOURNAL") : "";
-		queryString += (MeSHSubjects != null && !("".equals(MeSHSubjects)))
-				? addField(MeSHSubjects, "KW") : "";
+		if (openAccessOnly) {
+			queryString.append(addField("y", OPEN_ACCESS));
+		}
+		if (Title != null && !Title.isEmpty()) {
+			queryString.append(addField(Title, "TITLE"));
+		}
+		if (Authors != null && !Authors.isEmpty()) {
+			queryString.append(addField(Authors, AUTH));
+		}
+		if (Affiliations != null && !Affiliations.isEmpty()) {
+			queryString.append(addField(Affiliations, AFFILIATIONS));
+		}
+		if ((To != null && !To.isEmpty()) || (From != null && !From.isEmpty())) {
+			// Deal with dates in query
+			queryString.append(PUB_YEAR);
+			// Default start year is '0'
+			queryString.append(From != null && !From.isEmpty() ? From : "0");
+			queryString.append(" TO ");
+			// Default end year is now+2
+			queryString.append(To != null && !To.isEmpty() ? To : defaultYearTo());
+			queryString.append("] ");
+		}
+		if (Journals != null && !Journals.isEmpty()) {
+			queryString.append(addField(Journals, JOURNAL));
+		}
+		if (MeSHSubjects != null && !MeSHSubjects.isEmpty()) {
+			queryString.append(addField(MeSHSubjects, KW));
+		}
 
-		queryString = queryString.trim();
+		queryString = new StringBuilder(queryString.toString().trim());
 		// Now deal with sorting order - default is relevance
-		queryString += (sortDate) ? " SORT_DATE:y" : "";
-		return queryString.trim().replace("  ", " ");
+		if (sortDate) {
+			queryString.append(SORT_DATE_Y);
+		}
+
+		return queryString.toString().trim().replace("  ", " ");
 	}
 
 	/**
