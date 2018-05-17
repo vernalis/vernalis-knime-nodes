@@ -119,7 +119,8 @@ public abstract class AbstractLeaf<T> implements Comparable<AbstractLeaf<T>> {
 		if (idx < 0) {
 			throw new IllegalArgumentException("Index must be >= 0");
 		}
-		return canonicalSmiles.replaceAll("\\[[\\d]*\\*\\]", "[" + idx + "*]");
+		return canonicalSmiles.replaceAll("\\[[\\d]*\\*\\]", "[" + idx + "*]")
+				.replaceAll("(?<!\\[)\\*(?!\\])", "[" + idx + "*]");
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -38,6 +38,10 @@ import com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFac
 
 /**
  * Node dialog pane for the MMP Fragment nodes
+ * <p>
+ * Added version parameter, which allows upgrading v3 nodes to perform
+ * identically to their previous version - SDR 11-May-2018
+ * </p>
  * 
  * @author s.roughley
  */
@@ -52,9 +56,10 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 	 * @param isMulticut
 	 *            Is the node multicut?
 	 */
-	public AbstractMMPFragmentNodeDialog(FragmentationUtilsFactory<T, U> fragUtilityFactory,
-			boolean isMulticut) {
-		super(fragUtilityFactory, isMulticut);
+	public AbstractMMPFragmentNodeDialog(
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, int version) {
+		super(fragUtilityFactory, isMulticut, version);
 		/*
 		 * @formatter:off
 		 * ****************************************** 
@@ -65,20 +70,23 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 		createNewTab("Fragmentation Filtering Settings");
 
 		createNewGroup("Complexity");
-		SettingsModelBoolean limitByComplexityMdl = createLimitByComplexityModel();
-		SettingsModelIntegerBounded maxFragmentationsMdl = createMaxFragmentationsModel();
+		SettingsModelBoolean limitByComplexityMdl =
+				createLimitByComplexityModel();
+		SettingsModelIntegerBounded maxFragmentationsMdl =
+				createMaxFragmentationsModel();
 		limitByComplexityMdl.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				maxFragmentationsMdl.setEnabled(limitByComplexityMdl.getBooleanValue());
+				maxFragmentationsMdl
+						.setEnabled(limitByComplexityMdl.getBooleanValue());
 			}
 		});
 
-		addDialogComponent(
-				new DialogComponentBoolean(limitByComplexityMdl, MMPConstants.LIMIT_BY_COMPLEXITY));
-		addDialogComponent(
-				new DialogComponentNumber(maxFragmentationsMdl, "Maximum Fragmentations", 1000));
+		addDialogComponent(new DialogComponentBoolean(limitByComplexityMdl,
+				MMPConstants.LIMIT_BY_COMPLEXITY));
+		addDialogComponent(new DialogComponentNumber(maxFragmentationsMdl,
+				"Maximum Fragmentations", 1000));
 
 		createNewGroup("Chirality");
 		addDialogComponent(new DialogComponentBoolean(createProchiralModel(),
@@ -86,13 +94,16 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 		closeCurrentGroup();
 
 		createNewGroup("Variable Heavy Atom filter");
-		SettingsModelBoolean hasChangingAtomsMdl = createHasMaxChangingAtomsModel();
-		SettingsModelIntegerBounded maxChangingAtomsMdl = createMaxChangingAtomsModel();
+		SettingsModelBoolean hasChangingAtomsMdl =
+				createHasMaxChangingAtomsModel();
+		SettingsModelIntegerBounded maxChangingAtomsMdl =
+				createMaxChangingAtomsModel();
 		hasChangingAtomsMdl.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				maxChangingAtomsMdl.setEnabled(hasChangingAtomsMdl.getBooleanValue());
+				maxChangingAtomsMdl
+						.setEnabled(hasChangingAtomsMdl.getBooleanValue());
 
 			}
 		});
@@ -104,13 +115,15 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 				"Maximum Number of variable heavy atoms:", 1));
 
 		createNewGroup("Heavy Atom Ratio Filter");
-		SettingsModelBoolean hasHARatioFilterMdl = createHasHARatioFilterModel();
+		SettingsModelBoolean hasHARatioFilterMdl =
+				createHasHARatioFilterModel();
 		SettingsModelDoubleBounded minHARatioFilterMdl = createHARatioModel();
 		hasHARatioFilterMdl.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				minHARatioFilterMdl.setEnabled(hasHARatioFilterMdl.getBooleanValue());
+				minHARatioFilterMdl
+						.setEnabled(hasHARatioFilterMdl.getBooleanValue());
 			}
 		});
 		minHARatioFilterMdl.setEnabled(hasHARatioFilterMdl.getBooleanValue());
@@ -128,23 +141,31 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 		 */
 		createNewTab("Output Settings");
 
-		addDialogComponent(new DialogComponentBoolean(createOutputChangingHACountsModel(),
-				"Show number of changing atoms"));
-		addDialogComponent(new DialogComponentBoolean(createOutputHARatiosModel(),
-				"Show ratio of constant / changing heavy atoms"));
+		addDialogComponent(
+				new DialogComponentBoolean(createOutputChangingHACountsModel(),
+						"Show number of changing atoms"));
+		addDialogComponent(
+				new DialogComponentBoolean(createOutputHARatiosModel(),
+						"Show ratio of constant / changing heavy atoms"));
 
-		addDialogComponent(new DialogComponentBoolean(createAddFailReasonModel(),
-				"Add failure reasons to 2nd output table"));
+		addDialogComponent(
+				new DialogComponentBoolean(createAddFailReasonModel(),
+						"Add failure reasons to 2nd output table"));
 
 		if (fragUtilityFactory.getRendererType() != null) {
 			createNewGroup("Fragmentation rendering");
 
-			final SettingsModelBoolean renderFragmentationMdl = createRenderFragmentationModel();
-			final SettingsModelBoolean renderBreakingBondMdl = createRenderBreakingBondModel();
-			final SettingsModelColor breakingBondColourMdl = createBreakingBondColourModel();
-			final SettingsModelBoolean renderKeyBondMdl = createRenderKeyBondModel();
+			final SettingsModelBoolean renderFragmentationMdl =
+					createRenderFragmentationModel();
+			final SettingsModelBoolean renderBreakingBondMdl =
+					createRenderBreakingBondModel();
+			final SettingsModelColor breakingBondColourMdl =
+					createBreakingBondColourModel();
+			final SettingsModelBoolean renderKeyBondMdl =
+					createRenderKeyBondModel();
 			final SettingsModelColor keyColourMdl = createKeyColourModel();
-			final SettingsModelBoolean renderValueBondMdl = createRenderValueBondModel();
+			final SettingsModelBoolean renderValueBondMdl =
+					createRenderValueBondModel();
 			final SettingsModelColor valueColourMdl = createValueColourModel();
 
 			renderFragmentationMdl.addChangeListener(new ChangeListener() {
@@ -155,9 +176,12 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 						renderBreakingBondMdl.setEnabled(true);
 						renderKeyBondMdl.setEnabled(true);
 						renderValueBondMdl.setEnabled(true);
-						breakingBondColourMdl.setEnabled(renderBreakingBondMdl.getBooleanValue());
-						keyColourMdl.setEnabled(renderKeyBondMdl.getBooleanValue());
-						valueColourMdl.setEnabled(renderValueBondMdl.getBooleanValue());
+						breakingBondColourMdl.setEnabled(
+								renderBreakingBondMdl.getBooleanValue());
+						keyColourMdl
+								.setEnabled(renderKeyBondMdl.getBooleanValue());
+						valueColourMdl.setEnabled(
+								renderValueBondMdl.getBooleanValue());
 					} else {
 						renderBreakingBondMdl.setEnabled(false);
 						renderKeyBondMdl.setEnabled(false);
@@ -174,7 +198,8 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					breakingBondColourMdl.setEnabled(renderBreakingBondMdl.getBooleanValue());
+					breakingBondColourMdl.setEnabled(
+							renderBreakingBondMdl.getBooleanValue());
 				}
 			});
 			renderKeyBondMdl.addChangeListener(new ChangeListener() {
@@ -189,7 +214,8 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					valueColourMdl.setEnabled(renderValueBondMdl.getBooleanValue());
+					valueColourMdl
+							.setEnabled(renderValueBondMdl.getBooleanValue());
 				}
 			});
 
@@ -197,7 +223,8 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 				renderBreakingBondMdl.setEnabled(true);
 				renderKeyBondMdl.setEnabled(true);
 				renderValueBondMdl.setEnabled(true);
-				breakingBondColourMdl.setEnabled(renderBreakingBondMdl.getBooleanValue());
+				breakingBondColourMdl
+						.setEnabled(renderBreakingBondMdl.getBooleanValue());
 				keyColourMdl.setEnabled(renderKeyBondMdl.getBooleanValue());
 				valueColourMdl.setEnabled(renderValueBondMdl.getBooleanValue());
 			} else {
@@ -216,22 +243,25 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 								+ "to at least version 3.3.1 in order for the rendering code "
 								+ "to work</font></html>"));
 			}
-			addDialogComponent(
-					new DialogComponentBoolean(renderFragmentationMdl, "Render Fragmentation"));
+			addDialogComponent(new DialogComponentBoolean(
+					renderFragmentationMdl, "Render Fragmentation"));
 			setHorizontalPlacement(true);
 			addDialogComponent(new DialogComponentBoolean(renderBreakingBondMdl,
 					MMPConstants.SHOW_BREAKING_BONDS));
-			addDialogComponent(new DialogComponentColorChooser(breakingBondColourMdl,
-					"Breaking bond colour", true));
+			addDialogComponent(new DialogComponentColorChooser(
+					breakingBondColourMdl, "Breaking bond colour", true));
 			setHorizontalPlacement(false);
 			setHorizontalPlacement(true);
-			addDialogComponent(new DialogComponentBoolean(renderKeyBondMdl, "Show key"));
-			addDialogComponent(new DialogComponentColorChooser(keyColourMdl, "Key colour", true));
-			setHorizontalPlacement(false);
-			setHorizontalPlacement(true);
-			addDialogComponent(new DialogComponentBoolean(renderValueBondMdl, "Show value"));
 			addDialogComponent(
-					new DialogComponentColorChooser(valueColourMdl, "Value colour", true));
+					new DialogComponentBoolean(renderKeyBondMdl, "Show key"));
+			addDialogComponent(new DialogComponentColorChooser(keyColourMdl,
+					"Key colour", true));
+			setHorizontalPlacement(false);
+			setHorizontalPlacement(true);
+			addDialogComponent(new DialogComponentBoolean(renderValueBondMdl,
+					"Show value"));
+			addDialogComponent(new DialogComponentColorChooser(valueColourMdl,
+					"Value colour", true));
 			setHorizontalPlacement(false);
 			closeCurrentGroup();
 		}
@@ -243,7 +273,8 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 		 */
 		createNewTab("Fingerprints");
 		createNewGroup("'Value' fingerprints");
-		addDialogComponent(new DialogComponentBoolean(createAddValueGraphDistanceFPModel(),
+		addDialogComponent(new DialogComponentBoolean(
+				createAddValueGraphDistanceFPModel(),
 				"Show 'Value' attachment point graph distances fingerprint"));
 		closeCurrentGroup();
 
@@ -264,42 +295,46 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				fpLengthMdl.setEnabled(
-						apFingerprintsMdl.isEnabled() && apFingerprintsMdl.getBooleanValue());
-				morganRadiusMdl.setEnabled(
-						apFingerprintsMdl.isEnabled() && apFingerprintsMdl.getBooleanValue());
+				fpLengthMdl.setEnabled(apFingerprintsMdl.isEnabled()
+						&& apFingerprintsMdl.getBooleanValue());
+				morganRadiusMdl.setEnabled(apFingerprintsMdl.isEnabled()
+						&& apFingerprintsMdl.getBooleanValue());
 				if (fpUseBondTypesMdl != null) {
-					fpUseBondTypesMdl.setEnabled(
-							apFingerprintsMdl.isEnabled() && apFingerprintsMdl.getBooleanValue());
+					fpUseBondTypesMdl.setEnabled(apFingerprintsMdl.isEnabled()
+							&& apFingerprintsMdl.getBooleanValue());
 				}
 				if (fpUseChiralityMdl != null) {
-					fpUseChiralityMdl.setEnabled(
-							apFingerprintsMdl.isEnabled() && apFingerprintsMdl.getBooleanValue());
+					fpUseChiralityMdl.setEnabled(apFingerprintsMdl.isEnabled()
+							&& apFingerprintsMdl.getBooleanValue());
 				}
 			}
 		});
 		// Initialise enabled states
-		fpLengthMdl
-				.setEnabled(apFingerprintsMdl.isEnabled() && apFingerprintsMdl.getBooleanValue());
-		morganRadiusMdl
-				.setEnabled(apFingerprintsMdl.isEnabled() && apFingerprintsMdl.getBooleanValue());
+		fpLengthMdl.setEnabled(apFingerprintsMdl.isEnabled()
+				&& apFingerprintsMdl.getBooleanValue());
+		morganRadiusMdl.setEnabled(apFingerprintsMdl.isEnabled()
+				&& apFingerprintsMdl.getBooleanValue());
 		if (fpUseBondTypesMdl != null) {
-			fpUseBondTypesMdl.setEnabled(
-					apFingerprintsMdl.isEnabled() && apFingerprintsMdl.getBooleanValue());
+			fpUseBondTypesMdl.setEnabled(apFingerprintsMdl.isEnabled()
+					&& apFingerprintsMdl.getBooleanValue());
 		}
 		if (fpUseChiralityMdl != null) {
-			fpUseChiralityMdl.setEnabled(
-					apFingerprintsMdl.isEnabled() && apFingerprintsMdl.getBooleanValue());
+			fpUseChiralityMdl.setEnabled(apFingerprintsMdl.isEnabled()
+					&& apFingerprintsMdl.getBooleanValue());
 		}
 
 		// Add dialog components
+		addDialogComponent(new DialogComponentBoolean(apFingerprintsMdl,
+				"Add Attachment Point Fingerprints"));
+		addDialogComponent(new DialogComponentNumber(fpLengthMdl,
+				"Fingerprint Length", 128));
 		addDialogComponent(
-				new DialogComponentBoolean(apFingerprintsMdl, "Add Attachment Point Fingerprints"));
-		addDialogComponent(new DialogComponentNumber(fpLengthMdl, "Fingerprint Length", 128));
-		addDialogComponent(new DialogComponentNumber(morganRadiusMdl, "Morgan Radius", 1));
+				new DialogComponentNumber(morganRadiusMdl, "Morgan Radius", 1));
 		if (fragUtilityFactory.hasExtendedFingerprintOptions()) {
-			addDialogComponent(new DialogComponentBoolean(fpUseBondTypesMdl, "Use Bond Types"));
-			addDialogComponent(new DialogComponentBoolean(fpUseChiralityMdl, "Use chirality"));
+			addDialogComponent(new DialogComponentBoolean(fpUseBondTypesMdl,
+					"Use Bond Types"));
+			addDialogComponent(new DialogComponentBoolean(fpUseChiralityMdl,
+					"Use chirality"));
 		}
 	}
 
@@ -307,28 +342,32 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 	 * @return The settings model for the value colour
 	 */
 	static SettingsModelColor createValueColourModel() {
-		return new SettingsModelColor(MMPConstants.VALUE_COLOUR, MMPConstants.DEFAULT_VALUE_COLOUR);
+		return new SettingsModelColor(MMPConstants.VALUE_COLOUR,
+				MMPConstants.DEFAULT_VALUE_COLOUR);
 	}
 
 	/**
 	 * @return The settings model for the 'show value' model
 	 */
 	static SettingsModelBoolean createRenderValueBondModel() {
-		return new SettingsModelBoolean(MMPConstants.SHOW_VALUE, MMPConstants.DEFAULT_RENDER_VALUE);
+		return new SettingsModelBoolean(MMPConstants.SHOW_VALUE,
+				MMPConstants.DEFAULT_RENDER_VALUE);
 	}
 
 	/**
 	 * @return The settings model for the key colour
 	 */
 	static SettingsModelColor createKeyColourModel() {
-		return new SettingsModelColor(MMPConstants.KEY_COLOUR, MMPConstants.DEFAULT_KEY_COLOUR);
+		return new SettingsModelColor(MMPConstants.KEY_COLOUR,
+				MMPConstants.DEFAULT_KEY_COLOUR);
 	}
 
 	/**
 	 * @return The settings model for the 'show key' model
 	 */
 	static SettingsModelBoolean createRenderKeyBondModel() {
-		return new SettingsModelBoolean(MMPConstants.SHOW_KEY, MMPConstants.DEFAULT_RENDER_KEY);
+		return new SettingsModelBoolean(MMPConstants.SHOW_KEY,
+				MMPConstants.DEFAULT_RENDER_KEY);
 	}
 
 	/**
@@ -364,10 +403,11 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void addAdditionalColumnSelectors() {
-		addDialogComponent(new DialogComponentColumnNameSelection(createIDColumnSettingsModel(),
-				"Select Molecule IDs column", 0, StringValue.class));
-		addDialogComponent(
-				new DialogComponentBoolean(createAllowHiliteModel(), MMPConstants.ALLOW_HI_LITING));
+		addDialogComponent(new DialogComponentColumnNameSelection(
+				createIDColumnSettingsModel(), "Select Molecule IDs column", 0,
+				StringValue.class));
+		addDialogComponent(new DialogComponentBoolean(createAllowHiliteModel(),
+				MMPConstants.ALLOW_HI_LITING));
 	}
 
 	/**
@@ -397,7 +437,8 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 	/** Create settings model for the upper limit of fragmentations */
 	public static SettingsModelIntegerBounded createMaxFragmentationsModel() {
 		return new SettingsModelIntegerBounded(MMPConstants.MAX_FRAGMENTATIONS,
-				MMPConstants.DEFAULT_MAX_FRAGMENTATIONS, MMPConstants.MINIMUM_MAX_FRAGMENTATIONS,
+				MMPConstants.DEFAULT_MAX_FRAGMENTATIONS,
+				MMPConstants.MINIMUM_MAX_FRAGMENTATIONS,
 				MMPConstants.MAXIMUM_MAX_FRAGMENTATIONS);
 	}
 
@@ -414,7 +455,8 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 	 * Create the settings model for the has changing atoms filter
 	 */
 	public static SettingsModelBoolean createHasMaxChangingAtomsModel() {
-		return new SettingsModelBoolean(MMPConstants.HAS_MAX_CHANGING_ATOMS_FILTER,
+		return new SettingsModelBoolean(
+				MMPConstants.HAS_MAX_CHANGING_ATOMS_FILTER,
 				MMPConstants.DEFAULT_HAS_MAX_CHANGING_HA);
 	}
 
@@ -422,15 +464,18 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 	 * Create Settings model for the maximum number of changing atoms
 	 */
 	public static SettingsModelIntegerBounded createMaxChangingAtomsModel() {
-		return new SettingsModelIntegerBounded(MMPConstants.MAX_CHANGING_HEAVY_ATOMS,
-				MMPConstants.DEFAULT_MAX_CHANGING_HA, 0, MMPConstants.MAXIMUM_MAX_FRAGMENTATIONS);
+		return new SettingsModelIntegerBounded(
+				MMPConstants.MAX_CHANGING_HEAVY_ATOMS,
+				MMPConstants.DEFAULT_MAX_CHANGING_HA, 0,
+				MMPConstants.MAXIMUM_MAX_FRAGMENTATIONS);
 	}
 
 	/**
 	 * Create the settings model for the has atom ratio filter
 	 */
 	public static SettingsModelBoolean createHasHARatioFilterModel() {
-		return new SettingsModelBoolean(MMPConstants.HAS_MAX_CHANGING_ATOMS_RATIO_FILTER,
+		return new SettingsModelBoolean(
+				MMPConstants.HAS_MAX_CHANGING_ATOMS_RATIO_FILTER,
 				MMPConstants.DEFAULT_HAS_CHANGING_HA_RATIO);
 	}
 
@@ -455,7 +500,8 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 
 	/** Create the SM for outputting the HAC ratios */
 	public static SettingsModelBoolean createOutputHARatiosModel() {
-		return new SettingsModelBoolean(MMPConstants.OUTPUT_CHANGING_UNCHANGING_HA_RATIOS,
+		return new SettingsModelBoolean(
+				MMPConstants.OUTPUT_CHANGING_UNCHANGING_HA_RATIOS,
 				MMPConstants.DEFAULT_OUTPUT_CHANGING_UNCHANGING_HAC_RATIOS);
 	}
 
@@ -480,21 +526,24 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 
 	/** Create Settings Model for use of Attachment Point Fingerprints */
 	public static SettingsModelBoolean createApFingerprintsModel() {
-		return new SettingsModelBoolean(MMPConstants.ATTACHMENT_POINT_FINGERPRINTS,
+		return new SettingsModelBoolean(
+				MMPConstants.ATTACHMENT_POINT_FINGERPRINTS,
 				MMPConstants.DEFAULT_ADD_AP_FINGERPRINTS);
 	}
 
 	/** Create Settings Model for Morgan FP Radius */
 	public static SettingsModelIntegerBounded createMorganRadiusModel() {
 		return new SettingsModelIntegerBounded(MMPConstants.FP_MORGAN_RADIUS,
-				(int) MMPConstants.DEFAULT_FP_RADIUS, MMPConstants.MINIMUM_MORGAN_RADIUS,
+				(int) MMPConstants.DEFAULT_FP_RADIUS,
+				MMPConstants.MINIMUM_MORGAN_RADIUS,
 				MMPConstants.MAXIMUM_MAX_FRAGMENTATIONS);
 	}
 
 	/** Create Settings Model for Morgan FP Length */
 	public static SettingsModelIntegerBounded createFpLengthModel() {
 		return new SettingsModelIntegerBounded(MMPConstants.FP_LENGTH,
-				(int) MMPConstants.DEFAULT_FP_LENGTH, MMPConstants.MINIMUM_FINGERPRINT_LENGTH,
+				(int) MMPConstants.DEFAULT_FP_LENGTH,
+				MMPConstants.MINIMUM_FINGERPRINT_LENGTH,
 				MMPConstants.MAXIMUM_MAX_FRAGMENTATIONS);
 	}
 

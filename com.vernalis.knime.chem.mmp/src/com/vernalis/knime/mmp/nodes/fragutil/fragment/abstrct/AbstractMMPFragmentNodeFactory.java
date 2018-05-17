@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -28,6 +28,10 @@ import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
 
 /**
  * Node factory for the MMP Fragment nodes
+ * <p>
+ * Added version argument to allow version 3 nodes to redirect here and
+ * correctly convert settings to maintain behaviour (SDR, 11-May-2018)
+ * </p>
  * 
  * @author s.roughley
  *
@@ -38,8 +42,10 @@ import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
  */
 public abstract class AbstractMMPFragmentNodeFactory<T, U>
 		extends NodeFactory<AbstractMMPFragmentNodeModel<T, U>> {
+
 	protected boolean isMulticut;
 	protected Class<? extends FragmentationUtilsFactory<T, U>> fragUtilsFactory;
+	protected int version;
 
 	/**
 	 * Constructor. The values of the arguments are available to subclasses in
@@ -57,10 +63,12 @@ public abstract class AbstractMMPFragmentNodeFactory<T, U>
 	 *            running
 	 */
 	public AbstractMMPFragmentNodeFactory(boolean isMulticut,
-			Class<? extends FragmentationUtilsFactory<T, U>> fragUtilsFactory) {
+			Class<? extends FragmentationUtilsFactory<T, U>> fragUtilsFactory,
+			int version) {
 		super(true);
 		this.isMulticut = isMulticut;
 		this.fragUtilsFactory = fragUtilsFactory;
+		this.version = version;
 		init();
 	}
 
@@ -74,10 +82,13 @@ public abstract class AbstractMMPFragmentNodeFactory<T, U>
 			throws SAXException, IOException, XmlException {
 		try {
 			return new AbstractMMPFragmentNodeDescription<>(
-					fragUtilsFactory.getConstructor().newInstance(), isMulticut);
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			throw new RuntimeException("Error instantiating Fragmentation Utilities factory", e);
+					fragUtilsFactory.getConstructor().newInstance(), isMulticut,
+					version);
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			throw new RuntimeException(
+					"Error instantiating Fragmentation Utilities factory", e);
 		}
 	}
 
@@ -90,10 +101,12 @@ public abstract class AbstractMMPFragmentNodeFactory<T, U>
 	public AbstractMMPFragmentNodeModel<T, U> createNodeModel() {
 		try {
 			return new AbstractMMPFragmentNodeModel<>(isMulticut,
-					fragUtilsFactory.getConstructor().newInstance());
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			throw new RuntimeException("Error instantiating Fragmentation Utilities factory", e);
+					fragUtilsFactory.getConstructor().newInstance(), version);
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			throw new RuntimeException(
+					"Error instantiating Fragmentation Utilities factory", e);
 		}
 	}
 
@@ -114,8 +127,8 @@ public abstract class AbstractMMPFragmentNodeFactory<T, U>
 	 * org.knime.core.node.NodeModel)
 	 */
 	@Override
-	public NodeView<AbstractMMPFragmentNodeModel<T, U>> createNodeView(int viewIndex,
-			AbstractMMPFragmentNodeModel<T, U> nodeModel) {
+	public NodeView<AbstractMMPFragmentNodeModel<T, U>> createNodeView(
+			int viewIndex, AbstractMMPFragmentNodeModel<T, U> nodeModel) {
 		return new AbstractMMPFragmentProgressNodeView<>(nodeModel);
 	}
 
@@ -138,10 +151,13 @@ public abstract class AbstractMMPFragmentNodeFactory<T, U>
 	protected NodeDialogPane createNodeDialogPane() {
 		try {
 			return new AbstractMMPFragmentNodeDialog<>(
-					fragUtilsFactory.getConstructor().newInstance(), isMulticut);
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			throw new RuntimeException("Error instantiating Fragmentation Utilities factory", e);
+					fragUtilsFactory.getConstructor().newInstance(), isMulticut,
+					version);
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			throw new RuntimeException(
+					"Error instantiating Fragmentation Utilities factory", e);
 		}
 	}
 

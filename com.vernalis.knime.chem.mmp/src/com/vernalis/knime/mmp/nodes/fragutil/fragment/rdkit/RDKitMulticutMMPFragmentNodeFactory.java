@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017,2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -22,7 +22,7 @@ import com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmen
 
 /**
  * The node factory for the Multiple Cuts fragmentation node RDKit
- * implementaiton
+ * implementaiton Added version 4 argument (SDR, 11-May-2018)
  * 
  * @author s.roughley
  * 
@@ -34,7 +34,7 @@ public class RDKitMulticutMMPFragmentNodeFactory
 	 * Constructor
 	 */
 	public RDKitMulticutMMPFragmentNodeFactory() {
-		super(true, RWMolFragmentationUtilsFactory.class);
+		super(true, RWMolFragmentationUtilsFactory.class, 4);
 	}
 
 }

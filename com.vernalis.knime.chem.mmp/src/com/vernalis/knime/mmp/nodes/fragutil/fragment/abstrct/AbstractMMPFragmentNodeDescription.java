@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017,2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -48,8 +48,12 @@ import static com.vernalis.knime.nodes.NodeDescriptionUtils.insertReference;
  *            The matcher type parameter
  */
 public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
+
 	private final boolean isMulticut;
 	private final FragmentationUtilsFactory<T, U> fragUtilityFactory;
+	private final int version;
+
+	private static final int CURRENT_VERSION = 4;
 
 	/**
 	 * Constructor
@@ -59,17 +63,22 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 	 * @param isMulticut
 	 *            Is the node multicut or only performs n cuts?
 	 */
-	public AbstractMMPFragmentNodeDescription(FragmentationUtilsFactory<T, U> fragUtilityFactory,
-			boolean isMulticut) {
+	public AbstractMMPFragmentNodeDescription(
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, int version) {
 		super();
 		this.isMulticut = isMulticut;
 		this.fragUtilityFactory = fragUtilityFactory;
+		setIsDeprecated(version < CURRENT_VERSION);
+		this.version = version;
 	}
 
 	@Override
 	public String getIconPath() {
 		// Otherwise it is relative to the path of the node factory class
-		return getClass().getResource(isMulticut ? "MMPMultiFrag.png" : "MMPFrag.png").getFile();
+		return getClass()
+				.getResource(isMulticut ? "MMPMultiFrag.png" : "MMPFrag.png")
+				.getFile();
 	}
 
 	@Override
@@ -99,8 +108,16 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 
 	@Override
 	public String getNodeName() {
-		return "MMP Molecule " + (isMulticut ? "Multi-cut " : "") + "Fragment ("
-				+ fragUtilityFactory.getToolkitName() + ")";
+		StringBuilder sb = new StringBuilder("MMP Molecule ");
+		if (isMulticut) {
+			sb.append("Multi-cut ");
+		}
+		sb.append("Fragment (").append(fragUtilityFactory.getToolkitName())
+				.append(")");
+		if (isDeprecated()) {
+			sb.append(" (deprecated)");
+		}
+		return sb.toString();
 	}
 
 	@Override
@@ -168,6 +185,9 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 	public Element getXMLDescription() {
 		KnimeNodeDocument doc = KnimeNodeDocument.Factory.newInstance();
 		KnimeNode node = doc.addNewKnimeNode();
+		node.setDeprecated(KnimeNodeDocument.KnimeNode.Deprecated.Enum.forInt(
+				isDeprecated() ? KnimeNodeDocument.KnimeNode.Deprecated.INT_TRUE
+						: KnimeNodeDocument.KnimeNode.Deprecated.INT_FALSE));
 		node.setIcon(getIconPath());
 		node.setName(getNodeName());
 		node.setType(KnimeNode.Type.MANIPULATOR);
@@ -179,27 +199,34 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 
 		XmlCursor introCursor = intro.newCursor();
 		introCursor.toFirstContentToken();
-		introCursor.insertElementWithText("p",
-				"This node implements the molecule fragmentation part of the Hussain and Rea "
-						+ "algorithm (Ref 1) for finding Matched Molecular Pairs in a dataset, enabling "
-						+ "the fragmented molecule key-value pairs to be stored in a database for later "
-						+ "recall or used directly in a subsequent pair-finding node. The user "
-						+ "can specify the " + (isMulticut ? "maximum " : "")
-						+ "number of cuts to be made (1 - 10), and whether "
-						+ "Hydrogens should be added (1 cut only)" + (isMulticut
-								? ". All cuts from 1 to the" + "specified number are made" : ""));
+		introCursor
+				.insertElementWithText("p",
+						"This node implements the molecule fragmentation part of the Hussain and Rea "
+								+ "algorithm (Ref 1) for finding Matched Molecular Pairs in a dataset, enabling "
+								+ "the fragmented molecule key-value pairs to be stored in a database for later "
+								+ "recall or used directly in a subsequent pair-finding node. The user "
+								+ "can specify the "
+								+ (isMulticut ? "maximum " : "")
+								+ "number of cuts to be made (1 - 10), and whether "
+								+ "Hydrogens should be added (1 cut only)"
+								+ (isMulticut
+										? ". All cuts from 1 to the"
+												+ "specified number are made"
+										: ""));
 		addFragmentationOptionsDiscription(introCursor);
 		addRSmartsGuidelines(introCursor);
 
-		introCursor.insertElementWithText("p", "The algorithm is implemented using the "
-				+ fragUtilityFactory.getToolkitName() + " toolkit");
+		introCursor.insertElementWithText("p",
+				"The algorithm is implemented using the "
+						+ fragUtilityFactory.getToolkitName() + " toolkit");
 
 		addDevelopedByVernalis(introCursor);
 
 		insertReference(introCursor, 1, "J. Hussain and C Rea",
 				"Computationally efficient algorithm to identify matched molecular pairs"
 						+ " (MMPs) in large datasets",
-				"J. Chem. Inf. Model.", 2010, 50, "339-348", "10.1021/ci900450m");
+				"J. Chem. Inf. Model.", 2010, 50, "339-348",
+				"10.1021/ci900450m");
 
 		insertReference(introCursor, 2, "S. D. Roughley and A. M. Jordan",
 				"The Medicinal Chemist’s Toolbox: An Analysis of Reactions Used in the Pursuit of Drug Candidates",
@@ -213,12 +240,14 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 		introCursor.insertChars("An Overview of RDKit");
 		introCursor.toEndToken();
 		introCursor.toNextToken();
-		introCursor.insertChars(" (http://www.rdkit.org/docs/Overview.html#the-contrib-directory) "
-				+ "(section entitled 'mmpa')");
+		introCursor.insertChars(
+				" (http://www.rdkit.org/docs/Overview.html#the-contrib-directory) "
+						+ "(section entitled 'mmpa')");
 		introCursor.toEndToken();
 		introCursor.toNextToken();
 
-		insertReference(introCursor, 4, "N. M. O'Boyle, J. Bostrom, R. A. Sayle and A. Gill",
+		insertReference(introCursor, 4,
+				"N. M. O'Boyle, J. Bostrom, R. A. Sayle and A. Gill",
 				"Using Matched Molecular Series as a Predictive Tool To Optimize Biological Activity",
 				"J. Med. Chem.", 2014, 57, "2704-2713", "10.1021/jm500022q");
 
@@ -226,7 +255,8 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 
 		Tab tab = fullDesc.addNewTab();
 		tab.setName("Molecule & Fragmentation Options");
-		addOptionToTab(tab, "Select Molecule column", "Select the column containing the molecules");
+		addOptionToTab(tab, "Select Molecule column",
+				"Select the column containing the molecules");
 		addOptionToTab(tab, "Select Molecule IDs column",
 				"Select the column containing the molecule IDs");
 		addOptionToTab(tab, "Allow HiLiting",
@@ -238,8 +268,10 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 		addOptionToTab(tab, "User SMARTS",
 				"The optional user-defined (r)SMARTS (see above for details)");
 		addOptionToTab(tab, (isMulticut ? "Maximum n" : "N") + "umber of cuts",
-				"Select the " + (isMulticut ? "maximum " : "") + "number of cuts (1-10)");
-		addOptionToTab(tab, "Allow 2 cuts along single bond giving a single bond as 'value'?",
+				"Select the " + (isMulticut ? "maximum " : "")
+						+ "number of cuts (1-10)");
+		addOptionToTab(tab,
+				"Allow 2 cuts along single bond giving a single bond as 'value'?",
 				"If selected, for the 2 cuts case, 1 bond can be cut twice, "
 						+ "allowing a 'value' of [*:1]-[*:2] (i.e. a 'bond') to be formed");
 		addOptionToTab(tab, "Explicit Hydrogens",
@@ -271,7 +303,8 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 						+ "a very large number of fragmentations, based on the number of possible "
 						+ "fragmentable bond combinations (different bond combinations leading to "
 						+ "identical fragmentations are not discounted)");
-		addOptionToTab(tab, "Maximum Fragmentations", "The limit of predicted fragmentations");
+		addOptionToTab(tab, "Maximum Fragmentations",
+				"The limit of predicted fragmentations");
 		addOptionToTab(tab, "Treat no undefined chiral centres as chiral",
 				"In molecules with explicit chiral centres, newly created "
 						+ "stereocentres are given defined chirality. Molecules with only undefined "
@@ -287,7 +320,8 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 		addOptionToTab(tab, "Filter by ratio of changing / unchanging atoms?",
 				"If checked, the user can specify a maximum ratio of changing "
 						+ "to unchanging heavy atoms during fragmentation");
-		addOptionToTab(tab, "Minimum ratio of changing to unchanging heavy atoms",
+		addOptionToTab(tab,
+				"Minimum ratio of changing to unchanging heavy atoms",
 				"The minimum ratio of changing to unchanging heavy atoms");
 
 		tab = fullDesc.addNewTab();
@@ -303,20 +337,24 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 				"If checked, the reason the molecule could not be fragmented "
 						+ "is added to the second output table");
 
-		// TODO: Add rendering options here when we actually implement them...
 		if (fragUtilityFactory.getRendererType() != null) {
-			addOptionToTab(tab, "Render Fragmentation", "Should the fragmentation be rendered");
+			addOptionToTab(tab, "Render Fragmentation",
+					"Should the fragmentation be rendered");
 			addOptionToTab(tab, "Show breaking bonds",
 					"Should breaking bonds be highlighted in the rendering?");
 			addOptionToTab(tab, "Breaking bond colour",
 					"The colour to highlight the breaking bond(s)");
-			addOptionToTab(tab, "Show key", "Should the atoms/bonds forming the 'key' be "
-					+ "highlighted in the rendering?");
-			addOptionToTab(tab, "Key Colour", "The colour to highlight the 'key'");
-			addOptionToTab(tab, "Show value", "Should the atoms/bonds forming the 'value' be "
-					+ "highlighted in the rendering? If the fragmentation is a double cut to 1 bond, "
-					+ "then the breaking bond is also the value, and will be shown as such");
-			addOptionToTab(tab, "Value Colour", "The colour to highlight the 'value'");
+			addOptionToTab(tab, "Show key",
+					"Should the atoms/bonds forming the 'key' be "
+							+ "highlighted in the rendering?");
+			addOptionToTab(tab, "Key Colour",
+					"The colour to highlight the 'key'");
+			addOptionToTab(tab, "Show value",
+					"Should the atoms/bonds forming the 'value' be "
+							+ "highlighted in the rendering? If the fragmentation is a double cut to 1 bond, "
+							+ "then the breaking bond is also the value, and will be shown as such");
+			addOptionToTab(tab, "Value Colour",
+					"The colour to highlight the 'value'");
 		}
 		addOptionToTab(tab, "Incoming columns to keep",
 				"Select incoming data columns to keep. The ID column will always "
@@ -328,7 +366,8 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 		tab = fullDesc.addNewTab();
 		tab.setName("Fingerprints");
 
-		addOptionToTab(tab, "Show 'Value' attachment point graph distances fingerprint",
+		addOptionToTab(tab,
+				"Show 'Value' attachment point graph distances fingerprint",
 				"Include a graph distance fingerprint showing the graph distance between each "
 						+ "attachment point in the fragmentation 'value'. The fingeprint is the "
 						+ "number of bonds between each pair of attachment points, so "
@@ -336,8 +375,10 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 		addOptionToTab(tab, "Add Attachment Point Fingerprints",
 				"If checked, then attachment point fingerprints are added. "
 						+ "See above for further details. One column is added for each attachment point");
-		addOptionToTab(tab, "Fingerprint Length", "The number of bits in the fingerprints");
-		addOptionToTab(tab, "Morgan Radius", "The radius of the Morgan fingerprint");
+		addOptionToTab(tab, "Fingerprint Length",
+				"The number of bits in the fingerprints");
+		addOptionToTab(tab, "Morgan Radius",
+				"The radius of the Morgan fingerprint");
 
 		if (fragUtilityFactory.hasExtendedFingerprintOptions()) {
 			addOptionToTab(tab, "Use Bond Types",

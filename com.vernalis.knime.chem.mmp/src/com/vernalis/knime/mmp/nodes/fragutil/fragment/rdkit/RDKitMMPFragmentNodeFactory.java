@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017,2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -23,16 +23,19 @@ import com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmen
 /**
  * The node factory for the RDKit implementation of the MMP Fragment node
  * 
+ * Added version 4 argument (SDR, 11-May-2018)
+ * 
  * @author s.roughley
  * 
  */
-public class RDKitMMPFragmentNodeFactory extends AbstractMMPFragmentNodeFactory<RWMol, ROMol> {
+public class RDKitMMPFragmentNodeFactory
+		extends AbstractMMPFragmentNodeFactory<RWMol, ROMol> {
 
 	/**
 	 * Constructor
 	 */
 	public RDKitMMPFragmentNodeFactory() {
-		super(false, RWMolFragmentationUtilsFactory.class);
+		super(false, RWMolFragmentationUtilsFactory.class, 4);
 	}
 
 }

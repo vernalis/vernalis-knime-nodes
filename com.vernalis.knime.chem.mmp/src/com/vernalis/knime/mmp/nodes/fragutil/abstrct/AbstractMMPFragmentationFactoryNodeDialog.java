@@ -38,23 +38,27 @@ import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
  * 
  * @author s.roughley
  *
- * @param <T> The molecule type paramter
- * @param <U> The matcher type parameter
+ * @param <T>
+ *            The molecule type paramter
+ * @param <U>
+ *            The matcher type parameter
  */
-public class AbstractMMPFragmentationFactoryNodeDialog<T, U> extends DefaultNodeSettingsPane {
+public class AbstractMMPFragmentationFactoryNodeDialog<T, U>
+		extends DefaultNodeSettingsPane {
 
 	protected FragmentationUtilsFactory<T, U> fragUtilFactory;
+	protected final int version;
 
-	/**
-	 * Convenience constructor, for non-multicut nodes
-	 * 
-	 * @param fragUtilityFactory
-	 *            The {@link FragmentationUtilsFactory} instance
-	 */
-	public AbstractMMPFragmentationFactoryNodeDialog(
-			FragmentationUtilsFactory<T, U> fragUtilityFactory) {
-		this(fragUtilityFactory, false);
-	}
+	// /**
+	// * Convenience constructor, for non-multicut nodes
+	// *
+	// * @param fragUtilityFactory
+	// * The {@link FragmentationUtilsFactory} instance
+	// */
+	// public AbstractMMPFragmentationFactoryNodeDialog(
+	// FragmentationUtilsFactory<T, U> fragUtilityFactory) {
+	// this(fragUtilityFactory, false, version);
+	// }
 
 	/**
 	 * Convenience constructor, for nodes with a removeH's option
@@ -63,10 +67,13 @@ public class AbstractMMPFragmentationFactoryNodeDialog<T, U> extends DefaultNode
 	 *            The {@link FragmentationUtilsFactory} instance
 	 * @param isMulticut
 	 *            Does the node have only 1 cut number or does it do 1-n cuts?
+	 * @param version
+	 *            TODO
 	 */
 	public AbstractMMPFragmentationFactoryNodeDialog(
-			FragmentationUtilsFactory<T, U> fragUtilityFactory, boolean isMulticut) {
-		this(fragUtilityFactory, isMulticut, true);
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, int version) {
+		this(fragUtilityFactory, isMulticut, true, true, true, version);
 	}
 
 	/**
@@ -80,8 +87,8 @@ public class AbstractMMPFragmentationFactoryNodeDialog<T, U> extends DefaultNode
 	 *            Does the node have a remove H's option?
 	 */
 	public AbstractMMPFragmentationFactoryNodeDialog(
-			FragmentationUtilsFactory<T, U> fragUtilityFactory, boolean isMulticut,
-			boolean hasRemoveHs) {
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, boolean hasRemoveHs) {
 		this(fragUtilityFactory, isMulticut, hasRemoveHs, true);
 	}
 
@@ -99,8 +106,8 @@ public class AbstractMMPFragmentationFactoryNodeDialog<T, U> extends DefaultNode
 	 *            Does the node have a 'Number of cuts' option?
 	 */
 	public AbstractMMPFragmentationFactoryNodeDialog(
-			FragmentationUtilsFactory<T, U> fragUtilityFactory, boolean isMulticut,
-			boolean hasRemoveHs, boolean hasNumCuts) {
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, boolean hasRemoveHs, boolean hasNumCuts) {
 		this(fragUtilityFactory, isMulticut, hasRemoveHs, hasNumCuts, true);
 	}
 
@@ -127,13 +134,46 @@ public class AbstractMMPFragmentationFactoryNodeDialog<T, U> extends DefaultNode
 	 *            bond?
 	 */
 	public AbstractMMPFragmentationFactoryNodeDialog(
-			FragmentationUtilsFactory<T, U> fragUtilityFactory, boolean isMulticut,
-			boolean hasRemoveHs, boolean hasNumCuts, boolean hasTwoCutsToBond) {
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, boolean hasRemoveHs, boolean hasNumCuts,
+			boolean hasTwoCutsToBond) {
+		this(fragUtilityFactory, isMulticut, hasRemoveHs, hasNumCuts,
+				hasTwoCutsToBond, -1);
+	}
+
+	/**
+	 * Full constructor. The node dialog is build by calling the following
+	 * methods in order:
+	 * <ul>
+	 * <li>{@link #addColumnSelectors()}</li>
+	 * <li>{@link #addFragmentationTypeSelector()}</li>
+	 * <li>{@link #addNumberOfCutsOptions(boolean, boolean, boolean, boolean)}</li>
+	 * </ul>
+	 * 
+	 * 
+	 * @param fragUtilityFactory
+	 *            The {@link FragmentationUtilsFactory} instance
+	 * @param isMulticut
+	 *            Does the node have only 1 cut number or does it do 1-n cuts?
+	 * @param hasRemoveHs
+	 *            Does the node have a remove H's option?
+	 * @param hasNumCuts
+	 *            Does the node have a 'Number of cuts' option?
+	 * @param hasTwoCutsToBond
+	 *            Does the node have the option to perform two cuts to a single
+	 *            bond?
+	 */
+	public AbstractMMPFragmentationFactoryNodeDialog(
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, boolean hasRemoveHs, boolean hasNumCuts,
+			boolean hasTwoCutsToBond, int version) {
+		this.version = version;
 		this.fragUtilFactory = fragUtilityFactory;
 		renameTab("Options", "Molecule & Fragmentation Options");
 		addColumnSelectors();
 		addFragmentationTypeSelector();
-		addNumberOfCutsOptions(isMulticut, hasRemoveHs, hasNumCuts, hasTwoCutsToBond);
+		addNumberOfCutsOptions(isMulticut, hasRemoveHs, hasNumCuts,
+				hasTwoCutsToBond);
 
 	}
 
@@ -142,8 +182,9 @@ public class AbstractMMPFragmentationFactoryNodeDialog<T, U> extends DefaultNode
 	 * column, and then calls {@link #addAdditionalColumnSelectors()}
 	 */
 	private final void addColumnSelectors() {
-		addDialogComponent(new DialogComponentColumnNameSelection(createMolColumnSettingsModel(),
-				"Select Molecule column", 0, fragUtilFactory.getInputColumnTypes()));
+		addDialogComponent(new DialogComponentColumnNameSelection(
+				createMolColumnSettingsModel(), "Select Molecule column", 0,
+				fragUtilFactory.getInputColumnTypes()));
 		addAdditionalColumnSelectors();
 	}
 
@@ -165,18 +206,21 @@ public class AbstractMMPFragmentationFactoryNodeDialog<T, U> extends DefaultNode
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				customSMARTSMdl.setEnabled(FragmentationTypes.valueOf(
-						fragmentationTypeMdl.getStringValue()) == FragmentationTypes.USER_DEFINED);
+				customSMARTSMdl.setEnabled(
+						FragmentationTypes.valueOf(fragmentationTypeMdl
+								.getStringValue()) == FragmentationTypes.USER_DEFINED);
 			}
 		});
 
-		customSMARTSMdl.setEnabled(FragmentationTypes
-				.valueOf(fragmentationTypeMdl.getStringValue()) == FragmentationTypes.USER_DEFINED);
+		customSMARTSMdl
+				.setEnabled(FragmentationTypes.valueOf(fragmentationTypeMdl
+						.getStringValue()) == FragmentationTypes.USER_DEFINED);
 
 		createNewGroup("Select the fragmentation type");
-		addDialogComponent(new DialogComponentButtonGroup(fragmentationTypeMdl, null, true,
-				FragmentationTypes.values()));
-		addDialogComponent(new DialogComponentString(customSMARTSMdl, "User SMARTS:"));
+		addDialogComponent(new DialogComponentButtonGroup(fragmentationTypeMdl,
+				null, true, FragmentationTypes.values()));
+		addDialogComponent(
+				new DialogComponentString(customSMARTSMdl, "User SMARTS:"));
 		closeCurrentGroup();
 	}
 
@@ -192,13 +236,15 @@ public class AbstractMMPFragmentationFactoryNodeDialog<T, U> extends DefaultNode
 	 *            Does the node have the option to perform two cuts to a single
 	 *            bond?
 	 */
-	protected void addNumberOfCutsOptions(boolean isMulticut, boolean hasRemoveHs,
-			boolean hasNumCuts, boolean hasTwoCutsToBond) {
-		SettingsModelIntegerBounded numCutsMdl = hasNumCuts ? createCutsModel() : null;
+	protected void addNumberOfCutsOptions(boolean isMulticut,
+			boolean hasRemoveHs, boolean hasNumCuts, boolean hasTwoCutsToBond) {
+		SettingsModelIntegerBounded numCutsMdl =
+				hasNumCuts ? createCutsModel() : null;
 		SettingsModelBoolean allowTwoCutsToBondValueMdl =
 				hasTwoCutsToBond ? createAllowTwoCutsToBondValueModel() : null;
 		SettingsModelBoolean addHsMdl = createAddHModel();
-		SettingsModelBoolean stripHsMdl = hasRemoveHs ? createStripHModel() : null;
+		SettingsModelBoolean stripHsMdl =
+				hasRemoveHs ? createStripHModel() : null;
 		if (hasNumCuts) {
 			numCutsMdl.addChangeListener(new ChangeListener() {
 
@@ -208,11 +254,12 @@ public class AbstractMMPFragmentationFactoryNodeDialog<T, U> extends DefaultNode
 						addHsMdl.setEnabled(numCutsMdl.getIntValue() == 1);
 					}
 					if (hasRemoveHs) {
-						stripHsMdl.setEnabled(addHsMdl.isEnabled() && addHsMdl.getBooleanValue());
+						stripHsMdl.setEnabled(addHsMdl.isEnabled()
+								&& addHsMdl.getBooleanValue());
 					}
 					if (hasTwoCutsToBond) {
-						allowTwoCutsToBondValueMdl
-								.setEnabled((isMulticut && numCutsMdl.getIntValue() >= 2)
+						allowTwoCutsToBondValueMdl.setEnabled(
+								(isMulticut && numCutsMdl.getIntValue() >= 2)
 										|| numCutsMdl.getIntValue() == 2);
 					}
 
@@ -228,15 +275,18 @@ public class AbstractMMPFragmentationFactoryNodeDialog<T, U> extends DefaultNode
 
 				@Override
 				public void stateChanged(ChangeEvent arg0) {
-					stripHsMdl.setEnabled(addHsMdl.isEnabled() && addHsMdl.getBooleanValue());
+					stripHsMdl.setEnabled(
+							addHsMdl.isEnabled() && addHsMdl.getBooleanValue());
 				}
 			});
-			stripHsMdl.setEnabled(addHsMdl.isEnabled() && addHsMdl.getBooleanValue());
+			stripHsMdl.setEnabled(
+					addHsMdl.isEnabled() && addHsMdl.getBooleanValue());
 		}
 		if (hasNumCuts) {
 			if (hasTwoCutsToBond) {
-				allowTwoCutsToBondValueMdl.setEnabled((isMulticut && numCutsMdl.getIntValue() >= 2)
-						|| numCutsMdl.getIntValue() == 2);
+				allowTwoCutsToBondValueMdl.setEnabled(
+						(isMulticut && numCutsMdl.getIntValue() >= 2)
+								|| numCutsMdl.getIntValue() == 2);
 
 			}
 
@@ -244,15 +294,16 @@ public class AbstractMMPFragmentationFactoryNodeDialog<T, U> extends DefaultNode
 					(isMulticut ? "Maximum n" : "N") + "umber of cuts", 1));
 		}
 		if (hasTwoCutsToBond) {
-			addDialogComponent(new DialogComponentBoolean(allowTwoCutsToBondValueMdl,
+			addDialogComponent(new DialogComponentBoolean(
+					allowTwoCutsToBondValueMdl,
 					"Allow 2 cuts along single bond giving a single bond as 'value'?"));
 		}
 		createNewGroup("Explicit Hydrogens");
 		addDialogComponent(new DialogComponentLabel(
 				"The user is strongly advised to leave these setting at their recommended (default) values"));
 		addDialogComponent(new DialogComponentBoolean(addHsMdl,
-				"Add H's prior to fragmentation (Recommended for n" + (isMulticut ? ">" : "")
-						+ "=1)"));
+				"Add H's prior to fragmentation (Recommended for n"
+						+ (isMulticut ? ">" : "") + "=1)"));
 		if (hasRemoveHs) {
 			addDialogComponent(new DialogComponentBoolean(stripHsMdl,
 					"Remove Added Explicit H's from output (Recommended)"));
@@ -266,7 +317,8 @@ public class AbstractMMPFragmentationFactoryNodeDialog<T, U> extends DefaultNode
 	 * @return The settings model for the incoming explicit H's behaviour
 	 */
 	static SettingsModelString createIncomingExplicitHsModel() {
-		return new SettingsModelString(MMPConstants.INCOMING_EXPLICIT_H_S_OPTION,
+		return new SettingsModelString(
+				MMPConstants.INCOMING_EXPLICIT_H_S_OPTION,
 				IncomingExplicitHsOption.getDefault().getActionCommand());
 	}
 
@@ -295,18 +347,22 @@ public class AbstractMMPFragmentationFactoryNodeDialog<T, U> extends DefaultNode
 	 * Create the settings model for the number of cuts
 	 */
 	static SettingsModelIntegerBounded createCutsModel() {
-		return new SettingsModelIntegerBounded(MMPConstants.NUMBER_OF_CUTS, MMPConstants.MAXIMUM_NUMBER_OF_CUTS,
-				MMPConstants.MINIMUM_NUMBER_OF_CUTS, MMPConstants.MAXIMUM_NUMBER_OF_CUTS);
+		return new SettingsModelIntegerBounded(MMPConstants.NUMBER_OF_CUTS,
+				MMPConstants.MAXIMUM_NUMBER_OF_CUTS,
+				MMPConstants.MINIMUM_NUMBER_OF_CUTS,
+				MMPConstants.MAXIMUM_NUMBER_OF_CUTS);
 	}
 
 	/** Create the settings model for the option to add hydrogens */
 	static SettingsModelBoolean createAddHModel() {
-		return new SettingsModelBoolean(MMPConstants.ADD_HS, MMPConstants.DEFAULT_ADD_H);
+		return new SettingsModelBoolean(MMPConstants.ADD_HS,
+				MMPConstants.DEFAULT_ADD_H);
 	}
 
 	/** Create the settings model for the strip H's at the end option */
 	static SettingsModelBoolean createStripHModel() {
-		return new SettingsModelBoolean(MMPConstants.REMOVE_EXPLICIT_H_S_FROM_OUTPUT,
+		return new SettingsModelBoolean(
+				MMPConstants.REMOVE_EXPLICIT_H_S_FROM_OUTPUT,
 				MMPConstants.DEFAULT_REMOVE_H_POST_FRAGMENTATION);
 	}
 

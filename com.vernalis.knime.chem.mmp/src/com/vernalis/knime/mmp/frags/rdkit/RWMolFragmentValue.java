@@ -70,7 +70,8 @@ public class RWMolFragmentValue extends AbstractFragmentValue<RWMol> {
 	 * @param ignoreIDsForComparisons
 	 *            {@code true} if IDs should be ignored when comparing objects
 	 */
-	public RWMolFragmentValue(String smiles, String ID, boolean ignoreIDsForComparisons) {
+	public RWMolFragmentValue(String smiles, String ID,
+			boolean ignoreIDsForComparisons) {
 		super(smiles, ID, ignoreIDsForComparisons);
 	}
 
@@ -119,8 +120,8 @@ public class RWMolFragmentValue extends AbstractFragmentValue<RWMol> {
 			// Now calculate the pairwise distance
 			for (int i = 1; i < apCount; i++) {
 				for (int j = i + 1; j <= apCount; j++) {
-					Int_List shortestPath = RDKFuncs.getShortestPath(mol, attPtAtomIndices.get(i),
-							attPtAtomIndices.get(j));
+					Int_List shortestPath = RDKFuncs.getShortestPath(mol,
+							attPtAtomIndices.get(i), attPtAtomIndices.get(j));
 					// No of bonds from *i to *j (we use this to distinguish
 					// e.g.
 					// *a-*b from *a-C-*b)

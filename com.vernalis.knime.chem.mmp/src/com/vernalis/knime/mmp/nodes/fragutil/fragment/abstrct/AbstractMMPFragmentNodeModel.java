@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -13,33 +13,6 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
 package com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct;
-
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createAddFailReasonModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createAddValueGraphDistanceFPModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createAllowHiliteModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createApFingerprintsModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createBreakingBondColourModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createFpLengthModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createFpUseBondTypesModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createFpUseChiralityModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createHARatioModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createHasHARatioFilterModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createHasMaxChangingAtomsModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createIDColumnSettingsModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createKeptColumnsModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createKeyColourModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createLimitByComplexityModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createMaxChangingAtomsModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createMaxFragmentationsModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createMorganRadiusModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createOutputChangingHACountsModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createOutputHARatiosModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createProchiralModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createRenderBreakingBondModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createRenderFragmentationModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createRenderKeyBondModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createRenderValueBondModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createValueColourModel;
 
 import java.awt.Color;
 import java.io.File;
@@ -99,6 +72,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelColumnName;
 import org.knime.core.node.defaultnodesettings.SettingsModelDoubleBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
+import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.property.hilite.DefaultHiLiteMapper;
 import org.knime.core.node.property.hilite.HiLiteHandler;
@@ -127,9 +101,40 @@ import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
 import com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeModel;
 import com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage;
 
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createAddFailReasonModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createAddValueGraphDistanceFPModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createAllowHiliteModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createApFingerprintsModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createBreakingBondColourModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createFpLengthModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createFpUseBondTypesModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createFpUseChiralityModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createHARatioModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createHasHARatioFilterModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createHasMaxChangingAtomsModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createIDColumnSettingsModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createKeptColumnsModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createKeyColourModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createLimitByComplexityModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createMaxChangingAtomsModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createMaxFragmentationsModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createMorganRadiusModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createOutputChangingHACountsModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createOutputHARatiosModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createProchiralModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createRenderBreakingBondModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createRenderFragmentationModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createRenderKeyBondModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createRenderValueBondModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmentNodeDialog.createValueColourModel;
+
 /**
  * The abstract {@link NodeModel} implementation for the MMP Molecule Fragment
  * nodes
+ * <p>
+ * Added version argument handling to allow version 3 nodes to redirect here and
+ * correctly convert settings to maintain behaviour (SDR, 11-May-2018)
+ * </p>
  * 
  * @author s.roughley
  * @param <T>
@@ -196,25 +201,29 @@ public class AbstractMMPFragmentNodeModel<T, U>
 	 *            Should the node perform 1-n cuts in place of n cuts
 	 * @param fragUtilityFactory
 	 *            The {@link FragmentationUtilsFactory} for the node
+	 * @param version
+	 *            A version index - to differentiated between redirected v3 node
+	 *            and v4 nodes
 	 */
 	public AbstractMMPFragmentNodeModel(boolean isMulticut,
-			FragmentationUtilsFactory<T, U> fragUtilityFactory) {
-		super(1, 2, fragUtilityFactory, isMulticut);
+			FragmentationUtilsFactory<T, U> fragUtilityFactory, int version) {
+		super(1, 2, fragUtilityFactory, isMulticut, version);
 
 		// SettingsModels
 		m_maxChangingAtoms.setEnabled(m_hasChangingAtoms.getBooleanValue());
 		m_minHARatioFilter.setEnabled(m_hasHARatioFilter.getBooleanValue());
 		m_maxFragmentations.setEnabled(m_limitByComplexity.getBooleanValue());
-		m_fpLength.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
-		m_morganRadius
-				.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
+		m_fpLength.setEnabled(m_apFingerprints.isEnabled()
+				&& m_apFingerprints.getBooleanValue());
+		m_morganRadius.setEnabled(m_apFingerprints.isEnabled()
+				&& m_apFingerprints.getBooleanValue());
 		if (this.fragUtilityFactory.hasExtendedFingerprintOptions()) {
 			m_fpUseChirality = createFpUseChiralityModel();
 			m_fpUseBondTypes = createFpUseBondTypesModel();
-			m_fpUseChirality
-					.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
-			m_fpUseBondTypes
-					.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
+			m_fpUseChirality.setEnabled(m_apFingerprints.isEnabled()
+					&& m_apFingerprints.getBooleanValue());
+			m_fpUseBondTypes.setEnabled(m_apFingerprints.isEnabled()
+					&& m_apFingerprints.getBooleanValue());
 		} else {
 			m_fpUseChirality = null;
 			m_fpUseBondTypes = null;
@@ -243,9 +252,12 @@ public class AbstractMMPFragmentNodeModel<T, U>
 						renderBreakingBondMdl.setEnabled(true);
 						renderKeyBondMdl.setEnabled(true);
 						renderValueBondMdl.setEnabled(true);
-						breakingBondColourMdl.setEnabled(renderBreakingBondMdl.getBooleanValue());
-						keyColourMdl.setEnabled(renderKeyBondMdl.getBooleanValue());
-						valueColourMdl.setEnabled(renderValueBondMdl.getBooleanValue());
+						breakingBondColourMdl.setEnabled(
+								renderBreakingBondMdl.getBooleanValue());
+						keyColourMdl
+								.setEnabled(renderKeyBondMdl.getBooleanValue());
+						valueColourMdl.setEnabled(
+								renderValueBondMdl.getBooleanValue());
 					} else {
 						renderBreakingBondMdl.setEnabled(false);
 						renderKeyBondMdl.setEnabled(false);
@@ -262,7 +274,8 @@ public class AbstractMMPFragmentNodeModel<T, U>
 
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					breakingBondColourMdl.setEnabled(renderBreakingBondMdl.getBooleanValue());
+					breakingBondColourMdl.setEnabled(
+							renderBreakingBondMdl.getBooleanValue());
 				}
 			});
 			renderKeyBondMdl.addChangeListener(new ChangeListener() {
@@ -277,7 +290,8 @@ public class AbstractMMPFragmentNodeModel<T, U>
 
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					valueColourMdl.setEnabled(renderValueBondMdl.getBooleanValue());
+					valueColourMdl
+							.setEnabled(renderValueBondMdl.getBooleanValue());
 				}
 			});
 
@@ -285,7 +299,8 @@ public class AbstractMMPFragmentNodeModel<T, U>
 				renderBreakingBondMdl.setEnabled(true);
 				renderKeyBondMdl.setEnabled(true);
 				renderValueBondMdl.setEnabled(true);
-				breakingBondColourMdl.setEnabled(renderBreakingBondMdl.getBooleanValue());
+				breakingBondColourMdl
+						.setEnabled(renderBreakingBondMdl.getBooleanValue());
 				keyColourMdl.setEnabled(renderKeyBondMdl.getBooleanValue());
 				valueColourMdl.setEnabled(renderValueBondMdl.getBooleanValue());
 			} else {
@@ -316,9 +331,11 @@ public class AbstractMMPFragmentNodeModel<T, U>
 	 * DataTableSpec[])
 	 */
 	@Override
-	protected DataTableSpec[] doConfigure(DataTableSpec[] inSpecs) throws InvalidSettingsException {
+	protected DataTableSpec[] doConfigure(DataTableSpec[] inSpecs)
+			throws InvalidSettingsException {
 		// Now check the ID column
-		DataColumnSpec colSpec = inSpecs[0].getColumnSpec(m_idColName.getStringValue());
+		DataColumnSpec colSpec =
+				inSpecs[0].getColumnSpec(m_idColName.getStringValue());
 
 		if (colSpec == null) {
 			// No column selected, or selected column not found - autoguess!
@@ -326,11 +343,13 @@ public class AbstractMMPFragmentNodeModel<T, U>
 				// Reverse order to select most recently added, trying to avoid
 				// the molecule column
 				DataType colType = inSpecs[0].getColumnSpec(i).getType();
-				if (colType.isCompatible(StringValue.class) && !inSpecs[0].getColumnSpec(i)
-						.getName().equals(m_molColName.getStringValue())) {
-					m_idColName.setStringValue(inSpecs[0].getColumnSpec(i).getName());
-					logger.warn("No ID column selected. " + m_idColName.getStringValue()
-							+ " auto-selected.");
+				if (colType.isCompatible(StringValue.class)
+						&& !inSpecs[0].getColumnSpec(i).getName()
+								.equals(m_molColName.getStringValue())) {
+					m_idColName.setStringValue(
+							inSpecs[0].getColumnSpec(i).getName());
+					logger.warn("No ID column selected. "
+							+ m_idColName.getStringValue() + " auto-selected.");
 					break;
 				}
 				// If we are here when i = 0, then no suitable column found so
@@ -345,17 +364,21 @@ public class AbstractMMPFragmentNodeModel<T, U>
 			// We had a selected column, now lets see if it is a compatible type
 			if (!colSpec.getType().isCompatible(StringValue.class)) {
 				// The column is not compatible with one of the accepted types
-				logger.error(
-						"The column " + m_idColName.getStringValue() + " is not String-compatible");
+				logger.error("The column " + m_idColName.getStringValue()
+						+ " is not String-compatible");
 				throw new InvalidSettingsException(
-						"The column " + m_idColName.getStringValue() + " is not String-compatible");
+						"The column " + m_idColName.getStringValue()
+								+ " is not String-compatible");
 			}
 		}
 
-		if (renderFragmentationMdl != null && renderFragmentationMdl.getBooleanValue()) {
-			if (!(renderBreakingBondMdl.getBooleanValue() || renderKeyBondMdl.getBooleanValue()
+		if (renderFragmentationMdl != null
+				&& renderFragmentationMdl.getBooleanValue()) {
+			if (!(renderBreakingBondMdl.getBooleanValue()
+					|| renderKeyBondMdl.getBooleanValue()
 					|| renderValueBondMdl.getBooleanValue())) {
-				throw new InvalidSettingsException("No options to render selected");
+				throw new InvalidSettingsException(
+						"No options to render selected");
 			}
 		}
 
@@ -382,7 +405,8 @@ public class AbstractMMPFragmentNodeModel<T, U>
 		if (m_outputHARatio.getBooleanValue()) {
 			colCnt++;
 		}
-		if (m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue()) {
+		if (m_apFingerprints.isEnabled()
+				&& m_apFingerprints.getBooleanValue()) {
 			colCnt += m_numCuts.getIntValue();
 		}
 		if (m_addValueGraphDistanceFingerprint.getBooleanValue()) {
@@ -391,7 +415,8 @@ public class AbstractMMPFragmentNodeModel<T, U>
 		if (isMulticut) {
 			colCnt++;
 		}
-		if (renderFragmentationMdl != null && renderFragmentationMdl.getBooleanValue()) {
+		if (renderFragmentationMdl != null
+				&& renderFragmentationMdl.getBooleanValue()) {
 			colCnt++;
 		}
 		return colCnt;
@@ -417,17 +442,17 @@ public class AbstractMMPFragmentNodeModel<T, U>
 		DataColumnSpec[] specs = new DataColumnSpec[numCols];
 		int i = 0;
 		specs[i++] = createColSpec("ID", StringCell.TYPE);
-		specs[i++] =
-				createColSpec(
-						"Fragmentation 'Key' (" + (isMulticut ? "Upto " : "")
-								+ m_numCuts.getIntValue() + " bond cuts)",
-						MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE);
+		specs[i++] = createColSpec(
+				"Fragmentation 'Key' (" + (isMulticut ? "Upto " : "")
+						+ m_numCuts.getIntValue() + " bond cuts)",
+				MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE);
 		specs[i++] = createColSpec("Fragmentation 'Value'",
 				MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE);
 
-		if (renderFragmentationMdl != null && renderFragmentationMdl.getBooleanValue()) {
-			specs[i++] =
-					createColSpec("Fragmentation Depiction", fragUtilityFactory.getRendererType());
+		if (renderFragmentationMdl != null
+				&& renderFragmentationMdl.getBooleanValue()) {
+			specs[i++] = createColSpec("Fragmentation Depiction",
+					fragUtilityFactory.getRendererType());
 		}
 
 		if (m_outputNumChgHAs.getBooleanValue()) {
@@ -435,20 +460,25 @@ public class AbstractMMPFragmentNodeModel<T, U>
 		}
 		if (m_outputHARatio.getBooleanValue()) {
 			specs[i++] =
-					createColSpec("Ratio of Changing / Unchanging Heavy Atoms", DoubleCell.TYPE);
+					createColSpec("Ratio of Changing / Unchanging Heavy Atoms",
+							DoubleCell.TYPE);
 		}
-		if (m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue()) {
+		if (m_apFingerprints.isEnabled()
+				&& m_apFingerprints.getBooleanValue()) {
 			for (int fpIdx = 1; fpIdx <= m_numCuts.getIntValue(); fpIdx++) {
 				final DataColumnSpecCreator colSpec = new DataColumnSpecCreator(
-						"Attachment point " + fpIdx + " fingerprint", DenseBitVectorCell.TYPE);
+						"Attachment point " + fpIdx + " fingerprint",
+						DenseBitVectorCell.TYPE);
 				Map<String, String> fpColProps = new LinkedHashMap<>();
 				fpColProps.put("Length", "" + m_fpLength.getIntValue());
 				fpColProps.put("Radius", "" + m_morganRadius.getIntValue());
 				if (m_fpUseBondTypes != null) {
-					fpColProps.put("Use bond types", "" + m_fpUseBondTypes.getBooleanValue());
+					fpColProps.put("Use bond types",
+							"" + m_fpUseBondTypes.getBooleanValue());
 				}
 				if (m_fpUseChirality != null) {
-					fpColProps.put("Use chirality", "" + m_fpUseChirality.getBooleanValue());
+					fpColProps.put("Use chirality",
+							"" + m_fpUseChirality.getBooleanValue());
 				}
 				fpColProps.put("Toolkit", fragUtilityFactory.getToolkitName());
 				colSpec.setProperties(new DataColumnProperties(fpColProps));
@@ -456,9 +486,9 @@ public class AbstractMMPFragmentNodeModel<T, U>
 			}
 		}
 		if (m_addValueGraphDistanceFingerprint.getBooleanValue()) {
-			specs[i++] =
-					new DataColumnSpecCreator("Value Attachment Point Graph Distance fingerprint",
-							DenseByteVectorCell.TYPE).createSpec();
+			specs[i++] = new DataColumnSpecCreator(
+					"Value Attachment Point Graph Distance fingerprint",
+					DenseByteVectorCell.TYPE).createSpec();
 		}
 
 		if (isMulticut) {
@@ -469,7 +499,8 @@ public class AbstractMMPFragmentNodeModel<T, U>
 			DataColumnSpec inColSpec = spec.getColumnSpec(keptCol);
 			String newName = getUniqueColumnName(specs, inColSpec.getName());
 			if (!newName.equals(inColSpec.getName())) {
-				DataColumnSpecCreator specFact = new DataColumnSpecCreator(inColSpec);
+				DataColumnSpecCreator specFact =
+						new DataColumnSpecCreator(inColSpec);
 				specFact.setName(newName);
 				specs[i++] = specFact.createSpec();
 			} else {
@@ -490,9 +521,10 @@ public class AbstractMMPFragmentNodeModel<T, U>
 	 */
 	protected DataTableSpec createSpec_1(DataTableSpec dataTableSpec) {
 		if (m_addFailReasons.getBooleanValue()) {
-			DataTableSpecCreator retVal = new DataTableSpecCreator(dataTableSpec);
-			retVal.addColumns(new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(dataTableSpec, "Failure Reason"),
+			DataTableSpecCreator retVal =
+					new DataTableSpecCreator(dataTableSpec);
+			retVal.addColumns(new DataColumnSpecCreator(DataTableSpec
+					.getUniqueColumnName(dataTableSpec, "Failure Reason"),
 					StringCell.TYPE).createSpec());
 			return retVal.createSpec();
 		} else {
@@ -526,24 +558,26 @@ public class AbstractMMPFragmentNodeModel<T, U>
 	 * BufferedDataTable[])
 	 */
 	@Override
-	protected BufferedDataTable[] doExecute(BufferedDataTable[] inData, final ExecutionContext exec)
-			throws Exception {
+	protected BufferedDataTable[] doExecute(BufferedDataTable[] inData,
+			final ExecutionContext exec) throws Exception {
 		// Do some setting up
 		BufferedDataTable table = inData[0];
 		DataTableSpec spec = table.getSpec();
-		final int molColIdx = spec.findColumnIndex(m_molColName.getStringValue());
-		final int idColIdx =
-				m_idColName.useRowID() ? -1 : spec.findColumnIndex(m_idColName.getStringValue());
+		final int molColIdx =
+				spec.findColumnIndex(m_molColName.getStringValue());
+		final int idColIdx = m_idColName.useRowID() ? -1
+				: spec.findColumnIndex(m_idColName.getStringValue());
 		numRows = table.size();
 
 		// set any colours for optional rendering
-		bondColour =
-				renderFragmentationMdl.getBooleanValue() && renderBreakingBondMdl.getBooleanValue()
+		bondColour = renderFragmentationMdl.getBooleanValue()
+				&& renderBreakingBondMdl.getBooleanValue()
 						? breakingBondColourMdl.getColorValue() : null;
-		keyColour = renderFragmentationMdl.getBooleanValue() && renderKeyBondMdl.getBooleanValue()
-				? keyColourMdl.getColorValue() : null;
-		valueColour =
-				renderFragmentationMdl.getBooleanValue() && renderValueBondMdl.getBooleanValue()
+		keyColour = renderFragmentationMdl.getBooleanValue()
+				&& renderKeyBondMdl.getBooleanValue()
+						? keyColourMdl.getColorValue() : null;
+		valueColour = renderFragmentationMdl.getBooleanValue()
+				&& renderValueBondMdl.getBooleanValue()
 						? valueColourMdl.getColorValue() : null;
 
 		final BufferedDataContainer[] dc = new BufferedDataContainer[] {
@@ -555,7 +589,8 @@ public class AbstractMMPFragmentNodeModel<T, U>
 		// Deal with the empty table situation
 		if (numRows == 0) {
 			Arrays.stream(dc).forEach(x -> x.close());
-			return Arrays.stream(dc).map(x -> x.getTable()).toArray(x -> new BufferedDataTable[x]);
+			return Arrays.stream(dc).map(x -> x.getTable())
+					.toArray(x -> new BufferedDataTable[x]);
 		}
 		try {
 			this.setQueueSize(MatchedPairPreferencePage.getQueueSize());
@@ -577,15 +612,17 @@ public class AbstractMMPFragmentNodeModel<T, U>
 			// These two can both be null
 			final Integer maxNumVarAtm = (m_hasChangingAtoms.getBooleanValue())
 					? m_maxChangingAtoms.getIntValue() : null;
-			final Double minCnstToVarAtmRatio = (m_hasHARatioFilter.getBooleanValue())
-					? m_minHARatioFilter.getDoubleValue() : null;
+			final Double minCnstToVarAtmRatio =
+					(m_hasHARatioFilter.getBooleanValue())
+							? m_minHARatioFilter.getDoubleValue() : null;
 
-			final boolean stripHsAtEnd =
-					m_stripHsAtEnd.isEnabled() && m_stripHsAtEnd.getBooleanValue();
+			final boolean stripHsAtEnd = m_stripHsAtEnd.isEnabled()
+					&& m_stripHsAtEnd.getBooleanValue();
 
-			logger.info("Fragmentation SMIRKS: " + fragSMIRKS + " (Upto " + maxNumCuts + " cuts)");
-			logger.info("Using " + getNumThreads() + " threads and " + getQueueSize()
-					+ " queue items to parallel process...");
+			logger.info("Fragmentation SMIRKS: " + fragSMIRKS + " (Upto "
+					+ maxNumCuts + " cuts)");
+			logger.info("Using " + getNumThreads() + " threads and "
+					+ getQueueSize() + " queue items to parallel process...");
 			logger.info("Starting fragmentation at " + new Date().toString());
 			long systemStartTime = System.nanoTime();
 
@@ -598,18 +635,25 @@ public class AbstractMMPFragmentNodeModel<T, U>
 						@Override
 						protected Set<AbstractMulticomponentFragmentationParser<T>> compute(
 								DataRow in, long index)
-								throws IncomingMoleculeException, ClosedFactoryException {
+								throws IncomingMoleculeException,
+								ClosedFactoryException {
 
 							try {
 								long index1 = index + 1L;
 								Set<AbstractMulticomponentFragmentationParser<T>> retVal =
 										runFragmentationsOnRow(
-												getMoleculeFromRow(in, molColIdx, idColIdx, index1),
-												bondMatch, index1, minNumCuts, maxNumCuts,
-												m_prochiralAsChiral.getBooleanValue(), addHs,
-												stripHsAtEnd,
-												m_allowTwoCutsToBondValue.getBooleanValue(),
-												maxNumVarAtm, minCnstToVarAtmRatio, exec);
+												getMoleculeFromRow(in,
+														molColIdx, idColIdx,
+														index1),
+												bondMatch, index1, minNumCuts,
+												maxNumCuts,
+												m_prochiralAsChiral
+														.getBooleanValue(),
+												addHs, stripHsAtEnd,
+												m_allowTwoCutsToBondValue
+														.getBooleanValue(),
+												maxNumVarAtm,
+												minCnstToVarAtmRatio, exec);
 
 								updateProgress(exec);
 								return retVal;
@@ -623,42 +667,48 @@ public class AbstractMMPFragmentNodeModel<T, U>
 
 						@Override
 						protected void processFinished(ComputationTask task)
-								throws ExecutionException, CancellationException,
-								InterruptedException {
+								throws ExecutionException,
+								CancellationException, InterruptedException {
 							DataRow inRow = task.getInput();
-							Set<RowKey> inKeySet = Collections.singleton(inRow.getKey());
+							Set<RowKey> inKeySet =
+									Collections.singleton(inRow.getKey());
 							Set<AbstractMulticomponentFragmentationParser<T>> result;
 							long subRowIdx = 0;
 							try {
 								result = task.get();
-								DataCell idCell =
-										idColIdx < 0 ? new StringCell(inRow.getKey().getString())
-												: new StringCell(
-														((StringValue) inRow.getCell(idColIdx))
-																.getStringValue());
+								DataCell idCell = idColIdx < 0
+										? new StringCell(
+												inRow.getKey().getString())
+										: new StringCell(((StringValue) inRow
+												.getCell(idColIdx))
+														.getStringValue());
 								for (AbstractMulticomponentFragmentationParser<T> fragmentation : result) {
 									DataRow baseRow = new DefaultRow(
-											inRow.getKey().getString() + "_" + (subRowIdx++),
-											getCellsForFragmentation(idCell, fragmentation));
+											inRow.getKey().getString() + "_"
+													+ (subRowIdx++),
+											getCellsForFragmentation(idCell,
+													fragmentation));
 									if (m_hiliteMdl.getBooleanValue()) {
 										mapping.put(baseRow.getKey(), inKeySet);
 									}
-									dc[0].addRowToTable(
-											new AppendedColumnRow(baseRow, inRow, keptColMask));
+									dc[0].addRowToTable(new AppendedColumnRow(
+											baseRow, inRow, keptColMask));
 								}
 
 							} catch (ExecutionException ee) {
 								Throwable e = ee.getCause();
 								if (e instanceof IncomingMoleculeException) {
 									if (verboseLogging) {
-										logger.info(
-												"Rejecting molecule: (" + inRow.getKey().getString()
-														+ "): " + e.getMessage());
+										logger.info("Rejecting molecule: ("
+												+ inRow.getKey().getString()
+												+ "): " + e.getMessage());
 									}
 									dc[1].addRowToTable(
 											(m_addFailReasons.getBooleanValue())
-													? new AppendedColumnRow(inRow,
-															new StringCell(e.getMessage()))
+													? new AppendedColumnRow(
+															inRow,
+															new StringCell(
+																	e.getMessage()))
 													: inRow);
 								} else {
 									throw ee;
@@ -668,8 +718,10 @@ public class AbstractMMPFragmentNodeModel<T, U>
 								if (!task.isCancelled()) {
 									throw new InterruptedException(
 											"Exception encountered during execution: "
-													+ e.getClass().getSimpleName() + " '"
-													+ e.getMessage() + "'");
+													+ e.getClass()
+															.getSimpleName()
+													+ " '" + e.getMessage()
+													+ "'");
 								}
 							} finally {
 								updateProgress(exec);
@@ -686,15 +738,17 @@ public class AbstractMMPFragmentNodeModel<T, U>
 						/**
 						 * @param exec
 						 */
-						private void updateProgress(final ExecutionContext exec) {
+						private void updateProgress(
+								final ExecutionContext exec) {
 							rowsRun = getFinishedCount();
 							completedQueue = getFinishedTaskCount();
 							activeThreads = getActiveCount();
 							exec.setProgress(1.0 * rowsRun / numRows,
-									"Completed row " + rowsRun + " of " + numRows + "; "
-											+ completedQueue
+									"Completed row " + rowsRun + " of "
+											+ numRows + "; " + completedQueue
 											+ " further rows finished and waiting release; "
-											+ activeThreads + " active threads");
+											+ activeThreads
+											+ " active threads");
 							notifyViews(false);
 						}
 					};
@@ -703,7 +757,8 @@ public class AbstractMMPFragmentNodeModel<T, U>
 				processor.run(table);
 				rowsRun = numRows;
 			} catch (InterruptedException e) {
-				CanceledExecutionException cee = new CanceledExecutionException(e.getMessage());
+				CanceledExecutionException cee =
+						new CanceledExecutionException(e.getMessage());
 				cee.initCause(e);
 				rowsRun = 0;
 				throw cee;
@@ -719,9 +774,10 @@ public class AbstractMMPFragmentNodeModel<T, U>
 				hiLiteTranslator.setMapper(new DefaultHiLiteMapper(mapping));
 			}
 			logger.info("Fragmentation completed at " + new Date().toString());
-			Duration duration = Duration.ofNanos(System.nanoTime() - systemStartTime);
-			StringBuilder sb =
-					new StringBuilder().append(inData[0].size()).append(" rows fragmented in ");
+			Duration duration =
+					Duration.ofNanos(System.nanoTime() - systemStartTime);
+			StringBuilder sb = new StringBuilder().append(inData[0].size())
+					.append(" rows fragmented in ");
 			boolean keepanyway = false;
 			if (duration.toDays() > 0) {
 				sb.append(duration.toDays()).append("days ");
@@ -739,7 +795,8 @@ public class AbstractMMPFragmentNodeModel<T, U>
 				keepanyway = true;
 			}
 			if (duration.toMillis() > 1000) {
-				sb.append(String.format("%.2f", duration.toMillis() / 1000.0)).append("s");
+				sb.append(String.format("%.2f", duration.toMillis() / 1000.0))
+						.append("s");
 			} else {
 				sb.append(duration.toMillis()).append("ms");
 			}
@@ -749,7 +806,8 @@ public class AbstractMMPFragmentNodeModel<T, U>
 		} catch (Exception e) {
 			throw e;
 		}
-		return Arrays.stream(dc).map(x -> x.getTable()).toArray(x -> new BufferedDataTable[x]);
+		return Arrays.stream(dc).map(x -> x.getTable())
+				.toArray(x -> new BufferedDataTable[x]);
 	}
 
 	protected DataCell[] getCellsForFragmentation(DataCell idCell,
@@ -765,18 +823,22 @@ public class AbstractMMPFragmentNodeModel<T, U>
 		cells[colIdx++] = key.getKeyAsDataCell();
 		cells[colIdx++] = fragmentation.getValue().getSMILESCell();
 
-		if (renderFragmentationMdl != null && renderFragmentationMdl.getBooleanValue()) {
+		if (renderFragmentationMdl != null
+				&& renderFragmentationMdl.getBooleanValue()) {
 			cells[colIdx++] = fragmentation.getRenderingCell();
 		}
 
 		if (m_outputNumChgHAs.getBooleanValue()) {
-			cells[colIdx++] = fragmentation.getValue().getNumberChangingAtomsCell();
+			cells[colIdx++] =
+					fragmentation.getValue().getNumberChangingAtomsCell();
 		}
 		if (m_outputHARatio.getBooleanValue()) {
-			cells[colIdx++] = fragmentation.getKey()
-					.getConstantToVaryingAtomRatioCell(fragmentation.getValue());
+			cells[colIdx++] =
+					fragmentation.getKey().getConstantToVaryingAtomRatioCell(
+							fragmentation.getValue());
 		}
-		if (m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue()) {
+		if (m_apFingerprints.isEnabled()
+				&& m_apFingerprints.getBooleanValue()) {
 			for (int i = 0; i < fragmentation.getNumCuts(); i++) {
 				AbstractLeaf<T> leaf = null;
 				try {
@@ -785,14 +847,16 @@ public class AbstractMMPFragmentNodeModel<T, U>
 					// We have got no more leafs to find
 					break;
 				}
-				cells[colIdx++] = leaf.getMorganFingerprintCell(m_morganRadius.getIntValue(),
-						m_fpLength.getIntValue(), m_fpUseChirality.getBooleanValue(),
+				cells[colIdx++] = leaf.getMorganFingerprintCell(
+						m_morganRadius.getIntValue(), m_fpLength.getIntValue(),
+						m_fpUseChirality.getBooleanValue(),
 						m_fpUseBondTypes.getBooleanValue());
 			}
 			colIdx += m_numCuts.getIntValue() - fragmentation.getNumCuts();
 		}
 		if (m_addValueGraphDistanceFingerprint.getBooleanValue()) {
-			cells[colIdx++] = fragmentation.getValue().getAttachmentPointGraphDistanceFingerprint();
+			cells[colIdx++] = fragmentation.getValue()
+					.getAttachmentPointGraphDistanceFingerprint();
 		}
 		if (isMulticut) {
 			cells[colIdx++] = new IntCell(fragmentation.getNumCuts());
@@ -824,14 +888,16 @@ public class AbstractMMPFragmentNodeModel<T, U>
 	 * @throws CanceledExecutionException
 	 * @throws ClosedFactoryException
 	 */
-	protected Set<AbstractMulticomponentFragmentationParser<T>> runFragmentationsOnRow(T mol,
-			U bondMatch, long rowIndexForGc, int minNumCuts, int maxNumCuts,
-			boolean prochiralAsChiral, boolean addHs, boolean stripHsAtEnd,
-			boolean allowTwoCutsToBondValue, Integer maxNumVarAtm, Double minCnstToVarAtmRatio,
-			ExecutionContext exec)
-			throws CanceledExecutionException, IncomingMoleculeException, ClosedFactoryException {
+	protected Set<AbstractMulticomponentFragmentationParser<T>> runFragmentationsOnRow(
+			T mol, U bondMatch, long rowIndexForGc, int minNumCuts,
+			int maxNumCuts, boolean prochiralAsChiral, boolean addHs,
+			boolean stripHsAtEnd, boolean allowTwoCutsToBondValue,
+			Integer maxNumVarAtm, Double minCnstToVarAtmRatio,
+			ExecutionContext exec) throws CanceledExecutionException,
+			IncomingMoleculeException, ClosedFactoryException {
 
-		Set<AbstractMulticomponentFragmentationParser<T>> fragmentations = new TreeSet<>();
+		Set<AbstractMulticomponentFragmentationParser<T>> fragmentations =
+				new TreeSet<>();
 
 		// Deal with 1 cut
 		MoleculeFragmentationFactory2<T, U> fragFactory = null;
@@ -876,11 +942,13 @@ public class AbstractMMPFragmentNodeModel<T, U>
 			}
 
 			int i = Math.max(2, minNumCuts);
-			while (i <= maxNumCuts && i < matchingBondCount && numberOfFragmentations >= 0
-					&& numberOfFragmentations < m_maxFragmentations.getIntValue()) {
+			while (i <= maxNumCuts && i < matchingBondCount
+					&& numberOfFragmentations >= 0
+					&& numberOfFragmentations < m_maxFragmentations
+							.getIntValue()) {
 				// -ve numberOfFragmentations indicates numerical overflow
-				numberOfFragmentations +=
-						AbstractFragmentationFactory.numCombinations(matchingBondCount, i++);
+				numberOfFragmentations += AbstractFragmentationFactory
+						.numCombinations(matchingBondCount, i++);
 			}
 
 			if (numberOfFragmentations > m_maxFragmentations.getIntValue()) {
@@ -888,17 +956,17 @@ public class AbstractMMPFragmentNodeModel<T, U>
 					fragFactoryHAdded.close();
 				}
 				fragFactory.close();
-				throw new IncomingMoleculeException("Molecule failed complexity limit");
+				throw new IncomingMoleculeException(
+						"Molecule failed complexity limit");
 			}
 		}
 
 		// Now do the fragmentations
-		// TODO: Modify all these methods to take arguments for the rendering
-
 		if (addHs) {
 			try {
-				fragmentations.addAll(fragFactoryHAdded.breakMoleculeAlongMatchingBonds(exec,
-						bondColour, keyColour, valueColour));
+				fragmentations.addAll(
+						fragFactoryHAdded.breakMoleculeAlongMatchingBonds(exec,
+								bondColour, keyColour, valueColour));
 			} catch (IllegalArgumentException | ToolkitException e) {
 				fragFactory.close();
 				throw new IncomingMoleculeException(
@@ -911,8 +979,9 @@ public class AbstractMMPFragmentNodeModel<T, U>
 		if (minNumCuts == 1) {
 			// Do 1 cut along all matching bonds
 			try {
-				fragmentations.addAll(fragFactory.breakMoleculeAlongMatchingBonds(exec, bondColour,
-						keyColour, valueColour));
+				fragmentations.addAll(
+						fragFactory.breakMoleculeAlongMatchingBonds(exec,
+								bondColour, keyColour, valueColour));
 			} catch (ToolkitException e) {
 				fragFactory.close();
 				throw new IncomingMoleculeException(
@@ -923,8 +992,9 @@ public class AbstractMMPFragmentNodeModel<T, U>
 		// Deal with the special case of 2 cuts, and allowing *-* as a value
 		if (minNumCuts <= 2 && maxNumCuts >= 2 && allowTwoCutsToBondValue) {
 			try {
-				fragmentations.addAll(fragFactory.breakMoleculeAlongMatchingBondsWithBondInsertion(
-						exec, bondColour, keyColour, valueColour));
+				fragmentations.addAll(fragFactory
+						.breakMoleculeAlongMatchingBondsWithBondInsertion(exec,
+								bondColour, keyColour, valueColour));
 			} catch (ToolkitException e) {
 				fragFactory.close();
 				throw new IncomingMoleculeException(
@@ -943,16 +1013,16 @@ public class AbstractMMPFragmentNodeModel<T, U>
 			// bonds change with number of cuts!
 			Set<Set<BondIdentifier>> bondCombos;
 			try {
-				bondCombos =
-						fragFactory.generateCuttableBondCombos(Math.max(minNumCuts, 2), maxNumCuts);
+				bondCombos = fragFactory.generateCuttableBondCombos(
+						Math.max(minNumCuts, 2), maxNumCuts);
 			} catch (IllegalArgumentException | ToolkitException e) {
 				fragFactory.close();
 				throw new IncomingMoleculeException(
 						"Unable to fragment molecule - " + e.getMessage(), e);
 			}
-			fragmentations
-					.addAll(fragFactory.breakMoleculeAlongBondCombos(bondCombos, prochiralAsChiral,
-							exec, bondColour, keyColour, valueColour, logger, verboseLogging));
+			fragmentations.addAll(fragFactory.breakMoleculeAlongBondCombos(
+					bondCombos, prochiralAsChiral, exec, bondColour, keyColour,
+					valueColour, logger, verboseLogging));
 		}
 		fragFactory.close();
 
@@ -981,7 +1051,8 @@ public class AbstractMMPFragmentNodeModel<T, U>
 	 */
 	@Override
 	public OutputPortRole[] getOutputPortRoles() {
-		return new OutputPortRole[] { OutputPortRole.DISTRIBUTED, OutputPortRole.DISTRIBUTED };
+		return new OutputPortRole[] { OutputPortRole.DISTRIBUTED,
+				OutputPortRole.DISTRIBUTED };
 	}
 
 	/*
@@ -992,14 +1063,16 @@ public class AbstractMMPFragmentNodeModel<T, U>
 	 * node.streamable.PartitionInfo, org.knime.core.node.port.PortObjectSpec[])
 	 */
 	@Override
-	public StreamableOperator createStreamableOperator(PartitionInfo partitionInfo,
-			PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+	public StreamableOperator createStreamableOperator(
+			PartitionInfo partitionInfo, PortObjectSpec[] inSpecs)
+			throws InvalidSettingsException {
 		try {
 			return new StreamableOperator() {
 				// Do some setting up
 
 				DataTableSpec spec = (DataTableSpec) inSpecs[0];
-				final int molColIdx = spec.findColumnIndex(m_molColName.getStringValue());
+				final int molColIdx =
+						spec.findColumnIndex(m_molColName.getStringValue());
 				final int idColIdx = m_idColName.useRowID() ? -1
 						: spec.findColumnIndex(m_idColName.getStringValue());
 				// Sort out the reaction
@@ -1014,13 +1087,15 @@ public class AbstractMMPFragmentNodeModel<T, U>
 						: (maxNumCuts == 1) ? m_AddHs.getBooleanValue() : false;
 
 				// These two can both be null
-				final Integer maxNumVarAtm = (m_hasChangingAtoms.getBooleanValue())
-						? m_maxChangingAtoms.getIntValue() : null;
-				final Double minCnstToVarAtmRatio = (m_hasHARatioFilter.getBooleanValue())
-						? m_minHARatioFilter.getDoubleValue() : null;
+				final Integer maxNumVarAtm =
+						(m_hasChangingAtoms.getBooleanValue())
+								? m_maxChangingAtoms.getIntValue() : null;
+				final Double minCnstToVarAtmRatio =
+						(m_hasHARatioFilter.getBooleanValue())
+								? m_minHARatioFilter.getDoubleValue() : null;
 
-				final boolean stripHsAtEnd =
-						m_stripHsAtEnd.isEnabled() && m_stripHsAtEnd.getBooleanValue();
+				final boolean stripHsAtEnd = m_stripHsAtEnd.isEnabled()
+						&& m_stripHsAtEnd.getBooleanValue();
 
 				final AtomicLong rowIdx = new AtomicLong(1);
 
@@ -1037,40 +1112,52 @@ public class AbstractMMPFragmentNodeModel<T, U>
 							long idx = rowIdx.incrementAndGet();
 							Set<AbstractMulticomponentFragmentationParser<T>> frags =
 									runFragmentationsOnRow(
-											getMoleculeFromRow(row, molColIdx, idColIdx, idx),
-											bondMatch, idx, minNumCuts, maxNumCuts,
-											m_prochiralAsChiral.getBooleanValue(), addHs,
-											stripHsAtEnd,
-											m_allowTwoCutsToBondValue.getBooleanValue(),
-											maxNumVarAtm, minCnstToVarAtmRatio, exec);
+											getMoleculeFromRow(row, molColIdx,
+													idColIdx, idx),
+											bondMatch, idx, minNumCuts,
+											maxNumCuts,
+											m_prochiralAsChiral
+													.getBooleanValue(),
+											addHs, stripHsAtEnd,
+											m_allowTwoCutsToBondValue
+													.getBooleanValue(),
+											maxNumVarAtm, minCnstToVarAtmRatio,
+											exec);
 							long subRowIdx = 0;
 							Set<RowKey> mappedKeys = new HashSet<>();
 
 							DataCell idCell = idColIdx < 0
 									? new StringCell(row.getKey().getString())
-									: new StringCell(
-											((StringValue) row.getCell(idColIdx)).getStringValue());
+									: new StringCell(((StringValue) row
+											.getCell(idColIdx))
+													.getStringValue());
 							for (AbstractMulticomponentFragmentationParser<T> fragmentation : frags) {
 								DataRow baseRow = new DefaultRow(
-										row.getKey().getString() + "_" + (subRowIdx++),
-										getCellsForFragmentation(idCell, fragmentation));
+										row.getKey().getString() + "_"
+												+ (subRowIdx++),
+										getCellsForFragmentation(idCell,
+												fragmentation));
 								if (m_hiliteMdl.getBooleanValue()) {
 									mappedKeys.add(baseRow.getKey());
 								}
-								fragmentTable
-										.push(new AppendedColumnRow(baseRow, row, keptColMask));
+								fragmentTable.push(new AppendedColumnRow(
+										baseRow, row, keptColMask));
 							}
 							// if (m_hiliteMdl.getBooleanValue()) {
 							// mapping.put(row.getKey(), mappedKeys);
 							// }
 						} catch (IncomingMoleculeException e) {
 							if (verboseLogging) {
-								logger.info("Rejecting molecule: (" + row.getKey().getString()
-										+ "): " + e.getMessage());
+								logger.info("Rejecting molecule: ("
+										+ row.getKey().getString() + "): "
+										+ e.getMessage());
 							}
-							rejectTable.push((m_addFailReasons.getBooleanValue())
-									? new AppendedColumnRow(row, new StringCell(e.getMessage()))
-									: row);
+							rejectTable
+									.push((m_addFailReasons.getBooleanValue())
+											? new AppendedColumnRow(row,
+													new StringCell(
+															e.getMessage()))
+											: row);
 						}
 						exec.checkCanceled();
 					}

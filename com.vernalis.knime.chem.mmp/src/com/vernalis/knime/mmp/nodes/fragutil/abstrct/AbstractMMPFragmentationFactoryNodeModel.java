@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -13,19 +13,6 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
 package com.vernalis.knime.mmp.nodes.fragutil.abstrct;
-
-import static com.vernalis.knime.mmp.MolFormats.isColTypeRDKitCompatible;
-import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createAddHModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createAllowTwoCutsToBondValueModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createCustomSMARTSModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createCutsModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createIncomingExplicitHsModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createMolColumnSettingsModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createSMIRKSModel;
-import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createStripHModel;
-import static com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage.MMP_PREF_FRAGMENT_CACHE;
-import static com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING;
-import static com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage.getThreadsCount;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,12 +49,30 @@ import com.vernalis.knime.mmp.FragmentationTypes;
 import com.vernalis.knime.mmp.IncomingExplicitHsOption;
 import com.vernalis.knime.mmp.IncomingMoleculeException;
 import com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin;
+import com.vernalis.knime.mmp.RDKitFragmentationUtils;
 import com.vernalis.knime.mmp.ToolkitException;
 import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
+
+import static com.vernalis.knime.mmp.MolFormats.isColTypeRDKitCompatible;
+import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createAddHModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createAllowTwoCutsToBondValueModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createCustomSMARTSModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createCutsModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createIncomingExplicitHsModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createMolColumnSettingsModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createSMIRKSModel;
+import static com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog.createStripHModel;
+import static com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage.MMP_PREF_FRAGMENT_CACHE;
+import static com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING;
+import static com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage.getThreadsCount;
 
 /**
  * Simplest bare-bones {@link NodeModel} implementation for any node requiring a
  * fragmentation factory for execution
+ * <p>
+ * Added version argument to allow version 3 nodes to redirect here and
+ * correctly convert settings to maintain behaviour (SDR, 11-May-2018)
+ * </p>
  * 
  * @author s.roughley {@literal <knime@vernalis.com>}
  * @param <T>
@@ -75,11 +80,14 @@ import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
  * @param <U>
  *            The type of the substructure matching object
  */
-public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends NodeModel {
+public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U>
+		extends NodeModel {
 
-	protected final SettingsModelString m_molColName = createMolColumnSettingsModel();
+	protected final SettingsModelString m_molColName =
+			createMolColumnSettingsModel();
 	protected final SettingsModelString m_fragSMIRKS = createSMIRKSModel();
-	protected final SettingsModelString m_customSmarts = createCustomSMARTSModel();
+	protected final SettingsModelString m_customSmarts =
+			createCustomSMARTSModel();
 	protected final SettingsModelIntegerBounded m_numCuts;
 	protected final SettingsModelBoolean m_allowTwoCutsToBondValue;
 	protected final SettingsModelBoolean m_AddHs = createAddHModel();
@@ -99,6 +107,7 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 	/** The node logger instance */
 	protected NodeLogger logger = NodeLogger.getLogger(this.getClass());
 	protected final boolean isMulticut;
+	protected final int version;
 
 	/**
 	 * Overloaded constructor which creates a non-multicut node
@@ -110,6 +119,11 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 	 * @param fragUtilityFactory
 	 *            The {@link FragmentationUtilsFactory} to use for the node
 	 */
+	public AbstractMMPFragmentationFactoryNodeModel(int inPorts, int outPorts,
+			FragmentationUtilsFactory<T, U> fragUtilityFactory, int version) {
+		this(inPorts, outPorts, fragUtilityFactory, false, version);
+	}
+
 	public AbstractMMPFragmentationFactoryNodeModel(int inPorts, int outPorts,
 			FragmentationUtilsFactory<T, U> fragUtilityFactory) {
 		this(inPorts, outPorts, fragUtilityFactory, false);
@@ -126,26 +140,61 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 	 *            The {@link FragmentationUtilsFactory} to use for the node
 	 */
 	public AbstractMMPFragmentationFactoryNodeModel(int inPorts, int outPorts,
-			FragmentationUtilsFactory<T, U> fragUtilityFactory, boolean isMulticut) {
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, int version) {
+		this(inPorts, outPorts, fragUtilityFactory, isMulticut, true, version);
+	}
+
+	public AbstractMMPFragmentationFactoryNodeModel(int inPorts, int outPorts,
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut) {
 		this(inPorts, outPorts, fragUtilityFactory, isMulticut, true);
 	}
 
 	public AbstractMMPFragmentationFactoryNodeModel(int inPorts, int outPorts,
-			FragmentationUtilsFactory<T, U> fragUtilityFactory, boolean isMulticut,
-			boolean hasRemoveHs) {
-		this(inPorts, outPorts, fragUtilityFactory, isMulticut, hasRemoveHs, true);
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, boolean hasRemoveHs, int version) {
+		this(inPorts, outPorts, fragUtilityFactory, isMulticut, hasRemoveHs,
+				true, version);
 	}
 
 	public AbstractMMPFragmentationFactoryNodeModel(int inPorts, int outPorts,
-			FragmentationUtilsFactory<T, U> fragUtilityFactory, boolean isMulticut,
-			boolean hasRemoveHs, boolean hasNumCuts) {
-		this(inPorts, outPorts, fragUtilityFactory, isMulticut, hasRemoveHs, hasNumCuts, true);
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, boolean hasRemoveHs) {
+		this(inPorts, outPorts, fragUtilityFactory, isMulticut, hasRemoveHs,
+				true);
 	}
 
 	public AbstractMMPFragmentationFactoryNodeModel(int inPorts, int outPorts,
-			FragmentationUtilsFactory<T, U> fragUtilityFactory, boolean isMulticut,
-			boolean hasRemoveHs, boolean hasNumCuts, boolean hasTwoCutsToBond) {
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, boolean hasRemoveHs, boolean hasNumCuts,
+			int version) {
+		this(inPorts, outPorts, fragUtilityFactory, isMulticut, hasRemoveHs,
+				hasNumCuts, true, version);
+	}
+
+	public AbstractMMPFragmentationFactoryNodeModel(int inPorts, int outPorts,
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, boolean hasRemoveHs, boolean hasNumCuts) {
+		this(inPorts, outPorts, fragUtilityFactory, isMulticut, hasRemoveHs,
+				hasNumCuts, true);
+	}
+
+	public AbstractMMPFragmentationFactoryNodeModel(int inPorts, int outPorts,
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, boolean hasRemoveHs, boolean hasNumCuts,
+			boolean hasTwoCutsToBond) {
+		// USe default version 4 if none supplied
+		this(inPorts, outPorts, fragUtilityFactory, isMulticut, hasRemoveHs,
+				hasNumCuts, hasTwoCutsToBond, 4);
+	}
+
+	public AbstractMMPFragmentationFactoryNodeModel(int inPorts, int outPorts,
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, boolean hasRemoveHs, boolean hasNumCuts,
+			boolean hasTwoCutsToBond, int version) {
 		super(inPorts, outPorts);
+		this.version = version;
 		this.fragUtilityFactory = fragUtilityFactory;
 		this.isMulticut = isMulticut;
 
@@ -155,14 +204,18 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 
 				@Override
 				public void stateChanged(ChangeEvent e) {
-					m_AddHs.setEnabled(isMulticut || m_numCuts.getIntValue() == 1);
+					m_AddHs.setEnabled(
+							isMulticut || m_numCuts.getIntValue() == 1);
 					if (hasRemoveHs) {
-						m_stripHsAtEnd.setEnabled(m_AddHs.isEnabled() && m_AddHs.getBooleanValue());
+						m_stripHsAtEnd.setEnabled(m_AddHs.isEnabled()
+								&& m_AddHs.getBooleanValue());
 					}
 					if (isMulticut && hasTwoCutsToBond) {
-						m_allowTwoCutsToBondValue.setEnabled(m_numCuts.getIntValue() >= 2);
+						m_allowTwoCutsToBondValue
+								.setEnabled(m_numCuts.getIntValue() >= 2);
 					} else {
-						m_allowTwoCutsToBondValue.setEnabled(m_numCuts.getIntValue() == 2);
+						m_allowTwoCutsToBondValue
+								.setEnabled(m_numCuts.getIntValue() == 2);
 					}
 				}
 			});
@@ -208,25 +261,29 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 		}
 		if (hasNumCuts && hasTwoCutsToBond) {
 			if (isMulticut) {
-				m_allowTwoCutsToBondValue.setEnabled(m_numCuts.getIntValue() >= 2);
+				m_allowTwoCutsToBondValue
+						.setEnabled(m_numCuts.getIntValue() >= 2);
 			} else {
-				m_allowTwoCutsToBondValue.setEnabled(m_numCuts.getIntValue() == 2);
+				m_allowTwoCutsToBondValue
+						.setEnabled(m_numCuts.getIntValue() == 2);
 			}
 		}
 		m_fragSMIRKS.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				m_customSmarts.setEnabled(FragmentationTypes
-						.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED);
+				m_customSmarts
+						.setEnabled(FragmentationTypes.valueOf(m_fragSMIRKS
+								.getStringValue()) == FragmentationTypes.USER_DEFINED);
 
 			}
 		});
-		m_customSmarts.setEnabled(FragmentationTypes
-				.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED);
+		m_customSmarts.setEnabled(FragmentationTypes.valueOf(m_fragSMIRKS
+				.getStringValue()) == FragmentationTypes.USER_DEFINED);
 
 		// Preferences
-		prefStore = MatchedPairsMultipleCutsNodePlugin.getDefault().getPreferenceStore();
+		prefStore = MatchedPairsMultipleCutsNodePlugin.getDefault()
+				.getPreferenceStore();
 		prefStore.addPropertyChangeListener(new IPropertyChangeListener() {
 
 			@Override
@@ -250,7 +307,8 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 		// Do nothing
 	}
@@ -259,7 +317,8 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 		// Do nothing
 	}
@@ -320,6 +379,7 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 	@Override
 	protected void loadValidatedSettingsFrom(NodeSettingsRO settings)
 			throws InvalidSettingsException {
+
 		m_molColName.loadSettingsFrom(settings);
 		m_fragSMIRKS.loadSettingsFrom(settings);
 		m_customSmarts.loadSettingsFrom(settings);
@@ -339,7 +399,9 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 	}
 
 	@Override
-	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(NodeSettingsRO settings)
+			throws InvalidSettingsException {
+
 		m_AddHs.validateSettings(settings);
 		m_molColName.validateSettings(settings);
 		m_fragSMIRKS.validateSettings(settings);
@@ -356,6 +418,7 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 		if (m_incomingExplicitHsHandlingMdl != null) {
 			m_incomingExplicitHsHandlingMdl.validateSettings(settings);
 		}
+
 	}
 
 	/**
@@ -366,15 +429,19 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 			throws InvalidSettingsException {
 
 		// Check the molCol is a molecule
-		DataColumnSpec colSpec = inSpecs[0].getColumnSpec(m_molColName.getStringValue());
+		DataColumnSpec colSpec =
+				inSpecs[0].getColumnSpec(m_molColName.getStringValue());
 
 		if (colSpec == null) {
 			// No column selected, or selected column not found - autoguess!
 			for (int i = inSpecs[0].getNumColumns() - 1; i >= 0; i--) {
 				// Reverse order to select most recently added
-				if (isColTypeRDKitCompatible(inSpecs[0].getColumnSpec(i).getType())) {
-					m_molColName.setStringValue(inSpecs[0].getColumnSpec(i).getName());
-					logger.warn("No molecule column selected. " + m_molColName.getStringValue()
+				if (isColTypeRDKitCompatible(
+						inSpecs[0].getColumnSpec(i).getType())) {
+					m_molColName.setStringValue(
+							inSpecs[0].getColumnSpec(i).getName());
+					logger.warn("No molecule column selected. "
+							+ m_molColName.getStringValue()
 							+ " auto-selected.");
 					break;
 				}
@@ -382,8 +449,9 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 				if (i == 0) {
 					logger.error("No molecule column of the accepted"
 							+ " input formats (SDF, Mol, SMILES) was found.");
-					throw new InvalidSettingsException("No molecule column of the accepted"
-							+ " input formats (SDF, Mol, SMILES) was found.");
+					throw new InvalidSettingsException(
+							"No molecule column of the accepted"
+									+ " input formats (SDF, Mol, SMILES) was found.");
 				}
 			}
 
@@ -392,27 +460,28 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 			if (!isColTypeRDKitCompatible(colSpec.getType())) {
 				// The column is not compatible with one of the accepted types
 				logger.error("The column " + m_molColName.getStringValue()
-						+ " is not one of the accepted" + " input formats (SDF, Mol, SMILES)");
-				throw new InvalidSettingsException("The column " + m_molColName.getStringValue()
-						+ " is not one of the accepted" + " input formats (SDF, Mol, SMILES)");
+						+ " is not one of the accepted"
+						+ " input formats (SDF, Mol, SMILES)");
+				throw new InvalidSettingsException(
+						"The column " + m_molColName.getStringValue()
+								+ " is not one of the accepted"
+								+ " input formats (SDF, Mol, SMILES)");
 			}
 		}
 
-		if (FragmentationTypes
-				.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED) {
+		if (FragmentationTypes.valueOf(m_fragSMIRKS
+				.getStringValue()) == FragmentationTypes.USER_DEFINED) {
 			if (m_customSmarts.getStringValue() == null
 					|| "".equals(m_customSmarts.getStringValue())) {
 				logger.error("A reaction SMARTS string must be provided "
 						+ "for user-defined fragmentation patterns");
-				throw new InvalidSettingsException("A reaction SMARTS string must be provided "
-						+ "for user-defined fragmentation patterns");
+				throw new InvalidSettingsException(
+						"A reaction SMARTS string must be provided "
+								+ "for user-defined fragmentation patterns");
 			}
 		}
-		String rSMARTSCheck =
-				fragUtilityFactory.validateMatcherSmarts(getFragmentationSMARTSMatch());
-		if (rSMARTSCheck != null) {
-			throw new InvalidSettingsException("Error parsing rSMARTS: " + rSMARTSCheck);
-		}
+		// Just check it here
+		getFragmentationSMARTSMatch();
 
 		return doConfigure(inSpecs);
 	}
@@ -433,14 +502,15 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 	 * @return A uniquified version of the column name if it duplicates any
 	 *         previous
 	 */
-	protected String getUniqueColumnName(final DataColumnSpec[] colSpecs, final String columnName) {
+	protected String getUniqueColumnName(final DataColumnSpec[] colSpecs,
+			final String columnName) {
 
 		if (columnName == null) {
 			throw new NullPointerException("Column name must not be null.");
 		}
 
-		List<String> names = Arrays.stream(colSpecs).filter(x -> x != null).map(x -> x.getName())
-				.collect(Collectors.toList());
+		List<String> names = Arrays.stream(colSpecs).filter(x -> x != null)
+				.map(x -> x.getName()).collect(Collectors.toList());
 
 		String trimedName = columnName.trim();
 		int uniquifier = 1;
@@ -461,7 +531,8 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 	 *            The column {@link DataType}
 	 * @return A {@link DataColumnSpec}
 	 */
-	protected final DataColumnSpec createColSpec(String colName, DataType colType) {
+	protected final DataColumnSpec createColSpec(String colName,
+			DataType colType) {
 		return (new DataColumnSpecCreator(colName, colType)).createSpec();
 	}
 
@@ -469,8 +540,8 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected BufferedDataTable[] execute(BufferedDataTable[] inData, final ExecutionContext exec)
-			throws Exception {
+	protected BufferedDataTable[] execute(BufferedDataTable[] inData,
+			final ExecutionContext exec) throws Exception {
 
 		try {
 			return doExecute(inData, exec);
@@ -505,14 +576,15 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 	 *            The index of the current row - may be needed for garbage
 	 *            collection
 	 */
-	protected T getMoleculeFromRow(DataRow row, int molColIdx, Integer idColIdx, long rowIndex)
-			throws IncomingMoleculeException {
+	protected T getMoleculeFromRow(DataRow row, int molColIdx, Integer idColIdx,
+			long rowIndex) throws IncomingMoleculeException {
 
 		// We need both a molecule cell and an ID cell
 		DataCell molCell = row.getCell(molColIdx);
 		if (molCell.isMissing()) {
 			// Deal with missing mols
-			throw new IncomingMoleculeException("Missing value in Molecule Column");
+			throw new IncomingMoleculeException(
+					"Missing value in Molecule Column");
 		}
 
 		if (idColIdx >= 0 && row.getCell(idColIdx).isMissing()) {
@@ -523,9 +595,11 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 		// Now try and get the molecule in the correct format:
 		T mol;
 		try {
-			mol = fragUtilityFactory.getMolFromCell(row.getCell(molColIdx), rowIndex,
+			mol = fragUtilityFactory.getMolFromCell(row.getCell(molColIdx),
+					rowIndex,
 					incomingExplicitHsOption == null ? false
-							: incomingExplicitHsOption.getRemoveHsBeforeFragmentation());
+							: incomingExplicitHsOption
+									.getRemoveHsBeforeFragmentation());
 		} catch (ToolkitException e) {
 			// Log the failed row
 			throw new IncomingMoleculeException(e.getMessage(), e);
@@ -536,13 +610,15 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 			// Deal with when we cannot get a mol object - e.g. for 'No
 			// Structure' Mol files
 			// And add it to the second output
-			throw new IncomingMoleculeException("'No Structure' input molecule");
+			throw new IncomingMoleculeException(
+					"'No Structure' input molecule");
 		}
 
 		// Multicomponent molecules make no sense... (and duplicate salts crash
 		// the duplicate key resolver!)
 		if (fragUtilityFactory.moleculeIsMultiComponent(mol)) {
-			throw new IncomingMoleculeException("Multi-component structures cannot be fragmented");
+			throw new IncomingMoleculeException(
+					"Multi-component structures cannot be fragmented");
 		}
 
 		return mol;
@@ -587,9 +663,10 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 	 * @return The Matcher object
 	 * @throws ToolkitException
 	 */
-	protected U getMatcherFromSMARTS(String fragSMIRKS) throws ToolkitException {
-		return fragUtilityFactory
-				.getMatcher(fragSMIRKS.contains(">>") ? fragSMIRKS.split(">>")[0] : fragSMIRKS);
+	protected U getMatcherFromSMARTS(String fragSMIRKS)
+			throws ToolkitException {
+		return fragUtilityFactory.getMatcher(fragSMIRKS.contains(">>")
+				? fragSMIRKS.split(">>")[0] : fragSMIRKS);
 	}
 
 	/**
@@ -597,16 +674,20 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U> extends Nod
 	 *         from based on the current settings models
 	 * @throws InvalidSettingsException
 	 */
-	protected String getFragmentationSMARTSMatch() throws InvalidSettingsException {
+	protected String getFragmentationSMARTSMatch()
+			throws InvalidSettingsException {
 
-		String fragSMIRKS = FragmentationTypes.valueOf(m_fragSMIRKS.getStringValue()).getSMARTS();
-		if ((fragSMIRKS == null || "".equals(fragSMIRKS)) && FragmentationTypes
-				.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED) {
+		final FragmentationTypes fragType =
+				FragmentationTypes.valueOf(m_fragSMIRKS.getStringValue());
+		String fragSMIRKS = fragType.getSMARTS();
+		if ((fragSMIRKS == null || "".equals(fragSMIRKS))
+				&& fragType == FragmentationTypes.USER_DEFINED) {
 			fragSMIRKS = m_customSmarts.getStringValue();
 		}
 		String validation = fragUtilityFactory.validateMatcherSmarts(fragSMIRKS);
 		if (validation != null) {
-			throw new InvalidSettingsException("Invalid SMARTS Matcher - " + validation);
+			throw new InvalidSettingsException(
+					"Invalid SMARTS Matcher - " + validation);
 		}
 		return fragSMIRKS;
 	}
