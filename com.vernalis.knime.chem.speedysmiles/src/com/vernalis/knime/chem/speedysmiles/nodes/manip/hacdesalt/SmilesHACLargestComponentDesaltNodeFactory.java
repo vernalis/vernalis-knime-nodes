@@ -4,7 +4,7 @@
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -19,54 +19,54 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
 /**
- * <code>NodeFactory</code> for the "SmilesHACLargestComponentDesalt" Node.
- * Node to find largest component of SMILES by Heavy Atom Count
+ * <code>NodeFactory</code> for the "SmilesHACLargestComponentDesalt" Node. Node
+ * to find largest component of SMILES by Heavy Atom Count
  *
  * @author S Roughley
  */
-public class SmilesHACLargestComponentDesaltNodeFactory 
-        extends NodeFactory<SmilesHACLargestComponentDesaltNodeModel> {
+public class SmilesHACLargestComponentDesaltNodeFactory
+		extends NodeFactory<SmilesHACLargestComponentDesaltNodeModel> {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SmilesHACLargestComponentDesaltNodeModel createNodeModel() {
-        return new SmilesHACLargestComponentDesaltNodeModel();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public SmilesHACLargestComponentDesaltNodeModel createNodeModel() {
+		return new SmilesHACLargestComponentDesaltNodeModel();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getNrNodeViews() {
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getNrNodeViews() {
 		return 0;
-    }
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeView<SmilesHACLargestComponentDesaltNodeModel> createNodeView(final int viewIndex,
-            final SmilesHACLargestComponentDesaltNodeModel nodeModel) {
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public NodeView<SmilesHACLargestComponentDesaltNodeModel> createNodeView(
+			final int viewIndex,
+			final SmilesHACLargestComponentDesaltNodeModel nodeModel) {
 		return null;
-    }
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasDialog() {
-        return true;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean hasDialog() {
+		return true;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public NodeDialogPane createNodeDialogPane() {
-        return new SmilesHACLargestComponentDesaltNodeDialog();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public NodeDialogPane createNodeDialogPane() {
+		return new SmilesHACLargestComponentDesaltNodeDialog();
+	}
 
 }
-

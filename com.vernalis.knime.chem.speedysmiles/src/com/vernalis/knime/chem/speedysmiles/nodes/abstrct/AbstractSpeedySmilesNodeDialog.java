@@ -56,11 +56,12 @@ public class AbstractSpeedySmilesNodeDialog extends DefaultNodeSettingsPane {
 		if (groupColumnSelection) {
 			createNewGroup("Column Selection");
 		}
-		addDialogComponent(new DialogComponentColumnNameSelection(createColumnNameModel(),
-				"Select SMILES column", 0, SmilesValue.class));
+		addDialogComponent(
+				new DialogComponentColumnNameSelection(createColumnNameModel(),
+						"Select SMILES column", 0, SmilesValue.class));
 		if (allowInputColRemoval) {
-			addDialogComponent(new DialogComponentBoolean(createRemoveInputColumnModel(),
-					"Remove input column"));
+			addDialogComponent(new DialogComponentBoolean(
+					createRemoveInputColumnModel(), "Remove input column"));
 		}
 		if (groupColumnSelection) {
 			closeCurrentGroup();

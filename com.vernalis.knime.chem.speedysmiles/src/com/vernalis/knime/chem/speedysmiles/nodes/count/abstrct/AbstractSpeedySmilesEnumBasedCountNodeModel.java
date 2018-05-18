@@ -4,7 +4,7 @@
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -111,8 +111,10 @@ public class AbstractSpeedySmilesEnumBasedCountNodeModel<T extends Enum<T> & Cal
 				// dont change output if new properties added since node last
 				// loaded
 				m_elements[i].setBooleanValue(false);
-				m_logger.warn("Not all count settings had values - new counts will be ignored");
-				setWarningMessage("Not all count settings had values - new counts will be ignored");
+				m_logger.warn(
+						"Not all count settings had values - new counts will be ignored");
+				setWarningMessage(
+						"Not all count settings had values - new counts will be ignored");
 			}
 		}
 	}
@@ -121,14 +123,17 @@ public class AbstractSpeedySmilesEnumBasedCountNodeModel<T extends Enum<T> & Cal
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		super.validateSettings(settings);
 		for (int i = 0; i < m_elements.length; i++) {
 			try {
 				m_elements[i].validateSettings(settings);
 			} catch (InvalidSettingsException e) {
-				m_logger.warn("Not all count settings had values - new counts will be ignored");
-				setWarningMessage("Not all count settings had values - new counts will be ignored");
+				m_logger.warn(
+						"Not all count settings had values - new counts will be ignored");
+				setWarningMessage(
+						"Not all count settings had values - new counts will be ignored");
 			}
 		}
 	}
@@ -142,13 +147,15 @@ public class AbstractSpeedySmilesEnumBasedCountNodeModel<T extends Enum<T> & Cal
 
 	@Override
 	protected String[] getColumnNamePrefixes() {
-		return elemsToCount.stream().map(x -> x.displayName()).toArray(String[]::new);
+		return elemsToCount.stream().map(x -> x.displayName())
+				.toArray(String[]::new);
 
 	}
 
 	@Override
 	protected Integer[] getResultCounts(String SMILES, int numCols) {
-		return elemsToCount.stream().map(x -> x.calculate(SMILES)).toArray(Integer[]::new);
+		return elemsToCount.stream().map(x -> x.calculate(SMILES))
+				.toArray(Integer[]::new);
 	}
 
 }

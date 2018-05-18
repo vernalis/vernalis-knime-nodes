@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -14,13 +14,11 @@
  ******************************************************************************/
 package com.vernalis.knime.chem.speedysmiles.nodes.manip.stereo.enumerate;
 
-import static com.vernalis.knime.chem.speedysmiles.nodes.abstrct.AbstractSpeedySmilesNodeDialog.createColumnNameModel;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import org.knime.chem.types.SmilesCellFactory;
+import org.knime.chem.types.SmilesAdapterCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
@@ -51,12 +49,15 @@ import org.knime.core.node.streamable.StreamableOperator;
 
 import com.vernalis.knime.chem.speedysmiles.helpers.SmilesHelpers;
 
+import static com.vernalis.knime.chem.speedysmiles.nodes.abstrct.AbstractSpeedySmilesNodeDialog.createColumnNameModel;
+
 /**
  * Node Model Implementation for the for the SpeedySMILES Stereoenumerate node
  * 
  * @author S Roughley
  */
 public class SimpleSpeedySmilesStereoenumerateNodeModel extends NodeModel {
+
 	/** The node logger instance */
 	protected NodeLogger m_logger = NodeLogger.getLogger(this.getClass());
 
@@ -86,9 +87,12 @@ public class SimpleSpeedySmilesStereoenumerateNodeModel extends NodeModel {
 			m_logger.error(e.getMessage());
 			throw e;
 		}
-		DataColumnSpec newColSpec = new DataColumnSpecCreator(DataTableSpec.getUniqueColumnName(
-				inSpecs[0], m_colName.getStringValue() + " Enumerated Isomers"),
-				SmilesCellFactory.TYPE).createSpec();
+		DataColumnSpec newColSpec =
+				new DataColumnSpecCreator(
+						DataTableSpec.getUniqueColumnName(inSpecs[0],
+								m_colName.getStringValue()
+										+ " Enumerated Isomers"),
+						SmilesAdapterCell.RAW_TYPE).createSpec();
 		DataTableSpecCreator specFact = new DataTableSpecCreator(inSpecs[0]);
 		specFact.addColumns(newColSpec);
 		return new DataTableSpec[] { specFact.createSpec() };
@@ -102,9 +106,12 @@ public class SimpleSpeedySmilesStereoenumerateNodeModel extends NodeModel {
 			final ExecutionContext exec) throws Exception {
 
 		DataTableSpec inSpec = inData[0].getDataTableSpec();
-		DataColumnSpec newColSpec = new DataColumnSpecCreator(DataTableSpec.getUniqueColumnName(
-				inSpec, m_colName.getStringValue() + " Enumerated Isomers"), SmilesCellFactory.TYPE)
-						.createSpec();
+		DataColumnSpec newColSpec =
+				new DataColumnSpecCreator(
+						DataTableSpec.getUniqueColumnName(inSpec,
+								m_colName.getStringValue()
+										+ " Enumerated Isomers"),
+						SmilesAdapterCell.RAW_TYPE).createSpec();
 		DataTableSpecCreator specFact = new DataTableSpecCreator(inSpec);
 		specFact.addColumns(newColSpec);
 		DataTableSpec outSpec = specFact.createSpec();
@@ -112,7 +119,8 @@ public class SimpleSpeedySmilesStereoenumerateNodeModel extends NodeModel {
 		BufferedDataTable inTable = inData[0];
 		RowInput inputRow = new DataTableRowInput(inTable);
 
-		int smiColIdx = inTable.getDataTableSpec().findColumnIndex(m_colName.getStringValue());
+		int smiColIdx = inTable.getDataTableSpec()
+				.findColumnIndex(m_colName.getStringValue());
 		// Create the output containers
 		BufferedDataContainer bdc = exec.createDataContainer(outSpec);
 		RowOutput outputRow = new BufferedDataTableRowOutput(bdc);
@@ -121,9 +129,10 @@ public class SimpleSpeedySmilesStereoenumerateNodeModel extends NodeModel {
 		return new BufferedDataTable[] { bdc.getTable() };
 	}
 
-	protected void execute(final RowInput inRow, RowOutput outputRow, int smiColIdx,
-			final long numRows, final ExecutionContext exec)
-			throws InterruptedException, CanceledExecutionException, ExecutionException {
+	protected void execute(final RowInput inRow, RowOutput outputRow,
+			int smiColIdx, final long numRows, final ExecutionContext exec)
+			throws InterruptedException, CanceledExecutionException,
+			ExecutionException {
 
 		long rowIdx = 0;
 		DataRow row;
@@ -135,27 +144,32 @@ public class SimpleSpeedySmilesStereoenumerateNodeModel extends NodeModel {
 				exec.setProgress("Enumerating row " + rowIdx);
 			}
 			exec.checkCanceled();
-			String smi = SmilesHelpers.getSmilesFromCell(row.getCell(smiColIdx));
-			SmilesHelpers.enumerateLabelledStereoisomers(smi, row, outputRow, exec);
+			String smi =
+					SmilesHelpers.getSmilesFromCell(row.getCell(smiColIdx));
+			SmilesHelpers.enumerateLabelledStereoisomers(smi, row, outputRow,
+					exec);
 		}
 		outputRow.close();
 
 	}
 
 	@Override
-	public StreamableOperator createStreamableOperator(final PartitionInfo partitionInfo,
-			final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-		int smiColIdx = ((DataTableSpec) inSpecs[0]).findColumnIndex(m_colName.getStringValue());
+	public StreamableOperator createStreamableOperator(
+			final PartitionInfo partitionInfo, final PortObjectSpec[] inSpecs)
+			throws InvalidSettingsException {
+		int smiColIdx = ((DataTableSpec) inSpecs[0])
+				.findColumnIndex(m_colName.getStringValue());
 
 		return new StreamableOperator() {
 
 			@Override
-			public void runFinal(PortInput[] inputs, PortOutput[] outputs, ExecutionContext exec)
-					throws Exception {
+			public void runFinal(PortInput[] inputs, PortOutput[] outputs,
+					ExecutionContext exec) throws Exception {
 
 				// Run it - dont know row count!
-				SimpleSpeedySmilesStereoenumerateNodeModel.this.execute((RowInput) inputs[0],
-						(RowOutput) outputs[0], smiColIdx, -1, exec);
+				SimpleSpeedySmilesStereoenumerateNodeModel.this.execute(
+						(RowInput) inputs[0], (RowOutput) outputs[0], smiColIdx,
+						-1, exec);
 
 			}
 
@@ -200,7 +214,8 @@ public class SimpleSpeedySmilesStereoenumerateNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		m_colName.validateSettings(settings);
 	}
 
@@ -208,7 +223,8 @@ public class SimpleSpeedySmilesStereoenumerateNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 	}
 
@@ -216,7 +232,8 @@ public class SimpleSpeedySmilesStereoenumerateNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 	}
 

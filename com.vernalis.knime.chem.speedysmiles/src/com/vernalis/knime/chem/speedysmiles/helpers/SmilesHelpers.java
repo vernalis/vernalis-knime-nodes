@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2018, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -16,6 +16,7 @@ package com.vernalis.knime.chem.speedysmiles.helpers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -55,6 +56,7 @@ import com.vernalis.knime.chem.speedysmiles.nodes.count.chiralcentres.ChiralCent
  * 
  */
 public class SmilesHelpers {
+
 	private SmilesHelpers() {
 		// Utility Class - Do not Instantiate
 	}
@@ -64,7 +66,8 @@ public class SmilesHelpers {
 	 * 'organic SMILES atoms' which do not need to be enclosed in [] in their
 	 * normal valence state
 	 */
-	public static ArrayList<String> organicSMILESSubset = new ArrayList<>();
+	public static final ArrayList<String> organicSMILESSubset =
+			new ArrayList<>();
 
 	static {
 		organicSMILESSubset.add("B");
@@ -82,7 +85,7 @@ public class SmilesHelpers {
 	/**
 	 * A list of bond symbols in Daylight SMILES definition
 	 */
-	public static ArrayList<Character> bondSymbols = new ArrayList<>();
+	public static final ArrayList<Character> bondSymbols = new ArrayList<>();
 	static {
 		bondSymbols.add('-');
 		bondSymbols.add('=');
@@ -99,7 +102,8 @@ public class SmilesHelpers {
 	 * @return The biggest component(s)
 	 * @see #getLargestByHacComponents(String)
 	 */
-	public static Set<DataCell> getLargestDataCellByHacComponents(String smiles) {
+	public static Set<DataCell> getLargestDataCellByHacComponents(
+			String smiles) {
 		LinkedHashSet<DataCell> retVal = new LinkedHashSet<>();
 		if (smiles == null || "".equals(smiles)) {
 			return retVal;
@@ -134,7 +138,8 @@ public class SmilesHelpers {
 	 * @return The {@link DataCell} containing the longest SMILES String by
 	 *         string length
 	 */
-	public static DataCell getLongestSmilesStringCell(Set<DataCell> smilesCells) {
+	public static DataCell getLongestSmilesStringCell(
+			Set<DataCell> smilesCells) {
 		DataCell retVal = null;
 		int lngth = 0;
 		for (DataCell sCell : smilesCells) {
@@ -160,7 +165,8 @@ public class SmilesHelpers {
 	@Deprecated
 	public static Set<String> getLargestByHacComponents(String smiles) {
 		if (smiles == null || "".equals(smiles)) {
-			throw new IllegalArgumentException("You must supply a non-empty, non-null String");
+			throw new IllegalArgumentException(
+					"You must supply a non-empty, non-null String");
 		}
 
 		Set<String> retVal = new HashSet<>();
@@ -240,8 +246,9 @@ public class SmilesHelpers {
 			// assumed valency 1 without []), or not allowed without [] at all
 			// Only b, c, n, o, p and s are truly required, hence there
 			// positioning at the start of the list
-			if (x == 'c' || x == 'o' || x == 'n' || x == 's' || x == 'b' || x == 'p' || x == 'f'
-					|| x == 'k' || x == 'v' || x == 'i' || x == 'y' || x == 'u') {
+			if (x == 'c' || x == 'o' || x == 'n' || x == 's' || x == 'b'
+					|| x == 'p' || x == 'f' || x == 'k' || x == 'v' || x == 'i'
+					|| x == 'y' || x == 'u') {
 				cnt++;
 				continue;
 			}
@@ -276,21 +283,23 @@ public class SmilesHelpers {
 	 *             due to singleton Pattern compilation
 	 */
 	@Deprecated
-	public static int countElement(String smi, String elementSymbol, String[] counterCases) {
+	public static int countElement(String smi, String elementSymbol,
+			String[] counterCases) {
 		// TODO: Rewrite using Pattern.split, with Pattern as part of callig
 		// Enum
-		if (!smi.contains(elementSymbol) && !smi.contains(elementSymbol.toLowerCase())) {
+		if (!smi.contains(elementSymbol)
+				&& !smi.contains(elementSymbol.toLowerCase())) {
 			return 0;
 		}
 		// -1 forces end of string matches
-		int cnt = smi.split("(?<!@)(" + elementSymbol + "|" + elementSymbol.toLowerCase() + ")",
-				-1).length - 1;
+		int cnt = smi.split("(?<!@)(" + elementSymbol + "|"
+				+ elementSymbol.toLowerCase() + ")", -1).length - 1;
 
-		String counterCaseRegex =
-				"(?<!@)(" + Arrays.stream(counterCases).collect(Collectors.joining("|"));
-		String orgCounterCases =
-				Arrays.stream(counterCases).filter(x -> organicSMILESSubset.contains(x))
-						.map(x -> x.toLowerCase()).collect(Collectors.joining("|"));
+		String counterCaseRegex = "(?<!@)("
+				+ Arrays.stream(counterCases).collect(Collectors.joining("|"));
+		String orgCounterCases = Arrays.stream(counterCases)
+				.filter(x -> organicSMILESSubset.contains(x))
+				.map(x -> x.toLowerCase()).collect(Collectors.joining("|"));
 		if (!orgCounterCases.isEmpty()) {
 			counterCaseRegex += "|" + orgCounterCases;
 		}
@@ -313,13 +322,15 @@ public class SmilesHelpers {
 	 *            the same symbol
 	 * @return The count
 	 */
-	public static Integer countElement(String SMILES, Pattern elemPatt, Pattern counterCasesPatt) {
+	public static Integer countElement(String SMILES, Pattern elemPatt,
+			Pattern counterCasesPatt) {
 		if (!elemPatt.matcher(SMILES).find()) {
 			return 0;
 		}
 		// -1 forces end of string matches
 		// -1 -(-1) for lengths cancel out
-		return elemPatt.split(SMILES, -1).length - counterCasesPatt.split(SMILES, -1).length;
+		return elemPatt.split(SMILES, -1).length
+				- counterCasesPatt.split(SMILES, -1).length;
 
 	}
 
@@ -343,19 +354,22 @@ public class SmilesHelpers {
 			// Only count if immediately after an organicSMILESSubset member or
 			// ] or bond symbol (bond symbol added to handle e.g S(=O)=1)
 			if (x == ']' || bondSymbols.contains(x)
-					|| organicSMILESSubset.contains(String.valueOf(Character.toUpperCase(x)))
-					|| ((i + 1) < l && organicSMILESSubset.contains(new String(
-							new char[] { Character.toUpperCase(x), smi.charAt(i + 1) })))) {
+					|| organicSMILESSubset
+							.contains(String.valueOf(Character.toUpperCase(x)))
+					|| ((i + 1) < l && organicSMILESSubset.contains(
+							new String(new char[] { Character.toUpperCase(x),
+									smi.charAt(i + 1) })))) {
 
 				// Possible starting place to look
 				if ((i + 1) < l && organicSMILESSubset.contains(
-						new String(new char[] { Character.toUpperCase(x), smi.charAt(i + 1) }))) {
+						new String(new char[] { Character.toUpperCase(x),
+								smi.charAt(i + 1) }))) {
 					// Skip the second digit if a t character match found
 					i++;
 				}
 
-				while (++i < l && (Character.isDigit(x = smi.charAt(i)) || x == '%' || x == '\\'
-						|| x == '/')) {
+				while (++i < l && (Character.isDigit(x = smi.charAt(i))
+						|| x == '%' || x == '\\' || x == '/')) {
 					// possible intermediate characteres - double bond stereo
 					// and bond types, and % = double-digit index marker
 					if (Character.isDigit(x)) {
@@ -373,7 +387,8 @@ public class SmilesHelpers {
 						// or more
 						int id = 0;
 						int j = 0;
-						while (++i < l && j++ < 2 && Character.isDigit(x = smi.charAt(i))) {
+						while (++i < l && j++ < 2
+								&& Character.isDigit(x = smi.charAt(i))) {
 							id *= 10;
 							id += Character.getNumericValue(x);
 						}
@@ -417,19 +432,22 @@ public class SmilesHelpers {
 			// Only count if immediately after an organicSMILESSubset member or
 			// ] or bond symbol (bond symbol added to handle e.g S(=O)=1)
 			if (x == ']' || bondSymbols.contains(x)
-					|| organicSMILESSubset.contains(String.valueOf(Character.toUpperCase(x)))
-					|| ((i + 1) < l && organicSMILESSubset.contains(new String(
-							new char[] { Character.toUpperCase(x), smi.charAt(i + 1) })))) {
+					|| organicSMILESSubset
+							.contains(String.valueOf(Character.toUpperCase(x)))
+					|| ((i + 1) < l && organicSMILESSubset.contains(
+							new String(new char[] { Character.toUpperCase(x),
+									smi.charAt(i + 1) })))) {
 
 				// Possible starting place to look
 				if ((i + 1) < l && organicSMILESSubset.contains(
-						new String(new char[] { Character.toUpperCase(x), smi.charAt(i + 1) }))) {
+						new String(new char[] { Character.toUpperCase(x),
+								smi.charAt(i + 1) }))) {
 					// Skip the second digit if a t character match found
 					i++;
 				}
 
-				while (++i < l && (Character.isDigit(x = smi.charAt(i)) || x == '%' || x == '\\'
-						|| x == '/')) {
+				while (++i < l && (Character.isDigit(x = smi.charAt(i))
+						|| x == '%' || x == '\\' || x == '/')) {
 					// possible intermediate characteres - double bond stereo
 					// and bond types, and % = double-digit index marker
 					if (Character.isDigit(x)) {
@@ -448,7 +466,8 @@ public class SmilesHelpers {
 						// or more
 						int id = 0;
 						int j = 0;
-						while (++i < l && j++ < 2 && Character.isDigit(x = smi.charAt(i))) {
+						while (++i < l && j++ < 2
+								&& Character.isDigit(x = smi.charAt(i))) {
 							id *= 10;
 							id += Character.getNumericValue(x);
 						}
@@ -528,7 +547,8 @@ public class SmilesHelpers {
 		// takes TH1/@ to TH2 (NB temporary use of &TH2 to protect in following
 		// swap!), then restores TH3/@@@ to TH1/@
 
-		String retVal = HIGHER_STEREOCENTRE_PATTERN.matcher(smi).replaceAll("&$1");
+		String retVal =
+				HIGHER_STEREOCENTRE_PATTERN.matcher(smi).replaceAll("&$1");
 
 		// Now convert TH and allenyl 2 to 3
 		retVal = retVal.replace("@@", "&&&").replaceAll("@(TH|AL)2", "&$13");
@@ -549,7 +569,8 @@ public class SmilesHelpers {
 	/**
 	 * Regex to match any stereocentre
 	 */
-	private static final Pattern STEREOCENTRE_PATTERN = Pattern.compile("[@]+(TH|AL|SP|TB|OH)?");
+	private static final Pattern STEREOCENTRE_PATTERN =
+			Pattern.compile("[@]+(TH|AL|SP|TB|OH)?");
 
 	/**
 	 * @param smi
@@ -560,12 +581,39 @@ public class SmilesHelpers {
 		Matcher m = STEREOCENTRE_PATTERN.matcher(smi);
 		Double retVal = 1.0;
 		while (m.find() && Double.isFinite(retVal)) {
-			FlagProvider flag = m.group(1) == null ? ChiralCentreCount.UNLABELLED
-					: ChiralCentreCount.valueOf(m.group(1));
+			FlagProvider flag =
+					m.group(1) == null ? ChiralCentreCount.UNLABELLED
+							: ChiralCentreCount.valueOf(m.group(1));
 			int numIsomers = flag.max();
 			retVal *= (double) numIsomers;
 		}
 		return retVal;
+	}
+
+	/**
+	 * Regex to match any sterecentre designation including simple @ / @@ forms
+	 * along with @TH @OH etc with subsquent IDs
+	 */
+	private static Pattern ALL_STEREOCENTRE_INCL_LABEL_PATTERN =
+			Pattern.compile("@+(?:(?:TH|AL|SP|TB|OH)\\d*)?");
+
+	/**
+	 * @param smi
+	 *            the SMILES String
+	 * @return The SMILES String with all stereocentre labels removed
+	 */
+	public static String stripStereoCentres(String smi) {
+		return ALL_STEREOCENTRE_INCL_LABEL_PATTERN.matcher(smi).replaceAll("");
+
+	}
+
+	/**
+	 * @param smi
+	 *            the SMILES String
+	 * @return The SMILES String with all double bonde geometry labels removed
+	 */
+	public static String stripDoubleBondGeometry(String smi) {
+		return smi.replace("\\", "-").replace("/", "-");
 	}
 
 	/**
@@ -577,7 +625,8 @@ public class SmilesHelpers {
 	/**
 	 * Regex to match any non-labelled stereocentre, i.e. @ or @@ (or higher)
 	 */
-	private static final Pattern POLY_AT_STEREOCENTRE_PATTERN = Pattern.compile("@+");
+	private static final Pattern POLY_AT_STEREOCENTRE_PATTERN =
+			Pattern.compile("@+");
 
 	/**
 	 * Method to enumerate isomers of simple (@/@@) and complex (@xxnn, where xx
@@ -600,23 +649,28 @@ public class SmilesHelpers {
 	 * @throws InterruptedException
 	 * @throws ExecutionException
 	 */
-	public static void enumerateLabelledStereoisomers(String SMILES, DataRow row,
-			RowOutput rowOutput, ExecutionContext exec)
-			throws CanceledExecutionException, InterruptedException, ExecutionException {
+	public static void enumerateLabelledStereoisomers(String SMILES,
+			DataRow row, RowOutput rowOutput, ExecutionContext exec)
+			throws CanceledExecutionException, InterruptedException,
+			ExecutionException {
 		if (SMILES == null) {
 			// No SMILES - missing cell1
-			rowOutput.push(new AppendedColumnRow(row, DataType.getMissingCell()));
+			rowOutput.push(
+					new AppendedColumnRow(row, DataType.getMissingCell()));
 			return;
 		}
 		if (!SMILES.contains("@")) {
 			// No chiral centres defined - just return the molecule
-			rowOutput.push(new AppendedColumnRow(row, SmilesCellFactory.createAdapterCell(SMILES)));
+			rowOutput.push(new AppendedColumnRow(row,
+					SmilesCellFactory.createAdapterCell(SMILES)));
 			return;
 		}
 
-		String maskedSmi = POLY_AT_STEREOCENTRE_PATTERN
-				.matcher(ALL_LABELLED_STEREOCENTRE_PATTERN.matcher(SMILES).replaceAll("&$1£"))
-				.replaceAll("&£");
+		String maskedSmi =
+				POLY_AT_STEREOCENTRE_PATTERN
+						.matcher(ALL_LABELLED_STEREOCENTRE_PATTERN
+								.matcher(SMILES).replaceAll("&$1£"))
+						.replaceAll("&£");
 		doLabelledIsomerEnumeration(maskedSmi, row, rowOutput, exec);
 	}
 
@@ -631,7 +685,8 @@ public class SmilesHelpers {
 	 * Regex to match any non-labelled stereocentre which has been masked for
 	 * enumeration
 	 */
-	private static final Pattern MASKED_UNLABELLED_STEREOCENTRE_PATTERN = Pattern.compile("&£");
+	private static final Pattern MASKED_UNLABELLED_STEREOCENTRE_PATTERN =
+			Pattern.compile("&£");
 
 	/**
 	 * Private method called potentially recursively with a masked smiles string
@@ -646,16 +701,17 @@ public class SmilesHelpers {
 	 * @throws InterruptedException
 	 * @throws CanceledExecutionException
 	 */
-	private static void doLabelledIsomerEnumeration(String maskedSmi, DataRow row,
-			RowOutput rowOutput, ExecutionContext exec)
+	private static void doLabelledIsomerEnumeration(String maskedSmi,
+			DataRow row, RowOutput rowOutput, ExecutionContext exec)
 			throws InterruptedException, CanceledExecutionException {
 		Matcher m = MASKED_LABELLED_STEREOCENTRE_PATTERN.matcher(maskedSmi);
 		List<FlagProvider> flags = new ArrayList<>();
 		List<Integer> offsets = new ArrayList<>();
 		int offSet = 0;
 		while (m.find()) {
-			FlagProvider flag = m.group(1) == null ? ChiralCentreCount.UNLABELLED
-					: ChiralCentreCount.valueOf(m.group(1));
+			FlagProvider flag =
+					m.group(1) == null ? ChiralCentreCount.UNLABELLED
+							: ChiralCentreCount.valueOf(m.group(1));
 			if (offSet + flag.bits() < 64) {
 				flags.add(flag);
 				offsets.add(offSet);
@@ -676,11 +732,12 @@ public class SmilesHelpers {
 				int index = (int) ((x >> offset) & flag.mask());
 				// Now work through the centres
 				if (flag == ChiralCentreCount.UNLABELLED) {
-					newSmi = MASKED_UNLABELLED_STEREOCENTRE_PATTERN.matcher(newSmi)
+					newSmi = MASKED_UNLABELLED_STEREOCENTRE_PATTERN
+							.matcher(newSmi)
 							.replaceFirst((index > 0) ? "@@" : "@");
 				} else if (index++ < flag.max()) {
-					newSmi = MASKED_LABELLED_STEREOCENTRE_PATTERN.matcher(newSmi)
-							.replaceFirst("@$1" + index);
+					newSmi = MASKED_LABELLED_STEREOCENTRE_PATTERN
+							.matcher(newSmi).replaceFirst("@$1" + index);
 				} else {
 					// Nonsense value of x - can we precheck
 					continue flagset;
@@ -691,12 +748,15 @@ public class SmilesHelpers {
 
 			if (!MASKED_LABELLED_STEREOCENTRE_PATTERN.matcher(newSmi).find()) {
 				// They are - add the row to the ouput
-				rowOutput.push(new AppendedColumnRow(new RowKey(row.getKey() + "_" + (subRowIdx++)),
-						row, SmilesCellFactory.createAdapterCell(newSmi)));
+				rowOutput.push(new AppendedColumnRow(
+						new RowKey(row.getKey() + "_" + (subRowIdx++)), row,
+						SmilesCellFactory.createAdapterCell(newSmi)));
 			} else {
 				// Call recursively
 				doLabelledIsomerEnumeration(newSmi,
-						new DefaultRow(new RowKey(row.getKey() + "_" + (subRowIdx++)), row),
+						new DefaultRow(
+								new RowKey(row.getKey() + "_" + (subRowIdx++)),
+								row),
 						rowOutput, exec);
 			}
 			exec.checkCanceled();
@@ -764,7 +824,7 @@ public class SmilesHelpers {
 	}
 
 	/**
-	 * Convenienve method to get a SMILES String from a datacell or adaptor
+	 * Convenience method to get a SMILES String from a datacell or adaptor
 	 * cell.
 	 * 
 	 * @param dataCell
@@ -778,11 +838,213 @@ public class SmilesHelpers {
 		}
 		String smi;
 		if (dataCell.getType().isAdaptable(SmilesValue.class)) {
-			smi = ((AdapterValue) dataCell).getAdapter(SmilesValue.class).getSmilesValue();
+			smi = ((AdapterValue) dataCell).getAdapter(SmilesValue.class)
+					.getSmilesValue();
 		} else {
 			smi = ((SmilesValue) dataCell).getSmilesValue();
 		}
 		return smi;
+	}
+
+	/**
+	 * @param smiles
+	 *            The incoming SMILES String
+	 * @return <code>true</code> if the SMILES contains one or more dummy atoms
+	 */
+	public static boolean hasDummyAtom(String smiles) {
+		return smiles.contains("*");
+	}
+
+	/**
+	 * @param smiles
+	 *            The incoming SMILES String
+	 * @return The count of dummy atoms in the SMILES String
+	 */
+	public static int countDummyAtoms(String smiles) {
+		return smiles.split("\\*", -1).length - 1;
+
+	}
+
+	/**
+	 * Regex to match a dummy atom {@code [...*...]}
+	 * <p>
+	 * Notes:
+	 * <ul>
+	 * <li>{@code ((?<!\\()[\\\\/])?} Deals with matches where stereochemistry
+	 * is designated to the * atom</li>
+	 * <li>{@code [:\\-=#]?} deals with a possible explicit bond to the dummy
+	 * atom</li>
+	 * </ul>
+	 * </p>
+	 */
+
+	private static final Pattern DUMMY_ATOM_ISOTOPE_UNLABELLED =
+			Pattern.compile("\\[(\\d+)\\*([^:\\[\\]])*\\]");
+
+	public static String dummyAtomIsotopeToAtomLabel(String smiles) {
+		return DUMMY_ATOM_ISOTOPE_UNLABELLED.matcher(smiles)
+				.replaceAll("[*$2:$1]");
+	}
+
+	private static final Pattern DUMMY_ATOM_NOISOTOPE_NUMERICLABELLED =
+			Pattern.compile("\\[\\*([^:\\[\\]])*:(\\d*)\\]");
+
+	public static String dummyAtomAtomLabelToIsotope(String smiles) {
+		return DUMMY_ATOM_NOISOTOPE_NUMERICLABELLED.matcher(smiles)
+				.replaceAll("[$2*$1]");
+	}
+
+	private static final Pattern DUMMY_ATOM_PATTERN =
+			Pattern.compile("\\[(\\d*)\\*([^\\[\\]]*)\\]");
+
+	public static String dummyAtomToElementSymbol(String smiles, String repl) {
+		return DUMMY_ATOM_PATTERN.matcher(smiles)
+				.replaceAll("[$1" + repl + "$2]")
+				.replace("*", organicSMILESSubset.contains(repl) ? repl
+						: "[" + repl + "]");
+	}
+
+	private static final Pattern H_ISOTOPE_PATTERN = Pattern
+			.compile("\\[0*(2|3)H((?:@.*)?(?:H\\d*)?(?:(\\+|-)*\\d*)?)\\]");
+
+	public static String applyDTforHIsotopes(String smiles) {
+		final Matcher m = H_ISOTOPE_PATTERN.matcher(smiles);
+		StringBuffer sb = new StringBuffer();
+		while (m.find()) {
+			m.appendReplacement(sb, "[" + (m.group(1).equals("2") ? "D" : "T")
+					+ m.group(2) + "]");
+		}
+		m.appendTail(sb);
+		return sb.toString().replace("[D]", "D").replace("[T]", "T");
+
+	}
+
+	// D/T dont have isotopic labels!
+	private static final Pattern DT_ISOTOPE_PATTERN =
+			Pattern.compile("\\[(D|T)((?:@.*)?(?:H\\d*)?(?:(\\+|-)*\\d*)?)\\]");
+
+	public static String replaceDTwithHIsotopes(String smiles) {
+		// Start by putting non-bracketed D/T back together
+		Matcher m = DT_ISOTOPE_PATTERN
+				.matcher(convertIsolatedDTtoBracketedH(smiles));
+		StringBuffer sb = new StringBuffer();
+		while (m.find()) {
+			m.appendReplacement(sb, "[" + (m.group(1).equals("D") ? "2" : "3")
+					+ "H" + m.group(2) + "]");
+		}
+		m.appendTail(sb);
+		return sb.toString();
+	}
+
+	/**
+	 * Private method to replace any 'D' or 'T' outwith [] with '[2H]' or '[3H]'
+	 * respectively
+	 * 
+	 * @param smiles
+	 *            The SMILES
+	 * @return The modified SMILES
+	 */
+	private static String convertIsolatedDTtoBracketedH(String smiles) {
+		StringBuilder sb = new StringBuilder(smiles);
+		// NB define length as l as otherwise smiles.length
+		// is re-calculated on each iteration, apparently
+		for (int i = 0; i < sb.length(); i++) {
+			char x = sb.charAt(i);
+			if (x == '[') {
+				// skip to ]
+				while (sb.charAt(i) != ']') {
+					i++;
+				}
+				continue;
+			}
+			// Deal with isolated D or T
+			if (x == 'D') {
+				sb.replace(i, i + 1, "[2H]");
+				i += 2;
+			} else if (x == 'T') {
+				sb.replace(i, i + 1, "[3H]");
+				i += 2;
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Pattern to group anything other than leading / trailing '.' characters
+	 */
+	private static final Pattern TERMINAL_DOT_BOND_PATTERN =
+			Pattern.compile("^\\.*(.*?)\\.*$");
+	/**
+	 * Pattern to match to or more '.' characters
+	 */
+	private static final Pattern MULTI_DOT_PATTERN = Pattern.compile("\\.{2,}");
+
+	/**
+	 * SMILES strings can with loose parsing begin or end with the '.' non-bond
+	 * character, or contain multiple contiguous such characters, which should
+	 * be treated as a single '.'
+	 * 
+	 * @param smiles
+	 *            The SMILES
+	 * @return cleaned SMILES
+	 */
+	public static String cleanUpNonBonds(String smiles) {
+		return MULTI_DOT_PATTERN.matcher(
+				TERMINAL_DOT_BOND_PATTERN.matcher(smiles).replaceAll("$1"))
+				.replaceAll(".");
+	}
+
+	/**
+	 * Pattern to match leading '0's in isotope labels, ensuring that any
+	 * non-zeros are retained, along with 1 final '0' when the isotope label is
+	 * 0 (as this is not the same as no isotopic label)
+	 */
+	private static final Pattern LEADING_ZERO_ISOTOPE_PATTERN =
+			Pattern.compile("\\[0+(\\d+?[^\\d])");
+
+	/**
+	 * Isotopic labels are parsed as integers, allowing arbitrary leading '0's.
+	 * This function cleans any leading 0's. In the case of the label being for
+	 * isotope '0', then one '0' is retained, as this has a different meaning to
+	 * no isotopic label, e.g. [0013C] is the same as [13C], and [000C] is the
+	 * same as [0C], but not the same as [C]
+	 * 
+	 * @param smiles
+	 *            The SMILES
+	 * @return The SMILES with leading 0's cleaned
+	 */
+	public static String cleanUpLeadingIsotopeZeros(String smiles) {
+		return LEADING_ZERO_ISOTOPE_PATTERN.matcher(smiles).replaceAll("[$1");
+	}
+
+	/**
+	 * Pattern to match 2 or more '+' or '-' characters. See
+	 * https://stackoverflow.com/a/1660739/6076839 for explanation. In short,
+	 * the \\2 is a back-reference which means that all the characters have to
+	 * be the same. A lower bound of {1,} is used because group(2) already has 1
+	 * character, so we need at least one more. The only place these characters
+	 * are valid in 2 or more is within an atom, so we will lazily assume this
+	 * is correctly handled
+	 */
+	private static final Pattern DEPRECATED_CHARGES_PATTERN =
+			Pattern.compile("((\\+|-)\\2{1,})");
+
+	/**
+	 * Method to replace deprecated multiple-charge specification of 2 or more
+	 * contiguous '+' or '-' characters
+	 * 
+	 * @param smiles
+	 *            The SMILES
+	 * @return The cleaned SMILES
+	 */
+	public static String replaceDeprecatedCharges(String smiles) {
+		Matcher m = DEPRECATED_CHARGES_PATTERN.matcher(smiles);
+		StringBuffer sb = new StringBuffer();
+		while (m.find()) {
+			m.appendReplacement(sb, m.group(2) + m.group(1).length());
+		}
+		m.appendTail(sb);
+		return sb.toString();
 	}
 
 	/**
@@ -801,8 +1063,10 @@ public class SmilesHelpers {
 	 *             not appropriate
 	 */
 	public static String findSmilesColumn(final DataTableSpec inSpec,
-			final SettingsModelString colNameMdl) throws InvalidSettingsException {
-		DataColumnSpec colSpec = inSpec.getColumnSpec(colNameMdl.getStringValue());
+			final SettingsModelString colNameMdl)
+			throws InvalidSettingsException {
+		DataColumnSpec colSpec =
+				inSpec.getColumnSpec(colNameMdl.getStringValue());
 
 		String retVal = null;
 		if (colSpec == null) {
@@ -812,14 +1076,16 @@ public class SmilesHelpers {
 				DataType colType = inSpec.getColumnSpec(i).getType();
 				if (colType.isCompatible(SmilesValue.class)
 						|| colType.isAdaptable(SmilesValue.class)) {
-					colNameMdl.setStringValue(inSpec.getColumnSpec(i).getName());
-					retVal = "No column selected. " + colNameMdl.getStringValue()
-							+ " auto-selected.";
+					colNameMdl
+							.setStringValue(inSpec.getColumnSpec(i).getName());
+					retVal = "No column selected. "
+							+ colNameMdl.getStringValue() + " auto-selected.";
 					break;
 				}
 				// If we are here when i = 0, then no suitable column found
 				if (i == 0) {
-					throw new InvalidSettingsException("No SMILES column was found.");
+					throw new InvalidSettingsException(
+							"No SMILES column was found.");
 				}
 			}
 
@@ -827,10 +1093,327 @@ public class SmilesHelpers {
 			// We had a selected column, now lets see if it is a compatible type
 			if (!colSpec.getType().isCompatible(SmilesValue.class)) {
 				// The column is not compatible with one of the accepted types
-				throw new InvalidSettingsException("The column " + colNameMdl.getStringValue()
-						+ " is not in the SMILES format");
+				throw new InvalidSettingsException(
+						"The column " + colNameMdl.getStringValue()
+								+ " is not in the SMILES format");
 			}
 		}
 		return retVal;
+	}
+
+	/**
+	 * According to the OpenSMILES, 'aromatic bonds are implicit and the
+	 * explicit symbol should never be used'. Unfortunately, ':' also is the
+	 * indicator of the start of an atom class, so we cannot do a simple replace
+	 * 
+	 * @param smiles
+	 *            The SMILES
+	 * @return The cleaned SMILES
+	 */
+	public static String removeAromaticBonds(String smiles) {
+		BitSet aromBonds = new BitSet(smiles.length());
+		for (int i = 0; i < smiles.length(); i++) {
+			final char c = smiles.charAt(i);
+			if (c == '[') {
+				// - inside [] is atom class separator
+				while (smiles.charAt(i) != ']') {
+					// skip over
+					i++;
+				}
+				continue;
+			}
+			if (c == ':') {
+				aromBonds.set(i);
+			}
+		}
+		// Now aromBonds contains flags for aromatic bonds to be removed,
+		// working backwards from end to not corrupt indices
+		StringBuilder sb = new StringBuilder(smiles);
+		for (int i = aromBonds.length(); (i =
+				aromBonds.previousSetBit(i - 1)) >= 0;) {
+			sb.deleteCharAt(i);
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Set of organic subset aromatic atoms as chars
+	 */
+	private static final char[] ORGANIC_SUBSET_AROMATICS =
+			{ 'b', 'c', 'n', 'o', 'p', 's' };
+	/**
+	 * Set of aromatic atoms which can only occur bracketed
+	 */
+	private static final List<String> BRACKET_AROMATICS =
+			Arrays.asList(new String[] { "se", "as" });
+
+	/**
+	 * According to the OpenSMILES specification, the single bond symbol should
+	 * only used when connecting 2 aromatic atoms, as it is otherwise implicit
+	 * 
+	 * @param smiles
+	 *            The SMILES
+	 * @return The cleaned SMILES
+	 */
+	public static String removeUnnecessarySingleBonds(String smiles) {
+		BitSet singleBonds = new BitSet(smiles.length());
+		// First find all explicit single bonds
+		for (int i = 0; i < smiles.length(); i++) {
+			final char c = smiles.charAt(i);
+			if (c == '[') {
+				// - inside [] is -ve charge not single bond
+				while (smiles.charAt(i) != ']') {
+					// skip over
+					i++;
+				}
+				continue;
+			}
+			if (c == '-') {
+				singleBonds.set(i);
+			}
+		}
+
+		// Now loop through them all, checking atom after (easier) and before
+		// (harder), unsetting those to keep
+		for (int i = singleBonds.nextSetBit(0); i >= 0; i =
+				singleBonds.nextSetBit(i + 1)) {
+			final char c = smiles.charAt(i + 1);
+			if (c == '[') {
+				// Followed by a bracketed atom
+				int j = i + 2;
+				char c0;
+				while (Character.isDigit(c0 = smiles.charAt(j))) {
+					// skip isotope label
+					j++;
+				}
+				if (Arrays.binarySearch(ORGANIC_SUBSET_AROMATICS, c0) < 0
+						&& !(Character.isLowerCase(c0)
+								&& Character.isLowerCase(smiles.charAt(j + 1))
+								&& BRACKET_AROMATICS.contains(
+										smiles.substring(j, j + 2)))) {
+					// Not aromatic - leave it in
+					continue;
+				}
+			} else if (Arrays.binarySearch(ORGANIC_SUBSET_AROMATICS, c) < 0) {
+				// Non-bracketed atom not aromatic - leave it in
+				continue;
+			}
+
+			// The bond is followed by an aromatic atom
+			// Now the harder bit - it is followed by an aromatic atom, but is
+			// it preceded by one?
+			// Optionally, there are one or more nested brackets e.g. ()(())
+			// And there must by a ring closure which should be straight after
+			// the preceding atom, before any ()
+			int nestingLevel = 0;
+
+			int j = i - 1;
+			// Skip past any nested bracket sets
+			while (j >= 0 && smiles.charAt(j) == ')') {
+				nestingLevel++;
+				j--;
+				while (nestingLevel > 0) {
+					if (smiles.charAt(j) == ')') {
+						nestingLevel++;
+					} else if (smiles.charAt(j) == '(') {
+						nestingLevel--;
+					}
+					j--;
+				}
+			}
+			// Skip ring closure digit(s)
+			while (j >= 0 && Character.isDigit(smiles.charAt(j))) {
+				j--;
+			}
+			// Skip ring closure 2 digit identifier
+			if (smiles.charAt(j) == '%') {
+				// skip
+				j--;
+			}
+			if (Arrays.binarySearch(ORGANIC_SUBSET_AROMATICS,
+					smiles.charAt(j)) >= 0) {
+				// Preceded by a organic subset aromatic atom, so we want to
+				// keep this one
+				singleBonds.clear(i);
+				continue;
+			}
+			if (smiles.charAt(j) == ']') {
+				// Now need to work backwards to find the corresponding '['
+				while (smiles.charAt(j) != '[') {
+					j--;
+				}
+				// So now back-backtrack (forwardtrack?!) past any isotope label
+				j++;
+				char c0;
+				while (Character.isDigit(c0 = smiles.charAt(j))) {
+					// skip isotope label
+					j++;
+				}
+				if (Arrays.binarySearch(ORGANIC_SUBSET_AROMATICS, c0) >= 0
+						|| (Character.isLowerCase(c0)
+								&& Character.isLowerCase(smiles.charAt(j + 1))
+								&& BRACKET_AROMATICS.contains(
+										smiles.substring(j, j + 2)))) {
+					// [] aromatic, clear the flag
+					singleBonds.clear(i);
+					continue;
+				}
+			}
+			// If we are here then it wasnt preceded by an aromatic atom, and so
+			// it stays in to be marked for removal
+		}
+
+		// Now singleBonds contains flags for single bonds to be removed,
+		// working backwards from end to not corrupt indices
+		StringBuilder sb = new StringBuilder(smiles);
+		for (int i = singleBonds.length(); (i =
+				singleBonds.previousSetBit(i - 1)) >= 0;) {
+			sb.deleteCharAt(i);
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Pattern to match mono-charged atoms with a '1' after the charge sign
+	 */
+	private static final Pattern MONO_CHARGES_PATTERN =
+			Pattern.compile("(\\[[^\\]]+[\\+\\-])1([^\\[]*\\])");
+
+	/**
+	 * Mono charged atoms should not have '1' after the + or - charge symbol
+	 * 
+	 * @param smiles
+	 *            The SMILES
+	 * @return The cleaned SMILES
+	 */
+	public static String cleanMonoCharges(String smiles) {
+		return MONO_CHARGES_PATTERN.matcher(smiles).replaceAll("$1$2");
+	}
+
+	/**
+	 * The set of characters which standardly make up bonds
+	 */
+	private static final char[] BOND_CHARS = { '#', '-', '/', ':', '=', '\\' };
+
+	/**
+	 * Method to convert scaffold to SMILES or SMARTS scaffold
+	 * 
+	 * @param smiles
+	 *            The SMILES string to convert
+	 * @param useAnyAtom
+	 *            Should '*' (or 'a' and 'A') be used in place of 'C'
+	 * @param keepExplicitH
+	 *            Should any explicitly defined 'H' atoms (e.g. [H]) be kept as
+	 *            H or converted to scaffold atoms?
+	 * @param keepBondOrders
+	 *            Bond orders will be kept if this is selected, otherwise they
+	 *            will be converted to implicit bonds
+	 * @param keepAromatic
+	 *            Aromatic atoms will be kept as aromatic, e.g 'C' or 'c', or
+	 *            'A' or 'a'. If this option is selected with the
+	 *            {@code useAnyAtom} option, the result will be a SMARTS string,
+	 *            as A and a are not valid SMILES ('*' is)
+	 * @param keepChirality
+	 *            Should chiral specifications be kept or dropped?
+	 * @return The scaffold SMILES or SMARTS
+	 */
+	public static String convertToScaffold(String smiles, boolean useAnyAtom,
+			boolean keepExplicitH, boolean keepBondOrders, boolean keepAromatic,
+			boolean keepChirality) {
+		StringBuilder sb = new StringBuilder();
+		char repl = useAnyAtom ? keepAromatic ? 'A' : '*' : 'C';
+		char aromRepl = keepAromatic ? useAnyAtom ? 'a' : 'c' : repl;
+		for (int i = 0; i < smiles.length(); i++) {
+			char c = smiles.charAt(i);
+			// System.out.println(i + ":\t" + c);
+			if (c == '[') {
+				// Bracketed atom
+				if (!keepAromatic && !keepExplicitH && !keepChirality) {
+					// Doesnt matter what it is...
+					sb.append(repl);
+				} else {
+					// skip isotope label
+					i++;
+					while (Character.isDigit(smiles.charAt(i))) {
+						i++;
+					}
+					if (keepAromatic
+							&& Character.isLowerCase(smiles.charAt(i))) {
+						sb.append(aromRepl);
+					} else if (keepExplicitH && ((smiles.charAt(i) == 'H'
+							|| smiles.charAt(i) == 'T'
+							|| smiles.charAt(i) == 'D')
+							&& !Character.isLetter(smiles.charAt(i + 1)))) {
+
+						// TODO: Keep these atoms 'properly'
+						// TODO: Keep [nnXxHn...] Hs
+						sb.append('[').append(smiles.charAt(i)).append(']');
+					} else if (keepChirality && (smiles.indexOf('@', i) >= 0
+							&& smiles.indexOf('@', i) < smiles.indexOf(']',
+									i))) {
+						// Chiral atom
+						sb.append('[').append(repl);
+						// Now figure the chirality, including and TH etc labels
+						// and indices, and 'H'...
+						i = smiles.indexOf('@', i);
+						// 1 or more '@' - Daylight is unclear whether @@@ is
+						// allowed for e.g. OH3
+						while (smiles.charAt(i) == '@') {
+							sb.append('@');
+							i++;
+						}
+						// Either an 'H' or TH AL etc
+						while (Character.isUpperCase(smiles.charAt(i))) {
+							sb.append(smiles.charAt(i));
+							i++;
+						}
+						// A possible numeric code, e.g. TH1
+						while (Character.isDigit(smiles.charAt(i))) {
+							sb.append(smiles.charAt(i));
+							i++;
+						}
+						if (smiles.charAt(i) == 'H') {
+							sb.append('H');
+						}
+						sb.append(']');
+					} else {
+						sb.append(repl);
+					}
+				}
+				i = smiles.indexOf(']', i);
+			} else if (keepBondOrders
+					&& Arrays.binarySearch(BOND_CHARS, c) >= 0) {
+				// A bond (and we are bothered!)
+				sb.append(c);
+			} else if (Character.isLetter(c) || c == '*') {
+				// An unbracketed organic subset - NB could be 2 characters...
+				if (Character.isLowerCase(c)) {
+					// Must be aromatic - and these are all single char
+					sb.append(aromRepl);
+				} else if (keepExplicitH && (c == 'D' || c == 'T')
+						&& (i + 1 < smiles.length()
+								&& !Character.isLetter(smiles.charAt(i + 1)))) {
+					// An isolated 'D' or 'T' pseudoatom
+					sb.append(c);
+				} else if (c == '*') {
+					// Always has to stay as '*'
+					sb.append('*');
+				} else {
+					sb.append(repl);
+					// Might be a 2-character organic subset
+					if (i + 1 < smiles.length()
+							&& Character.isLowerCase(smiles.charAt(i + 1))
+							&& organicSMILESSubset
+									.contains(smiles.substring(i, i + 2))) {
+						i++;
+					}
+				}
+			} else if (c == '%' || Character.isDigit(c) || c == '('
+					|| c == ')') {
+				// Part of a ring closure or branch opening/closure
+				sb.append(c);
+			}
+		}
+		return sb.toString();
 	}
 }

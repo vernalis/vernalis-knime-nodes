@@ -4,7 +4,7 @@
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -28,7 +28,8 @@ import com.vernalis.knime.chem.speedysmiles.nodes.filter.abstrct.AbstractSpeedyS
  *
  * @author S Roughley
  */
-public class ChiralSplitterNodeFactory extends NodeFactory<AbstractSpeedySmilesFilterNodeModel> {
+public class ChiralSplitterNodeFactory
+		extends NodeFactory<AbstractSpeedySmilesFilterNodeModel> {
 
 	/**
 	 * {@inheritDoc}
@@ -56,7 +57,8 @@ public class ChiralSplitterNodeFactory extends NodeFactory<AbstractSpeedySmilesF
 	 * {@inheritDoc}
 	 */
 	@Override
-	public NodeView<AbstractSpeedySmilesFilterNodeModel> createNodeView(final int viewIndex,
+	public NodeView<AbstractSpeedySmilesFilterNodeModel> createNodeView(
+			final int viewIndex,
 			final AbstractSpeedySmilesFilterNodeModel nodeModel) {
 		return null;
 	}

@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -14,8 +14,7 @@
  ******************************************************************************/
 package com.vernalis.knime.chem.speedysmiles.nodes.manip.stereo.invert;
 
-import static com.vernalis.knime.chem.speedysmiles.helpers.SmilesHelpers.invertStereoCentres;
-
+import org.knime.chem.types.SmilesAdapterCell;
 import org.knime.chem.types.SmilesCellFactory;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
@@ -25,6 +24,8 @@ import org.knime.core.node.NodeView;
 
 import com.vernalis.knime.chem.speedysmiles.nodes.abstrct.AbstractSpeedySmilesNodeDialog;
 import com.vernalis.knime.chem.speedysmiles.nodes.manip.abstrct.AbstractSpeedySmilesSingleCellManipNodeModel;
+
+import static com.vernalis.knime.chem.speedysmiles.helpers.SmilesHelpers.invertStereoCentres;
 
 /**
  * @author s.roughley
@@ -44,7 +45,8 @@ public class StereoInvertNodeFactory
 
 			@Override
 			protected DataCell getResultCell(String smilesValue) {
-				return SmilesCellFactory.createAdapterCell(invertStereoCentres(smilesValue));
+				return SmilesCellFactory
+						.createAdapterCell(invertStereoCentres(smilesValue));
 			}
 
 			@Override
@@ -59,7 +61,7 @@ public class StereoInvertNodeFactory
 
 			@Override
 			protected DataType getColumnType() {
-				return SmilesCellFactory.TYPE;
+				return SmilesAdapterCell.RAW_TYPE;
 			}
 		};
 	}
@@ -81,7 +83,8 @@ public class StereoInvertNodeFactory
 	 * org.knime.core.node.NodeModel)
 	 */
 	@Override
-	public NodeView<AbstractSpeedySmilesSingleCellManipNodeModel> createNodeView(int viewIndex,
+	public NodeView<AbstractSpeedySmilesSingleCellManipNodeModel> createNodeView(
+			int viewIndex,
 			AbstractSpeedySmilesSingleCellManipNodeModel nodeModel) {
 		return null;
 	}

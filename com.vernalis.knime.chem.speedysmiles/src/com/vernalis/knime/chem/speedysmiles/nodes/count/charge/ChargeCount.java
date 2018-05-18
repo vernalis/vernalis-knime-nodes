@@ -4,7 +4,7 @@
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -79,7 +79,8 @@ public enum ChargeCount implements CalculatedProperty<Integer> {
 
 		@Override
 		public Integer calculate(String SMILES) {
-			return TOTAL_POSITIVE.calculate(SMILES) - TOTAL_NEGATIVE.calculate(SMILES);
+			return TOTAL_POSITIVE.calculate(SMILES)
+					- TOTAL_NEGATIVE.calculate(SMILES);
 		}
 	},
 
@@ -87,7 +88,8 @@ public enum ChargeCount implements CalculatedProperty<Integer> {
 
 		@Override
 		public Integer calculate(String SMILES) {
-			return TOTAL_POSITIVE.calculate(SMILES) + TOTAL_NEGATIVE.calculate(SMILES);
+			return TOTAL_POSITIVE.calculate(SMILES)
+					+ TOTAL_NEGATIVE.calculate(SMILES);
 		}
 	},
 
@@ -102,7 +104,8 @@ public enum ChargeCount implements CalculatedProperty<Integer> {
 				char x = SMILES.charAt(i);
 				if (x == '+') {
 					if (Character.isDigit(SMILES.charAt(i + 1))) {
-						max = Math.max(max, Character.getNumericValue(SMILES.charAt(i + 1)));
+						max = Math.max(max, Character
+								.getNumericValue(SMILES.charAt(i + 1)));
 					} else {
 						int cnt = 0;
 						while (SMILES.charAt(i) == '+') {
@@ -137,7 +140,8 @@ public enum ChargeCount implements CalculatedProperty<Integer> {
 				}
 				if (inAtomParentheses && x == '-') {
 					if (Character.isDigit(SMILES.charAt(i + 1))) {
-						max = Math.max(max, Character.getNumericValue(SMILES.charAt(i + 1)));
+						max = Math.max(max, Character
+								.getNumericValue(SMILES.charAt(i + 1)));
 					} else {
 						int cnt = 0;
 						while (SMILES.charAt(i) == '-') {
@@ -156,7 +160,8 @@ public enum ChargeCount implements CalculatedProperty<Integer> {
 
 		@Override
 		public Integer calculate(String SMILES) {
-			return Math.max(BIGGEST_POSITIVE.calculate(SMILES), BIGGEST_NEGATIVE.calculate(SMILES));
+			return Math.max(BIGGEST_POSITIVE.calculate(SMILES),
+					BIGGEST_NEGATIVE.calculate(SMILES));
 		}
 	};
 

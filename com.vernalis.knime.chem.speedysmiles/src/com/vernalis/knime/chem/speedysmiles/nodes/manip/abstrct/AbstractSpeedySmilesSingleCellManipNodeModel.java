@@ -4,7 +4,7 @@
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -42,7 +42,8 @@ public abstract class AbstractSpeedySmilesSingleCellManipNodeModel
 	 * @param hasRemoveInputCol
 	 *            Should the node handle a 'Remove Input Column' setting
 	 */
-	public AbstractSpeedySmilesSingleCellManipNodeModel(boolean hasRemoveInputCol) {
+	public AbstractSpeedySmilesSingleCellManipNodeModel(
+			boolean hasRemoveInputCol) {
 		super(hasRemoveInputCol);
 	}
 
@@ -55,7 +56,8 @@ public abstract class AbstractSpeedySmilesSingleCellManipNodeModel
 
 	@Override
 	protected String[] getColumnNameSuffixes() {
-		return getColumnNameSuffix() == null ? null : new String[] { getColumnNameSuffix() };
+		return getColumnNameSuffix() == null ? null
+				: new String[] { getColumnNameSuffix() };
 	}
 
 	/**
@@ -67,7 +69,8 @@ public abstract class AbstractSpeedySmilesSingleCellManipNodeModel
 
 	@Override
 	protected String[] getColumnNamePrefixes() {
-		return new String[] { getColumnNamePrefix() };
+		return getColumnNamePrefix() == null ? null
+				: new String[] { getColumnNamePrefix() };
 	}
 
 	/**
@@ -77,7 +80,8 @@ public abstract class AbstractSpeedySmilesSingleCellManipNodeModel
 	protected abstract String getColumnNamePrefix();
 
 	@Override
-	protected DataCell[] getResultColumns(String SMILES, int numCols) throws Exception {
+	protected DataCell[] getResultColumns(String SMILES, int numCols)
+			throws Exception {
 		return new DataCell[] { getResultCell(SMILES) };
 	}
 

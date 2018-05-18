@@ -4,7 +4,7 @@
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -29,11 +29,11 @@ import com.vernalis.knime.chem.speedysmiles.helpers.SmilesHelpers;
  *
  */
 public enum ElementCount implements CalculatedProperty<Integer> {
-	Carbon("C", new String[] { "Cl", "Ca", "Sc", "Cr", "Co", "Cu", "Tc", "Cd", "Cs", "Cn", "Ce",
-			"Cm", "Cf" }),
+	Carbon("C", new String[] { "Cl", "Ca", "Sc", "Cr", "Co", "Cu", "Tc", "Cd",
+			"Cs", "Cn", "Ce", "Cm", "Cf" }),
 
-	Nitrogen("N", new String[] { "Ne", "Na", "Mn", "Ni", "Zn", "Nb", "In", "Sn", "Rn", "Cn", "Nd",
-			"No" }),
+	Nitrogen("N", new String[] { "Ne", "Na", "Mn", "Ni", "Zn", "Nb", "In", "Sn",
+			"Rn", "Cn", "Nd", "No" }),
 
 	Oxygen("O", new String[] { "Co", "Mo", "Os", "Po", "Uuo", "Ho", "No" });
 
@@ -42,7 +42,8 @@ public enum ElementCount implements CalculatedProperty<Integer> {
 
 	private ElementCount(String elemSymbol, String[] countercases) {
 		this.counterCases = countercases;
-		elemPatt = Pattern.compile("(?<!@)(" + elemSymbol + "|" + elemSymbol.toLowerCase() + ")");
+		elemPatt = Pattern.compile(
+				"(?<!@)(" + elemSymbol + "|" + elemSymbol.toLowerCase() + ")");
 		String counterCaseRegex = "(?<!@)("
 				+ Arrays.stream(counterCases).collect(Collectors.joining("|"));
 		String orgCounterCases = Arrays.stream(counterCases)

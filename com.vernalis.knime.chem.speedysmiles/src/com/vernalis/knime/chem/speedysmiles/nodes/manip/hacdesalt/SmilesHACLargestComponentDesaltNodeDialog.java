@@ -4,7 +4,7 @@
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -34,8 +34,8 @@ import com.vernalis.knime.chem.speedysmiles.nodes.abstrct.AbstractSpeedySmilesNo
  * 
  * @author S Roughley
  */
-public class SmilesHACLargestComponentDesaltNodeDialog extends
-		AbstractSpeedySmilesNodeDialog {
+public class SmilesHACLargestComponentDesaltNodeDialog
+		extends AbstractSpeedySmilesNodeDialog {
 
 	/**
 	 * New pane for configuring the SmilesHACLargestComponentDesalt node.
@@ -43,23 +43,26 @@ public class SmilesHACLargestComponentDesaltNodeDialog extends
 	protected SmilesHACLargestComponentDesaltNodeDialog() {
 		super(true, true);
 		createNewGroup("Tie-break behaviour");
-		final SettingsModelBoolean keepFirstOnlyModel = createKeepFirstOnlyModel();
-		final SettingsModelBoolean keepLongestSmilesStringModel = createKeepLongestModel();
+		final SettingsModelBoolean keepFirstOnlyModel =
+				createKeepFirstOnlyModel();
+		final SettingsModelBoolean keepLongestSmilesStringModel =
+				createKeepLongestModel();
 		keepLongestSmilesStringModel.setEnabled(keepFirstOnlyModel.isEnabled());
 		keepFirstOnlyModel.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				keepLongestSmilesStringModel.setEnabled(keepFirstOnlyModel
-						.getBooleanValue());
+				keepLongestSmilesStringModel
+						.setEnabled(keepFirstOnlyModel.getBooleanValue());
 
 			}
 		});
 
 		addDialogComponent(new DialogComponentBoolean(keepFirstOnlyModel,
 				"Keep only 1st unique component"));
-		addDialogComponent(new DialogComponentBoolean(
-				keepLongestSmilesStringModel, "Keep the longest SMILES String"));
+		addDialogComponent(
+				new DialogComponentBoolean(keepLongestSmilesStringModel,
+						"Keep the longest SMILES String"));
 
 	}
 
@@ -70,8 +73,6 @@ public class SmilesHACLargestComponentDesaltNodeDialog extends
 		return new SettingsModelBoolean("Keep longest SMILES String", true);
 	}
 
-
-
 	/**
 	 * @return Settings Model for only keeping the 1st component when more than
 	 *         1 matches
@@ -79,6 +80,5 @@ public class SmilesHACLargestComponentDesaltNodeDialog extends
 	public static SettingsModelBoolean createKeepFirstOnlyModel() {
 		return new SettingsModelBoolean("Keep only 1st component", false);
 	}
-
 
 }

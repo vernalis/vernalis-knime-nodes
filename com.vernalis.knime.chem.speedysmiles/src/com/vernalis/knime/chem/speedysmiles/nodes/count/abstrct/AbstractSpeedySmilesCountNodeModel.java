@@ -4,7 +4,7 @@
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -86,7 +86,8 @@ public abstract class AbstractSpeedySmilesCountNodeModel
 	 * int)
 	 */
 	@Override
-	protected DataCell[] getResultColumns(String SMILES, int numCols) throws Exception {
+	protected DataCell[] getResultColumns(String SMILES, int numCols)
+			throws Exception {
 		DataCell[] retVal = new DataCell[numCols];
 		int colIdx = 0;
 		for (Integer val : getResultCounts(SMILES, numCols)) {

@@ -22,6 +22,7 @@ package com.vernalis.knime.chem.speedysmiles.helpers;
  *
  */
 public interface FlagProvider {
+
 	/**
 	 * @return The bitmask to apply to a long to obtain the (value-1)
 	 */

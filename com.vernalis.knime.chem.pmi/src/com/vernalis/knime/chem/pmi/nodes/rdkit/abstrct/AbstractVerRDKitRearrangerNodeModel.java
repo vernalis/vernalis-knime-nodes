@@ -96,6 +96,7 @@ import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector2WaveSupplier;
  *
  */
 public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
+
 	/**
 	 * Map Key for the Input column name model
 	 */
@@ -156,7 +157,8 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 	 * @param nrOutDataPorts
 	 *            The number of output ports
 	 */
-	public AbstractVerRDKitRearrangerNodeModel(int nrInDataPorts, int nrOutDataPorts) {
+	public AbstractVerRDKitRearrangerNodeModel(int nrInDataPorts,
+			int nrOutDataPorts) {
 		super(nrInDataPorts, nrOutDataPorts);
 		registerSettingsModel(COL_NAME,
 				AbstractVerRDKitRearrangerNodeModel.createMolColNameModel());
@@ -172,7 +174,8 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 	 * @param nrOutDataPorts
 	 *            The number of output ports
 	 */
-	public AbstractVerRDKitRearrangerNodeModel(PortType[] inPortTypes, PortType[] outPortTypes) {
+	public AbstractVerRDKitRearrangerNodeModel(PortType[] inPortTypes,
+			PortType[] outPortTypes) {
 		super(inPortTypes, outPortTypes);
 		registerSettingsModel(COL_NAME,
 				AbstractVerRDKitRearrangerNodeModel.createMolColNameModel());
@@ -193,13 +196,15 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 		// Check the selection for the sdf or mol column
 		((SettingsModelString) getSettingsModel(COL_NAME))
 				.setStringValue(PmiUtils.checkColumnNameAndAutoPick(
-						((SettingsModelString) getSettingsModel(COL_NAME)).getStringValue(),
+						((SettingsModelString) getSettingsModel(COL_NAME))
+								.getStringValue(),
 						inSpecs[0], logger));
 
 		// Use the rearranger to create the spec- also checks if any properties
 		// are being calculated
 		try {
-			return new DataTableSpec[] { createColumnRearranger(inSpecs[0]).createSpec() };
+			return new DataTableSpec[] {
+					createColumnRearranger(inSpecs[0]).createSpec() };
 		} catch (Exception e) {
 			throw new InvalidSettingsException(e);
 		}
@@ -212,11 +217,12 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 	 * BufferedDataTable[], org.knime.core.node.ExecutionContext)
 	 */
 	@Override
-	protected BufferedDataTable[] execute(BufferedDataTable[] inData, ExecutionContext exec)
-			throws Exception {
+	protected BufferedDataTable[] execute(BufferedDataTable[] inData,
+			ExecutionContext exec) throws Exception {
 		gcWave.set(1);
-		return new BufferedDataTable[] { exec.createColumnRearrangeTable(inData[0],
-				createColumnRearranger(inData[0].getDataTableSpec()), exec) };
+		return new BufferedDataTable[] { exec.createColumnRearrangeTable(
+				inData[0], createColumnRearranger(inData[0].getDataTableSpec()),
+				exec) };
 	}
 
 	/**
@@ -228,62 +234,70 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 	 * @return The resulting column rearranger
 	 * @throws Exception
 	 */
-	protected ColumnRearranger createColumnRearranger(DataTableSpec inSpec) throws Exception {
+	protected ColumnRearranger createColumnRearranger(DataTableSpec inSpec)
+			throws Exception {
 		ColumnRearranger rearranger = new ColumnRearranger(inSpec);
 
 		// Now generate the new column specs
 		DataColumnSpec[] newColSpec = createNewColumnSpecs(inSpec);
 
 		final int molColIdx = inSpec.findColumnIndex(
-				((SettingsModelString) getSettingsModel(COL_NAME)).getStringValue());
+				((SettingsModelString) getSettingsModel(COL_NAME))
+						.getStringValue());
 
 		// Create a CellFactory which calls #calculateResultCells() if the
 		// molecule is non-null
-		AbstractCellFactory cellFact = new AbstractCellFactory(true, newColSpec) {
+		AbstractCellFactory cellFact =
+				new AbstractCellFactory(true, newColSpec) {
 
-			@Override
-			public DataCell[] getCells(DataRow row) {
-				DataCell[] retVal = new DataCell[resultColumns.size()];
-				Arrays.fill(retVal, DataType.getMissingCell());
+					@Override
+					public DataCell[] getCells(DataRow row) {
+						DataCell[] retVal = new DataCell[resultColumns.size()];
+						Arrays.fill(retVal, DataType.getMissingCell());
 
-				DataCell molCell = row.getCell(molColIdx);
-				if (molCell.isMissing()) {
-					return retVal;
-				}
-				long currentWaveID = gcWave.getAndIncrement();
+						DataCell molCell = row.getCell(molColIdx);
+						if (molCell.isMissing()) {
+							return retVal;
+						}
+						long currentWaveID = gcWave.getAndIncrement();
 
-				ROMol mol = gc.markForCleanup(getMolFromCell(molCell), currentWaveID);
-				if (mol != null) {
-					calculateResultCells(retVal, mol);
-					gc.cleanupMarkedObjects(currentWaveID);
-				}
-				return retVal;
-			}
-		};
+						ROMol mol = gc.markForCleanup(getMolFromCell(molCell),
+								currentWaveID);
+						if (mol != null) {
+							calculateResultCells(retVal, mol);
+							gc.cleanupMarkedObjects(currentWaveID);
+						}
+						return retVal;
+					}
+				};
 
 		// Append or replace the new column(s)
 		if (settingsModels.containsKey(REMOVE_INPUT_COL)
-				&& ((SettingsModelBoolean) getSettingsModel(REMOVE_INPUT_COL)).getBooleanValue()) {
+				&& ((SettingsModelBoolean) getSettingsModel(REMOVE_INPUT_COL))
+						.getBooleanValue()) {
 			// #replace() only works for single column, and doesnt look right to
 			// insert all at the replace column using #remove() then #insertAt()
 			if (cellFact.getColumnSpecs().length > 1) {
-				SingleCellFactory scf = new SingleCellFactory(cellFact.isParallelProcessing(),
-						cellFact.getColumnSpecs()[0]) {
+				SingleCellFactory scf =
+						new SingleCellFactory(cellFact.isParallelProcessing(),
+								cellFact.getColumnSpecs()[0]) {
 
-					@Override
-					public DataCell getCell(DataRow row) {
-						return cellFact.getCells(row)[0];
-					}
-				};
+							@Override
+							public DataCell getCell(DataRow row) {
+								return cellFact.getCells(row)[0];
+							}
+						};
 				rearranger.replace(scf, molColIdx);
 
 				AbstractCellFactory newCellFact =
-						new AbstractCellFactory(cellFact.isParallelProcessing(), Arrays.copyOfRange(
-								cellFact.getColumnSpecs(), 1, cellFact.getColumnSpecs().length)) {
+						new AbstractCellFactory(cellFact.isParallelProcessing(),
+								Arrays.copyOfRange(cellFact.getColumnSpecs(), 1,
+										cellFact.getColumnSpecs().length)) {
 
 							@Override
 							public DataCell[] getCells(DataRow row) {
-								return Arrays.copyOfRange(cellFact.getCells(row), 1,
+								return Arrays.copyOfRange(
+										cellFact.getCells(row), 1,
 										cellFact.getColumnSpecs().length);
 							}
 						};
@@ -308,7 +322,8 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 	 * @param mol
 	 *            The ROMol object
 	 */
-	protected abstract void calculateResultCells(DataCell[] resultCells, ROMol mol);
+	protected abstract void calculateResultCells(DataCell[] resultCells,
+			ROMol mol);
 
 	/**
 	 * Method to generate an ROMol object from an incoming data cell
@@ -323,14 +338,16 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 			if (type.isCompatible(RDKitMolValue.class)) {
 				mol = ((RDKitMolValue) molCell).readMoleculeValue();
 			} else if (type.isCompatible(SmilesValue.class)) {
-				RWMol rwMol =
-						RWMol.MolFromSmiles(((SmilesValue) molCell).getSmilesValue(), 0, false);
+				RWMol rwMol = RWMol.MolFromSmiles(
+						((SmilesValue) molCell).getSmilesValue(), 0, false);
 				RDKFuncs.sanitizeMol(rwMol);
 				mol = rwMol;
 			} else if (type.isCompatible(MolValue.class)) {
-				mol = RWMol.MolFromMolBlock(((MolValue) molCell).getMolValue(), true, false);
+				mol = RWMol.MolFromMolBlock(((MolValue) molCell).getMolValue(),
+						true, false);
 			} else if (type.isCompatible(SdfValue.class)) {
-				mol = RWMol.MolFromMolBlock(((SdfValue) molCell).getSdfValue(), true, false);
+				mol = RWMol.MolFromMolBlock(((SdfValue) molCell).getSdfValue(),
+						true, false);
 			}
 		} catch (Exception e) {
 			// Nothing - we return a null
@@ -349,9 +366,11 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 		DataColumnSpec[] retVal = new DataColumnSpec[resultColumns.size()];
 		int colIdx = 0;
 		for (Entry<String, DataType> ent : resultColumns.entrySet()) {
-			retVal[colIdx++] = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(inSpec, ent.getKey().replace("_", " ")),
-					ent.getValue()).createSpec();
+			retVal[colIdx++] =
+					new DataColumnSpecCreator(
+							DataTableSpec.getUniqueColumnName(inSpec,
+									ent.getKey().replace("_", " ")),
+							ent.getValue()).createSpec();
 		}
 		return retVal;
 	}
@@ -370,9 +389,8 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 	}
 
 	/**
-	 * Method to remove all registered output columns * @see {@link
-	 * AbstractVerRDKitRearrangerNodeModel#registerResultColumn(String,
-	 * DataType)
+	 * Method to remove all registered output columns * @see
+	 * {@link AbstractVerRDKitRearrangerNodeModel#registerResultColumn(String, DataType)
 	 */
 	protected void resetResultColumns() {
 		resultColumns = new LinkedHashMap<>();
@@ -396,7 +414,8 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 			throws IllegalArgumentException {
 		if (settingsModels.containsKey(name)) {
 			throw new IllegalArgumentException(
-					"The settings models already contain the key '" + name + "'");
+					"The settings models already contain the key '" + name
+							+ "'");
 		}
 		settingsModels.put(name, model);
 	}
@@ -405,7 +424,8 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 	 * Convenience method to add a 'Remove input column' settings model
 	 */
 	protected void addRemoveInputColumnModel() {
-		this.registerSettingsModel(REMOVE_INPUT_COL, createRemoveInputColModel());
+		this.registerSettingsModel(REMOVE_INPUT_COL,
+				createRemoveInputColModel());
 	}
 
 	/**
@@ -428,7 +448,8 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 	}
 
 	@Override
-	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		for (SettingsModel model : settingsModels.values()) {
 			model.validateSettings(settings);
 		}
@@ -481,12 +502,14 @@ public abstract class AbstractVerRDKitRearrangerNodeModel extends NodeModel {
 
 	/** Create the molecule column name settings model */
 	public static final SettingsModelString createMolColNameModel() {
-		return new SettingsModelString(AbstractVerRDKitRearrangerNodeModel.CFG_SDFCOL, null);
+		return new SettingsModelString(
+				AbstractVerRDKitRearrangerNodeModel.CFG_SDFCOL, null);
 	}
 
 	/** Create the remove input column settings model */
 	public static final SettingsModelBoolean createRemoveInputColModel() {
-		return new SettingsModelBoolean(AbstractVerRDKitRearrangerNodeModel.CFG_RMV_COL, true);
+		return new SettingsModelBoolean(
+				AbstractVerRDKitRearrangerNodeModel.CFG_RMV_COL, true);
 	}
 
 }

@@ -4,7 +4,7 @@
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -47,11 +47,12 @@ public class SpeedySmilesRingCountNodeFactory
 			}
 
 			@Override
-			protected Integer getResultCount(String SMILES) throws RowExecutionException {
+			protected Integer getResultCount(String SMILES)
+					throws RowExecutionException {
 				Integer retVal = SmilesHelpers.countRings(SMILES);
 				if (retVal == null) {
-					throw new RowExecutionException(
-							"SMILES String '" + SMILES + "' has broken ring closure bonds");
+					throw new RowExecutionException("SMILES String '" + SMILES
+							+ "' has broken ring closure bonds");
 				}
 				return retVal;
 			}
@@ -64,8 +65,8 @@ public class SpeedySmilesRingCountNodeFactory
 	}
 
 	@Override
-	public NodeView<AbstractSpeedySmilesSingleCountNodeModel> createNodeView(int viewIndex,
-			AbstractSpeedySmilesSingleCountNodeModel nodeModel) {
+	public NodeView<AbstractSpeedySmilesSingleCountNodeModel> createNodeView(
+			int viewIndex, AbstractSpeedySmilesSingleCountNodeModel nodeModel) {
 		return null;
 	}
 

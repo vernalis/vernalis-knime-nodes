@@ -29,6 +29,7 @@ import com.vernalis.knime.chem.speedysmiles.nodes.count.abstrct.AbstractSpeedySm
  *            The number type to be returned by the calculation
  */
 public interface CalculatedProperty<T extends Number> {
+
 	/**
 	 * Method to calculate the property
 	 * 

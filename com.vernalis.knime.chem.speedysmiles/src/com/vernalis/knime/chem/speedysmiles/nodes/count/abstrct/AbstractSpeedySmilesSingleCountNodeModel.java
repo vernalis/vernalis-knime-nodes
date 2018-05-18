@@ -4,7 +4,7 @@
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -33,7 +33,8 @@ public abstract class AbstractSpeedySmilesSingleCountNodeModel
 
 	@Override
 	protected String[] getColumnNameSuffixes() {
-		return getColumnNameSuffix() == null ? null : new String[] { getColumnNameSuffix() };
+		return getColumnNameSuffix() == null ? null
+				: new String[] { getColumnNameSuffix() };
 	}
 
 	/**
@@ -55,7 +56,8 @@ public abstract class AbstractSpeedySmilesSingleCountNodeModel
 	protected abstract String getColumnNamePrefix();
 
 	@Override
-	protected Integer[] getResultCounts(String SMILES, int numCols) throws RowExecutionException {
+	protected Integer[] getResultCounts(String SMILES, int numCols)
+			throws RowExecutionException {
 		return new Integer[] { getResultCount(SMILES) };
 	}
 
@@ -69,6 +71,7 @@ public abstract class AbstractSpeedySmilesSingleCountNodeModel
 	 * @throws RowExecutionException
 	 * @see {@link AbstractSpeedySmilesManipNodeModel#getResultColumns(String, int)
 	 */
-	protected abstract Integer getResultCount(String SMILES) throws RowExecutionException;
+	protected abstract Integer getResultCount(String SMILES)
+			throws RowExecutionException;
 
 }

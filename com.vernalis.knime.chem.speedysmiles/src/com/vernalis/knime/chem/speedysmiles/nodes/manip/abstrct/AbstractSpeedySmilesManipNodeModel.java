@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2018, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -14,12 +14,11 @@
  ******************************************************************************/
 package com.vernalis.knime.chem.speedysmiles.nodes.manip.abstrct;
 
-import static com.vernalis.knime.chem.speedysmiles.nodes.abstrct.AbstractSpeedySmilesNodeDialog.createColumnNameModel;
-import static com.vernalis.knime.chem.speedysmiles.nodes.abstrct.AbstractSpeedySmilesNodeDialog.createRemoveInputColumnModel;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -35,7 +34,9 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
+import org.knime.core.node.defaultnodesettings.SettingsModelInteger;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 
@@ -43,6 +44,9 @@ import com.vernalis.exceptions.RowExecutionException;
 import com.vernalis.knime.chem.speedysmiles.helpers.SmilesHelpers;
 import com.vernalis.knime.chem.speedysmiles.nodes.count.abstrct.AbstractSpeedySmilesCountNodeModel;
 import com.vernalis.knime.chem.speedysmiles.nodes.count.abstrct.AbstractSpeedySmilesSingleCountNodeModel;
+
+import static com.vernalis.knime.chem.speedysmiles.nodes.abstrct.AbstractSpeedySmilesNodeDialog.createColumnNameModel;
+import static com.vernalis.knime.chem.speedysmiles.nodes.abstrct.AbstractSpeedySmilesNodeDialog.createRemoveInputColumnModel;
 
 /**
  * This is the base class for all SpeedySMILES nodes which can use a
@@ -78,13 +82,24 @@ import com.vernalis.knime.chem.speedysmiles.nodes.count.abstrct.AbstractSpeedySm
  * @author s.roughley
  *
  */
-public abstract class AbstractSpeedySmilesManipNodeModel extends SimpleStreamableFunctionNodeModel {
+public abstract class AbstractSpeedySmilesManipNodeModel
+		extends SimpleStreamableFunctionNodeModel {
+
 	/** The node logger instance */
 	protected NodeLogger m_logger = NodeLogger.getLogger(this.getClass());
 
 	protected final SettingsModelString m_colName = createColumnNameModel();
 	protected final SettingsModelBoolean m_removeInputCol;
 	protected final boolean m_hasRemoveInputCol;
+
+	protected final Set<SettingsModel> models = new HashSet<>();
+
+	/**
+	 * Node version. v1 (applied retrospectively in #loadSettings) does not
+	 * remove name prefix/suffix if the input column is removed
+	 */
+	protected final SettingsModelInteger m_version =
+			new SettingsModelInteger("Version", 2);
 
 	/**
 	 * Constructor with no 'Remove Input Column' option
@@ -101,9 +116,11 @@ public abstract class AbstractSpeedySmilesManipNodeModel extends SimpleStreamabl
 	 */
 	public AbstractSpeedySmilesManipNodeModel(boolean hasRemoveInputCol) {
 		super();
+		registerSettingsModel(m_colName);
 		m_hasRemoveInputCol = hasRemoveInputCol;
 		if (m_hasRemoveInputCol) {
 			m_removeInputCol = createRemoveInputColumnModel();
+			registerSettingsModel(m_removeInputCol);
 		} else {
 			m_removeInputCol = null;
 		}
@@ -113,6 +130,38 @@ public abstract class AbstractSpeedySmilesManipNodeModel extends SimpleStreamabl
 	protected ColumnRearranger createColumnRearranger(DataTableSpec spec)
 			throws InvalidSettingsException {
 
+		if ((getColumnNamePrefixes() == null && getColumnNameSuffixes() == null)
+				|| getColumnTypes().length < 1) {
+			throw new InvalidSettingsException(
+					"The implementation is broken! No output columns are defined");
+		}
+		if (getColumnNamePrefixes() != null && getColumnNameSuffixes() != null
+				&& getColumnNamePrefixes().length != getColumnNameSuffixes().length) {
+			throw new InvalidSettingsException(
+					"The implementation is broken! Different number of column name suffixes and prefixes");
+		}
+
+		if (getColumnNameSuffixes() != null
+				&& getColumnTypes().length != getColumnNameSuffixes().length) {
+			throw new InvalidSettingsException(
+					"The implementation is broken! Different number of column names and types");
+		}
+		if (getColumnNamePrefixes() != null
+				&& getColumnTypes().length != getColumnNamePrefixes().length) {
+			throw new InvalidSettingsException(
+					"The implementation is broken! Different number of column names and types");
+		}
+
+		try {
+			String msg = SmilesHelpers.findSmilesColumn(spec, m_colName);
+			if (msg != null) {
+				m_logger.warn(msg);
+			}
+		} catch (InvalidSettingsException e) {
+			m_logger.error(e.getMessage());
+			throw e;
+		}
+
 		ColumnRearranger rearranger = new ColumnRearranger(spec);
 		final int smiColIdx = spec.findColumnIndex(m_colName.getStringValue());
 
@@ -121,14 +170,37 @@ public abstract class AbstractSpeedySmilesManipNodeModel extends SimpleStreamabl
 		}
 
 		// Generate the new column specs
-		DataColumnSpec[] newSpecs = new DataColumnSpec[getColumnNamePrefixes().length];
+		DataColumnSpec[] newSpecs = new DataColumnSpec[getColumnTypes().length];
 		for (int i = 0; i < newSpecs.length; i++) {
-			String columnName = getColumnNamePrefixes()[i];
-			if (getColumnNameSuffixes() != null) {
-				columnName += " (" + m_colName.getStringValue() + ")" + getColumnNameSuffixes()[i];
+
+			StringBuilder columnName = new StringBuilder();
+			if (m_version.getIntValue() > 1 && m_hasRemoveInputCol
+					&& m_removeInputCol.getBooleanValue()) {
+				// As of v2, we only add suffixes/prefixes if we are not
+				// removing the input column, otherwise we keep the name
+				columnName.append(m_colName.getStringValue());
+			} else {
+				boolean hasPrefix = false;
+				if (getColumnNamePrefixes() != null
+						&& getColumnNamePrefixes()[i] != null) {
+					columnName.append(getColumnNamePrefixes()[i]).append(" (");
+					hasPrefix = true;
+				}
+				columnName.append(m_colName.getStringValue());
+				if (hasPrefix) {
+					columnName.append(')');
+				}
+				if (getColumnNameSuffixes() != null
+						&& getColumnNameSuffixes()[i] != null) {
+					columnName.append(" (").append(getColumnNameSuffixes()[i])
+							.append(')');
+				}
 			}
-			DataColumnSpecCreator specFact = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(spec, columnName), getColumnTypes()[i]);
+			DataColumnSpecCreator specFact =
+					new DataColumnSpecCreator(
+							DataTableSpec.getUniqueColumnName(spec,
+									columnName.toString()),
+							getColumnTypes()[i]);
 			newSpecs[i] = specFact.createSpec();
 		}
 
@@ -144,7 +216,8 @@ public abstract class AbstractSpeedySmilesManipNodeModel extends SimpleStreamabl
 					try {
 						outCells = getResultColumns(smi, newSpecs.length);
 					} catch (RowExecutionException ree) {
-						m_logger.warn(ree.getMessage() + " (" + row.getKey() + ")");
+						m_logger.warn(
+								ree.getMessage() + " (" + row.getKey() + ")");
 					} catch (Exception e) {
 						if (e instanceof RuntimeException) {
 							throw (RuntimeException) e;
@@ -193,7 +266,21 @@ public abstract class AbstractSpeedySmilesManipNodeModel extends SimpleStreamabl
 	 *            The number of properties to calculate
 	 * @return The output cells
 	 */
-	protected abstract DataCell[] getResultColumns(String SMILES, int numCols) throws Exception;
+	protected abstract DataCell[] getResultColumns(String SMILES, int numCols)
+			throws Exception;
+
+	/**
+	 * Convenience method to register {@link SettingsModel}s and have this class
+	 * handle the load/save/validate operations without subclasses requiring to
+	 * overwrite the load/save/validate settings methods
+	 * 
+	 * @param model
+	 *            The {@link SettingsModel} to register
+	 * @return true if the model was successfully registered.
+	 */
+	protected final boolean registerSettingsModel(SettingsModel model) {
+		return models.add(model);
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -207,43 +294,11 @@ public abstract class AbstractSpeedySmilesManipNodeModel extends SimpleStreamabl
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
-			throws InvalidSettingsException {
-		if (getColumnNameSuffixes() != null
-				&& getColumnNamePrefixes().length != getColumnNameSuffixes().length) {
-			throw new InvalidSettingsException(
-					"The implementation is broken! Different number of column name suffixes and prefixes");
-		}
-		if (getColumnNamePrefixes().length < 1) {
-			throw new InvalidSettingsException(
-					"The implementation is broken! No output columns are defined");
-		}
-		if (getColumnTypes().length != getColumnNamePrefixes().length) {
-			throw new InvalidSettingsException(
-					"The implementation is broken! Different number of column names and types");
-		}
-
-		try {
-			String msg = SmilesHelpers.findSmilesColumn(inSpecs[0], m_colName);
-			if (msg != null) {
-				m_logger.warn(msg);
-			}
-		} catch (InvalidSettingsException e) {
-			m_logger.error(e.getMessage());
-			throw e;
-		}
-		return new DataTableSpec[] { createColumnRearranger(inSpecs[0]).createSpec() };
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		m_colName.saveSettingsTo(settings);
-		if (m_hasRemoveInputCol) {
-			m_removeInputCol.saveSettingsTo(settings);
+		for (SettingsModel model : models) {
+			model.saveSettingsTo(settings);
 		}
+		m_version.saveSettingsTo(settings);
 	}
 
 	/**
@@ -252,28 +307,38 @@ public abstract class AbstractSpeedySmilesManipNodeModel extends SimpleStreamabl
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		m_colName.loadSettingsFrom(settings);
-		if (m_hasRemoveInputCol) {
-			m_removeInputCol.loadSettingsFrom(settings);
+
+		for (SettingsModel model : models) {
+			model.loadSettingsFrom(settings);
 		}
+		try {
+			m_version.loadSettingsFrom(settings);
+		} catch (Exception e) {
+			// Apply v1 - legacy behaviour
+			m_version.setIntValue(1);
+		}
+		m_logger.info("Speedy SMILES Version: " + m_version.getIntValue());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
-		m_colName.validateSettings(settings);
-		if (m_hasRemoveInputCol) {
-			m_removeInputCol.validateSettings(settings);
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
+
+		for (SettingsModel model : models) {
+			model.validateSettings(settings);
 		}
+		// Dont validate m_version
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 
 	}
@@ -282,7 +347,8 @@ public abstract class AbstractSpeedySmilesManipNodeModel extends SimpleStreamabl
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 
 	}

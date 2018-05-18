@@ -4,7 +4,7 @@
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -21,8 +21,8 @@ import com.vernalis.knime.chem.speedysmiles.nodes.count.abstrct.AbstractSpeedySm
  *
  * @author S Roughley
  */
-public class SmilesChiralCentreCountNodeFactory
-		extends AbstractSpeedySmilesEnumBasedCountNodeFactory<ChiralCentreCount> {
+public class SmilesChiralCentreCountNodeFactory extends
+		AbstractSpeedySmilesEnumBasedCountNodeFactory<ChiralCentreCount> {
 
 	public SmilesChiralCentreCountNodeFactory() {
 		super(ChiralCentreCount.values());

@@ -4,7 +4,7 @@
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -40,8 +40,8 @@ public class AbstractSpeedySmilesEnumBasedCountNodeDialog<T extends Enum<T> & Ca
 	public AbstractSpeedySmilesEnumBasedCountNodeDialog(T[] elements) {
 		ELEMENTS = elements;
 		for (T elem : ELEMENTS) {
-			addDialogComponent(new DialogComponentBoolean(createElementModel(elem.name()),
-					elem.displayName()));
+			addDialogComponent(new DialogComponentBoolean(
+					createElementModel(elem.name()), elem.displayName()));
 		}
 
 	}

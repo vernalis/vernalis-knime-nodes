@@ -4,7 +4,7 @@
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -26,7 +26,8 @@ import com.vernalis.knime.chem.speedysmiles.helpers.FlagProvider;
  * @author S.Roughley
  *
  */
-public enum ChiralCentreCount implements CalculatedProperty<Integer>, FlagProvider {
+public enum ChiralCentreCount
+		implements CalculatedProperty<Integer>, FlagProvider {
 	ALL("All Absolute Centres") {
 
 		@Override
@@ -78,7 +79,8 @@ public enum ChiralCentreCount implements CalculatedProperty<Integer>, FlagProvid
 			for (int i = 0, l = SMILES.length(); i < l; i++) {
 				char x = SMILES.charAt(i);
 				if (x == '@') {
-					String nextTwo = "" + SMILES.charAt(i + 1) + SMILES.charAt(i + 2);
+					String nextTwo =
+							"" + SMILES.charAt(i + 1) + SMILES.charAt(i + 2);
 					if (!labels.matcher(nextTwo).matches()) {
 						cnt++;
 					}
@@ -117,7 +119,8 @@ public enum ChiralCentreCount implements CalculatedProperty<Integer>, FlagProvid
 			for (int i = 0, l = SMILES.length(); i < l; i++) {
 				char x = SMILES.charAt(i);
 				if (x == '@') {
-					if (SMILES.charAt(i + 1) == 'A' && SMILES.charAt(i + 2) == 'L') {
+					if (SMILES.charAt(i + 1) == 'A'
+							&& SMILES.charAt(i + 2) == 'L') {
 						cnt++;
 					}
 					// skip following
@@ -155,7 +158,8 @@ public enum ChiralCentreCount implements CalculatedProperty<Integer>, FlagProvid
 			for (int i = 0, l = SMILES.length(); i < l; i++) {
 				char x = SMILES.charAt(i);
 				if (x == '@') {
-					if (SMILES.charAt(i + 1) == 'O' && SMILES.charAt(i + 2) == 'H') {
+					if (SMILES.charAt(i + 1) == 'O'
+							&& SMILES.charAt(i + 2) == 'H') {
 						cnt++;
 					}
 					// skip following
@@ -193,7 +197,8 @@ public enum ChiralCentreCount implements CalculatedProperty<Integer>, FlagProvid
 			for (int i = 0, l = SMILES.length(); i < l; i++) {
 				char x = SMILES.charAt(i);
 				if (x == '@') {
-					if (SMILES.charAt(i + 1) == 'S' && SMILES.charAt(i + 2) == 'P') {
+					if (SMILES.charAt(i + 1) == 'S'
+							&& SMILES.charAt(i + 2) == 'P') {
 						cnt++;
 					}
 					// skip following
@@ -231,7 +236,8 @@ public enum ChiralCentreCount implements CalculatedProperty<Integer>, FlagProvid
 			for (int i = 0, l = SMILES.length(); i < l; i++) {
 				char x = SMILES.charAt(i);
 				if (x == '@') {
-					if (SMILES.charAt(i + 1) == 'T' && SMILES.charAt(i + 2) == 'B') {
+					if (SMILES.charAt(i + 1) == 'T'
+							&& SMILES.charAt(i + 2) == 'B') {
 						cnt++;
 					}
 					// skip following
@@ -269,7 +275,8 @@ public enum ChiralCentreCount implements CalculatedProperty<Integer>, FlagProvid
 			for (int i = 0, l = SMILES.length(); i < l; i++) {
 				char x = SMILES.charAt(i);
 				if (x == '@') {
-					if (SMILES.charAt(i + 1) == 'T' && SMILES.charAt(i + 2) == 'H') {
+					if (SMILES.charAt(i + 1) == 'T'
+							&& SMILES.charAt(i + 2) == 'H') {
 						cnt++;
 					}
 					// skip following
