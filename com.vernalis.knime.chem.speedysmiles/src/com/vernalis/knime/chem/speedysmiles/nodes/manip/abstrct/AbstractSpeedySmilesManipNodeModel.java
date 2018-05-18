@@ -182,7 +182,8 @@ public abstract class AbstractSpeedySmilesManipNodeModel
 			} else {
 				boolean hasPrefix = false;
 				if (getColumnNamePrefixes() != null
-						&& getColumnNamePrefixes()[i] != null) {
+						&& getColumnNamePrefixes()[i] != null
+						&& !getColumnNamePrefixes()[i].isEmpty()) {
 					columnName.append(getColumnNamePrefixes()[i]).append(" (");
 					hasPrefix = true;
 				}
@@ -191,7 +192,8 @@ public abstract class AbstractSpeedySmilesManipNodeModel
 					columnName.append(')');
 				}
 				if (getColumnNameSuffixes() != null
-						&& getColumnNameSuffixes()[i] != null) {
+						&& getColumnNameSuffixes()[i] != null
+						&& !getColumnNameSuffixes()[i].isEmpty()) {
 					columnName.append(" (").append(getColumnNameSuffixes()[i])
 							.append(')');
 				}

@@ -88,6 +88,9 @@
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.clean.CleanChargesNodeFactory"/>
      <node
             category-path="/community/vernalis/speedy/manipulate"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.clean.CleanBondsNodeFactory"/>
+     <node
+            category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.clean.CleanDotNonbondsNodeFactory"/>
      <node
             category-path="/community/vernalis/speedy/manipulate"
