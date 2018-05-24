@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, Vernalis (R&D) Ltd
+ * Copyright (c) 2015, 2018, Vernalis (R&D) Ltd
  * This program is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License, Version 3, as 
  * published by the Free Software Foundation.
@@ -34,31 +34,40 @@ import com.vernalis.knime.dialog.components.SettingsModelStringArrayFlowVarRepla
  */
 public class AbstractLoadFilesNodeDialog extends DefaultNodeSettingsPane {
 
+	private static final String INCLUDE_FILENAMES_IN_OUTPUT_TABLE =
+			"Include filenames in output table";
 	private final SettingsModelStringArrayFlowVarReplacable m_fileNames;
 
-	/**
-	 * New pane for configuring the node.
-	 * 
-	 * @param historyId
-	 *            The History ID for the file history
-	 */
-	public AbstractLoadFilesNodeDialog(String historyId) {
-
-		m_fileNames = createFilenamesModel();
-		FlowVariableModel fvm = createFlowVariableModel(m_fileNames);
-		addDialogComponent(new DialogComponentListFilesSelector(m_fileNames, "Select file(s)", true,
-				"Select files to load.  Each will will be loaded to a new table row.", historyId,
-				JFileChooser.OPEN_DIALOG, fvm));
-
-		addDialogComponent(new DialogComponentButtonGroup(createFileEncodingModel(),
-				"Select file encoding", true, FileEncodingWithGuess.values()));
-
-		addDialogComponent(new DialogComponentBoolean(createIncludePathsModel(),
-				"Include paths in output table"));
-		addDialogComponent(new DialogComponentBoolean(createIncludeFilenameAsRowIDModel(),
-				"Include filename in Row IDs"));
-
-	}
+	// /**
+	// * New pane for configuring the node.
+	// *
+	// * @param historyId
+	// * The History ID for the file history
+	// */
+	// public AbstractLoadFilesNodeDialog(String historyId) {
+	//
+	// m_fileNames = createFilenamesModel();
+	// FlowVariableModel fvm = createFlowVariableModel(m_fileNames);
+	// addDialogComponent(new DialogComponentListFilesSelector(m_fileNames,
+	// "Select file(s)", true,
+	// "Select files to load. Each will will be loaded to a new table row.",
+	// historyId,
+	// JFileChooser.OPEN_DIALOG, fvm));
+	//
+	// addDialogComponent(new
+	// DialogComponentButtonGroup(createFileEncodingModel(),
+	// "Select file encoding", true, FileEncodingWithGuess.values()));
+	//
+	// addDialogComponent(new DialogComponentBoolean(createIncludePathsModel(),
+	// "Include paths in output table"));
+	// addDialogComponent(new
+	// DialogComponentBoolean(createIncludeFilenamesModel(),
+	// INCLUDE_FILENAMES_IN_OUTPUT_TABLE));
+	// addDialogComponent(new
+	// DialogComponentBoolean(createIncludeFilenameAsRowIDModel(),
+	// "Include filename in Row IDs"));
+	//
+	// }
 
 	/**
 	 * New pane for configuring the LoadTextFiles node.
@@ -72,18 +81,28 @@ public class AbstractLoadFilesNodeDialog extends DefaultNodeSettingsPane {
 
 		m_fileNames = createFilenamesModel();
 		FlowVariableModel fvm = createFlowVariableModel(m_fileNames);
-		addDialogComponent(new DialogComponentListFilesSelector(m_fileNames, "Select file(s)", true,
-				"Select files to load.  Each will will be loaded to a new table row.", historyID,
-				JFileChooser.OPEN_DIALOG, fvm, fileTypes));
+		addDialogComponent(new DialogComponentListFilesSelector(m_fileNames,
+				"Select file(s)", true,
+				"Select files to load.  Each will will be loaded to a new table row.",
+				historyID, JFileChooser.OPEN_DIALOG, fvm, fileTypes));
 
-		addDialogComponent(new DialogComponentButtonGroup(createFileEncodingModel(),
-				"Select file encoding", true, FileEncodingWithGuess.values()));
+		addDialogComponent(new DialogComponentButtonGroup(
+				createFileEncodingModel(), "Select file encoding", true,
+				FileEncodingWithGuess.values()));
 
 		addDialogComponent(new DialogComponentBoolean(createIncludePathsModel(),
 				"Include paths in output table"));
-		addDialogComponent(new DialogComponentBoolean(createIncludeFilenameAsRowIDModel(),
-				"Include filename in Row IDs"));
+		addDialogComponent(
+				new DialogComponentBoolean(createIncludeFilenameAsRowIDModel(),
+						"Include filename in Row IDs"));
+		addDialogComponent(
+				new DialogComponentBoolean(createIncludeFilenamesModel(),
+						INCLUDE_FILENAMES_IN_OUTPUT_TABLE));
+	}
 
+	static SettingsModelBoolean createIncludeFilenamesModel() {
+		return new SettingsModelBoolean(INCLUDE_FILENAMES_IN_OUTPUT_TABLE,
+				true);
 	}
 
 	/**
@@ -105,7 +124,8 @@ public class AbstractLoadFilesNodeDialog extends DefaultNodeSettingsPane {
 	 * @return Settings model for the selected filenames
 	 */
 	static SettingsModelStringArrayFlowVarReplacable createFilenamesModel() {
-		return new SettingsModelStringArrayFlowVarReplacable("Selected Files", null);
+		return new SettingsModelStringArrayFlowVarReplacable("Selected Files",
+				null);
 	}
 
 	/**

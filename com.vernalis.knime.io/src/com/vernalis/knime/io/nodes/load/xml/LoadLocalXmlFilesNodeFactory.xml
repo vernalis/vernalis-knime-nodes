@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<knimeNode icon="./default.png" type="Source"
-	xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<knimeNode
+	icon="./default.png"
+	type="Source"
+	xmlns="http://knime.org/node/v2.8"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
 	<name>Load Local XML Files</name>
 
@@ -40,11 +43,16 @@
 			at 0). Otherwise, the Row IDs will be in the format 'Row_n', with an
 			an index starting at 0
 		</option>
+		<option name="Include filenames in output table">Include the filename as a column in the output
+			table
+		</option>
 	</fullDescription>
 
 	<ports>
 
-		<outPort index="0" name="File Content">Content of the loaded files
+		<outPort
+			index="0"
+			name="File Content">Content of the loaded files
 		</outPort>
 
 	</ports>

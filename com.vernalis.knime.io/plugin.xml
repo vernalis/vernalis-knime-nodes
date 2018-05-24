@@ -43,6 +43,10 @@
             category-path="/community/vernalis/io"
             factory-class="com.vernalis.knime.io.nodes.load.rxn.LoadLocalRxnFilesNodeFactory">
       </node>
+      <node
+            category-path="/community/vernalis/io"
+            factory-class="com.vernalis.knime.io.nodes.load.bruker.amix.LoadAmixPeaklistFilesNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">

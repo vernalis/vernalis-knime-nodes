@@ -35,22 +35,24 @@ import com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeModel;
  * 
  * @author S. Roughley
  */
-public class LoadLocalXmlFilesNodeFactory extends NodeFactory<AbstractLoadFilesNodeModel> {
+public class LoadLocalXmlFilesNodeFactory
+		extends NodeFactory<AbstractLoadFilesNodeModel> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public AbstractLoadFilesNodeModel createNodeModel() {
-		return new AbstractLoadFilesNodeModel(XMLCellFactory.TYPE, "XML Files") {
+		return new AbstractLoadFilesNodeModel(XMLCellFactory.TYPE,
+				"XML Files") {
 
 			@Override
 			protected DataCell getDataCellFromString(String fileContentString) {
 				try {
 					return XMLCellFactory.create(fileContentString);
-				} catch (IOException | ParserConfigurationException | SAXException
-						| XMLStreamException e) {
-					m_logger.info("Error parsing XML: " + e.getMessage());
+				} catch (IOException | ParserConfigurationException
+						| SAXException | XMLStreamException e) {
+					getLogger().info("Error parsing XML: " + e.getMessage());
 					return DataType.getMissingCell();
 				}
 			}
@@ -69,8 +71,8 @@ public class LoadLocalXmlFilesNodeFactory extends NodeFactory<AbstractLoadFilesN
 	 * {@inheritDoc}
 	 */
 	@Override
-	public NodeView<AbstractLoadFilesNodeModel> createNodeView(final int viewIndex,
-			final AbstractLoadFilesNodeModel nodeModel) {
+	public NodeView<AbstractLoadFilesNodeModel> createNodeView(
+			final int viewIndex, final AbstractLoadFilesNodeModel nodeModel) {
 		return null;
 	}
 

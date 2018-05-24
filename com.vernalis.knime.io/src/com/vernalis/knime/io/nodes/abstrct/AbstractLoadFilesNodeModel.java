@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, Vernalis (R&D) Ltd
+ * Copyright (c) 2015, 2018, Vernalis (R&D) Ltd
  * This program is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License, Version 3, as 
  * published by the Free Software Foundation.
@@ -13,11 +13,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses>
  *******************************************************************************/
 package com.vernalis.knime.io.nodes.abstrct;
-
-import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.createFileEncodingModel;
-import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.createFilenamesModel;
-import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.createIncludeFilenameAsRowIDModel;
-import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.createIncludePathsModel;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +31,6 @@ import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -54,6 +48,12 @@ import com.vernalis.io.FileEncodingWithGuess;
 import com.vernalis.io.FileHelpers;
 import com.vernalis.knime.dialog.components.SettingsModelStringArrayFlowVarReplacable;
 
+import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.createFileEncodingModel;
+import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.createFilenamesModel;
+import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.createIncludeFilenameAsRowIDModel;
+import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.createIncludeFilenamesModel;
+import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.createIncludePathsModel;
+
 /**
  * This is the model implementation of LoadTextFiles. Node to load one or more
  * text-based files into table cells (1 cell per file)
@@ -61,12 +61,17 @@ import com.vernalis.knime.dialog.components.SettingsModelStringArrayFlowVarRepla
  * @author S. Roughley
  */
 public abstract class AbstractLoadFilesNodeModel extends NodeModel {
-	protected final SettingsModelStringArrayFlowVarReplacable m_files = createFilenamesModel();
-	protected final SettingsModelBoolean m_rowIDs = createIncludeFilenameAsRowIDModel();
-	protected final SettingsModelBoolean m_locCols = createIncludePathsModel();
-	protected final SettingsModelString m_fileEncoding = createFileEncodingModel();
 
-	protected final NodeLogger m_logger = NodeLogger.getLogger(AbstractLoadFilesNodeModel.class);
+	protected final SettingsModelStringArrayFlowVarReplacable m_files =
+			createFilenamesModel();
+	protected final SettingsModelBoolean m_rowIDs =
+			createIncludeFilenameAsRowIDModel();
+	protected final SettingsModelBoolean m_locCols = createIncludePathsModel();
+	protected final SettingsModelString m_fileEncoding =
+			createFileEncodingModel();
+	protected final SettingsModelBoolean m_inclFilenames =
+			createIncludeFilenamesModel();
+
 	protected DataTableSpec outSpec;
 	protected FileEncodingWithGuess fileEnc;
 	protected final DataType m_DataType;
@@ -75,7 +80,8 @@ public abstract class AbstractLoadFilesNodeModel extends NodeModel {
 	/**
 	 * Constructor for the node model.
 	 */
-	protected AbstractLoadFilesNodeModel(DataType dataType, String contentColumnName) {
+	protected AbstractLoadFilesNodeModel(DataType dataType,
+			String contentColumnName) {
 		super(0, 1);
 		m_DataType = dataType;
 		m_contentColumnName = contentColumnName;
@@ -101,8 +107,8 @@ public abstract class AbstractLoadFilesNodeModel extends NodeModel {
 
 		BufferedDataTableRowOutput output = new BufferedDataTableRowOutput(
 				exec.createDataContainer(outSpec));
-		createStreamableOperator(null, null).runFinal(new PortInput[0], new PortOutput[] { output },
-				exec);
+		createStreamableOperator(null, null).runFinal(new PortInput[0],
+				new PortOutput[] { output }, exec);
 		return new BufferedDataTable[] { output.getDataTable() };
 	}
 
@@ -114,13 +120,14 @@ public abstract class AbstractLoadFilesNodeModel extends NodeModel {
 	 * node.streamable.PartitionInfo, org.knime.core.node.port.PortObjectSpec[])
 	 */
 	@Override
-	public StreamableOperator createStreamableOperator(PartitionInfo partitionInfo,
-			PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+	public StreamableOperator createStreamableOperator(
+			PartitionInfo partitionInfo, PortObjectSpec[] inSpecs)
+			throws InvalidSettingsException {
 		return new StreamableOperator() {
 
 			@Override
-			public void runFinal(PortInput[] inputs, PortOutput[] outputs, ExecutionContext exec)
-					throws Exception {
+			public void runFinal(PortInput[] inputs, PortOutput[] outputs,
+					ExecutionContext exec) throws Exception {
 				RowOutput out = (RowOutput) outputs[0];
 				HashMap<String, Integer> rowSuffixes = new HashMap<>();
 				Integer rowSuffix = 0;
@@ -128,7 +135,8 @@ public abstract class AbstractLoadFilesNodeModel extends NodeModel {
 				for (String file : files) {
 					// Now, if it is a Location, convert to a URL
 					file = FileHelpers.forceURL(file);
-
+					final File f = new File(file);
+					String fName = f.getName();
 					// Only try to load the files - do not check type! Encoding
 					// and
 					// un-zipping will be handled
@@ -137,7 +145,7 @@ public abstract class AbstractLoadFilesNodeModel extends NodeModel {
 					// Now the RowID
 					String rId;
 					if (m_rowIDs.getBooleanValue()) {
-						rId = new File(file).getName();
+						rId = fName;
 						rowSuffix = rowSuffixes.get(rId);
 						if (rowSuffix == null) {
 							rowSuffix = 0;
@@ -155,7 +163,11 @@ public abstract class AbstractLoadFilesNodeModel extends NodeModel {
 					int colidx = 0;
 					if (m_locCols.getBooleanValue()) {
 						cells[colidx++] = new StringCell(file);
-						cells[colidx++] = new StringCell(new File(file).toURI().toURL().toString());
+						cells[colidx++] =
+								new StringCell(f.toURI().toURL().toString());
+					}
+					if (m_inclFilenames.getBooleanValue()) {
+						cells[colidx++] = new StringCell(fName);
 					}
 					if (r != null) {
 						cells[colidx++] = getDataCellFromString(r);
@@ -195,12 +207,14 @@ public abstract class AbstractLoadFilesNodeModel extends NodeModel {
 	@Override
 	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
 			throws InvalidSettingsException {
-		if (m_files.getStringArrayValue() == null || m_files.getStringArrayValue().length == 0) {
-			m_logger.error("No files selected");
+		if (m_files.getStringArrayValue() == null
+				|| m_files.getStringArrayValue().length == 0) {
+			getLogger().error("No files selected");
 			throw new InvalidSettingsException("No files selected");
 		}
 		outSpec = createOutputSpec();
-		fileEnc = FileEncodingWithGuess.valueOf(m_fileEncoding.getStringValue());
+		fileEnc =
+				FileEncodingWithGuess.valueOf(m_fileEncoding.getStringValue());
 		return new DataTableSpec[] { outSpec };
 	}
 
@@ -211,12 +225,19 @@ public abstract class AbstractLoadFilesNodeModel extends NodeModel {
 		DataTableSpecCreator specCreator = new DataTableSpecCreator();
 		DataColumnSpecCreator colSpecFact;
 		if (m_locCols.getBooleanValue()) {
-			colSpecFact = new DataColumnSpecCreator("Location", StringCell.TYPE);
+			colSpecFact =
+					new DataColumnSpecCreator("Location", StringCell.TYPE);
 			specCreator.addColumns(colSpecFact.createSpec());
 			colSpecFact = new DataColumnSpecCreator("URL", StringCell.TYPE);
 			specCreator.addColumns(colSpecFact.createSpec());
 		}
-		colSpecFact = new DataColumnSpecCreator(m_contentColumnName, m_DataType);
+		if (m_inclFilenames.getBooleanValue()) {
+			specCreator.addColumns(
+					new DataColumnSpecCreator("Filename", StringCell.TYPE)
+							.createSpec());
+		}
+		colSpecFact =
+				new DataColumnSpecCreator(m_contentColumnName, m_DataType);
 		specCreator.addColumns(colSpecFact.createSpec());
 		return specCreator.createSpec();
 	}
@@ -230,7 +251,7 @@ public abstract class AbstractLoadFilesNodeModel extends NodeModel {
 		m_fileEncoding.saveSettingsTo(settings);
 		m_rowIDs.saveSettingsTo(settings);
 		m_locCols.saveSettingsTo(settings);
-
+		m_inclFilenames.saveSettingsTo(settings);
 	}
 
 	/**
@@ -243,24 +264,33 @@ public abstract class AbstractLoadFilesNodeModel extends NodeModel {
 		m_fileEncoding.loadSettingsFrom(settings);
 		m_rowIDs.loadSettingsFrom(settings);
 		m_locCols.loadSettingsFrom(settings);
+		try {
+			m_inclFilenames.loadSettingsFrom(settings);
+		} catch (InvalidSettingsException e) {
+			// Set false for back compatibility
+			m_inclFilenames.setBooleanValue(false);
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		m_files.validateSettings(settings);
 		m_fileEncoding.validateSettings(settings);
 		m_rowIDs.validateSettings(settings);
 		m_locCols.validateSettings(settings);
+		// Dont validate include filenames settings for back compatibility
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 		//
 	}
@@ -269,7 +299,8 @@ public abstract class AbstractLoadFilesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 		//
 	}
