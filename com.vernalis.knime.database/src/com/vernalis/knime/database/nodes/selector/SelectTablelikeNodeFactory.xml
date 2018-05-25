@@ -30,8 +30,6 @@
 		<intro>The user can select the table type, schema name and table name.
 			The dropdowns are re-populated dynamically on changing a selection in
 			the table type or schema options
-		</intro>
-
 		<p>
 			This node was developed by
 			<a href="http://www.vernalis-research.com/">Vernalis Research</a>
@@ -41,6 +39,7 @@
 				knime@vernalis.com
 			</a>
 		</p>
+		</intro>
 		<option name="Table Type">The table type to use
 		</option>
 		<option name="Schema Name">The name of the schema</option>

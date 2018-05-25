@@ -32,7 +32,11 @@ public interface MultilineTextObject {
 	DataColumnSpec[] getNewColumnSpecs();
 
 	/**
+	 * @param lineSeparator
+	 *            The lineseparator to use to join the lines back together for
+	 *            the 'whole object' cell
 	 * @return The cells for the output table from the object
+	 * 
 	 */
-	DataCell[] getNewCells();
+	DataCell[] getNewCells(String lineSeparator);
 }

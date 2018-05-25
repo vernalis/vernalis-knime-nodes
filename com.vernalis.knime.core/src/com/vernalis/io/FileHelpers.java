@@ -22,6 +22,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -31,6 +32,7 @@ import java.net.URLConnection;
 import java.util.zip.GZIPInputStream;
 
 import org.knime.core.node.NodeLogger;
+import org.knime.core.node.util.ButtonGroupEnumInterface;
 import org.knime.core.util.pathresolve.ResolverUtil;
 
 /**
@@ -234,7 +236,8 @@ public class FileHelpers {
 			}
 		}
 		if (lastException != null) {
-			throw new FileDownloadException(lastException);
+			throw new FileDownloadException("Unable to download file after "
+					+ MAX_DOWNLOAD_ATTEMPTS + " tries", lastException);
 		}
 		return null;
 	}
@@ -266,7 +269,10 @@ public class FileHelpers {
 		InputStream is = uc.getInputStream();
 
 		// decompress, if necessary
-		if (urlStr.endsWith(".gz")) {
+		if (urlStr.endsWith(".gz") || urlStr.contains("&compressionType=gz")
+				|| (uc.getHeaderField("Content-Disposition") != null
+						&& uc.getHeaderField("Content-Disposition")
+								.matches(".*[Ff]ilename=\\\".*?\\.gz\\\".*"))) {
 			is = new GZIPInputStream(is);
 		}
 
@@ -374,5 +380,149 @@ public class FileHelpers {
 			encoding = fileEncoding.getText();
 		}
 		return encoding;
+	}
+
+	public static final int MAX_READAHEAD_FOR_LINEBREAK = 65535;
+
+	/**
+	 * Method to determine the linebreak from a Reader. The method leaves the
+	 * reader in the state it found it. If no linebreak is found in the first
+	 * {@link #MAX_READAHEAD_FOR_LINEBREAK} characters, then the system default
+	 * is used
+	 * 
+	 * @param rd
+	 *            The reader
+	 * @return The {@link LineBreak} system
+	 * @throws IOException
+	 */
+	public static LineBreak getLineBreakFromReader(Reader rd)
+			throws IOException {
+		StringBuilder sb = new StringBuilder();
+		try {
+			rd.mark(MAX_READAHEAD_FOR_LINEBREAK);
+			boolean foundStart = false;
+			for (int i = 0; i < MAX_READAHEAD_FOR_LINEBREAK; i++) {
+				int next = rd.read();
+				if (next < 0) {
+					// EOF
+					break;
+				}
+				char c = (char) next;
+				if (c == '\r') {
+					foundStart = true;
+					sb.append(c);
+				} else if (c == '\n') {
+					// '\n' ends the normal newline options ('\n' or '\r\n'), so
+					// our job is done
+					sb.append(c);
+					break;
+				} else if (foundStart) {
+					// We had a stray '\r' - ditch it
+					sb.deleteCharAt(0);
+					foundStart = false;
+				}
+			}
+		} finally {
+			rd.reset();
+		}
+		switch (sb.length()) {
+		case 0:
+			// Nothing found
+			logger.info("No linebreak found, using System default");
+			return LineBreak.getDefault();
+		case 1:
+			return LineBreak.UNIX;
+		case 2:
+			return LineBreak.WINDOWS;
+		default:
+			// Shouldnt ever be here!
+			logger.info("Linebreak found has " + sb.length() + " characters ("
+					+ sb.toString() + "), using System default");
+			return LineBreak.getDefault();
+		}
+	}
+
+	public enum LineBreak implements ButtonGroupEnumInterface {
+		SYSTEM {
+
+			@Override
+			public String getNewlineString() {
+				return System.lineSeparator();
+			}
+		},
+		WINDOWS {
+
+			@Override
+			public String getNewlineString() {
+				return "\r\n";
+			}
+		},
+		UNIX {
+
+			@Override
+			public String getNewlineString() {
+				return "\n";
+			}
+		},
+
+		PRESERVE_INCOMING {
+
+			@Override
+			public String getNewlineString() {
+				return null;
+			}
+
+		};
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.knime.core.node.util.ButtonGroupEnumInterface#getText()
+		 */
+		@Override
+		public String getText() {
+			return name().substring(0, 1)
+					+ name().substring(1).toLowerCase().replace("_", " ")
+					+ (getNewlineString() == null ? ""
+							: " (" + getNewlineString().replace("\n", "\\n")
+									.replace("\r", "\\r") + ")");
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.knime.core.node.util.ButtonGroupEnumInterface#getActionCommand()
+		 */
+		@Override
+		public String getActionCommand() {
+			return name();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.knime.core.node.util.ButtonGroupEnumInterface#getToolTip()
+		 */
+		@Override
+		public String getToolTip() {
+			return getText();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.knime.core.node.util.ButtonGroupEnumInterface#isDefault()
+		 */
+		@Override
+		public boolean isDefault() {
+			return this == getDefault();
+		}
+
+		public abstract String getNewlineString();
+
+		public static LineBreak getDefault() {
+			return SYSTEM;
+		}
 	}
 }
