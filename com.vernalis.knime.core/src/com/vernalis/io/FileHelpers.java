@@ -408,10 +408,7 @@ public class FileHelpers {
 					break;
 				}
 				char c = (char) next;
-				if (c == '\r') {
-					foundStart = true;
-					sb.append(c);
-				} else if (c == '\n') {
+				if (c == '\n') {
 					// '\n' ends the normal newline options ('\n' or '\r\n'), so
 					// our job is done
 					sb.append(c);
@@ -420,6 +417,9 @@ public class FileHelpers {
 					// We had a stray '\r' - ditch it
 					sb.deleteCharAt(0);
 					foundStart = false;
+				} else if (c == '\r') {
+					foundStart = true;
+					sb.append(c);
 				}
 			}
 		} finally {
@@ -428,11 +428,17 @@ public class FileHelpers {
 		switch (sb.length()) {
 		case 0:
 			// Nothing found
-			logger.info("No linebreak found, using System default");
-			return LineBreak.getDefault();
+			logger.info(
+					"No linebreak found, using System default ("
+							+ LineBreak.SYSTEM.getNewlineString()
+									.replace("\n", "\\n").replace("\r", "\\r")
+							+ ")");
+			return LineBreak.SYSTEM;
 		case 1:
+			logger.debug("Using UNIX-Style linebreaks");
 			return LineBreak.UNIX;
 		case 2:
+			logger.debug("Using Windows-style linebreaks");
 			return LineBreak.WINDOWS;
 		default:
 			// Shouldnt ever be here!
