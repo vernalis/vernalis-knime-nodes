@@ -193,14 +193,14 @@ final class AmixPeakList implements MultilineTextObject {
 	}
 
 	@Override
-	public DataCell[] getNewCells() {
+	public DataCell[] getNewCells(String lineSeparator) {
 
 		DataCell[] retVal = new DataCell[NEW_COL_SPECS.length];
 		int i = 0;
-		retVal[i++] = lines == null || lines.isEmpty()
-				? DataType.getMissingCell()
-				: new StringCell(lines.stream()
-						.collect(Collectors.joining(System.lineSeparator())));
+		retVal[i++] =
+				lines == null || lines.isEmpty() ? DataType.getMissingCell()
+						: new StringCell(lines.stream()
+								.collect(Collectors.joining(lineSeparator)));
 		retVal[i++] = title == null || title.isEmpty()
 				? DataType.getMissingCell() : new StringCell(title);
 		retVal[i++] = date == null || date.isEmpty() ? DataType.getMissingCell()

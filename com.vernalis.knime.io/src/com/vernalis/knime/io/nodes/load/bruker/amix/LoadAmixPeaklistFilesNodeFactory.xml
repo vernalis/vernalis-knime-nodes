@@ -104,6 +104,13 @@
 		</option>
 		<option name="Include filenames in output table">Include the filename as a column in the output
 			table</option>
+		<option name="Newline output">The newline character(s) to be used in the cell
+			containing the full peaklist file for the individual spectrum.
+			'System' will dynamically use the the newline of the system the node
+			is executed on (the current value for this is shown in the dialog,
+			but on another system, the local value will be used). 'Preserve
+			incoming' will look in the first 65535 characters of the file for the
+			first linebreak ('\r\n' or '\n') and use that</option>
 	</fullDescription>
 
 	<ports>

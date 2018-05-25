@@ -51,6 +51,7 @@ import org.knime.core.node.streamable.StreamableOperator;
 
 import com.vernalis.io.FileEncodingWithGuess;
 import com.vernalis.io.FileHelpers;
+import com.vernalis.io.FileHelpers.LineBreak;
 import com.vernalis.io.MultilineTextObject;
 import com.vernalis.io.MultilineTextObjectReader;
 import com.vernalis.knime.dialog.components.SettingsModelStringArrayFlowVarReplacable;
@@ -60,6 +61,7 @@ import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.cr
 import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.createIncludeFilenameAsRowIDModel;
 import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.createIncludeFilenamesModel;
 import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.createIncludePathsModel;
+import static com.vernalis.knime.io.nodes.abstrct.AbstractMultiLineObjectLoadFilesNodeDialog.createNewlineModel;
 
 /**
  * This is the model implementation of the node for loading
@@ -71,6 +73,9 @@ import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.cr
 public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends MultilineTextObject>
 		extends NodeModel {
 
+	private static final String NO_FILES_SELECTED = "No files selected";
+	private static final String UNRECOGNISED_LINEBREAK_OPTION =
+			"Unrecognised linebreak option";
 	private static final String FILE_LOCATION_LOST_WARNING =
 			"File location information will be lost in output table!";
 	protected final SettingsModelStringArrayFlowVarReplacable m_files =
@@ -82,6 +87,8 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 			createFileEncodingModel();
 	protected final SettingsModelBoolean m_inclFilenames =
 			createIncludeFilenamesModel();
+	protected final SettingsModelString m_lineBreaksModel =
+			createNewlineModel();
 
 	protected final T nonReadableObject;
 	protected DataTableSpec outSpec;
@@ -135,6 +142,8 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 				Map<String, AtomicLong> rowSuffixes =
 						Collections.synchronizedMap(new HashMap<>());
 				String[] files = m_files.getStringArrayValue();
+				LineBreak lineBreak =
+						LineBreak.valueOf(m_lineBreaksModel.getStringValue());
 				for (String file : files) {
 					// Now, if it is a Location, convert to a URL
 					file = FileHelpers.forceURL(file);
@@ -142,6 +151,11 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 					try {
 						BufferedReader br =
 								FileHelpers.getReaderFromUrl(file, fileEnc);
+						String newLineStr =
+								lineBreak == LineBreak.PRESERVE_INCOMING
+										? FileHelpers.getLineBreakFromReader(br)
+												.getNewlineString()
+										: lineBreak.getNewlineString();
 						MultilineTextObjectReader<T> objReader =
 								getObjectReader(br);
 						T nextObj;
@@ -162,11 +176,12 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 									cells[colidx++] =
 											new StringCell(f.getName());
 								}
-								for (DataCell objCell : nextObj.getNewCells()) {
+								for (DataCell objCell : nextObj
+										.getNewCells(newLineStr)) {
 									cells[colidx++] = objCell;
 								}
 							} else {
-								cells = nextObj.getNewCells();
+								cells = nextObj.getNewCells(newLineStr);
 							}
 							out.push(new DefaultRow(rK, cells));
 						}
@@ -211,10 +226,17 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 	@Override
 	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
 			throws InvalidSettingsException {
+		try {
+			LineBreak.valueOf(m_lineBreaksModel.getStringValue());
+		} catch (IllegalArgumentException | NullPointerException e) {
+			getLogger().error(UNRECOGNISED_LINEBREAK_OPTION);
+			throw new InvalidSettingsException(UNRECOGNISED_LINEBREAK_OPTION,
+					e);
+		}
 		if (m_files.getStringArrayValue() == null
 				|| m_files.getStringArrayValue().length == 0) {
-			getLogger().error("No files selected");
-			throw new InvalidSettingsException("No files selected");
+			getLogger().error(NO_FILES_SELECTED);
+			throw new InvalidSettingsException(NO_FILES_SELECTED);
 		}
 		outSpec = createOutputSpec();
 		fileEnc =
@@ -259,6 +281,7 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 		m_rowIDs.saveSettingsTo(settings);
 		m_locCols.saveSettingsTo(settings);
 		m_inclFilenames.saveSettingsTo(settings);
+		m_lineBreaksModel.saveSettingsTo(settings);
 	}
 
 	/**
@@ -272,6 +295,7 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 		m_rowIDs.loadSettingsFrom(settings);
 		m_locCols.loadSettingsFrom(settings);
 		m_inclFilenames.loadSettingsFrom(settings);
+		m_lineBreaksModel.loadSettingsFrom(settings);
 	}
 
 	/**
@@ -285,6 +309,7 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 		m_rowIDs.validateSettings(settings);
 		m_locCols.validateSettings(settings);
 		m_inclFilenames.validateSettings(settings);
+		m_lineBreaksModel.validateSettings(settings);
 	}
 
 	/**

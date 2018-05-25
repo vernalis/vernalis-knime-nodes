@@ -21,7 +21,7 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
 import com.vernalis.io.MultilineTextObjectReader;
-import com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog;
+import com.vernalis.knime.io.nodes.abstrct.AbstractMultiLineObjectLoadFilesNodeDialog;
 import com.vernalis.knime.io.nodes.abstrct.AbstractMultiLineObjectLoadFilesNodeModel;
 
 /**
@@ -79,8 +79,8 @@ public class LoadAmixPeaklistFilesNodeFactory extends
 	 */
 	@Override
 	public NodeDialogPane createNodeDialogPane() {
-		return new AbstractLoadFilesNodeDialog(this.getClass().getName(),
-				".txt");
+		return new AbstractMultiLineObjectLoadFilesNodeDialog(
+				this.getClass().getName(), ".txt");
 	}
 
 }
