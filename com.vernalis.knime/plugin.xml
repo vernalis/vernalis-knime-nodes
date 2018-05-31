@@ -49,6 +49,22 @@
             category-path="/community/vernalis/sequence"
             factory-class="com.vernalis.nodes.pdb.getsequence.Pdb2SequenceNodeFactory"
             />
+            
+      <!-- v1.15.0 -->
+      <node
+      		category-path="/community/vernalis/misc/dist"
+            factory-class="com.vernalis.nodes.misc.distance.Distance1DNodeFactory" />
+      <node
+      		category-path="/community/vernalis/misc/dist"
+            factory-class="com.vernalis.nodes.misc.distance.Distance2DNodeFactory" />
+      <node
+      		category-path="/community/vernalis/misc/dist"
+            factory-class="com.vernalis.nodes.misc.distance.Distance3DNodeFactory" />
+      <node
+      		category-path="/community/vernalis/misc/dist"
+            factory-class="com.vernalis.nodes.misc.distance.DistanceNDNodeFactory" />
+            
+      <!-- Deprecated Nodes -->
       <node
             category-path="/community/vernalis/fps"
             deprecated="true"
@@ -132,6 +148,13 @@
             locked="true"
             name="Fingerprints"
             path="/community/vernalis/">
+      </category>
+      <category
+            icon="icons/Dist_Cat.png"
+            level-id="dist"
+            locked="false"
+            name="Geometric Distance"
+            path="/community/vernalis/misc">
       </category>
    </extension>
 </plugin>

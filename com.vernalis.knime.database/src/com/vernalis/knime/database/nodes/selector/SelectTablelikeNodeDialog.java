@@ -146,7 +146,10 @@ public class SelectTablelikeNodeDialog extends DefaultNodeSettingsPane {
 		TreeMap<String, SortedSet<String>> options =
 				createTablesList(m_upstreamDbSettings, getCredentialsProvider(),
 						m_logger, tableTypeMdl.getStringValue());
+
 		if (options.containsKey(schemaNameMdl.getStringValue())) {
+			// Replace the Table selector first, otherwise the setting is
+			// over-written with the first value and then the true setting lost
 			m_tableSelector.replaceListItems(
 					options.get(schemaNameMdl.getStringValue()), null);
 		}
