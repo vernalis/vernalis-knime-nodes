@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -144,16 +143,20 @@ public class SelectTablelikeNodeDialog extends DefaultNodeSettingsPane {
 	/**
 	 */
 	protected void updateModelsAfterTypeChange() {
-		Set<String> options =
+		TreeMap<String, SortedSet<String>> options =
 				createTablesList(m_upstreamDbSettings, getCredentialsProvider(),
-						m_logger, tableTypeMdl.getStringValue()).keySet();
-		m_schemaSelector.replaceListItems(options, null);
+						m_logger, tableTypeMdl.getStringValue());
+		if (options.containsKey(schemaNameMdl.getStringValue())) {
+			m_tableSelector.replaceListItems(
+					options.get(schemaNameMdl.getStringValue()), null);
+		}
+		m_schemaSelector.replaceListItems(options.keySet(), null);
 		// SettingsModel model = m_schemaSelector.getModel();
 		schemaNameMdl.setEnabled(true);
 		if (options.isEmpty()) {
 			schemaNameMdl.setEnabled(false);
 		} else if (options.size() == 1) {
-			String val = options.iterator().next();
+			String val = options.firstKey();
 			if (val.equals(INITIALIZING_DIALOG)
 					|| val.equals(NO_METADATA_AVAILABLE)
 					|| val.equals(NO_SCHEMAS) || (val.startsWith("<No ")
