@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2018, Vernalis (R&D) Ltd
+     This program is free software; you can redistribute it and/or modify it 
+     under the terms of the GNU General Public License, Version 3, as 
+     published by the Free Software Foundation.
+     
+     This program is distributed in the hope that it will be useful, but 
+     WITHOUT ANY WARRANTY; without even the implied warranty of 
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+     See the GNU General Public License for more details.
+     
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, see <http://www.gnu.org/licenses>
+ -->
+<knimeNode
+	icon="./SpeedySMILES_scaffold.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v2.8"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
+	<name>Speedy SMILES Convert to Scaffold</name>
+
+
+	<shortDescription>
+		Node to convert SMILES strings to a scaffold
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>This node converts SMILES strings to a scaffold representation. By
+				default, all atoms are represented as 'C' (i.e. carbon), and the
+				output is a SMILES string. However, when 'Any Atom' ('*' in SMILES)
+				is used, and the 'Keep Aromatic atoms aromatic' option is selected,
+				then a SMARTS cell is returned, using the SMARTS 'A' and 'a' atoms,
+				as these are not valid SMILES. See the individual options below for
+				details.
+			</p>
+			<p>
+				NB,
+				<i>no canonicalisation of the output is attempted</i>
+				, and so if grouping molecules
+				by identical scaffold is required,
+				then the output should subsequently be passed
+				into a toolkit for
+				canonicalisation
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+
+		<option name="Select SMILES column">The SMILES column, containing molecules</option>
+		<option name="Remove input columns">If checked, then the input column is removed
+		</option>
+		<option name="Use 'Any Atom' (* or A/a) symbols">See above for details</option>
+		<option name="Keep Explicit H's">Any [H] atoms, or 'D' and 'T' pseudoatoms for [2H]
+			and [3H] are preserved. NB no other isotopic, atom class or other
+			atom properties are maintained on these atoms, and H's specified as
+			e.g [C3H] will be discarded. If this option is not set, then they
+			will be treated as any other atom, and so will appear as 'C' or '*'
+			in the output.
+		</option>
+		<option name="Keep Bond Orders">If this option is checked, any bond symbols
+			present in the input will be removed in the output (including
+			explicit single bonds between aromatic atoms not in rings)
+		</option>
+		<option name="Keep Aromatic atoms aromatic">An atom represented as aromatic in the SMILES
+			(specifically, a lower-case non-bracketed organic subset atom, or a
+			bracketed atom starting with a lower case letter - i.e. not just 'as'
+			and 'se' as bracketed 2-character elements) will be represented as an
+			aromatic 'c' or 'a', otherwise it will be represented as 'C' or 'A'.
+			See also above.
+		</option>
+		<option name="Keep Chirality">If this option is selected, then and '@' chirality
+			settings on atoms are preserved (including '@@', '@@@' - the Daylight
+			specification is ambiguous as to whether this should be allowed for
+			e.g. @OH3 - and the @TH1/@OH1 etc forms)
+		</option>
+	</fullDescription>
+
+
+	<ports>
+		<inPort
+			index="0"
+			name="SMILES Cells">Input Table containing a SMILES Column
+		</inPort>
+
+		<outPort
+			index="0"
+			name="Scaffolds">SMILES or SMARTS scaffold representation
+		</outPort>
+	</ports>
+
+</knimeNode>

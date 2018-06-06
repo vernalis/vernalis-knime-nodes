@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.knime.workbench.repository.nodes">
+      <node
+            category-path="/community/vernalis/local.pdb"
+            factory-class="com.vernalis.nodes.io.pdb.loadlocal.LocalPDBLoadNodeFactory2"
+            />
+      <node
+            after="LocalPDBLoadNodeFactory2"
+            category-path="/community/vernalis/local.pdb"
+            factory-class="com.vernalis.nodes.io.pdb.savelocal.SavePDBLocalNodeFactory"
+            />
+      <node
+            category-path="/community/vernalis/sequence"
+           factory-class="com.vernalis.nodes.fasta.FASTASequenceNodeFactory_2"
+            />
+      <node
+            after="SavePDBLocalNodeFactory"
+            category-path="/community/vernalis/local.pdb"
+            factory-class="com.vernalis.nodes.pdb.props.PdbPropertiesNodeFactory"
+            />
+      <node
+            category-path="/community/vernalis/misc"
+            factory-class="com.vernalis.nodes.smartsviewer.SmartsViewer2NodeFactory"
+            />
+      <node
+            category-path="/community/vernalis/misc"
+            factory-class="com.vernalis.nodes.misc.randomnos.RandomNumbers2NodeFactory"
+            />
+      <node
+            category-path="/community/vernalis/misc"
+            factory-class="com.vernalis.nodes.io.listdirs2.ListDirs2NodeFactory"
+            />
+      <node
+            category-path="/community/vernalis/misc/txt.IO"
+            factory-class="com.vernalis.nodes.io.txt.LoadTxtNodeFactory"
+            />
+      <node
+            category-path="/community/vernalis/misc/txt.IO"
+            factory-class="com.vernalis.nodes.io.txt.SaveTxtLocalNodeFactory"
+           />
+      <node
+            category-path="/community/vernalis/ePMC"
+           factory-class="com.vernalis.nodes.epmc.EuroPmcAdvancedSearchNodeFactory"
+           />
+      <node
+            category-path="/community/vernalis/sequence"
+            factory-class="com.vernalis.nodes.pdb.getsequence.Pdb2SequenceNodeFactory"
+            />
+            
+      <!-- v1.15.0 -->
+      <node
+      		category-path="/community/vernalis/misc/dist"
+            factory-class="com.vernalis.nodes.misc.distance.Distance1DNodeFactory" />
+      <node
+      		category-path="/community/vernalis/misc/dist"
+            factory-class="com.vernalis.nodes.misc.distance.Distance2DNodeFactory" />
+      <node
+      		category-path="/community/vernalis/misc/dist"
+            factory-class="com.vernalis.nodes.misc.distance.Distance3DNodeFactory" />
+      <node
+      		category-path="/community/vernalis/misc/dist"
+            factory-class="com.vernalis.nodes.misc.distance.DistanceNDNodeFactory" />
+            
+      <!-- Deprecated Nodes -->
+      <node
+            category-path="/community/vernalis/fps"
+            deprecated="true"
+            factory-class="com.vernalis.nodes.fingerprint.properties.FpPropsNodeFactory"
+            />
+      <node
+            deprecated="true"
+            factory-class="com.vernalis.flowcontrol.nodes.fv.caseselect.FVarFVCaseSelectNodeFactory"
+            />
+      <node
+            deprecated="true"
+            factory-class="com.vernalis.nodes.smartsviewer.SmartsViewerNodeFactory"
+            />
+      <node
+            deprecated="true"
+            factory-class="com.vernalis.flowcontrol.nodes.fv.varvalifswitch.FlowVarFvvalIfSwitchNodeFactory"
+            />
+      <node
+            deprecated="true"
+            factory-class="com.vernalis.flowcontrol.nodes.fv.ifswitch.FVarIfSwitchNodeFactory"
+            />
+      <node
+            deprecated="true"
+            factory-class="com.vernalis.flowcontrol.nodes.fv.endif.FlowVarEndIfNodeFactory"
+            />
+      <node
+            deprecated="true"
+            factory-class="com.vernalis.flowcontrol.nodes.fv.endcase.FlowVarEndCaseNodeFactory"
+            />
+      <node
+            category-path="/community/vernalis/misc"
+            deprecated="true"
+            factory-class="com.vernalis.nodes.misc.randomnos.RandomNumbersNodeFactory"
+           />
+   </extension>
+   <extension
+         point="org.knime.workbench.repository.categories">
+      <category
+            after="local.pdb"
+            description="Vernalis nodes for Sequence manipulation tools"
+            icon="icons/SeqTools.png"
+            level-id="sequence"
+            name="Sequence Tools"
+            path="/community/vernalis/">
+      </category>
+      <category
+            after="rcsb"
+            description="Vernalis file reader nodes"
+            icon="icons/IO_icon.png"
+            level-id="local.pdb"
+            name="Local PDB Tools"
+            path="/community/vernalis/">
+      </category>
+      <category
+            after="fps"
+            description="Miscellaneous Vernalis nodes"
+            icon="icons/missing.gif"
+            level-id="misc"
+            name="Miscellaneous"
+            path="/community/vernalis/">
+      </category>
+      <category
+            description="Text-based file IO Nodes"
+            icon="icons/IO_icon.png"
+            level-id="txt.IO"
+            locked="true"
+            name="Text-based IO"
+            path="/community/vernalis/misc/">
+      </category>
+      <category
+            icon="icons/ePMCv1.png"
+            level-id="ePMC"
+            locked="true"
+            name="European PubMed Central"
+            path="/community/vernalis/">
+      </category>
+      <category
+            after="sequence"
+            icon="icons/fingerprint_category.png"
+            level-id="fps"
+            locked="true"
+            name="Fingerprints"
+            path="/community/vernalis/">
+      </category>
+      <category
+            icon="icons/Dist_Cat.png"
+            level-id="dist"
+            locked="false"
+            name="Geometric Distance"
+            path="/community/vernalis/misc">
+      </category>
+   </extension>
+</plugin>
