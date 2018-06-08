@@ -514,6 +514,17 @@ public class SmilesHelpers {
 	}
 
 	/**
+	 * Check for a defined double bond geometry
+	 * 
+	 * @param smi
+	 *            SMILES String
+	 * @return {@code true} if a defined geometry double bond exists
+	 */
+	public static boolean hasDefinedDoubleBondGeometry(String smi) {
+		return smi.contains("\\") || smi.contains("/");
+	}
+
+	/**
 	 * Check for multicomponent SMILES
 	 * 
 	 * @param smi

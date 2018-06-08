@@ -64,6 +64,34 @@
       		category-path="/community/vernalis/misc/dist"
             factory-class="com.vernalis.nodes.misc.distance.DistanceNDNodeFactory" />
             
+      <!-- v1.16.0 -->
+      <node
+      		category-path="/community/vernalis/misc/dist"
+            factory-class="com.vernalis.nodes.misc.distance.VectorDistance1DNodeFactory" />
+      <node
+      		category-path="/community/vernalis/misc/dist"
+            factory-class="com.vernalis.nodes.misc.distance.VectorDistance2DNodeFactory" />
+      <node
+      		category-path="/community/vernalis/misc/dist"
+            factory-class="com.vernalis.nodes.misc.distance.VectorDistance3DNodeFactory" />
+      <node
+      		category-path="/community/vernalis/misc/dist"
+            factory-class="com.vernalis.nodes.misc.distance.VectorDistanceNDNodeFactory" />
+     <node
+     		category-path="/community/vernalis/misc/"
+            factory-class="com.vernalis.nodes.misc.colprops.InjectColumnPropertiesNodeFactory" />
+     <node
+     		category-path="/community/vernalis/misc/"
+            factory-class="com.vernalis.nodes.misc.colprops.ExtractColumnPropertiesNodeFactory" />
+     <node
+     		category-path="/community/vernalis/misc/plate"
+            factory-class="com.vernalis.nodes.misc.plateids.PlateWellIDNodeFactory" />
+     <node
+     		category-path="/community/vernalis/misc/plate"
+            factory-class="com.vernalis.nodes.misc.plateids.PlateWellIDSourceNodeFactory" />
+     <!-- node
+     		category-path="/community/vernalis/misc/plate"
+            factory-class="com.vernalis.nodes.misc.plateids.PlateWellIDMapUpwardsNodeFactory" / -->
       <!-- Deprecated Nodes -->
       <node
             category-path="/community/vernalis/fps"
@@ -149,11 +177,20 @@
             name="Fingerprints"
             path="/community/vernalis/">
       </category>
+      <!-- v1.15.0 -->
       <category
             icon="icons/Dist_Cat.png"
             level-id="dist"
             locked="false"
             name="Geometric Distance"
+            path="/community/vernalis/misc">
+      </category>
+      <!-- v1.16.0 -->
+      <category
+            icon="icons/Plate_ID.png"
+            level-id="plate"
+            locked="false"
+            name="Plate Tools"
             path="/community/vernalis/misc">
       </category>
    </extension>

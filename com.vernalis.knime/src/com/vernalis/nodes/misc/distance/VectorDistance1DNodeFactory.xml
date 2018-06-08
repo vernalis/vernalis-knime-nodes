@@ -14,23 +14,23 @@
 	along with this program; if not, see <http://www.gnu.org/licenses>
 -->
 <knimeNode
-	icon="nD_Dist.png"
+	icon="1D_Dist.png"
 	type="Manipulator"
 	xmlns="http://knime.org/node/v2.8"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
-	<name>Distance (n-D)</name>
+	<name>Vector Distance (1-D)</name>
 
 	<shortDescription>
-		This node calculates the distance between two points
-		in n-D space
+		This node calculates the vector distance between two points
+		in 1-D space
 	</shortDescription>
 
 	<fullDescription>
 		<intro>
-			<p>This node calculates the distance between two points in nD
-				Euclidean space. The coordinates are contained in 2 columns of
-				numerical lists.  The number of dimensions is also returned
+			<p>This node calculates the vector distance between two points in 1-D
+				Euclidean space (i.e. [x1-x0]). The coordinates are contained in 2 numerical
+				columns.
 			</p>
 			<p>
 				This node was developed by
@@ -42,23 +42,21 @@
 		</intro>
 
 
-		<option name="n0">The coordinates of the first point in a List Cell
+		<option name="x0">The coordinate of the first point
 		</option>
 
-		<option name="n1">The coordinates of the second point in a List Cell
+		<option name="x1">The coordinate of the second point
 		</option>
-		<option name="Return squared Distance">Should the node return the squared distance,
-			rather than the distance
-		</option>
+
 	</fullDescription>
 
 	<ports>
 		<inPort
 			index="0"
-			name="n-D Points">Port containing n-D points</inPort>
+			name="1-D Points">Port containing 1-D points</inPort>
 		<outPort
 			index="0"
-			name="Distances">Port with n-D distances and number of dimensions added</outPort>
+			name="Distances">Port with 1-D distances added</outPort>
 	</ports>
 
 </knimeNode>

@@ -14,16 +14,8 @@
  ******************************************************************************/
 package com.vernalis.nodes.misc.distance;
 
-import org.knime.core.data.DataColumnSpec;
-import org.knime.core.data.DoubleValue;
-import org.knime.core.data.collection.ListDataValue;
-import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
-import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.core.node.util.ColumnFilter;
-import org.knime.core.node.util.DataValueColumnFilter;
 
 /**
  * Node Dialog for the distance nodes
@@ -31,27 +23,11 @@ import org.knime.core.node.util.DataValueColumnFilter;
  * @author s.roughley
  *
  */
-public class AbstractDistanceNodeDialog extends DefaultNodeSettingsPane {
+public class AbstractDistanceNodeDialog
+		extends AbstractVectorDistanceNodeDialog {
 
 	private static final String RETURN_SQUARED_DISTANCE =
 			"Return squared Distance";
-	/**
-	 * A {@link ColumnFilter} for a column containing Lists of Numbers
-	 */
-	final static ColumnFilter LIST_OF_NUMBERS = new ColumnFilter() {
-
-		@Override
-		public boolean includeColumn(DataColumnSpec colSpec) {
-			return colSpec.getType().isCompatible(ListDataValue.class)
-					&& colSpec.getType().getCollectionElementType()
-							.isCompatible(DoubleValue.class);
-		}
-
-		@Override
-		public String allFilteredMsg() {
-			return "No Lists of Numbers found";
-		}
-	};
 
 	/**
 	 * Constructor for a non-collection-based implementation. At least one
@@ -93,47 +69,7 @@ public class AbstractDistanceNodeDialog extends DefaultNodeSettingsPane {
 	 */
 	private AbstractDistanceNodeDialog(boolean isCollectionBased,
 			char firstDimension, char... extraDimensions) {
-		if (isCollectionBased && extraDimensions.length > 0) {
-			throw new IllegalArgumentException(
-					"Collection-based implementations should only supply a single dimension name");
-		}
-
-		if (extraDimensions.length > 0) {
-			createNewGroup("Start Point");
-		}
-		setHorizontalPlacement(true);
-
-		@SuppressWarnings("unchecked")
-		ColumnFilter colFilter = isCollectionBased ? LIST_OF_NUMBERS
-				: new DataValueColumnFilter(DoubleValue.class);
-		SettingsModelString mdl =
-				AbstractDistanceNodeDialog.createStartModel(firstDimension);
-		addDialogComponent(new DialogComponentColumnNameSelection(mdl,
-				mdl.getKey(), 0, colFilter));
-
-		for (char dim : extraDimensions) {
-			mdl = AbstractDistanceNodeDialog.createStartModel(dim);
-			addDialogComponent(new DialogComponentColumnNameSelection(mdl,
-					mdl.getKey(), 0, colFilter));
-		}
-
-		if (extraDimensions.length > 0) {
-			setHorizontalPlacement(false);
-			createNewGroup("End Point");
-			setHorizontalPlacement(true);
-		}
-
-		mdl = AbstractDistanceNodeDialog.createEndModel(firstDimension);
-		addDialogComponent(new DialogComponentColumnNameSelection(mdl,
-				mdl.getKey(), 0, colFilter));
-
-		for (char dim : extraDimensions) {
-			mdl = AbstractDistanceNodeDialog.createEndModel(dim);
-			addDialogComponent(new DialogComponentColumnNameSelection(mdl,
-					mdl.getKey(), 0, colFilter));
-		}
-		setHorizontalPlacement(false);
-		closeCurrentGroup();
+		super(isCollectionBased, firstDimension, extraDimensions);
 		addDialogComponent(new DialogComponentBoolean(
 				createSquareDistanceModel(), RETURN_SQUARED_DISTANCE));
 	}
@@ -143,26 +79,6 @@ public class AbstractDistanceNodeDialog extends DefaultNodeSettingsPane {
 	 */
 	static SettingsModelBoolean createSquareDistanceModel() {
 		return new SettingsModelBoolean(RETURN_SQUARED_DISTANCE, false);
-	}
-
-	/**
-	 * @param dim
-	 *            The name of the dimension
-	 * @return The Settings model for the dimension for the 'End' column
-	 */
-	static SettingsModelString createEndModel(char dim) {
-		return new SettingsModelString(String.valueOf(dim).toLowerCase() + "1",
-				null);
-	}
-
-	/**
-	 * @param dim
-	 *            The name of the dimension
-	 * @return The Settings model for the dimension for the 'Start' column
-	 */
-	static SettingsModelString createStartModel(char dim) {
-		return new SettingsModelString(String.valueOf(dim).toLowerCase() + "0",
-				null);
 	}
 
 }

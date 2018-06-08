@@ -44,15 +44,9 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
-import org.knime.core.node.util.ColumnFilter;
-import org.knime.core.node.util.DataValueColumnFilter;
 import org.knime.core.util.Pair;
 
-import static com.vernalis.nodes.misc.distance.AbstractDistanceNodeDialog.LIST_OF_NUMBERS;
-import static com.vernalis.nodes.misc.distance.AbstractDistanceNodeDialog.createEndModel;
 import static com.vernalis.nodes.misc.distance.AbstractDistanceNodeDialog.createSquareDistanceModel;
-import static com.vernalis.nodes.misc.distance.AbstractDistanceNodeDialog.createStartModel;
 
 /**
  * Base node model class for calculating geometric distance between points.
@@ -65,54 +59,10 @@ import static com.vernalis.nodes.misc.distance.AbstractDistanceNodeDialog.create
  *
  */
 public abstract class AbstractDistanceNodeModel
-		extends SimpleStreamableFunctionNodeModel {
+		extends AbstractVectorDistanceNodeModel {
 
-	/**
-	 * A primitive implementation of Pair<T,U> to store a pair of ints
-	 * 
-	 * @author s.roughley
-	 *
-	 */
-	private static final class IntPair {
-
-		private final int first;
-		private final int second;
-
-		/**
-		 * Constructor
-		 * 
-		 * @param first
-		 *            the first value
-		 * @param second
-		 *            the second value
-		 */
-		private IntPair(int first, int second) {
-			this.first = first;
-			this.second = second;
-		}
-
-		/**
-		 * @return the first value
-		 */
-		public int getFirst() {
-			return first;
-		}
-
-		/**
-		 * @return the second value
-		 */
-		public int getSecond() {
-			return second;
-		}
-
-	}
-
-	protected final Map<String, Pair<SettingsModelString, SettingsModelString>> dimensionModels =
-			new TreeMap<>();
 	protected final SettingsModelBoolean sqrDistanceMdl =
 			createSquareDistanceModel();
-	protected final ColumnFilter colFilter;
-	protected final boolean isCollectionBased;
 
 	/**
 	 * Constructor for a non-collection-based implementation. At least one
@@ -152,35 +102,9 @@ public abstract class AbstractDistanceNodeModel
 	 * @param extraDimensions
 	 *            The name of any additional dimensions
 	 */
-	@SuppressWarnings("unchecked")
 	private AbstractDistanceNodeModel(boolean isCollectionBased,
 			char firstDimension, char... extraDimensions) {
-		if (isCollectionBased && extraDimensions.length > 0) {
-			throw new IllegalArgumentException(
-					"Collection-based implementations should only supply a single dimension name");
-		}
-		registerDimension(firstDimension);
-		for (char dim : extraDimensions) {
-			registerDimension(dim);
-		}
-		colFilter = isCollectionBased ? LIST_OF_NUMBERS
-				: new DataValueColumnFilter(DoubleValue.class);
-		this.isCollectionBased = isCollectionBased;
-	}
-
-	/**
-	 * Method to generate and register for loading/saving the settings models
-	 * for a dimension, which must be a letter
-	 * 
-	 * @param dim
-	 *            The name of the dimension
-	 */
-	protected final void registerDimension(char dim) {
-		if (!Character.isLetter(dim)) {
-			throw new IllegalArgumentException("Dimension must be a letter!");
-		}
-		dimensionModels.put(String.valueOf(dim).toLowerCase(),
-				new Pair<>(createStartModel(dim), createEndModel(dim)));
+		super(isCollectionBased, firstDimension, extraDimensions);
 	}
 
 	@Override
@@ -346,6 +270,7 @@ public abstract class AbstractDistanceNodeModel
 	 * @return A {@link StringBuilder} containing any messages about guesses
 	 *         made along the way
 	 */
+	@Override
 	protected StringBuilder guessMissingColumnNames(
 			Deque<String> numericalColNames) {
 		StringBuilder retVal = new StringBuilder();
@@ -371,6 +296,7 @@ public abstract class AbstractDistanceNodeModel
 	 *             If there is a problem with any of the selections (i.e. the
 	 *             column is missing from the table, or is of an incorrect type)
 	 */
+	@Override
 	protected void checkSelectedIncomingColumns(
 			Collection<String> numericalColNames,
 			Collection<String> selectedColNames)
@@ -384,126 +310,23 @@ public abstract class AbstractDistanceNodeModel
 		}
 	}
 
-	/**
-	 * Method to guess a column name from the incoming table if one is not
-	 * already supplied. The method first attempts to use a column with the same
-	 * name as the dimensions (e.g. x0, y1 etc), and if that is not present,
-	 * chooses the last column in the table which is not one of the other
-	 * dimension names, and is not already chosen. Finally, a column will be
-	 * used which might match another dimension name. In practice, this shouldnt
-	 * happen, as the node should know by the time it is here that there are
-	 * sufficient columns to choose from.
-	 * 
-	 * @param mdl
-	 *            The settings model for the current column
-	 * @param numericalColNames
-	 *            A {@link Deque} of all the suitable columns to choose from
-	 * @return A string indicating what guess was made (or an empty string if no
-	 *         guessing was performed)
-	 */
-	protected final String guessColumn(SettingsModelString mdl,
-			Deque<String> numericalColNames) {
-		String name = mdl.getKey();
-		if (mdl.getStringValue() == null || mdl.getStringValue().isEmpty()) {
-			if (numericalColNames.contains(name)) {
-				mdl.setStringValue(name);
-				numericalColNames.removeLastOccurrence(name);
-			} else {
-				Iterator<String> iter = numericalColNames.descendingIterator();
-				guessAgain: while (iter.hasNext()) {
-					String nextGuess = iter.next();
-					for (Pair<SettingsModelString, SettingsModelString> dimMdl : dimensionModels
-							.values()) {
-						if (dimMdl.getFirst().getKey().equals(nextGuess)
-								|| dimMdl.getSecond().getKey()
-										.equals(nextGuess)) {
-							continue guessAgain;
-						}
-					}
-					mdl.setStringValue(nextGuess);
-					numericalColNames.removeLastOccurrence(nextGuess);
-					break;
-				}
-				if (mdl.getStringValue() == null
-						|| mdl.getStringValue().isEmpty()) {
-					// We didnt find without a clash, so just take the last
-					// column and keep going - dont *think* it should be
-					// possible
-					// to be here!
-					mdl.setStringValue(numericalColNames.pollLast());
-				}
-			}
-			getLogger().info("Auto-guessing column '" + mdl.getStringValue()
-					+ "' for " + name);
-			return ("\nAuto-guessing column '" + mdl.getStringValue() + "' for "
-					+ name);
-		}
-		return "";
-	}
-
-	/**
-	 * Method to check that the selected column is present in the table as a
-	 * column of the appropriate type, and has not already been selected for
-	 * another coordinate column
-	 * 
-	 * @param mdl
-	 *            The settings model for the current column
-	 * @param name
-	 *            The name of the dimension we are looking for (e.g. 'x0' etc)
-	 * @param numericalColNames
-	 *            A collection of all the numerical columns in the table
-	 * @param selectedColNames
-	 *            A collection of all the columns selected so far. Modified to
-	 *            include the current selection if it passed the conditions
-	 * @throws InvalidSettingsException
-	 *             If the column was not present or of the correct type, or was
-	 *             selected previously
-	 */
-	protected final void checkColumn(SettingsModelString mdl, String name,
-			Collection<String> numericalColNames,
-			Collection<String> selectedColNames)
-			throws InvalidSettingsException {
-		if (mdl.getStringValue() != null && !mdl.getStringValue().isEmpty()) {
-			if (!numericalColNames.contains(mdl.getStringValue())) {
-				throw new InvalidSettingsException(name + " column '"
-						+ mdl.getStringValue() + "' is not present in table");
-			} else if (selectedColNames.contains(mdl.getStringValue())) {
-				throw new InvalidSettingsException(
-						"Column '" + mdl.getStringValue() + "' selected twice");
-			}
-			selectedColNames.add(mdl.getStringValue());
-		}
-	}
-
 	@Override
 	protected void saveSettingsTo(NodeSettingsWO settings) {
-		for (Pair<SettingsModelString, SettingsModelString> mdls : dimensionModels
-				.values()) {
-			mdls.getFirst().saveSettingsTo(settings);
-			mdls.getSecond().saveSettingsTo(settings);
-		}
+		super.saveSettingsTo(settings);
 		sqrDistanceMdl.saveSettingsTo(settings);
 	}
 
 	@Override
 	protected void validateSettings(NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		for (Pair<SettingsModelString, SettingsModelString> mdls : dimensionModels
-				.values()) {
-			mdls.getFirst().validateSettings(settings);
-			mdls.getSecond().validateSettings(settings);
-		}
+		super.validateSettings(settings);
 		sqrDistanceMdl.validateSettings(settings);
 	}
 
 	@Override
 	protected void loadValidatedSettingsFrom(NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		for (Pair<SettingsModelString, SettingsModelString> mdls : dimensionModels
-				.values()) {
-			mdls.getFirst().loadSettingsFrom(settings);
-			mdls.getSecond().loadSettingsFrom(settings);
-		}
+		super.loadValidatedSettingsFrom(settings);
 		sqrDistanceMdl.loadSettingsFrom(settings);
 	}
 

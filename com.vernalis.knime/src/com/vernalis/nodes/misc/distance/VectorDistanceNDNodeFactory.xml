@@ -19,17 +19,17 @@
 	xmlns="http://knime.org/node/v2.8"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
-	<name>Distance (n-D)</name>
+	<name>Vector Distance (n-D)</name>
 
 	<shortDescription>
-		This node calculates the distance between two points
+		This node calculates the vector distance between two points
 		in n-D space
 	</shortDescription>
 
 	<fullDescription>
 		<intro>
 			<p>This node calculates the distance between two points in nD
-				Euclidean space. The coordinates are contained in 2 columns of
+				Euclidean space (i.e. d(i)=n1(i)-n0(i)). The coordinates are contained in 2 columns of
 				numerical lists.  The number of dimensions is also returned
 			</p>
 			<p>
@@ -47,10 +47,7 @@
 
 		<option name="n1">The coordinates of the second point in a List Cell
 		</option>
-		<option name="Return squared Distance">Should the node return the squared distance,
-			rather than the distance
-		</option>
-	</fullDescription>
+		</fullDescription>
 
 	<ports>
 		<inPort

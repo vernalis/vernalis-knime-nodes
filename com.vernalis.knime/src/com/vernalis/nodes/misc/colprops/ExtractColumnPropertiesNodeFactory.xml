@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2018, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="./extractProps.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v2.8"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
+	<name>Extract Column Properties</name>
+
+	<shortDescription>
+		This node extracts the column properties for selected
+		column(s)
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>This node extracts the column properties for the selected
+				column(s) to a new table. The new table contains three String
+				columns, containing the column name, property name and property
+				value. This table may be supplied as the second argument to the
+				'Insert Column Properties' node
+			</p>
+			<p>The input table is passed through unchanged in the first output
+			</p>
+			
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+		</intro>
+
+
+		<option name="Select columns to extract properties for">Select the columns to extract any available
+			properties from. The node will not execute if no columns are selected
+		</option>
+
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="Input Table">Incoming data table</inPort>
+		<outPort
+			index="0"
+			name="Unchanged Input Table">The unchanged input table</outPort>
+		<outPort
+			index="1"
+			name="Column Properties">A table listing all the column properties found for the
+			specified column(s)</outPort>
+	</ports>
+
+</knimeNode>

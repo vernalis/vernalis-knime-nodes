@@ -47,6 +47,13 @@
       <node
             category-path="/community/vernalis/speedy/filters"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.dummyatoms.DummyAtomsSplitterNodeFactory" />
+       <!-- Since 1.16.0 -->
+     <node
+     		category-path="/community/vernalis/speedy/filters"
+     		factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.chirality.BondGeomSplitterNodeFactory" />
+     <node
+     		category-path="/community/vernalis/speedy/filters"
+     		factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.chirality.BondGeomFilterNodeFactory" /> 
       
       <!-- MANIPULATORS -->
       <node
@@ -95,7 +102,7 @@
      <node
             category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.clean.CleanIsotopeLeadingZerosNodeFactory"/>
-       
+    
                         
       <!-- PROPERTIES -->
       <node
