@@ -112,13 +112,14 @@ public abstract class AbstractMultilineTextObjectReader<T extends MultilineTextO
 				lines.add(line);
 			}
 		}
+
+		if (lines.isEmpty()) {
+			return null;
+		}
 		// We got to the end and didnt find an object deliminator
 		if (inclDelimAtEnd && requireFinalDelim) {
 			throw new EOFException(
 					"End of file reached without required final deliminator");
-		}
-		if (lines.isEmpty()) {
-			return null;
 		}
 		T retVal = getObjectFromLines(lines);
 		lines.clear();
