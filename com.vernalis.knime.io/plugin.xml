@@ -48,7 +48,7 @@
             factory-class="com.vernalis.knime.io.nodes.load.bruker.amix.LoadAmixPeaklistFilesNodeFactory" />
       <!-- Since 1.17.0 -->
       <node
-            category-path="/vernalis.int/io"
+            category-path="/community/vernalis/io"
             factory-class="com.vernalis.knime.io.nodes.load.sdf.LoadSdFilesNodeFactory" />
    </extension>
    <extension
