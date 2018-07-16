@@ -201,7 +201,11 @@ public class Sdfile implements MultilineTextObject {
 	public DataCell[] getNewCells(String lineSeparator) {
 		return new DataCell[] {
 				SdfCellFactory.createAdapterCell(lines.stream()
-						.collect(Collectors.joining(lineSeparator))),
+						.collect(Collectors.joining(lineSeparator))
+						+ lineSeparator /*
+										 * SDFcellFactory appends a line
+										 * terminator otherwise
+										 */),
 				getStringCell(name), getStringCell(userInitials),
 				getStringCell(programName), getDateCell(date, dateHasTime),
 				getStringCell(dimensionality), getIntCell(sf1),
