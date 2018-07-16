@@ -27,6 +27,16 @@ public class SdfileReader extends AbstractMultilineTextObjectReader<Sdfile> {
 	@Override
 	public Sdfile getObjectFromLines(List<String> lines)
 			throws ParseException, IllegalArgumentException {
+		// Need to add one or two lines before we process... This stops
+		// SDFCellFactory spuriously adding system linebreaks at the end of the
+		// file
+		if (!DELIMINATOR_PATTERN.matcher(lines.get(lines.size() - 1))
+				.matches()) {
+			// Ensure we have a terminator
+			lines.add("$$$$");
+		}
+		// Ensure we have a final linebreak when we come to join everything
+		lines.add("");
 		return new Sdfile(lines);
 	}
 

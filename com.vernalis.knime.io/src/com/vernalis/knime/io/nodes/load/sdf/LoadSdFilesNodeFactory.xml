@@ -89,9 +89,7 @@
 			'Preserve
 			incoming' will look in the first 65535 characters of the
 			file for the
-			first linebreak ('\r\n' or '\n') and use that. NB For
-			sd-files incorrectly missing '$$$$' termination in the final record,
-			the system linebreak will be appended regardless of this setting</option>
+			first linebreak ('\r\n' or '\n') and use that.</option>
 	</fullDescription>
 
 	<ports>
