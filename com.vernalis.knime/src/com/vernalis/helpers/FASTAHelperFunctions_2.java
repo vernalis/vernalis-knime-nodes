@@ -52,8 +52,8 @@ public class FASTAHelperFunctions_2 {
 	 *            If true, then the sequence is included as a new column
 	 * @return A LinkedHashSet of the column names to be added
 	 */
-	public static Set<String> ColumnNames(String FASTA_Type, boolean IncludeHeader,
-			boolean extractSequence) {
+	public static Set<String> ColumnNames(String FASTA_Type,
+			boolean IncludeHeader, boolean extractSequence) {
 
 		// Use a set to simplify the default case in the switch of adding the
 		// header row if nothing else specified
@@ -132,8 +132,8 @@ public class FASTAHelperFunctions_2 {
 	 * @return An ArrayList containing the DataCells according to the specified
 	 *         options
 	 */
-	public static DataCell[] ColumnValues(String FASTA, String FASTA_Type, boolean IncludeHeader,
-			boolean extractSequence) {
+	public static DataCell[] ColumnValues(String FASTA, String FASTA_Type,
+			boolean IncludeHeader, boolean extractSequence) {
 
 		String FASTAHeader = getHeader(FASTA);
 		List<String> ColumnValues = new ArrayList<>();
@@ -151,16 +151,19 @@ public class FASTAHelperFunctions_2 {
 				ColumnValues.add(null);
 			} else if ("swiss-prot".equals(temp) || "patents".equals(temp)
 					|| "general database identifier".equals(temp)
-					|| "ncbi reference sequence".equals(temp) || "pdb".equals(temp)) {
+					|| "ncbi reference sequence".equals(temp)
+					|| "pdb".equals(temp)) {
 				// These only have 2
 				ColumnValues.add(null);
 				ColumnValues.add(null);
-			} else if ("nbrf".equals(temp) || "protein research foundation".equals(temp)
+			} else if ("nbrf".equals(temp)
+					|| "protein research foundation".equals(temp)
 					|| "geninfo backbone id".equals(temp)
 					|| "local sequence identifier".equals(temp)) {
 				// And these only have 1
 				ColumnValues.add(null);
-			} else if (!"other (no fields extracted from header)".equals(temp) && !IncludeHeader) {
+			} else if (!"other (no fields extracted from header)".equals(temp)
+					&& !IncludeHeader) {
 				// If somehow we dont have one of the presets, then we just add
 				// the header - but only once - so only if we've not added it at
 				// the beginning!
@@ -192,7 +195,8 @@ public class FASTAHelperFunctions_2 {
 				} catch (Exception e) {
 					ColumnValues.add(null);
 				}
-			} else if ("nbrf".equals(temp) || "protein research foundation".equals(temp)) {
+			} else if ("nbrf".equals(temp)
+					|| "protein research foundation".equals(temp)) {
 				try {
 					ColumnValues.add(FASTAHeader.split("\\|")[2]);
 				} catch (Exception e) {
@@ -243,7 +247,8 @@ public class FASTAHelperFunctions_2 {
 						ColumnValues.add(null);
 					}
 				}
-			} else if (!"other (no fields extracted from header)".equals(temp) && !IncludeHeader) {
+			} else if (!"other (no fields extracted from header)".equals(temp)
+					&& !IncludeHeader) {
 				// If somehow we dont have one of the presets, then we just add
 				// the header but only once - so only if we've not added it at
 				// the beginning!
@@ -354,17 +359,39 @@ public class FASTAHelperFunctions_2 {
 			FASTA = ">"; // This ensures the row is propagated in the output
 							// table
 		}
+		// try {
+		// String[] r = FASTA.split(">");
+		// String[] s = new String[r.length - 1];
+		// for (int i = 1; i < r.length; i++) {
+		// // The first entry is a blank, as it is actually the bit
+		// // preceding the first '>'
+		// // Put the '>' back at the start to keep them as valid FASTA
+		// // formats
+		// s[i - 1] = ">" + r[i];
+		// }
+		// return s;
+		// } catch (Exception e) {
+		// return null;
+		// }
 		try {
-			String[] r = FASTA.split(">");
-			String[] s = new String[r.length - 1];
-			for (int i = 1; i < r.length; i++) {
-				// The first entry is a blank, as it is actually the bit
-				// preceding the first '>'
-				// Put the '>' back at the start to keep them as valid FASTA
-				// formats
-				s[i - 1] = ">" + r[i];
+			String[] r = FASTA.split("\n");
+			List<String> retVal = new ArrayList<>();
+			StringBuilder fasta = null;
+			for (String l : r) {
+				if (l.startsWith(">")) {
+					// new entry
+					if (fasta != null) {
+						retVal.add(fasta.toString());
+					}
+					fasta = new StringBuilder(l);
+				} else {
+					fasta.append("\n").append(l);
+				}
 			}
-			return s;
+			if (fasta != null) {
+				retVal.add(fasta.toString());
+			}
+			return retVal.toArray(new String[retVal.size()]);
 		} catch (Exception e) {
 			return null;
 		}
