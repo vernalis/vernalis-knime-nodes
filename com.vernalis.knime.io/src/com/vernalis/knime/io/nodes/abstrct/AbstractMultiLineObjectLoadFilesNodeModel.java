@@ -17,13 +17,17 @@ package com.vernalis.knime.io.nodes.abstrct;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.knime.core.data.DataCell;
+import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
@@ -41,7 +45,11 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
+import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.streamable.BufferedDataTableRowOutput;
 import org.knime.core.node.streamable.PartitionInfo;
 import org.knime.core.node.streamable.PortInput;
@@ -62,6 +70,7 @@ import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.cr
 import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.createIncludeFilenamesModel;
 import static com.vernalis.knime.io.nodes.abstrct.AbstractLoadFilesNodeDialog.createIncludePathsModel;
 import static com.vernalis.knime.io.nodes.abstrct.AbstractMultiLineObjectLoadFilesNodeDialog.createNewlineModel;
+import static com.vernalis.knime.io.nodes.abstrct.AbstractMultiLineObjectLoadFilesNodeDialog.createPropertySelectionModel;
 
 /**
  * This is the model implementation of the node for loading
@@ -73,6 +82,8 @@ import static com.vernalis.knime.io.nodes.abstrct.AbstractMultiLineObjectLoadFil
 public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends MultilineTextObject>
 		extends NodeModel {
 
+	private static final String NO_OUTPUT_PROPS_SELECTED =
+			"No output properties selected";
 	private static final String NO_FILES_SELECTED = "No files selected";
 	private static final String UNRECOGNISED_LINEBREAK_OPTION =
 			"Unrecognised linebreak option";
@@ -89,10 +100,12 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 			createIncludeFilenamesModel();
 	protected final SettingsModelString m_lineBreaksModel =
 			createNewlineModel();
+	protected final SettingsModelStringArray m_selectedPropertiesModel;
 
 	protected final T nonReadableObject;
 	protected DataTableSpec outSpec;
 	protected FileEncodingWithGuess fileEnc;
+	protected BitSet propertyMask;
 
 	/**
 	 * Constructor for the node model.
@@ -104,15 +117,20 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 	 * 
 	 */
 	protected AbstractMultiLineObjectLoadFilesNodeModel(T nonReadableObject) {
-		super(0, 1);
+		super(new PortType[] { FlowVariablePortObject.TYPE_OPTIONAL },
+				new PortType[] { BufferedDataTable.TYPE });
 		this.nonReadableObject = nonReadableObject;
+		m_selectedPropertiesModel =
+				this.nonReadableObject.getNewColumnSpecs().length > 1
+						? createPropertySelectionModel(this.nonReadableObject)
+						: null;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
+	protected BufferedDataTable[] execute(final PortObject[] inData,
 			final ExecutionContext exec) throws Exception {
 
 		BufferedDataTableRowOutput output = new BufferedDataTableRowOutput(
@@ -164,6 +182,23 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 
 							DataCell[] cells;
 							int colidx = 0;
+							DataCell[] newObjCells =
+									nextObj.getNewCells(newLineStr);
+							if (propertyMask != null) {
+								List<DataCell> newObjCellsLst =
+										new ArrayList<>();
+								for (int i =
+										propertyMask.nextSetBit(0); i >= 0; i =
+												propertyMask
+														.nextSetBit(i + 1)) {
+									newObjCellsLst.add(newObjCells[i]);
+									if (i == Integer.MAX_VALUE) {
+										break;
+									}
+								}
+								newObjCells = newObjCellsLst.toArray(
+										new DataCell[newObjCellsLst.size()]);
+							}
 							if (m_locCols.getBooleanValue()
 									|| m_inclFilenames.getBooleanValue()) {
 								cells = new DataCell[outSpec.getNumColumns()];
@@ -176,12 +211,11 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 									cells[colidx++] =
 											new StringCell(f.getName());
 								}
-								for (DataCell objCell : nextObj
-										.getNewCells(newLineStr)) {
+								for (DataCell objCell : newObjCells) {
 									cells[colidx++] = objCell;
 								}
 							} else {
-								cells = nextObj.getNewCells(newLineStr);
+								cells = newObjCells;
 							}
 							out.push(new DefaultRow(rK, cells));
 						}
@@ -224,7 +258,7 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
+	protected DataTableSpec[] configure(final PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
 		try {
 			LineBreak.valueOf(m_lineBreaksModel.getStringValue());
@@ -238,7 +272,7 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 			getLogger().error(NO_FILES_SELECTED);
 			throw new InvalidSettingsException(NO_FILES_SELECTED);
 		}
-		outSpec = createOutputSpec();
+
 		fileEnc =
 				FileEncodingWithGuess.valueOf(m_fileEncoding.getStringValue());
 		if (!(m_inclFilenames.getBooleanValue() || m_rowIDs.getBooleanValue()
@@ -246,6 +280,25 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 			getLogger().warn(FILE_LOCATION_LOST_WARNING);
 			setWarningMessage(FILE_LOCATION_LOST_WARNING);
 		}
+		if (m_selectedPropertiesModel != null) {
+			List<String> selectedProps = Arrays
+					.asList(m_selectedPropertiesModel.getStringArrayValue());
+			if (selectedProps.isEmpty()) {
+				getLogger().error(NO_OUTPUT_PROPS_SELECTED);
+				throw new InvalidSettingsException(NO_OUTPUT_PROPS_SELECTED);
+			}
+			DataColumnSpec[] newColSpecs =
+					nonReadableObject.getNewColumnSpecs();
+			propertyMask = new BitSet(newColSpecs.length);
+			for (int i = 0; i < newColSpecs.length; i++) {
+				if (selectedProps.contains(newColSpecs[i].getName())) {
+					propertyMask.set(i);
+				}
+			}
+		} else {
+			propertyMask = null;
+		}
+		outSpec = createOutputSpec();
 		return new DataTableSpec[] { outSpec };
 	}
 
@@ -267,7 +320,18 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 					new DataColumnSpecCreator("Filename", StringCell.TYPE)
 							.createSpec());
 		}
-		specCreator.addColumns(nonReadableObject.getNewColumnSpecs());
+		if (propertyMask == null) {
+			specCreator.addColumns(nonReadableObject.getNewColumnSpecs());
+		} else {
+			DataColumnSpec[] newSpecs = nonReadableObject.getNewColumnSpecs();
+			for (int i = propertyMask.nextSetBit(0); i >= 0; i =
+					propertyMask.nextSetBit(i + 1)) {
+				specCreator.addColumns(newSpecs[i]);
+				if (i == Integer.MAX_VALUE) {
+					break;
+				}
+			}
+		}
 		return specCreator.createSpec();
 	}
 
@@ -282,6 +346,9 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 		m_locCols.saveSettingsTo(settings);
 		m_inclFilenames.saveSettingsTo(settings);
 		m_lineBreaksModel.saveSettingsTo(settings);
+		if (m_selectedPropertiesModel != null) {
+			m_selectedPropertiesModel.saveSettingsTo(settings);
+		}
 	}
 
 	/**
@@ -296,6 +363,17 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 		m_locCols.loadSettingsFrom(settings);
 		m_inclFilenames.loadSettingsFrom(settings);
 		m_lineBreaksModel.loadSettingsFrom(settings);
+		if (m_selectedPropertiesModel != null) {
+			try {
+				m_selectedPropertiesModel.loadSettingsFrom(settings);
+			} catch (InvalidSettingsException e) {
+				// Load up the default set
+				m_selectedPropertiesModel.setStringArrayValue(Arrays
+						.stream(nonReadableObject.getNewColumnSpecs())
+						.map(spec -> spec.getName()).toArray(String[]::new));
+
+			}
+		}
 	}
 
 	/**
@@ -310,6 +388,8 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 		m_locCols.validateSettings(settings);
 		m_inclFilenames.validateSettings(settings);
 		m_lineBreaksModel.validateSettings(settings);
+		// Don't validate m_selectedPropertiesModel for sake of backwards
+		// compatibility
 	}
 
 	/**

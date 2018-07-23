@@ -36,7 +36,10 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
+import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.streamable.BufferedDataTableRowOutput;
 import org.knime.core.node.streamable.PartitionInfo;
 import org.knime.core.node.streamable.PortInput;
@@ -82,7 +85,8 @@ public abstract class AbstractLoadFilesNodeModel extends NodeModel {
 	 */
 	protected AbstractLoadFilesNodeModel(DataType dataType,
 			String contentColumnName) {
-		super(0, 1);
+		super(new PortType[] { FlowVariablePortObject.TYPE_OPTIONAL },
+				new PortType[] { BufferedDataTable.TYPE });
 		m_DataType = dataType;
 		m_contentColumnName = contentColumnName;
 		if (m_contentColumnName == null) {
@@ -102,7 +106,7 @@ public abstract class AbstractLoadFilesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
+	protected BufferedDataTable[] execute(final PortObject[] inData,
 			final ExecutionContext exec) throws Exception {
 
 		BufferedDataTableRowOutput output = new BufferedDataTableRowOutput(
@@ -205,7 +209,7 @@ public abstract class AbstractLoadFilesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
+	protected DataTableSpec[] configure(final PortObjectSpec[] inSpecs)
 			throws InvalidSettingsException {
 		if (m_files.getStringArrayValue() == null
 				|| m_files.getStringArrayValue().length == 0) {

@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.knime.chem.types.MolAdapterCell;
+import org.knime.chem.types.MolCellFactory;
 import org.knime.chem.types.SdfAdapterCell;
 import org.knime.chem.types.SdfCellFactory;
 import org.knime.core.data.DataCell;
@@ -25,7 +27,7 @@ public class Sdfile implements MultilineTextObject {
 
 	private final List<String> lines = new ArrayList<>();
 	private String name, userInitials, programName, dimensionality, comments,
-			version;
+			version, molBlock;
 	private Integer sf1, irn;
 	private Double sf2, energy;
 	private int atomCount, bondCount, atomListCount, sTextEntriesCount;
@@ -78,6 +80,27 @@ public class Sdfile implements MultilineTextObject {
 		sTextEntriesCount = parseInt(subString(countLine, 15, 18));
 		version = nullify(
 				countLine.length() > 33 ? countLine.substring(33) : null);
+		boolean isFirst = true;
+		boolean foundMEnd = false;
+		StringBuilder sb = new StringBuilder();
+		for (String l : lines) {
+			if (!isFirst) {
+				sb.append("\n");
+			} else {
+				isFirst = false;
+			}
+			sb.append(l);
+			if (l.toUpperCase().startsWith("M  END")) {
+				foundMEnd = true;
+				sb.append("\n");// We will replace later!
+				break;
+			}
+		}
+		if (!foundMEnd) {
+			molBlock = null;
+		} else {
+			molBlock = sb.toString();
+		}
 	}
 
 	private String subString(String str, int start, int end) {
@@ -159,6 +182,8 @@ public class Sdfile implements MultilineTextObject {
 		return new DataColumnSpec[] {
 				new DataColumnSpecCreator("SD-File", SdfAdapterCell.RAW_TYPE)
 						.createSpec(),
+				new DataColumnSpecCreator("Mol Block", MolAdapterCell.RAW_TYPE)
+						.createSpec(),
 				/* From the Header block Line 1 */
 				new DataColumnSpecCreator("Molecule Name", StringCell.TYPE)
 						.createSpec(),
@@ -199,9 +224,12 @@ public class Sdfile implements MultilineTextObject {
 
 	@Override
 	public DataCell[] getNewCells(String lineSeparator) {
+
 		return new DataCell[] {
 				SdfCellFactory.createAdapterCell(lines.stream()
 						.collect(Collectors.joining(lineSeparator))),
+				MolCellFactory.createAdapterCell("\n".equals(lineSeparator)
+						? molBlock : molBlock.replace("\n", lineSeparator)),
 				getStringCell(name), getStringCell(userInitials),
 				getStringCell(programName), getDateCell(date, dateHasTime),
 				getStringCell(dimensionality), getIntCell(sf1),

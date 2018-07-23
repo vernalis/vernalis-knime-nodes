@@ -15,9 +15,12 @@
 package com.vernalis.knime.io.nodes.load.sdf;
 
 import java.io.BufferedReader;
+import java.util.Arrays;
 
+import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeView;
 
 import com.vernalis.io.MultilineTextObjectReader;
@@ -29,21 +32,46 @@ import com.vernalis.knime.io.nodes.abstrct.AbstractMultiLineObjectLoadFilesNodeM
  * 
  * @author S. Roughley
  */
-public class LoadSdFilesNodeFactory extends
-		NodeFactory<com.vernalis.knime.io.nodes.abstrct.AbstractMultiLineObjectLoadFilesNodeModel<Sdfile>> {
+public class LoadSdFilesNodeFactory
+		extends NodeFactory<AbstractMultiLineObjectLoadFilesNodeModel<Sdfile>> {
+
+	private static final Sdfile SDFILE = new Sdfile();
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public AbstractMultiLineObjectLoadFilesNodeModel<Sdfile> createNodeModel() {
-		return new AbstractMultiLineObjectLoadFilesNodeModel<Sdfile>(
-				new Sdfile()) {
+		return new AbstractMultiLineObjectLoadFilesNodeModel<Sdfile>(SDFILE) {
 
 			@Override
 			protected MultilineTextObjectReader<Sdfile> getObjectReader(
 					BufferedReader br) {
 				return new SdfileReader(br);
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see com.vernalis.knime.internal.misc.io.nodes.abstrct.
+			 * AbstractMultiLineObjectLoadFilesNodeModel#
+			 * loadValidatedSettingsFrom(org.knime.core.node.NodeSettingsRO)
+			 */
+			@Override
+			protected void loadValidatedSettingsFrom(NodeSettingsRO settings)
+					throws InvalidSettingsException {
+				super.loadValidatedSettingsFrom(settings);
+				try {
+					m_selectedPropertiesModel.loadSettingsFrom(settings);
+				} catch (Exception e) {
+					// Legacy version did not contain mol block
+					// Load up the default set
+					m_selectedPropertiesModel.setStringArrayValue(
+							Arrays.stream(nonReadableObject.getNewColumnSpecs())
+									.map(spec -> spec.getName())
+									.filter(name -> !"Mol Block".equals(name))
+									.toArray(String[]::new));
+				}
 			}
 		};
 	}
@@ -79,7 +107,7 @@ public class LoadSdFilesNodeFactory extends
 	 */
 	@Override
 	public NodeDialogPane createNodeDialogPane() {
-		return new AbstractMultiLineObjectLoadFilesNodeDialog(
+		return new AbstractMultiLineObjectLoadFilesNodeDialog<>(SDFILE,
 				this.getClass().getName(), ".sd|.sdf");
 	}
 

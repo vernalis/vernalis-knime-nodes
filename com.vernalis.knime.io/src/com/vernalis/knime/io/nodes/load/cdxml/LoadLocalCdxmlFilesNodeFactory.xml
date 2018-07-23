@@ -49,7 +49,9 @@
 	</fullDescription>
 
 	<ports>
-
+		<inPort
+			index="0"
+			name="Flow variables">Optional flow variables containing file path(s)</inPort>
 		<outPort
 			index="0"
 			name="File Content">Content of the loaded files

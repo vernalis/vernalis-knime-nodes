@@ -32,13 +32,15 @@ import com.vernalis.knime.io.nodes.abstrct.AbstractMultiLineObjectLoadFilesNodeM
 public class LoadAmixPeaklistFilesNodeFactory extends
 		NodeFactory<AbstractMultiLineObjectLoadFilesNodeModel<AmixPeakList>> {
 
+	private static final AmixPeakList AMIX_PEAK_LIST = new AmixPeakList();
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public AbstractMultiLineObjectLoadFilesNodeModel<AmixPeakList> createNodeModel() {
 		return new AbstractMultiLineObjectLoadFilesNodeModel<AmixPeakList>(
-				new AmixPeakList()) {
+				AMIX_PEAK_LIST) {
 
 			@Override
 			protected MultilineTextObjectReader<AmixPeakList> getObjectReader(
@@ -79,8 +81,8 @@ public class LoadAmixPeaklistFilesNodeFactory extends
 	 */
 	@Override
 	public NodeDialogPane createNodeDialogPane() {
-		return new AbstractMultiLineObjectLoadFilesNodeDialog(
-				this.getClass().getName(), ".txt");
+		return new AbstractMultiLineObjectLoadFilesNodeDialog<>(
+				AMIX_PEAK_LIST, this.getClass().getName(), ".txt");
 	}
 
 }

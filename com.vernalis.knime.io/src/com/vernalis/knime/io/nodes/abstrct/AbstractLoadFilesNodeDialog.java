@@ -87,9 +87,9 @@ public class AbstractLoadFilesNodeDialog extends DefaultNodeSettingsPane {
 				historyID, JFileChooser.OPEN_DIALOG, fvm, fileTypes));
 
 		addDialogComponent(new DialogComponentButtonGroup(
-				createFileEncodingModel(), "Select file encoding", true,
+				createFileEncodingModel(), "Select file encoding", false,
 				FileEncodingWithGuess.values()));
-
+		setHorizontalPlacement(true);
 		addDialogComponent(new DialogComponentBoolean(createIncludePathsModel(),
 				"Include paths in output table"));
 		addDialogComponent(
@@ -98,6 +98,7 @@ public class AbstractLoadFilesNodeDialog extends DefaultNodeSettingsPane {
 		addDialogComponent(
 				new DialogComponentBoolean(createIncludeFilenamesModel(),
 						INCLUDE_FILENAMES_IN_OUTPUT_TABLE));
+		setHorizontalPlacement(false);
 	}
 
 	static SettingsModelBoolean createIncludeFilenamesModel() {
