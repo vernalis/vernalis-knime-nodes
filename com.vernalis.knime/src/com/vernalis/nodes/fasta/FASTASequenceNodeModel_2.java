@@ -64,8 +64,10 @@ import com.vernalis.helpers.FASTAHelperFunctions_2;
  * sequences from a FASTA sequence file column
  */
 public class FASTASequenceNodeModel_2 extends NodeModel {
+
 	// the logger instance
-	private static final NodeLogger logger = NodeLogger.getLogger(FASTASequenceNodeModel_2.class);
+	private static final NodeLogger logger =
+			NodeLogger.getLogger(FASTASequenceNodeModel_2.class);
 
 	// Settings models
 	static final String CFG_FASTA_COL_NAME = "FASTA_Column";
@@ -79,13 +81,16 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 			new SettingsModelString(CFG_FASTA_COL_NAME, null);
 
 	// Extract the Header Row? (The chain and sequence are always extracted!)
-	private final SettingsModelBoolean m_HEADER = new SettingsModelBoolean(CFG_HEADER, false);
+	private final SettingsModelBoolean m_HEADER =
+			new SettingsModelBoolean(CFG_HEADER, false);
 
 	// Define the FASTA type
-	private final SettingsModelString m_FASTAType = new SettingsModelString(CFG_FASTA_TYPE, null);
+	private final SettingsModelString m_FASTAType =
+			new SettingsModelString(CFG_FASTA_TYPE, null);
 
 	// Overwrite the FASTA column
-	private final SettingsModelBoolean m_Overwrite = new SettingsModelBoolean(CFG_OVERWRITE, false);
+	private final SettingsModelBoolean m_Overwrite =
+			new SettingsModelBoolean(CFG_OVERWRITE, false);
 
 	// Extract the actual sequence
 	private final SettingsModelBoolean m_ExtractSequence =
@@ -111,28 +116,31 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 		final boolean addHeader = m_HEADER.getBooleanValue();
 
 		// Create the new output table spec and a Buffered Data Container for it
-		final DataTableSpec newSpec =
-				createTableSpec(table.getSpec(), m_FASTAcolName.getStringValue(), removeFastaCol,
-						FASTAHelperFunctions_2.ColumnNames(m_FASTAType.getStringValue(), addHeader,
-								m_ExtractSequence.getBooleanValue()));
+		final DataTableSpec newSpec = createTableSpec(table.getSpec(),
+				m_FASTAcolName.getStringValue(), removeFastaCol,
+				FASTAHelperFunctions_2.ColumnNames(m_FASTAType.getStringValue(),
+						addHeader, m_ExtractSequence.getBooleanValue()));
 
-		BufferedDataTableRowOutput output =
-				new BufferedDataTableRowOutput(exec.createDataContainer(newSpec));
+		BufferedDataTableRowOutput output = new BufferedDataTableRowOutput(
+				exec.createDataContainer(newSpec));
 		RowInput input = new DataTableRowInput(table);
 
-		final int colIdx = table.getSpec().findColumnIndex(m_FASTAcolName.getStringValue());
+		final int colIdx = table.getSpec()
+				.findColumnIndex(m_FASTAcolName.getStringValue());
 		final long totalRowCount = table.size();
 
 		// count of new columns
-		int newColCnt = FASTAHelperFunctions_2.ColumnNames(m_FASTAType.getStringValue(), addHeader,
-				m_ExtractSequence.getBooleanValue()).size();
-		this.execute(input, output, colIdx, removeFastaCol, addHeader, newColCnt, totalRowCount,
-				exec);
+		int newColCnt =
+				FASTAHelperFunctions_2.ColumnNames(m_FASTAType.getStringValue(),
+						addHeader, m_ExtractSequence.getBooleanValue()).size();
+		this.execute(input, output, colIdx, removeFastaCol, addHeader,
+				newColCnt, totalRowCount, exec);
 		return new BufferedDataTable[] { output.getDataTable() };
 	}
 
-	protected void execute(final RowInput inRow, RowOutput out, int colIdx, boolean removeFastaCol,
-			boolean addHeader, int newColCnt, final long numRows, final ExecutionContext exec)
+	protected void execute(final RowInput inRow, RowOutput out, int colIdx,
+			boolean removeFastaCol, boolean addHeader, int newColCnt,
+			final long numRows, final ExecutionContext exec)
 			throws InterruptedException, CanceledExecutionException {
 		long rowIdx = 0;
 		DataRow row;
@@ -148,18 +156,19 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 
 			// Firstly, deal with the possibility of an empty FASTA sell
 			if (c.isMissing()) {
-				final DataRow newRow = createClone(row.getKey(), row, colIdx, removeFastaCol,
-						new DataCell[newColCnt]);
+				final DataRow newRow = createClone(row.getKey(), row, colIdx,
+						removeFastaCol, new DataCell[newColCnt]);
 				out.push(newRow);
 				continue;
 			}
 
-			String[] FASTAs = FASTAHelperFunctions_2.getFASTAs(((StringValue) c).getStringValue());
+			String[] FASTAs = FASTAHelperFunctions_2
+					.getFASTAs(((StringValue) c).getStringValue());
 			// Now deal with the possibility that the FASTA cell couldnt be
 			// parsed properly
-			if (FASTAs.length == 0 || FASTAs == null) {
-				final DataRow newRow = createClone(row.getKey(), row, colIdx, removeFastaCol,
-						new DataCell[newColCnt]);
+			if (FASTAs == null || FASTAs.length == 0) {
+				final DataRow newRow = createClone(row.getKey(), row, colIdx,
+						removeFastaCol, new DataCell[newColCnt]);
 				out.push(newRow);
 				continue;
 			}
@@ -170,15 +179,17 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 			for (String FASTA : FASTAs) {
 				// Sort out new row keys, based on existing
 				final RowKey oldKey = row.getKey();
-				final RowKey newKey = new RowKey(oldKey.getString() + "_" + counter++);
+				final RowKey newKey =
+						new RowKey(oldKey.getString() + "_" + counter++);
 
 				// Extract the properties to be added
 
-				DataCell[] newCells =
-						FASTAHelperFunctions_2.ColumnValues(FASTA, m_FASTAType.getStringValue(),
-								addHeader, m_ExtractSequence.getBooleanValue());
+				DataCell[] newCells = FASTAHelperFunctions_2.ColumnValues(FASTA,
+						m_FASTAType.getStringValue(), addHeader,
+						m_ExtractSequence.getBooleanValue());
 
-				final DataRow newRow = createClone(newKey, row, colIdx, removeFastaCol, newCells);
+				final DataRow newRow = createClone(newKey, row, colIdx,
+						removeFastaCol, newCells);
 				out.push(newRow);
 			}
 		}
@@ -186,26 +197,29 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 	}
 
 	@Override
-	public StreamableOperator createStreamableOperator(final PartitionInfo partitionInfo,
-			final PortObjectSpec[] inSpecs) throws InvalidSettingsException {
-		final int colIdx =
-				((DataTableSpec) inSpecs[0]).findColumnIndex(m_FASTAcolName.getStringValue());
+	public StreamableOperator createStreamableOperator(
+			final PartitionInfo partitionInfo, final PortObjectSpec[] inSpecs)
+			throws InvalidSettingsException {
+		final int colIdx = ((DataTableSpec) inSpecs[0])
+				.findColumnIndex(m_FASTAcolName.getStringValue());
 		final boolean removeFastaCol = m_Overwrite.getBooleanValue();
 		final boolean addHeader = m_HEADER.getBooleanValue();
 
 		// count of new columns
-		int newColCnt = FASTAHelperFunctions_2.ColumnNames(m_FASTAType.getStringValue(), addHeader,
-				m_ExtractSequence.getBooleanValue()).size();
+		int newColCnt =
+				FASTAHelperFunctions_2.ColumnNames(m_FASTAType.getStringValue(),
+						addHeader, m_ExtractSequence.getBooleanValue()).size();
 
 		return new StreamableOperator() {
 
 			@Override
-			public void runFinal(PortInput[] inputs, PortOutput[] outputs, ExecutionContext exec)
-					throws Exception {
+			public void runFinal(PortInput[] inputs, PortOutput[] outputs,
+					ExecutionContext exec) throws Exception {
 
 				// Run it - dont know row count!
-				FASTASequenceNodeModel_2.this.execute((RowInput) inputs[0], (RowOutput) outputs[0],
-						colIdx, removeFastaCol, addHeader, newColCnt, -1, exec);
+				FASTASequenceNodeModel_2.this.execute((RowInput) inputs[0],
+						(RowOutput) outputs[0], colIdx, removeFastaCol,
+						addHeader, newColCnt, -1, exec);
 
 			}
 
@@ -222,8 +236,10 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 		return new OutputPortRole[] { OutputPortRole.DISTRIBUTED };
 	}
 
-	private DataRow createClone(final RowKey newKey, final DataRow row, final int FastaColId,
-			final boolean removeFastaCol, final DataCell[] newCells) {
+	private DataRow createClone(final RowKey newKey, final DataRow row,
+			final int FastaColId, final boolean removeFastaCol,
+			final DataCell[] newCells) {
+
 		// Create a clone of the existing row adding the new columns to the end
 		// Calculate number of cells
 		int cellCount = row.getNumCells();
@@ -245,8 +261,8 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 
 		// now add the new cells
 		for (int i = 0, length = newCells.length; i < length; i++) {
-			newRowCells[cellIdx++] =
-					(newCells[i] == null) ? DataType.getMissingCell() : newCells[i];
+			newRowCells[cellIdx++] = (newCells[i] == null)
+					? DataType.getMissingCell() : newCells[i];
 		}
 
 		return new DefaultRow(newKey, newRowCells);
@@ -277,7 +293,8 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 				if (cs.getType().isCompatible(StringValue.class)) {
 					if (colIndex != -1) {
 						setWarningMessage("No FASTA column selected");
-						throw new InvalidSettingsException("No FASTA column selected.");
+						throw new InvalidSettingsException(
+								"No FASTA column selected.");
 					}
 					colIndex = i;
 				}
@@ -288,30 +305,36 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 				setWarningMessage("No FASTA column selected");
 				throw new InvalidSettingsException("No FASTA column selected.");
 			}
-			m_FASTAcolName.setStringValue(inSpecs[0].getColumnSpec(colIndex).getName());
+			m_FASTAcolName.setStringValue(
+					inSpecs[0].getColumnSpec(colIndex).getName());
 			logger.info("Column '" + m_FASTAcolName.getStringValue()
 					+ "' auto selected for FASTA column");
 			setWarningMessage("Column '" + m_FASTAcolName.getStringValue()
 					+ "' auto selected for FASTA column");
 		} else {
-			colIndex = inSpecs[0].findColumnIndex(m_FASTAcolName.getStringValue());
+			colIndex =
+					inSpecs[0].findColumnIndex(m_FASTAcolName.getStringValue());
 			if (colIndex < 0) {
-				setWarningMessage("No such column: " + m_FASTAcolName.getStringValue());
+				setWarningMessage(
+						"No such column: " + m_FASTAcolName.getStringValue());
 				throw new InvalidSettingsException(
 						"No such column: " + m_FASTAcolName.getStringValue());
 			}
 
 			DataColumnSpec colSpec = inSpecs[0].getColumnSpec(colIndex);
 			if (!colSpec.getType().isCompatible(StringValue.class)) {
-				setWarningMessage(
-						"Column \"" + m_FASTAcolName + "\" does not contain string values");
-				throw new InvalidSettingsException("Column \"" + CFG_FASTA_COL_NAME
-						+ "\" does not contain string values: " + colSpec.getType().toString());
+				setWarningMessage("Column \"" + m_FASTAcolName
+						+ "\" does not contain string values");
+				throw new InvalidSettingsException(
+						"Column \"" + CFG_FASTA_COL_NAME
+								+ "\" does not contain string values: "
+								+ colSpec.getType().toString());
 			}
 		}
 
-		Set<String> newColNames = FASTAHelperFunctions_2.ColumnNames(m_FASTAType.getStringValue(),
-				m_HEADER.getBooleanValue(), m_ExtractSequence.getBooleanValue());
+		Set<String> newColNames = FASTAHelperFunctions_2.ColumnNames(
+				m_FASTAType.getStringValue(), m_HEADER.getBooleanValue(),
+				m_ExtractSequence.getBooleanValue());
 
 		// Ensure at least one column will be added to the output
 		if (newColNames.size() < 1) {
@@ -319,8 +342,9 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 			throw new InvalidSettingsException("No new columns created!");
 		}
 
-		final DataTableSpec resultSpec = createTableSpec(spec, m_FASTAcolName.getStringValue(),
-				m_Overwrite.getBooleanValue(), newColNames);
+		final DataTableSpec resultSpec =
+				createTableSpec(spec, m_FASTAcolName.getStringValue(),
+						m_Overwrite.getBooleanValue(), newColNames);
 		return new DataTableSpec[] { resultSpec };
 	}
 
@@ -337,8 +361,9 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 	 * @throws InvalidSettinsException
 	 *             if an excettion occurs
 	 */
-	private static DataTableSpec createTableSpec(final DataTableSpec spec, final String colName,
-			final boolean removeFastaCol, final Collection<String> NewColumnNames)
+	private static DataTableSpec createTableSpec(final DataTableSpec spec,
+			final String colName, final boolean removeFastaCol,
+			final Collection<String> NewColumnNames)
 			throws InvalidSettingsException {
 		/*
 		 * Method to create a new table spec, optionally retaining the FASTA
@@ -347,7 +372,8 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 		 */
 		final int index = spec.findColumnIndex(colName);
 		if (index < 0) {
-			throw new InvalidSettingsException("Invalid column name: " + colName);
+			throw new InvalidSettingsException(
+					"Invalid column name: " + colName);
 		}
 		final DataColumnSpec colSpec = spec.getColumnSpec(index);
 
@@ -371,11 +397,13 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 		Iterator<String> itr = NewColumnNames.iterator();
 		while (itr.hasNext()) {
 			newColName = DataTableSpec.getUniqueColumnName(spec, itr.next());
-			specCreator = new DataColumnSpecCreator(newColName, StringCell.TYPE);
+			specCreator =
+					new DataColumnSpecCreator(newColName, StringCell.TYPE);
 			specs.add(specCreator.createSpec());
 		}
 
-		final DataTableSpec resultSpec = new DataTableSpec(specs.toArray(new DataColumnSpec[0]));
+		final DataTableSpec resultSpec =
+				new DataTableSpec(specs.toArray(new DataColumnSpec[0]));
 		return resultSpec;
 	}
 
@@ -410,7 +438,8 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 
 		m_FASTAcolName.validateSettings(settings);
 		m_Overwrite.validateSettings(settings);
@@ -423,7 +452,8 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 	}
 
@@ -431,7 +461,8 @@ public class FASTASequenceNodeModel_2 extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 	}
 

@@ -175,7 +175,8 @@ public class FASTAHelperFunctions_2 {
 			}
 		} else {
 			if (IncludeHeader) {
-				ColumnValues.add(FASTAHeader.split(">")[1]);
+				// Skip the '>'
+				ColumnValues.add(FASTAHeader.substring(1));
 			}
 
 			if ("genbank".equals(temp) || "embl".equals(temp)
@@ -253,7 +254,7 @@ public class FASTAHelperFunctions_2 {
 				// the header but only once - so only if we've not added it at
 				// the beginning!
 				try {
-					ColumnValues.add(FASTAHeader.split(">")[1]);
+					ColumnValues.add(FASTAHeader.substring(1));
 				} catch (Exception e) {
 					ColumnValues.add(null);
 				}
@@ -286,7 +287,12 @@ public class FASTAHelperFunctions_2 {
 	 */
 	public static String getHeader(String FASTA) {
 		try {
-			return ">" + FASTA.split(">")[1].split("\\n")[0];
+			final String retVal = FASTA.trim().split("\\n")[0].trim();
+			if (!retVal.startsWith(">")) {
+				// Not a header line!
+				return null;
+			}
+			return retVal;
 		} catch (Exception e) {
 			return null;
 		}
@@ -336,7 +342,7 @@ public class FASTAHelperFunctions_2 {
 			String seq = "";
 			for (String line : FASTA.split("\\n")) {
 				if (!line.startsWith(">")) {
-					seq += line;
+					seq += line.trim();
 				}
 			}
 			return seq.replaceAll("\\s", "");
