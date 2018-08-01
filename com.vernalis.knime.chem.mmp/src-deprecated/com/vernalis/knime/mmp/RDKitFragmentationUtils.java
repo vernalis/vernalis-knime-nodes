@@ -713,8 +713,10 @@ public class RDKitFragmentationUtils {
 		at0.setIsotope(index);
 		// SDR 20-Apr-2018
 		// As of RDKit v 3.3.1, addAtom(Atom, boolean) is removed, so add
-		// default 'takeOwnership Argument'
-		mol.addAtom(at0, true, false);
+		// default 'takeOwnership Argument' (false)
+		// SDR 31-Jul-2018
+		// the addAtom(Atom, boolean) method is restored...
+		mol.addAtom(at0, true);
 		// SDR 20-Apr-2018
 		// As of RDKit v 3.3.1, addBond(Atom, Atom, BondType) is removed, so use
 		// much simpler addBond(long, long, BondType)
@@ -723,7 +725,7 @@ public class RDKitFragmentationUtils {
 		// Add a dummy atom to the end
 		Atom at1 = swigGC.markForCleanup(new Atom(0), gcWrapLayer);
 		at1.setIsotope(index);
-		mol.addAtom(at1, true, false);
+		mol.addAtom(at1, true);
 		mol.addBond(bond.getEndIdx(), newAtmIdx++, BondType.SINGLE);
 
 		// TODO: DOES THIS BREAK IT???
@@ -781,24 +783,24 @@ public class RDKitFragmentationUtils {
 		// Add a dummy atom to the start
 		Atom at0 = swigGC.markForCleanup(new Atom(0), gcWrapLayer);
 		at0.setIsotope(index);
-		mol.addAtom(at0, true, false);
+		mol.addAtom(at0, true);
 
 		mol.addBond(bond.getStartIdx(), newAtmIdx++, BondType.SINGLE);
 
 		// Add a dummy atom to the end - with an incremented index
 		Atom at1 = swigGC.markForCleanup(new Atom(0), gcWrapLayer);
 		at1.setIsotope(index + 1);
-		mol.addAtom(at1, true, false);
+		mol.addAtom(at1, true);
 		mol.addBond(bond.getEndIdx(), newAtmIdx++, BondType.SINGLE);
 
 		// Now we need to add two further atoms and bond them together too
 		Atom at2 = swigGC.markForCleanup(new Atom(0), gcWrapLayer);
 		at2.setIsotope(index);
-		mol.addAtom(at2, true, false);
+		mol.addAtom(at2, true);
 
 		Atom at3 = swigGC.markForCleanup(new Atom(0), gcWrapLayer);
 		at3.setIsotope(index + 1);
-		mol.addAtom(at3, true, false);
+		mol.addAtom(at3, true);
 
 		mol.addBond(newAtmIdx++, newAtmIdx++, BondType.SINGLE);
 		return mol;
