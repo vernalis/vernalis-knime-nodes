@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2018, Vernalis (R&D) Ltd
+     This program is free software; you can redistribute it and/or modify it 
+     under the terms of the GNU General Public License, Version 3, as 
+     published by the Free Software Foundation.
+     
+     This program is distributed in the hope that it will be useful, but 
+     WITHOUT ANY WARRANTY; without even the implied warranty of 
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+     See the GNU General Public License for more details.
+     
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, see <http://www.gnu.org/licenses>
+ -->
+<knimeNode
+	icon="./SpeedySMILES_dummy_atomclass2isotope.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v2.8"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
+	<name>Speedy SMILES Dummy Atom Atom Class to Isotope Label</name>
+
+
+	<shortDescription>
+		Node to move dummy atom atom class labels to isotopes
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>This node moves dummy atom atom classes to isotopes. Where
+				an
+				isotope is already present, or an (illegal!) non-numeric atom class
+				is present, the atom is left unchanged. e.g.
+				[*:3] is converted to
+				[3*], but [3*:1] and [*:a] are left unchanged.
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+
+		<option name="Select SMILES column">The SMILES column, containing molecules</option>
+		<option name="Remove input columns">If checked, then the input column is removed
+		</option>
+
+
+	</fullDescription>
+
+
+	<ports>
+		<inPort
+			index="0"
+			name="SMILES">SMILES dummy atoms labelled by atom class
+		</inPort>
+
+		<outPort
+			index="0"
+			name="SMILES with Isotope Labels">SMILES dummy atoms labelled by isotope
+		</outPort>
+	</ports>
+
+</knimeNode>
