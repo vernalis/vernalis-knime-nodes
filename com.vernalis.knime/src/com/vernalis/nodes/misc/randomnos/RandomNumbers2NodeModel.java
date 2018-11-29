@@ -53,9 +53,11 @@ import org.knime.core.node.streamable.StreamableOperator;
  * @author SDR
  */
 public class RandomNumbers2NodeModel extends NodeModel {
+
 	// the logger instance
 	@SuppressWarnings("unused")
-	private static final NodeLogger logger = NodeLogger.getLogger(RandomNumbersNodeModel.class);
+	private static final NodeLogger logger =
+			NodeLogger.getLogger(RandomNumbersNodeModel.class);
 
 	/**
 	 * the settings key which is used to retrieve and store the settings (from
@@ -70,20 +72,22 @@ public class RandomNumbers2NodeModel extends NodeModel {
 	static final String CFG_N = "Number_of_values";
 	static final String CFG_UNIQUE = "Unique_set";
 
-	private final SettingsModelString m_ColumnName = new SettingsModelString(CFG_COLUMN_NAME,
-			"Random Values");
+	private final SettingsModelString m_ColumnName =
+			new SettingsModelString(CFG_COLUMN_NAME, "Random Values");
 
-	private final SettingsModelString m_Type = new SettingsModelString(CFG_TYPE, "Double");
+	private final SettingsModelString m_Type =
+			new SettingsModelString(CFG_TYPE, "Double");
 
-	private final SettingsModelDoubleRange m_Range = new SettingsModelDoubleRange(CFG_MIN_MAX, 0.0,
-			100000.0);
+	private final SettingsModelDoubleRange m_Range =
+			new SettingsModelDoubleRange(CFG_MIN_MAX, 0.0, 100000.0);
 
-	private final SettingsModelLongBounded m_n = new SettingsModelLongBounded(CFG_N, 100, 1,
-			Integer.MAX_VALUE);
+	private final SettingsModelLongBounded m_n =
+			new SettingsModelLongBounded(CFG_N, 100, 1, Integer.MAX_VALUE);
 
-	private final SettingsModelBoolean m_isUnique = new SettingsModelBoolean(CFG_UNIQUE, true);
+	private final SettingsModelBoolean m_isUnique =
+			new SettingsModelBoolean(CFG_UNIQUE, true);
 
-	private static DataTableSpec spec;
+	private DataTableSpec spec;
 
 	/**
 	 * Constructor for the node model.
@@ -100,10 +104,10 @@ public class RandomNumbers2NodeModel extends NodeModel {
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
 			final ExecutionContext exec) throws Exception {
 
-		BufferedDataTableRowOutput output = new BufferedDataTableRowOutput(
-				exec.createDataContainer(spec));
-		createStreamableOperator(null, null).runFinal(new PortInput[0], new PortOutput[] { output },
-				exec);
+		BufferedDataTableRowOutput output =
+				new BufferedDataTableRowOutput(exec.createDataContainer(spec));
+		createStreamableOperator(null, null).runFinal(new PortInput[0],
+				new PortOutput[] { output }, exec);
 		return new BufferedDataTable[] { output.getDataTable() };
 
 	}
@@ -116,32 +120,37 @@ public class RandomNumbers2NodeModel extends NodeModel {
 	 * node.streamable.PartitionInfo, org.knime.core.node.port.PortObjectSpec[])
 	 */
 	@Override
-	public StreamableOperator createStreamableOperator(PartitionInfo partitionInfo,
-			PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+	public StreamableOperator createStreamableOperator(
+			PartitionInfo partitionInfo, PortObjectSpec[] inSpecs)
+			throws InvalidSettingsException {
 		return new StreamableOperator() {
 
 			@Override
-			public void runFinal(PortInput[] inputs, PortOutput[] outputs, ExecutionContext exec)
-					throws Exception {
+			public void runFinal(PortInput[] inputs, PortOutput[] outputs,
+					ExecutionContext exec) throws Exception {
 				RowOutput out = (RowOutput) outputs[0];
 				if (m_Type.getStringValue().equals("Integer")) {
 					if (m_isUnique.getBooleanValue()) {
-						RandomNumbers.addUniqueInts((int) Math.floor(m_Range.getMinRange()),
-								(int) Math.floor(m_Range.getMaxRange()), m_n.getLongValue(), out,
-								exec);
+						RandomNumbers.addUniqueInts(
+								(int) Math.floor(m_Range.getMinRange()),
+								(int) Math.floor(m_Range.getMaxRange()),
+								m_n.getLongValue(), out, exec);
 					} else {
-						RandomNumbers.addInts((int) Math.floor(m_Range.getMinRange()),
-								(int) Math.floor(m_Range.getMaxRange()), m_n.getLongValue(), out,
-								exec);
+						RandomNumbers.addInts(
+								(int) Math.floor(m_Range.getMinRange()),
+								(int) Math.floor(m_Range.getMaxRange()),
+								m_n.getLongValue(), out, exec);
 					}
 				} else {
 					// Actually get the values
 					if (m_isUnique.getBooleanValue()) {
-						RandomNumbers.addUniqueDoubles(m_Range.getMinRange(), m_Range.getMaxRange(),
-								m_n.getLongValue(), out, exec);
+						RandomNumbers.addUniqueDoubles(m_Range.getMinRange(),
+								m_Range.getMaxRange(), m_n.getLongValue(), out,
+								exec);
 					} else {
-						RandomNumbers.addDoubles(m_Range.getMinRange(), m_Range.getMaxRange(),
-								m_n.getLongValue(), out, exec);
+						RandomNumbers.addDoubles(m_Range.getMinRange(),
+								m_Range.getMaxRange(), m_n.getLongValue(), out,
+								exec);
 					}
 
 				}
@@ -171,7 +180,8 @@ public class RandomNumbers2NodeModel extends NodeModel {
 			throw new InvalidSettingsException("No column name enteres");
 		}
 		if (m_n.getLongValue() <= 0 || m_n == null) {
-			throw new InvalidSettingsException("Need to enter a valid number of values");
+			throw new InvalidSettingsException(
+					"Need to enter a valid number of values");
 		}
 		if (m_n.getLongValue() > Integer.MAX_VALUE) {
 			throw new InvalidSettingsException("Too many values required");
@@ -181,8 +191,8 @@ public class RandomNumbers2NodeModel extends NodeModel {
 		}
 
 		// Create an output table spec
-		spec = new DataTableSpec(
-				createDataColumnSpec(m_ColumnName.getStringValue(), m_Type.getStringValue()));
+		spec = new DataTableSpec(createDataColumnSpec(
+				m_ColumnName.getStringValue(), m_Type.getStringValue()));
 		return new DataTableSpec[] { spec };
 	}
 
@@ -217,7 +227,8 @@ public class RandomNumbers2NodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 
 		m_ColumnName.validateSettings(settings);
 		m_isUnique.validateSettings(settings);
@@ -230,7 +241,8 @@ public class RandomNumbers2NodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 	}
 
@@ -238,7 +250,8 @@ public class RandomNumbers2NodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 	}
 
@@ -246,9 +259,11 @@ public class RandomNumbers2NodeModel extends NodeModel {
 			final String colType) {
 		DataColumnSpec[] dcs = new DataColumnSpec[1];
 		if ("Double".equals(colType)) {
-			dcs[0] = new DataColumnSpecCreator(colName, DoubleCell.TYPE).createSpec();
+			dcs[0] = new DataColumnSpecCreator(colName, DoubleCell.TYPE)
+					.createSpec();
 		} else {
-			dcs[0] = new DataColumnSpecCreator(colName, IntCell.TYPE).createSpec();
+			dcs[0] = new DataColumnSpecCreator(colName, IntCell.TYPE)
+					.createSpec();
 		}
 		return dcs;
 	}

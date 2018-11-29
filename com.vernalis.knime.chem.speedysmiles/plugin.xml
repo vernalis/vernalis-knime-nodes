@@ -20,7 +20,11 @@
    
    <extension
          point="org.knime.workbench.repository.nodes">
-      <!-- FILTERS / SPLITTERS -->
+      <!-- 
+      ***********************
+      * FILTERS / SPLITTERS *
+      ***********************
+      -->
       <node
             category-path="/community/vernalis/speedy/filters"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.chirality.ChiralFilterNodeFactory"/>
@@ -47,15 +51,51 @@
       <node
             category-path="/community/vernalis/speedy/filters"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.dummyatoms.DummyAtomsSplitterNodeFactory" />
-       <!-- Since 1.16.0 -->
-     <node
+      <!-- Since 1.16.0 -->
+      <node
      		category-path="/community/vernalis/speedy/filters"
      		factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.chirality.BondGeomSplitterNodeFactory" />
-     <node
+      <node
      		category-path="/community/vernalis/speedy/filters"
      		factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.chirality.BondGeomFilterNodeFactory" /> 
       
-      <!-- MANIPULATORS -->
+      <!-- Sinc 1.18.0-->
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.organic.OrganicFilterNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.organic.OrganicSplitterNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.metals.DBlockMetalFilterNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.metals.DBlockMetalSplitterNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.metals.FBlockMetalFilterNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.metals.FBlockMetalSplitterNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.metals.PBlockMetalFilterNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.metals.PBlockMetalSplitterNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.metals.SBlockMetalFilterNodeFactory"/>
+      <node
+            category-path="/community/vernalis/speedy/filters"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.filter.metals.SBlockMetalSplitterNodeFactory"/>              
+      
+      <!-- 
+      ****************
+      * MANIPULATORS *
+      ****************
+      -->
       <node
             category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.hacdesalt.SmilesHACLargestComponentDesaltNodeFactory"/>
@@ -65,46 +105,54 @@
       <node
             category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.stereo.invert.StereoInvertNodeFactory"/>
-     <!-- Since v1.13.0 -->
-     <node
+      <!-- Since v1.13.0 -->
+      <node
             category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.stereo.strip.BondGeomStripNodeFactory"/>
-     <node
+      <node
             category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.stereo.strip.StereoStripNodeFactory"/>
-     <node
+      <node
             category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.scaffold.SmilesToScaffoldNodeFactory"/>
-     <node
+      <node
             category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.hisotopes.HIsotopeToTDpseudoatomNodeFactory"/>
-     <node
+      <node
             category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.hisotopes.TDpseudoatomToHIsotopeNodeFactory"/>
-     <node
+      <node
             category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.dummy.DummyAtomAtomClassToIsotopeNodeFactory"/>
-     <node
+      <node
             category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.dummy.DummyAtomIsotopeToAtomClassNodeFactory"/>
-     <node
+      <node
             category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.dummy.ReplaceDummyAtomNodeFactory"/>
-     <node
+      <node
             category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.clean.CleanChargesNodeFactory"/>
-     <node
+      <node
             category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.clean.CleanBondsNodeFactory"/>
-     <node
+      <node
             category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.clean.CleanDotNonbondsNodeFactory"/>
-     <node
+      <node
             category-path="/community/vernalis/speedy/manipulate"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.clean.CleanIsotopeLeadingZerosNodeFactory"/>
     
-                        
-      <!-- PROPERTIES -->
+     <!-- Since 1.18.0 -->
+     <node
+            category-path="/community/vernalis/speedy/manipulate"
+            factory-class="com.vernalis.knime.chem.speedysmiles.nodes.manip.cyclise.SmilesCycliseNodeFactory"/>
+    
+      <!-- 
+      **************
+      * PROPERTIES *
+      **************
+      -->
       <node
             category-path="/community/vernalis/speedy/props"
             factory-class="com.vernalis.knime.chem.speedysmiles.nodes.count.hac.SmilesHACNodeFactory"/>

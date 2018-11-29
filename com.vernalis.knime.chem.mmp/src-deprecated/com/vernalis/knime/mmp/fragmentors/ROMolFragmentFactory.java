@@ -43,6 +43,7 @@ import org.RDKit.RDKFuncs;
 import org.RDKit.ROMol;
 import org.RDKit.ROMol_Vect;
 import org.RDKit.RWMol;
+import org.RDKit.RingInfo;
 import org.RDKit.UInt_Vect;
 import org.knime.core.node.NodeLogger;
 
@@ -390,7 +391,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 					// atKey = gc.markForCleanup(key.getAtomWithIdx(atIdx),
 					// localGcWave);
 					atKey = gc.markForCleanup(new Atom(0), localGcWave);
-					atKey.setAtomicNum(0);
+					// atKey.setAtomicNum(0);
 					// atKey.setIsotope(500);
 					atKey.setProp(AP_ISOTOPIC_LABEL, "500");
 					key.replaceAtom(atIdx, atKey);
@@ -772,7 +773,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 							// at = gc.markForCleanup(
 							// frags[i].getAtomWithIdx(atIdx), localGcWave);
 							at = gc.markForCleanup(new Atom(0), localGcWave);
-							at.setAtomicNum(0);
+							// at.setAtomicNum(0);
 
 							// at.setIsotope(apIdx);
 							at.setProp(AP_ISOTOPIC_LABEL, "" + apIdx);
@@ -802,6 +803,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 				Arrays.copyOf(frags, frags.length - 1));
 
 		for (int i = 0; i < frags.length; i++) {
+			System.out.println(frags[i].MolToSmiles(true));
 			assignCreatedDblBondGeometry(frags[i], localGcWave);
 			// if (i < frags.length - 1) {
 			applyAPIsotopicLabels(frags[i], localGcWave);
@@ -832,7 +834,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 			throws MoleculeFragmentationException, UnenumeratedStereochemistryException {
 		int localGcWave = gcWave.getAndIncrement();
 		RWMol tmp = gc.markForCleanup(new RWMol(mol), localGcWave);
-
+		logger.debug("Using short fragmentation for" + bonds.toString());
 		// A lookup of the atom index and the AP index
 		Map<Long, Integer> APLookup = new HashMap<>();
 		// Firstly, we break all the marked bonds
@@ -1028,11 +1030,14 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 
 		canonicaliseDuplicateKeyComponents(value, localGcWave, key);
 
+		System.out.println(key.MolToSmiles());
+		System.out.println(key.MolToSmiles(true));
 		applyAPIsotopicLabels(key, localGcWave);
 		applyAPIsotopicLabels(value, localGcWave);
 
-		String retVal = key.MolToSmiles(true) + "."
-				+ /* getCanonicalValueSMILES(value, localGcWave);// */ value.MolToSmiles(true);
+		String retVal = key.MolToSmiles(true);
+		retVal += ".";
+		retVal += /* getCanonicalValueSMILES(value, localGcWave);// */ value.MolToSmiles(true);
 		gc.cleanupMarkedObjects(localGcWave);
 
 		// RDKit output multicomponents as ':' separated
@@ -1115,17 +1120,46 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	 *            The gc wave index
 	 */
 	private void assignCreatedDblBondGeometry(RWMol component, int localGcWave) {
-		// System.out.println("Starting... " + component.MolToSmiles(true));
+		System.out.println("Starting... " + component.MolToSmiles(true));
 		if (!hasNonflaggedDoubleBonds || !component.MolToSmiles(true).contains("=")) {
 			// Nothing to do with this component..
 			return;
 		}
-
+		System.out.println("About to sanitize...");
 		try {
+			// As test for seg fault, perform each step of sanitization
+			// separately...
+			RDKFuncs.cleanUp(component);
+			System.out.println("Cleaned up...");
+			component.updatePropertyCache(true);
+			System.out.println("Updated property cache...");
+			// component.symmetrizeSSSR();
+			// System.out.println("Symmetrized SSSR");
+			// component.Kekulize();
+			// System.out.println("Kekulized..");
+			RDKFuncs.assignRadicals(component);
+			System.out.println("Assigned radicals..");
+			// RDKFuncs.setAromaticity(component);
+			// System.out.println("Assigned aromaticity..");
+			RDKFuncs.setConjugation(component);
+			System.out.println("Assigned conjugation..");
+			RDKFuncs.setHybridization(component);
+			System.out.println("Assigned hybridization..");
+			RDKFuncs.cleanupChirality(component);
+			System.out.println("Cleaned up chirality..");
+			RDKFuncs.adjustHs(component);
+			System.out.println("Adjusted H's..");
+
+			RingInfo ri = component.getRingInfo();
+			System.out.println("Got ring info...");
+			ri.initialize();
+			System.out.println("Initialized ringinfo...");
 			component.sanitizeMol();
+			System.out.println("Sanitized..");
 			// This adds a list of stereoatoms to previously unassigned double
 			// bonds
 			RDKFuncs.findPotentialStereoBonds(component, false);
+			System.out.println("Found potential stereobonds...");
 		} catch (MolSanitizeException e) {
 			if (verboseLogging) {
 				logger.info("Problem assigning double bond geometry" + e.message() == null ? ""
@@ -1243,10 +1277,9 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 
 		}
 
-		// System.out.println(
-		// "And after application of datives and steroes... " +
-		// component.MolToSmiles(true));
-		// System.out.println("=====================");
+		System.out.println(
+				"And after application of datives and steroes... " + component.MolToSmiles(true));
+		System.out.println("=====================");
 	}
 
 	/**
@@ -1280,6 +1313,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 			if (at.getAtomicNum() == 0 && at.hasProp(AP_ISOTOPIC_LABEL)) {
 				int isotope = Integer.parseInt(at.getProp(AP_ISOTOPIC_LABEL).trim());
 				at.setIsotope(isotope);
+				// System.out.println("Setting isotope label: " + isotope);
 			}
 		}
 	}
@@ -1300,11 +1334,13 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 	private void canonicaliseDuplicateKeyComponents(RWMol value, int localGcWave,
 			RWMol... keyComponents) {
 
-		// System.out.println("Value:\t" + value.MolToSmiles(true));
-		// listAPs(value, localGcWave);
-		// System.out.println("Keys:");
+		System.out.println("Value:\t" + value.MolToSmiles(true));
+		listAPs(value, localGcWave);
+		System.out.println("Keys:");
 
 		if (keyComponents.length == 1) {
+			System.out.println(keyComponents[0].MolToSmiles(true));
+			logger.debug(keyComponents[0].MolToSmiles(true));
 			ROMol_Vect comps = gc.markForCleanup(
 					RDKFuncs.getMolFrags(keyComponents[0], true, null, null, false), localGcWave);
 			if (comps.size() > 1) {
@@ -1316,7 +1352,6 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 
 				// Now canonicalise
 				canonicaliseDuplicateKeyComponents(value, localGcWave, comps2);
-
 				// and now put them back into keyComponents
 				keyComponents[0].clear();
 				for (RWMol comp : comps2) {
@@ -1425,6 +1460,7 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 
 	@SuppressWarnings("unused")
 	private void listAPs(RWMol value, int localGcWave) {
+		// Used for debugging purposes
 		for (int atIdx = 0; atIdx < value.getNumAtoms(); atIdx++) {
 			Atom at = gc.markForCleanup(value.getAtomWithIdx(atIdx), localGcWave);
 			if (at.getAtomicNum() == 0 && at.hasProp(AP_ISOTOPIC_LABEL)) {

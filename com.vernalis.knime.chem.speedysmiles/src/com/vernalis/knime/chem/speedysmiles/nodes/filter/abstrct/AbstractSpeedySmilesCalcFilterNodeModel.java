@@ -44,12 +44,12 @@ import static com.vernalis.knime.chem.speedysmiles.nodes.abstrct.AbstractSpeedyS
 public abstract class AbstractSpeedySmilesCalcFilterNodeModel<T>
 		extends AbstractStreamableParallelisedFilterSplitterNodeModel<T> {
 
-	protected final SettingsModelString m_colName = createColumnNameModel();
+	protected final SettingsModelString m_colName =
+			registerSettingsModel(createColumnNameModel());
 	protected int smiColIdx;
 
 	protected AbstractSpeedySmilesCalcFilterNodeModel(boolean isSplitter) {
 		super(isSplitter);
-		registerSettingsModel(m_colName);
 	}
 
 	/*

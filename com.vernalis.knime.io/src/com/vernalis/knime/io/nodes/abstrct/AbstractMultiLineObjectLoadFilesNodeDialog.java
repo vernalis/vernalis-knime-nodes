@@ -29,7 +29,7 @@ import com.vernalis.io.FileHelpers.LineBreak;
 import com.vernalis.io.MultilineTextObject;
 
 /**
- * 
+ * Node dialog base class for the Load ... Files nodes
  * @author s.roughley
  *
  */
@@ -39,6 +39,7 @@ public class AbstractMultiLineObjectLoadFilesNodeDialog<T extends MultilineTextO
 	private static final String PROPERTIES = "Properties";
 	private static final String NEWLINE_OUTPUT = "Newline output";
 	protected final T nonReadableObject;
+	protected final DialogComponentStringListSelection propertiesDlg;
 
 	public AbstractMultiLineObjectLoadFilesNodeDialog(T nonReadableObject,
 			String historyID, String... fileTypes) {
@@ -51,15 +52,28 @@ public class AbstractMultiLineObjectLoadFilesNodeDialog<T extends MultilineTextO
 		addDialogComponent(lbDlg);
 		final DataColumnSpec[] newColumnSpecs =
 				this.nonReadableObject.getNewColumnSpecs();
-		if (newColumnSpecs.length > 1) {
-			addDialogComponent(new DialogComponentStringListSelection(
+		if (getNumProperties(newColumnSpecs) > 1) {
+			propertiesDlg = new DialogComponentStringListSelection(
 					createPropertySelectionModel(nonReadableObject), PROPERTIES,
 					Arrays.stream(newColumnSpecs)
 							.map(colSpec -> colSpec.getName())
 							.collect(Collectors.toList()),
 					ListSelectionModel.MULTIPLE_INTERVAL_SELECTION, true,
-					Math.min(newColumnSpecs.length, 12)));
+					Math.min(getNumProperties(newColumnSpecs), 12));
+			setHorizontalPlacement(true);
+			addDialogComponent(propertiesDlg);
+		} else {
+			propertiesDlg = null;
 		}
+	}
+
+	/**
+	 * Method to return the number of properties
+	 * @param newColumnSpecs
+	 * @return
+	 */
+	protected int getNumProperties(final DataColumnSpec[] newColumnSpecs) {
+		return newColumnSpecs.length;
 	}
 
 	static <T extends MultilineTextObject> SettingsModelStringArray createPropertySelectionModel(

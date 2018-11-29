@@ -68,9 +68,7 @@ import org.knime.core.util.MultiThreadWorker;
 import org.rdkit.knime.types.RDKitMolValue;
 
 import com.vernalis.exceptions.RowExecutionException;
-import com.vernalis.knime.mmp.FragmentKey2;
 import com.vernalis.knime.mmp.FragmentationTypes;
-import com.vernalis.knime.mmp.Leaf;
 import com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin;
 import com.vernalis.knime.mmp.MulticomponentSmilesFragmentParser;
 import com.vernalis.knime.mmp.RDKitBondIdentifier;
@@ -78,6 +76,10 @@ import com.vernalis.knime.mmp.RDKitFragmentationUtils;
 import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationException;
 import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationFactory;
 import com.vernalis.knime.mmp.fragmentors.UnenumeratedStereochemistryException;
+import com.vernalis.knime.mmp.frags.abstrct.AbstractFragmentKey;
+import com.vernalis.knime.mmp.frags.abstrct.AbstractLeaf;
+import com.vernalis.knime.mmp.frags.abstrct.AbstractMulticomponentFragmentationParser;
+import com.vernalis.knime.mmp.frags.abstrct.BondIdentifier;
 import com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage;
 import com.vernalis.knime.parallel.MultiTableParallelResult;
 import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
@@ -112,7 +114,8 @@ import static com.vernalis.knime.mmp.nodes.rdkit.fragment2.MultipleCutParallelRd
  * 
  */
 @Deprecated
-public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeModel {
+public abstract class AbstractParallelRdkitMMPFragment3NodeModel
+		extends NodeModel {
 
 	/** The node logger instance */
 	protected NodeLogger m_Logger = NodeLogger.getLogger(this.getClass());
@@ -120,28 +123,44 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	/*
 	 * Settings Models
 	 */
-	protected final SettingsModelString m_molColName = createMolColumnSettingsModel();
-	protected final SettingsModelString m_idColName = createIDColumnSettingsModel();
+	protected final SettingsModelString m_molColName =
+			createMolColumnSettingsModel();
+	protected final SettingsModelString m_idColName =
+			createIDColumnSettingsModel();
 	protected final SettingsModelString m_fragSMIRKS = createSMIRKSModel();
-	protected final SettingsModelString m_customSmarts = createCustomSMARTSModel();
+	protected final SettingsModelString m_customSmarts =
+			createCustomSMARTSModel();
 	protected final SettingsModelIntegerBounded m_numCuts = createCutsModel();
 	protected final SettingsModelBoolean m_allowTwoCutsToBondValue =
 			createAllowTwoCutsToBondValueModel();
 	protected final SettingsModelBoolean m_AddHs = createAddHModel();
-	protected final SettingsModelBoolean m_hasChangingAtoms = createHasMaxChangingAtomsModel();
-	protected final SettingsModelBoolean m_hasHARatioFilter = createHasHARatioFilterModel();
-	protected final SettingsModelIntegerBounded m_maxChangingAtoms = createMaxChangingAtomsModel();
-	protected final SettingsModelDoubleBounded m_minHARatioFilter = createRatioModel();
+	protected final SettingsModelBoolean m_hasChangingAtoms =
+			createHasMaxChangingAtomsModel();
+	protected final SettingsModelBoolean m_hasHARatioFilter =
+			createHasHARatioFilterModel();
+	protected final SettingsModelIntegerBounded m_maxChangingAtoms =
+			createMaxChangingAtomsModel();
+	protected final SettingsModelDoubleBounded m_minHARatioFilter =
+			createRatioModel();
 	protected final SettingsModelBoolean m_stripHsAtEnd = createStripHModel();
-	protected final SettingsModelBoolean m_outputNumChgHAs = createOutputChangingHACountsModel();
-	protected final SettingsModelBoolean m_outputHARatio = createOutputHARatiosModel();
-	protected final SettingsModelBoolean m_addFailReasons = createAddFailReasonModel();
-	protected final SettingsModelBoolean m_apFingerprints = createApFingerprintsModel();
-	protected final SettingsModelBoolean m_useBondTypes = createFpUseBondTypesModel();
-	protected final SettingsModelBoolean m_useChirality = createFpUseChiralityModel();
-	protected final SettingsModelIntegerBounded m_fpLength = createFpLengthModel();
-	protected final SettingsModelIntegerBounded m_morganRadius = createMorganRadiusModel();
-	protected final SettingsModelBoolean m_prochiralAsChiral = createProchiralModel();
+	protected final SettingsModelBoolean m_outputNumChgHAs =
+			createOutputChangingHACountsModel();
+	protected final SettingsModelBoolean m_outputHARatio =
+			createOutputHARatiosModel();
+	protected final SettingsModelBoolean m_addFailReasons =
+			createAddFailReasonModel();
+	protected final SettingsModelBoolean m_apFingerprints =
+			createApFingerprintsModel();
+	protected final SettingsModelBoolean m_useBondTypes =
+			createFpUseBondTypesModel();
+	protected final SettingsModelBoolean m_useChirality =
+			createFpUseChiralityModel();
+	protected final SettingsModelIntegerBounded m_fpLength =
+			createFpLengthModel();
+	protected final SettingsModelIntegerBounded m_morganRadius =
+			createMorganRadiusModel();
+	protected final SettingsModelBoolean m_prochiralAsChiral =
+			createProchiralModel();
 
 	/** Number of columns in the output table */
 	protected int numCols;
@@ -154,7 +173,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	protected Integer numThreads, queueSize;
 	protected final boolean isMulticut;
 	/** SWIG Garbage collector for RDKit Objects */
-	protected final SWIGObjectGarbageCollector m_SWIGGC = new SWIGObjectGarbageCollector();
+	protected final SWIGObjectGarbageCollector m_SWIGGC =
+			new SWIGObjectGarbageCollector();
 
 	/**
 	 * Wrap layer for RDKit objects to be persisted throughout a call to
@@ -172,36 +192,39 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 
 		m_maxChangingAtoms.setEnabled(m_hasChangingAtoms.getBooleanValue());
 		m_minHARatioFilter.setEnabled(m_hasHARatioFilter.getBooleanValue());
-		m_customSmarts.setEnabled(FragmentationTypes
-				.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED);
-		m_useBondTypes
-				.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
-		m_useChirality
-				.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
-		m_fpLength.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
-		m_morganRadius
-				.setEnabled(m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue());
+		m_customSmarts.setEnabled(FragmentationTypes.valueOf(m_fragSMIRKS
+				.getStringValue()) == FragmentationTypes.USER_DEFINED);
+		m_useBondTypes.setEnabled(m_apFingerprints.isEnabled()
+				&& m_apFingerprints.getBooleanValue());
+		m_useChirality.setEnabled(m_apFingerprints.isEnabled()
+				&& m_apFingerprints.getBooleanValue());
+		m_fpLength.setEnabled(m_apFingerprints.isEnabled()
+				&& m_apFingerprints.getBooleanValue());
+		m_morganRadius.setEnabled(m_apFingerprints.isEnabled()
+				&& m_apFingerprints.getBooleanValue());
 		if (isMulticut) {
 			m_allowTwoCutsToBondValue.setEnabled(m_numCuts.getIntValue() >= 2);
 		} else {
 			m_allowTwoCutsToBondValue.setEnabled(m_numCuts.getIntValue() == 2);
 		}
-		prefStore = MatchedPairsMultipleCutsNodePlugin.getDefault().getPreferenceStore();
+		prefStore = MatchedPairsMultipleCutsNodePlugin.getDefault()
+				.getPreferenceStore();
 		prefStore.addPropertyChangeListener(new IPropertyChangeListener() {
 
 			@Override
 			public void propertyChange(PropertyChangeEvent event) {
 
 				// Re-load the settings
-				verboseLogging =
-						prefStore.getBoolean(MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING);
+				verboseLogging = prefStore.getBoolean(
+						MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING);
 				queueSize = MatchedPairPreferencePage.getQueueSize();
 				numThreads = MatchedPairPreferencePage.getThreadsCount();
 
 			}
 		});
 
-		verboseLogging = prefStore.getBoolean(MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING);
+		verboseLogging = prefStore
+				.getBoolean(MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING);
 		queueSize = MatchedPairPreferencePage.getQueueSize();
 		numThreads = MatchedPairPreferencePage.getThreadsCount();
 	}
@@ -213,15 +236,19 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
 			throws InvalidSettingsException {
 		// Check the molCol is a molecule
-		DataColumnSpec colSpec = inSpecs[0].getColumnSpec(m_molColName.getStringValue());
+		DataColumnSpec colSpec =
+				inSpecs[0].getColumnSpec(m_molColName.getStringValue());
 
 		if (colSpec == null) {
 			// No column selected, or selected column not found - autoguess!
 			for (int i = inSpecs[0].getNumColumns() - 1; i >= 0; i--) {
 				// Reverse order to select most recently added
-				if (isColTypeRDKitCompatible(inSpecs[0].getColumnSpec(i).getType())) {
-					m_molColName.setStringValue(inSpecs[0].getColumnSpec(i).getName());
-					m_Logger.warn("No column selected. " + m_molColName.getStringValue()
+				if (isColTypeRDKitCompatible(
+						inSpecs[0].getColumnSpec(i).getType())) {
+					m_molColName.setStringValue(
+							inSpecs[0].getColumnSpec(i).getName());
+					m_Logger.warn("No column selected. "
+							+ m_molColName.getStringValue()
 							+ " auto-selected.");
 					break;
 				}
@@ -229,8 +256,9 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 				if (i == 0) {
 					m_Logger.error("No molecule column of the accepted"
 							+ " input formats (SDF, Mol, SMILES) was found.");
-					throw new InvalidSettingsException("No molecule column of the accepted"
-							+ " input formats (SDF, Mol, SMILES) was found.");
+					throw new InvalidSettingsException(
+							"No molecule column of the accepted"
+									+ " input formats (SDF, Mol, SMILES) was found.");
 				}
 			}
 
@@ -239,9 +267,12 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 			if (!isColTypeRDKitCompatible(colSpec.getType())) {
 				// The column is not compatible with one of the accepted types
 				m_Logger.error("The column " + m_molColName.getStringValue()
-						+ " is not one of the accepted" + " input formats (SDF, Mol, SMILES)");
-				throw new InvalidSettingsException("The column " + m_molColName.getStringValue()
-						+ " is not one of the accepted" + " input formats (SDF, Mol, SMILES)");
+						+ " is not one of the accepted"
+						+ " input formats (SDF, Mol, SMILES)");
+				throw new InvalidSettingsException(
+						"The column " + m_molColName.getStringValue()
+								+ " is not one of the accepted"
+								+ " input formats (SDF, Mol, SMILES)");
 			}
 		}
 
@@ -254,42 +285,47 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 				// Reverse order to select most recently added
 				DataType colType = inSpecs[0].getColumnSpec(i).getType();
 				if (colType.isCompatible(StringValue.class)) {
-					m_idColName.setStringValue(inSpecs[0].getColumnSpec(i).getName());
-					m_Logger.warn("No column selected. " + m_idColName.getStringValue()
-							+ " auto-selected.");
+					m_idColName.setStringValue(
+							inSpecs[0].getColumnSpec(i).getName());
+					m_Logger.warn("No column selected. "
+							+ m_idColName.getStringValue() + " auto-selected.");
 					break;
 				}
 				// If we are here when i = 0, then no suitable column found
 				if (i == 0) {
 					m_Logger.error("No String-compatible ID column was found.");
-					throw new InvalidSettingsException("No String-compatible ID column was found.");
+					throw new InvalidSettingsException(
+							"No String-compatible ID column was found.");
 				}
 			}
 		} else {
 			// We had a selected column, now lets see if it is a compatible type
 			if (!colSpec.getType().isCompatible(StringValue.class)) {
 				// The column is not compatible with one of the accepted types
-				m_Logger.error(
-						"The column " + m_idColName.getStringValue() + " is not String-compatible");
+				m_Logger.error("The column " + m_idColName.getStringValue()
+						+ " is not String-compatible");
 				throw new InvalidSettingsException(
-						"The column " + m_idColName.getStringValue() + " is not String-compatible");
+						"The column " + m_idColName.getStringValue()
+								+ " is not String-compatible");
 			}
 		}
 
-		if (FragmentationTypes
-				.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED) {
+		if (FragmentationTypes.valueOf(m_fragSMIRKS
+				.getStringValue()) == FragmentationTypes.USER_DEFINED) {
 			if (m_customSmarts.getStringValue() == null
 					|| "".equals(m_customSmarts.getStringValue())) {
 				m_Logger.error("A reaction SMARTS string must be provided "
 						+ "for user-defined fragmentation patterns");
-				throw new InvalidSettingsException("A reaction SMARTS string must be provided "
-						+ "for user-defined fragmentation patterns");
+				throw new InvalidSettingsException(
+						"A reaction SMARTS string must be provided "
+								+ "for user-defined fragmentation patterns");
 			}
-			String rSMARTSCheck =
-					RDKitFragmentationUtils.validateReactionSmarts(m_customSmarts.getStringValue());
+			String rSMARTSCheck = RDKitFragmentationUtils
+					.validateReactionSmarts(m_customSmarts.getStringValue());
 			if (rSMARTSCheck != null) {
 				m_Logger.error("Error parsing rSMARTS: " + rSMARTSCheck);
-				throw new InvalidSettingsException("Error parsing rSMARTS: " + rSMARTSCheck);
+				throw new InvalidSettingsException(
+						"Error parsing rSMARTS: " + rSMARTSCheck);
 			}
 		}
 		m_spec_0 = createSpec_0(inSpecs[0], isMulticut);
@@ -309,7 +345,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 *            cuts
 	 * @return The 1st output table spec
 	 */
-	protected DataTableSpec createSpec_0(DataTableSpec spec, boolean includeNumCutsColumn) {
+	protected DataTableSpec createSpec_0(DataTableSpec spec,
+			boolean includeNumCutsColumn) {
 		int numCols = 3;
 		if (includeNumCutsColumn) {
 			numCols++;
@@ -320,15 +357,18 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 		if (m_outputHARatio.getBooleanValue()) {
 			numCols++;
 		}
-		if (m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue()) {
+		if (m_apFingerprints.isEnabled()
+				&& m_apFingerprints.getBooleanValue()) {
 			numCols += m_numCuts.getIntValue();
 		}
 
 		DataColumnSpec[] specs = new DataColumnSpec[numCols];
 		int i = 0;
 		specs[i++] = createColSpec("ID", StringCell.TYPE);
-		specs[i++] = createColSpec("Fragmentation 'Key' (" + (isMulticut ? "Upto " : "")
-				+ m_numCuts.getIntValue() + " bond cuts)", SmilesCell.TYPE);
+		specs[i++] = createColSpec(
+				"Fragmentation 'Key' (" + (isMulticut ? "Upto " : "")
+						+ m_numCuts.getIntValue() + " bond cuts)",
+				SmilesCell.TYPE);
 		specs[i++] = createColSpec("Fragmentation 'Value'", SmilesCell.TYPE);
 
 		if (m_outputNumChgHAs.getBooleanValue()) {
@@ -336,14 +376,18 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 		}
 		if (m_outputHARatio.getBooleanValue()) {
 			specs[i++] =
-					createColSpec("Ratio of Changing / Unchanging Heavy Atoms", DoubleCell.TYPE);
+					createColSpec("Ratio of Changing / Unchanging Heavy Atoms",
+							DoubleCell.TYPE);
 		}
-		if (m_apFingerprints.isEnabled() && m_apFingerprints.getBooleanValue()) {
+		if (m_apFingerprints.isEnabled()
+				&& m_apFingerprints.getBooleanValue()) {
 			for (int fpIdx = 1; fpIdx <= m_numCuts.getIntValue(); fpIdx++) {
-				specs[i++] = new DataColumnSpecCreator(
-						DataTableSpec.getUniqueColumnName(spec,
-								"Attachment point " + fpIdx + " fingerprint"),
-						DenseBitVectorCell.TYPE).createSpec();
+				specs[i++] =
+						new DataColumnSpecCreator(
+								DataTableSpec.getUniqueColumnName(spec,
+										"Attachment point " + fpIdx
+												+ " fingerprint"),
+								DenseBitVectorCell.TYPE).createSpec();
 			}
 		}
 
@@ -364,9 +408,10 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 */
 	protected DataTableSpec createSpec_1(DataTableSpec dataTableSpec) {
 		if (m_addFailReasons.getBooleanValue()) {
-			DataTableSpecCreator retVal = new DataTableSpecCreator(dataTableSpec);
-			retVal.addColumns(new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(dataTableSpec, "Failure Reason"),
+			DataTableSpecCreator retVal =
+					new DataTableSpecCreator(dataTableSpec);
+			retVal.addColumns(new DataColumnSpecCreator(DataTableSpec
+					.getUniqueColumnName(dataTableSpec, "Failure Reason"),
 					StringCell.TYPE).createSpec());
 			return retVal.createSpec();
 		} else {
@@ -383,7 +428,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 *            The column {@link DataType}
 	 * @return A {@link DataColumnSpec}
 	 */
-	protected final DataColumnSpec createColSpec(String colName, DataType colType) {
+	protected final DataColumnSpec createColSpec(String colName,
+			DataType colType) {
 		return (new DataColumnSpecCreator(colName, colType)).createSpec();
 	}
 
@@ -391,8 +437,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected BufferedDataTable[] execute(BufferedDataTable[] inData, final ExecutionContext exec)
-			throws Exception {
+	protected BufferedDataTable[] execute(BufferedDataTable[] inData,
+			final ExecutionContext exec) throws Exception {
 
 		// Do some setting up
 		BufferedDataTable table = inData[0];
@@ -413,13 +459,16 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 		}
 
 		// Sort out the reaction
-		String fragSMIRKS = FragmentationTypes.valueOf(m_fragSMIRKS.getStringValue()).getSMARTS();
-		if ((fragSMIRKS == null || "".equals(fragSMIRKS)) && FragmentationTypes
-				.valueOf(m_fragSMIRKS.getStringValue()) == FragmentationTypes.USER_DEFINED) {
+		String fragSMIRKS = FragmentationTypes
+				.valueOf(m_fragSMIRKS.getStringValue()).getSMARTS();
+		if ((fragSMIRKS == null || "".equals(fragSMIRKS))
+				&& FragmentationTypes.valueOf(m_fragSMIRKS
+						.getStringValue()) == FragmentationTypes.USER_DEFINED) {
 			fragSMIRKS = m_customSmarts.getStringValue();
 		}
-		final ROMol bondMatch = m_SWIGGC
-				.markForCleanup(RWMol.MolFromSmarts(fragSMIRKS.split(">>")[0]), GC_LEVEL_EXECUTE);
+		final ROMol bondMatch = m_SWIGGC.markForCleanup(
+				RWMol.MolFromSmarts(fragSMIRKS.split(">>")[0]),
+				GC_LEVEL_EXECUTE);
 
 		// Now do some final setting up
 		final int numCuts = m_numCuts.getIntValue();
@@ -428,28 +477,33 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 				: (numCuts == 1) ? m_AddHs.getBooleanValue() : false;
 
 		// These two can both be null
-		final Integer maxNumVarAtm =
-				(m_hasChangingAtoms.getBooleanValue()) ? m_maxChangingAtoms.getIntValue() : null;
+		final Integer maxNumVarAtm = (m_hasChangingAtoms.getBooleanValue())
+				? m_maxChangingAtoms.getIntValue() : null;
 		final Double minCnstToVarAtmRatio =
-				(m_hasHARatioFilter.getBooleanValue()) ? m_minHARatioFilter.getDoubleValue() : null;
+				(m_hasHARatioFilter.getBooleanValue())
+						? m_minHARatioFilter.getDoubleValue() : null;
 
-		final boolean stripHsAtEnd = m_stripHsAtEnd.isEnabled() && m_stripHsAtEnd.getBooleanValue();
+		final boolean stripHsAtEnd =
+				m_stripHsAtEnd.isEnabled() && m_stripHsAtEnd.getBooleanValue();
 
 		m_Logger.info("Starting fragmentation");
-		m_Logger.info("Fragmentation SMIRKS: " + fragSMIRKS + " (Upto " + numCuts + " cuts)");
+		m_Logger.info("Fragmentation SMIRKS: " + fragSMIRKS + " (Upto "
+				+ numCuts + " cuts)");
 		m_Logger.info("Using " + numThreads + " threads and " + queueSize
 				+ " queue items to parallel process...");
 
 		MultiThreadWorker<DataRow, MultiTableParallelResult> processor =
-				getMultithreadWorker(exec, molIdx, idIdx, numRows, dc_0, dc_1, bondMatch, numCuts,
-						addHs, maxNumVarAtm, minCnstToVarAtmRatio, stripHsAtEnd);
+				getMultithreadWorker(exec, molIdx, idIdx, numRows, dc_0, dc_1,
+						bondMatch, numCuts, addHs, maxNumVarAtm,
+						minCnstToVarAtmRatio, stripHsAtEnd);
 
 		try {
 			processor.run(table);
 		} catch (InterruptedException e) {
 			// Quarantine to give time for all threads to cancel
 			m_SWIGGC.quarantineAndCleanupMarkedObjects();
-			CanceledExecutionException cee = new CanceledExecutionException(e.getMessage());
+			CanceledExecutionException cee =
+					new CanceledExecutionException(e.getMessage());
 			cee.initCause(e);
 			throw cee;
 		} catch (ExecutionException e) {
@@ -489,25 +543,32 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 * @return
 	 */
 	private MultiThreadWorker<DataRow, MultiTableParallelResult> getMultithreadWorker(
-			final ExecutionContext exec, final int molIdx, final int idIdx, final long numRows,
-			final BufferedDataContainer dc_0, final BufferedDataContainer dc_1,
-			final ROMol bondMatch, final int numCuts, final boolean addHs,
-			final Integer maxNumVarAtm, final Double minCnstToVarAtmRatio,
-			final boolean stripHsAtEnd) {
-		return new MultiThreadWorker<DataRow, MultiTableParallelResult>(queueSize, numThreads) {
+			final ExecutionContext exec, final int molIdx, final int idIdx,
+			final long numRows, final BufferedDataContainer dc_0,
+			final BufferedDataContainer dc_1, final ROMol bondMatch,
+			final int numCuts, final boolean addHs, final Integer maxNumVarAtm,
+			final Double minCnstToVarAtmRatio, final boolean stripHsAtEnd) {
+		return new MultiThreadWorker<DataRow, MultiTableParallelResult>(
+				queueSize, numThreads) {
 
 			@Override
-			protected MultiTableParallelResult compute(DataRow in, long index) throws Exception {
+			protected MultiTableParallelResult compute(DataRow in, long index)
+					throws Exception {
 				try {
 					return fragmentRow(in, index + 1, numCols, molIdx,
-							m_addFailReasons.getBooleanValue(), bondMatch, numCuts,
-							m_prochiralAsChiral.getBooleanValue(), addHs, stripHsAtEnd,
-							m_allowTwoCutsToBondValue.getBooleanValue(), maxNumVarAtm,
-							minCnstToVarAtmRatio, idIdx, m_outputNumChgHAs.getBooleanValue(),
-							m_outputHARatio.getBooleanValue(), m_apFingerprints.getBooleanValue(),
-							m_morganRadius.getIntValue(), m_fpLength.getIntValue(),
-							m_useChirality.getBooleanValue(), m_useBondTypes.getBooleanValue(),
-							m_SWIGGC, exec, m_Logger, verboseLogging);
+							m_addFailReasons.getBooleanValue(), bondMatch,
+							numCuts, m_prochiralAsChiral.getBooleanValue(),
+							addHs, stripHsAtEnd,
+							m_allowTwoCutsToBondValue.getBooleanValue(),
+							maxNumVarAtm, minCnstToVarAtmRatio, idIdx,
+							m_outputNumChgHAs.getBooleanValue(),
+							m_outputHARatio.getBooleanValue(),
+							m_apFingerprints.getBooleanValue(),
+							m_morganRadius.getIntValue(),
+							m_fpLength.getIntValue(),
+							m_useChirality.getBooleanValue(),
+							m_useBondTypes.getBooleanValue(), m_SWIGGC, exec,
+							m_Logger, verboseLogging);
 				} catch (CanceledExecutionException e) {
 					throw new CancellationException();
 				}
@@ -515,14 +576,16 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 
 			@Override
 			protected void processFinished(ComputationTask task)
-					throws ExecutionException, CancellationException, InterruptedException {
+					throws ExecutionException, CancellationException,
+					InterruptedException {
 				long r = task.getIndex();
 				String inKey = task.getInput().getKey().getString();
 				long subIdx = 0;
 				MultiTableParallelResult result = task.get();
 
 				try {
-					for (int tblId = 0; tblId < result.getNumberTables(); tblId++) {
+					for (int tblId = 0; tblId < result
+							.getNumberTables(); tblId++) {
 						List<DataRow> rows = result.getRowsForTable(tblId);
 						int numRows = rows.size();
 						for (DataRow row : rows) {
@@ -530,8 +593,9 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 							if (tblId > 0 && numRows == 1) {
 								dc_1.addRowToTable(row);
 							} else {
-								DataRow row2 =
-										new DefaultRow(new RowKey(inKey + "_" + subIdx++), row);
+								DataRow row2 = new DefaultRow(
+										new RowKey(inKey + "_" + subIdx++),
+										row);
 								dc_0.addRowToTable(row2);
 
 							}
@@ -540,8 +604,10 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 				} catch (DataContainerException e) {
 					// Cancellation can cause table writing blow-up!
 					if (!task.isCancelled()) {
-						throw new InterruptedException("Exception encountered during execution: "
-								+ e.getClass().getSimpleName() + " '" + e.getMessage() + "'");
+						throw new InterruptedException(
+								"Exception encountered during execution: "
+										+ e.getClass().getSimpleName() + " '"
+										+ e.getMessage() + "'");
 					}
 				} finally {
 					m_SWIGGC.cleanupMarkedObjects((int) (r + 1));
@@ -570,28 +636,34 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 *             Thrown if the cell is not of the correct type
 	 * @throws RowExecutionException
 	 */
-	protected ROMol getROMolFromCell(DataCell cell) throws RowExecutionException {
+	protected ROMol getROMolFromCell(DataCell cell)
+			throws RowExecutionException {
 		ROMol mol = null;
 		DataType type = cell.getType();
 		try {
 			if (type.isCompatible(RDKitMolValue.class)) {
 				mol = ((RDKitMolValue) cell).readMoleculeValue();
 			} else if (type.isCompatible(SmilesValue.class)) {
-				RWMol rwMol = RWMol.MolFromSmiles(((SmilesValue) cell).getSmilesValue(), 0, false);
+				RWMol rwMol = RWMol.MolFromSmiles(
+						((SmilesValue) cell).getSmilesValue(), 0, false);
 				RDKFuncs.sanitizeMol(rwMol);
 				mol = rwMol;
 				// rwMol.delete();
 			} else if (type.isCompatible(MolValue.class)) {
-				mol = RWMol.MolFromMolBlock(((MolValue) cell).getMolValue(), true, false);
+				mol = RWMol.MolFromMolBlock(((MolValue) cell).getMolValue(),
+						true, false);
 			} else if (type.isCompatible(SdfValue.class)) {
-				mol = RWMol.MolFromMolBlock(((SdfValue) cell).getSdfValue(), true, false);
+				mol = RWMol.MolFromMolBlock(((SdfValue) cell).getSdfValue(),
+						true, false);
 			} else {
-				throw new RowExecutionException("Cell is not a recognised molecule type");
+				throw new RowExecutionException(
+						"Cell is not a recognised molecule type");
 			}
 		} catch (MolSanitizeException e) {
 			// MolSanitizeException returns null for #getMessage()
 			throw new RowExecutionException("Error in sanitizing molecule: "
-					+ ((StringValue) cell).getStringValue() + " : " + e.message());
+					+ ((StringValue) cell).getStringValue() + " : "
+					+ e.message());
 		} catch (Exception e) {
 			String msg = e.getMessage();
 			if (msg == null || "".equals(msg)) {
@@ -673,14 +745,17 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 *         fragmentation rows of a failed row
 	 * @throws CanceledExecutionException
 	 */
-	protected abstract MultiTableParallelResult fragmentRow(DataRow row, long index, int numCols,
-			int molIdx, boolean addFailReasons, ROMol bondMatch, int numCuts,
-			boolean prochiralAsChiral, boolean addHs, boolean stripHsAtEnd,
-			boolean allowTwoCutsToBondValue, Integer maxNumVarAtm, Double minCnstToVarAtmRatio,
-			int idColIdx, boolean outputNumChgHAs, boolean outputHARatio, boolean addFingerprints,
-			int morganRadius, int fpLength, boolean useChirality, boolean useBondTypes,
-			SWIGObjectGarbageCollector swigGC, ExecutionContext exec, NodeLogger logger,
-			boolean verboseLogging) throws CanceledExecutionException;
+	protected abstract MultiTableParallelResult fragmentRow(DataRow row,
+			long index, int numCols, int molIdx, boolean addFailReasons,
+			ROMol bondMatch, int numCuts, boolean prochiralAsChiral,
+			boolean addHs, boolean stripHsAtEnd,
+			boolean allowTwoCutsToBondValue, Integer maxNumVarAtm,
+			Double minCnstToVarAtmRatio, int idColIdx, boolean outputNumChgHAs,
+			boolean outputHARatio, boolean addFingerprints, int morganRadius,
+			int fpLength, boolean useChirality, boolean useBondTypes,
+			SWIGObjectGarbageCollector swigGC, ExecutionContext exec,
+			NodeLogger logger, boolean verboseLogging)
+			throws CanceledExecutionException;
 
 	/**
 	 * A collection of bonds which have been identified as cuttable (i.e. match
@@ -696,8 +771,9 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 * @return A Set of Sets of {@code numCuts} bonds
 	 * @throws IllegalArgumentException
 	 */
-	protected abstract Set<Set<RDKitBondIdentifier>> generateCuttableBondCombos(ROMol roMol,
-			ROMol bondMatch, int numCuts) throws IllegalArgumentException;
+	protected abstract Set<Set<BondIdentifier>> generateCuttableBondCombos(
+			ROMol roMol, ROMol bondMatch, int numCuts)
+			throws IllegalArgumentException;
 
 	/**
 	 * Method to break the supplied {@link ROMol} along the indicated bond
@@ -721,9 +797,10 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 *             if the user cancels during execution
 	 */
 	protected Set<MulticomponentSmilesFragmentParser> breakMoleculeAlongBondCombos(
-			MoleculeFragmentationFactory fragFactory, Set<Set<RDKitBondIdentifier>> bondCombos,
-			boolean prochiralAsChiral, ExecutionContext exec, NodeLogger logger,
-			boolean verboseLogging) throws CanceledExecutionException {
+			MoleculeFragmentationFactory fragFactory,
+			Set<Set<RDKitBondIdentifier>> bondCombos, boolean prochiralAsChiral,
+			ExecutionContext exec, NodeLogger logger, boolean verboseLogging)
+			throws CanceledExecutionException {
 		int count = 0;
 		Set<MulticomponentSmilesFragmentParser> retVal = new TreeSet<>();
 		for (Set<RDKitBondIdentifier> bondSet : bondCombos) {
@@ -731,19 +808,20 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 			count++;
 			if (verboseLogging) {
 				if (count % 50 == 0) {
-					logger.info("Fragmenting molecule: " + count + " of " + bondCombos.size()
-							+ " fragmentations tried");
+					logger.info("Fragmenting molecule: " + count + " of "
+							+ bondCombos.size() + " fragmentations tried");
 				}
 			}
 			MulticomponentSmilesFragmentParser smiParser = null;
 			try {
-				smiParser = fragFactory.fragmentMolecule(bondSet, prochiralAsChiral);
+				smiParser = fragFactory.fragmentMolecule(bondSet,
+						prochiralAsChiral);
 				// Collect the fragmentation
 				retVal.add(smiParser);
 			} catch (MoleculeFragmentationException e) {
 				if (verboseLogging) {
-					logger.info("Discarding Fragmentation: " + e.getMessage() == null ? ""
-							: e.getMessage());
+					logger.info("Discarding Fragmentation: "
+							+ e.getMessage() == null ? "" : e.getMessage());
 				}
 				// Goto next fragmentation
 				continue;
@@ -752,12 +830,12 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 				// Fragmentation Factory
 				try {
 					// NB the method handles the n=1 case reversal
-					retVal.addAll(
-							RDKitFragmentationUtils.enumerateDativeMaskedDoubleBondIsomers(e));
+					retVal.addAll(RDKitFragmentationUtils
+							.enumerateDativeMaskedDoubleBondIsomers(e));
 				} catch (MoleculeFragmentationException e1) {
 					if (verboseLogging) {
-						logger.info("Discarding Fragmentation: " + e.getMessage() == null ? ""
-								: e.getMessage());
+						logger.info("Discarding Fragmentation: "
+								+ e.getMessage() == null ? "" : e.getMessage());
 					}
 					// Goto next fragmentation
 					continue;
@@ -771,7 +849,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 					retVal.add(smiParser);
 				} catch (MoleculeFragmentationException e) {
 					if (verboseLogging) {
-						logger.info("Discarding Fragmentation: " + e.getMessage());
+						logger.info(
+								"Discarding Fragmentation: " + e.getMessage());
 					}
 					// Goto next fragmentation
 					continue;
@@ -807,9 +886,10 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 *             if the user cancels during execution
 	 */
 	protected Set<MulticomponentSmilesFragmentParser> breakMoleculeAlongBonds(
-			MoleculeFragmentationFactory fragFactory, Set<RDKitBondIdentifier> bonds,
-			boolean prochiralAsChiral, ExecutionContext exec, NodeLogger logger,
-			boolean verboseLogging) throws CanceledExecutionException {
+			MoleculeFragmentationFactory fragFactory,
+			Set<RDKitBondIdentifier> bonds, boolean prochiralAsChiral,
+			ExecutionContext exec, NodeLogger logger, boolean verboseLogging)
+			throws CanceledExecutionException {
 
 		Set<MulticomponentSmilesFragmentParser> retVal = new TreeSet<>();
 		for (RDKitBondIdentifier bond : bonds) {
@@ -817,13 +897,14 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 
 			MulticomponentSmilesFragmentParser smiParser = null;
 			try {
-				smiParser = fragFactory.fragmentMolecule(bond, prochiralAsChiral);
+				smiParser =
+						fragFactory.fragmentMolecule(bond, prochiralAsChiral);
 				// Collect the fragmentation
 				retVal.add(smiParser);
 			} catch (MoleculeFragmentationException e) {
 				if (verboseLogging) {
-					logger.info("Discarding Fragmentation: " + e.getMessage() == null ? ""
-							: e.getMessage());
+					logger.info("Discarding Fragmentation: "
+							+ e.getMessage() == null ? "" : e.getMessage());
 				}
 				// Goto next fragmentation
 				continue;
@@ -832,12 +913,12 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 				// Fragmentation Factory
 				try {
 					// NB the method handles the n=1 case reversal
-					retVal.addAll(
-							RDKitFragmentationUtils.enumerateDativeMaskedDoubleBondIsomers(e));
+					retVal.addAll(RDKitFragmentationUtils
+							.enumerateDativeMaskedDoubleBondIsomers(e));
 				} catch (MoleculeFragmentationException e1) {
 					if (verboseLogging) {
-						logger.info("Discarding Fragmentation: " + e.getMessage() == null ? ""
-								: e.getMessage());
+						logger.info("Discarding Fragmentation: "
+								+ e.getMessage() == null ? "" : e.getMessage());
 					}
 					// Goto next fragmentation
 					continue;
@@ -851,7 +932,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 					retVal.add(smiParser);
 				} catch (MoleculeFragmentationException e) {
 					if (verboseLogging) {
-						logger.info("Discarding Fragmentation: " + e.getMessage());
+						logger.info(
+								"Discarding Fragmentation: " + e.getMessage());
 					}
 					// Goto next fragmentation
 					continue;
@@ -889,22 +971,26 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 *             if the user cancels node execution during this method
 	 */
 	protected Set<MulticomponentSmilesFragmentParser> doDoubleCutToSingleBond(
-			MoleculeFragmentationFactory fragFactory, Set<RDKitBondIdentifier> cuttableBonds,
-			boolean prochiralAsChiral, ExecutionContext exec, NodeLogger logger,
-			boolean verboseLogging) throws CanceledExecutionException {
+			MoleculeFragmentationFactory fragFactory,
+			Set<RDKitBondIdentifier> cuttableBonds, boolean prochiralAsChiral,
+			ExecutionContext exec, NodeLogger logger, boolean verboseLogging)
+			throws CanceledExecutionException {
 
-		Set<MulticomponentSmilesFragmentParser> fragmentations = new TreeSet<>();
+		Set<MulticomponentSmilesFragmentParser> fragmentations =
+				new TreeSet<>();
 		// Break each bond in turn
 		for (RDKitBondIdentifier bond : cuttableBonds) {
 			exec.checkCanceled();
 			MulticomponentSmilesFragmentParser smiParser = null;
 			try {
-				smiParser = fragFactory.fragmentMoleculeWithBondInsertion(bond, prochiralAsChiral);
+				smiParser = fragFactory.fragmentMoleculeWithBondInsertion(bond,
+						prochiralAsChiral);
 				fragmentations.add(smiParser);
 			} catch (MoleculeFragmentationException e) {
 				if (verboseLogging) {
-					logger.info("Discarding Fragmentation: " + e.getMessage() == null
-							? bond.toString() : e.getMessage());
+					logger.info("Discarding Fragmentation: "
+							+ e.getMessage() == null ? bond.toString()
+									: e.getMessage());
 				}
 				// Goto next fragmentation
 				continue;
@@ -912,12 +998,12 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 				// Some stereochemistry that could not be applied by the
 				// Fragmentation Factory
 				try {
-					fragmentations.addAll(
-							RDKitFragmentationUtils.enumerateDativeMaskedDoubleBondIsomers(e));
+					fragmentations.addAll(RDKitFragmentationUtils
+							.enumerateDativeMaskedDoubleBondIsomers(e));
 				} catch (MoleculeFragmentationException e1) {
 					if (verboseLogging) {
-						logger.info("Discarding Fragmentation: " + e.getMessage() == null ? ""
-								: e.getMessage());
+						logger.info("Discarding Fragmentation: "
+								+ e.getMessage() == null ? "" : e.getMessage());
 					}
 					// Goto next fragmentation
 					continue;
@@ -958,10 +1044,12 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 * @param outNumCutsColumn
 	 *            Include the number of cuts column in the output table
 	 */
-	protected void addRowToTable(final MultiTableParallelResult table, boolean stripHsAtEnd,
-			DataCell idCell, MulticomponentSmilesFragmentParser smiParser, int numCols,
-			boolean outputNumChgHAs, boolean outputHARatio, boolean addFingerprints,
-			int morganRadius, int fpLength, boolean useChirality, boolean useBondTypes,
+	protected void addRowToTable(final MultiTableParallelResult table,
+			boolean stripHsAtEnd, DataCell idCell,
+			AbstractMulticomponentFragmentationParser<RWMol> smiParser,
+			int numCols, boolean outputNumChgHAs, boolean outputHARatio,
+			boolean addFingerprints, int morganRadius, int fpLength,
+			boolean useChirality, boolean useBondTypes,
 			boolean outNumCutsColumn) {
 
 		// We use a dummy row key - the keys are sorted in the concurrent
@@ -972,29 +1060,29 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 		Arrays.fill(cells, DataType.getMissingCell());
 		int colIdx = 0;
 		cells[colIdx++] = idCell;
-		FragmentKey2 key = smiParser.getKey();
+		AbstractFragmentKey<RWMol> key = smiParser.getKey();
 		// The fragmentation factory should already have removed H's so we dont
 		// repeat the effort here!
-		cells[colIdx++] = key.getKeyAsDataCell(false);
-		cells[colIdx++] = smiParser.getValue().getSMILESCell(false);
+		cells[colIdx++] = key.getKeyAsDataCell();
+		cells[colIdx++] = smiParser.getValue().getSMILESCell();
 		if (outputNumChgHAs) {
 			cells[colIdx++] = smiParser.getValue().getNumberChangingAtomsCell();
 		}
 		if (outputHARatio) {
-			cells[colIdx++] =
-					smiParser.getKey().getConstantToVaryingAtomRatioCell(smiParser.getValue());
+			cells[colIdx++] = smiParser.getKey()
+					.getConstantToVaryingAtomRatioCell(smiParser.getValue());
 		}
 		if (addFingerprints) {
 			for (int i = 0; i < smiParser.getNumCuts(); i++) {
-				Leaf l = null;
+				AbstractLeaf<RWMol> l = null;
 				try {
 					l = key.getLeafWithIdx(i + 1);
 				} catch (IndexOutOfBoundsException e) {
 					// We have got no more leafs to find
 					break;
 				}
-				cells[colIdx++] = l.getMorganFingerprintCell(morganRadius, fpLength, useChirality,
-						useBondTypes);
+				cells[colIdx++] = l.getMorganFingerprintCell(morganRadius,
+						fpLength, useChirality, useBondTypes);
 			}
 		}
 		if (outNumCutsColumn) {
@@ -1080,7 +1168,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 * #validateSettings(org.knime.core.node.NodeSettingsRO)
 	 */
 	@Override
-	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		m_prochiralAsChiral.validateSettings(settings);
 		m_AddHs.validateSettings(settings);
 		m_idColName.validateSettings(settings);
@@ -1108,7 +1197,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 		// Do nothing
 	}
@@ -1117,7 +1207,8 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel extends NodeMod
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 		// Do nothing
 	}

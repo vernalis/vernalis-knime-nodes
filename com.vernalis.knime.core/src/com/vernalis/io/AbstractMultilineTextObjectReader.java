@@ -43,6 +43,7 @@ public abstract class AbstractMultilineTextObjectReader<T extends MultilineTextO
 	private List<String> lines =
 			Collections.synchronizedList(new ArrayList<>());
 	private boolean isFirst = true;
+	private long bytesRead = 0;
 
 	/**
 	 * Constructor
@@ -88,6 +89,7 @@ public abstract class AbstractMultilineTextObjectReader<T extends MultilineTextO
 		String line;
 
 		while ((line = br.readLine()) != null) {
+			bytesRead += line.length();
 			if (delimPattern != null
 					&& delimPattern.matcher(line.trim()).find()) {
 				// We have a deliminator line, so handle object creation and
@@ -202,6 +204,17 @@ public abstract class AbstractMultilineTextObjectReader<T extends MultilineTextO
 		builder.append(isFirst);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.vernalis.knime.internal.io.MultilineTextObjectReader#getBytesRead()
+	 */
+	@Override
+	public long getBytesRead() {
+		return bytesRead;
 	}
 
 }

@@ -33,6 +33,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.knime.core.node.NodeLogger;
 import org.knime.core.node.util.ButtonGroupEnumInterface;
+import org.knime.core.util.Pair;
 import org.knime.core.util.pathresolve.ResolverUtil;
 
 /**
@@ -263,10 +264,38 @@ public class FileHelpers {
 	public static BufferedReader getReaderFromUrl(String urlStr,
 			FileEncodingWithGuess fileEncoding) throws MalformedURLException,
 			IOException, UnsupportedEncodingException {
+		return getLengthedReaderFromUrl(urlStr, fileEncoding).getFirst();
+	}
+
+	/**
+	 * Method to return the reader and the length in bytes of the content
+	 * 
+	 * @param urlStr
+	 *            The URL to open a {@link BufferedReader} on
+	 * @param fileEncoding
+	 *            The encoding policy - {@link FileEncodingWithGuess#GUESS} will
+	 *            result in the URL header or content Byte Order Mark (BOM)
+	 *            being used to guess, otherwise the encoding will be set to the
+	 *            value specified here
+	 * @return A {@link BufferedReader} for the supplied URL
+	 * @throws MalformedURLException
+	 *             If the URL was incorrectly formatted
+	 * @throws IOException
+	 *             If there was a problem reading the BOM from the
+	 *             {@link InputStream}
+	 * @throws UnsupportedEncodingException
+	 *             If the guessed charset encoding is not supported within the
+	 *             current JVM
+	 */
+	public static Pair<BufferedReader, Long> getLengthedReaderFromUrl(
+			String urlStr, FileEncodingWithGuess fileEncoding)
+			throws MalformedURLException, IOException,
+			UnsupportedEncodingException {
 		// Form a URL connection
 		URL url = new URL(urlStr);
 		URLConnection uc = url.openConnection();
 		InputStream is = uc.getInputStream();
+		long length = uc.getContentLengthLong();
 
 		// decompress, if necessary
 		if (urlStr.endsWith(".gz") || urlStr.contains("&compressionType=gz")
@@ -281,7 +310,7 @@ public class FileHelpers {
 		// Now set up a buffered reader to read it
 		BufferedReader in =
 				new BufferedReader(new InputStreamReader(is, encoding));
-		return in;
+		return new Pair<>(in, length);
 	}
 
 	/**

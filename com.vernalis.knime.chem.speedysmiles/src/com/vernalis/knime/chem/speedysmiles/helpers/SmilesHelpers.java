@@ -8,7 +8,7 @@
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
- *   
+ *  
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
@@ -20,6 +20,7 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
@@ -46,6 +47,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.streamable.RowOutput;
 
+import com.vernalis.knime.chem.speedysmiles.nodes.count.charge.ChargeCount;
 import com.vernalis.knime.chem.speedysmiles.nodes.count.chiralcentres.ChiralCentreCount;
 
 /**
@@ -335,6 +337,211 @@ public class SmilesHelpers {
 	}
 
 	/**
+	 * Count the number of explicitly defined stereocentres
+	 * 
+	 * @param smi
+	 *            SMILES String
+	 * @return Number of explicitly defined stereocentres
+	 * @deprecated Subsumed into {@link ChiralCentreCount}
+	 */
+	@Deprecated
+	public static int countExplicitStereoCentres(String smi) {
+		int cnt = 0;
+		// NB define length as l as otherwise smiles.length
+		// is re-calculated on each iteration, apparently
+		for (int i = 0, l = smi.length(); i < l; i++) {
+			char x = smi.charAt(i);
+			if (x == '@') {
+				cnt++;
+				// skip following
+				while (smi.charAt(i) == '@') {
+					i++;
+				}
+			}
+		}
+		return cnt;
+	}
+
+	/**
+	 * Find the most positive charge in a molecule SMILES. Single digit numeric
+	 * suffixes are allowed as per the Daylight specification
+	 * 
+	 * @param smi
+	 *            SMILES string
+	 * @return Count of positive charges
+	 * @deprecated Subsumed by {@link ChargeCount}
+	 */
+	@Deprecated
+	public static int getMaxPositiveCharge(String smi) {
+		int max = 0;
+		// NB define length as l as otherwise smiles.length
+		// is re-calculated on each iteration, apparently
+		for (int i = 0, l = smi.length(); i < l; i++) {
+			char x = smi.charAt(i);
+			if (x == '+') {
+				if (Character.isDigit(smi.charAt(i + 1))) {
+					max = Math.max(max,
+							Character.getNumericValue(smi.charAt(i + 1)));
+				} else {
+					int cnt = 0;
+					while (smi.charAt(i) == '+') {
+						i++;
+						cnt++;
+					}
+					max = Math.max(max, cnt);
+				}
+			}
+		}
+		return max;
+	}
+
+	/**
+	 * Count the positive charges in a molecule SMILES. Single digit numeric
+	 * suffixes are allowed as per the Daylight specification
+	 * 
+	 * @param smi
+	 *            SMILES string
+	 * @return Count of positive charges
+	 * @deprecated Subsumed by {@link ChargeCount}
+	 */
+	@Deprecated
+	public static int countPositiveCharges(String smi) {
+		int cnt = 0;
+		// NB define length as l as otherwise smiles.length
+		// is re-calculated on each iteration, apparently
+		for (int i = 0, l = smi.length(); i < l; i++) {
+			char x = smi.charAt(i);
+			if (x == '+') {
+				if (Character.isDigit(smi.charAt(i + 1))) {
+					cnt += Character.getNumericValue(smi.charAt(i + 1));
+				} else {
+					cnt++;
+				}
+			}
+		}
+		return cnt;
+	}
+
+	/**
+	 * Count the negative charges in a molecule SMILES. Single digit numeric
+	 * suffixes are allowed as per the Daylight specification. NB This is more
+	 * complicated then positive charges, as '-' also indicates a single bond
+	 * 
+	 * @param smi
+	 *            SMILES string
+	 * @return Count of negative charges
+	 * @deprecated Subsumed by {@link ChargeCount}
+	 */
+	@Deprecated
+	public static int countNegativeCharges(String smi) {
+		int cnt = 0;
+		boolean inAtomParentheses = false;
+		// NB define length as l as otherwise smiles.length
+		// is re-calculated on each iteration, apparently
+		for (int i = 0, l = smi.length(); i < l; i++) {
+			char x = smi.charAt(i);
+			if (x == '[') {
+				inAtomParentheses = true;
+				continue;
+			}
+			if (x == ']') {
+				inAtomParentheses = false;
+				continue;
+			}
+			if (inAtomParentheses && x == '-') {
+				if (Character.isDigit(smi.charAt(i + 1))) {
+					cnt += Character.getNumericValue(smi.charAt(i + 1));
+				} else {
+					cnt++;
+				}
+			}
+		}
+		return cnt;
+	}
+
+	/**
+	 * Find the most negative charge in a SMILES. Single digit numeric suffixes
+	 * are allowed as per the Daylight specification. NB This is more
+	 * complicated then positive charges, as '-' also indicates a single bond
+	 * 
+	 * @param smi
+	 *            SMILES string
+	 * @return Most negative charge
+	 * @deprecated Subsumed by {@link ChargeCount}
+	 */
+	@Deprecated
+	public static int getMaxNegativeCharge(String smi) {
+		int max = 0;
+		boolean inAtomParentheses = false;
+		// NB define length as l as otherwise smiles.length
+		// is re-calculated on each iteration, apparently
+		for (int i = 0, l = smi.length(); i < l; i++) {
+			char x = smi.charAt(i);
+			if (x == '[') {
+				inAtomParentheses = true;
+				continue;
+			}
+			if (x == ']') {
+				inAtomParentheses = false;
+				continue;
+			}
+			if (inAtomParentheses && x == '-') {
+				if (Character.isDigit(smi.charAt(i + 1))) {
+					max = Math.max(max,
+							Character.getNumericValue(smi.charAt(i + 1)));
+				} else {
+					int cnt = 0;
+					while (smi.charAt(i) == '-') {
+						i++;
+						cnt++;
+					}
+					max = Math.max(max, cnt);
+				}
+			}
+		}
+		return max;
+	}
+
+	/**
+	 * Get the biggest absolute charge
+	 * 
+	 * @param smilesValue
+	 *            SMILES String
+	 * @return The magnitude of the biggest absolute charge
+	 * @deprecated Subsumed by {@link ChargeCount}
+	 */
+	@Deprecated
+	public static int getMaxTotalCharge(String smi) {
+		return Math.max(getMaxPositiveCharge(smi), getMaxNegativeCharge(smi));
+	}
+
+	/**
+	 * Count the total overall net charge (+ve - -ve charges)
+	 * 
+	 * @param smi
+	 *            SMILES String
+	 * @return The net charge
+	 * @deprecated Subsumed by {@link ChargeCount}
+	 */
+	@Deprecated
+	public static int countNetCharge(String smi) {
+		return countPositiveCharges(smi) - countNegativeCharges(smi);
+	}
+
+	/**
+	 * Count the total number of charges (+ve <b>+</b> -ve charges)
+	 * 
+	 * @param smi
+	 *            SMILES String
+	 * @return The total charge count
+	 * @deprecated Subsumed by {@link ChargeCount}
+	 */
+	@Deprecated
+	public static int countTotalChargeCount(String smi) {
+		return countPositiveCharges(smi) + countNegativeCharges(smi);
+	}
+
+	/**
 	 * Checks for un-closed bond indexes
 	 * 
 	 * @param smi
@@ -448,7 +655,7 @@ public class SmilesHelpers {
 
 				while (++i < l && (Character.isDigit(x = smi.charAt(i))
 						|| x == '%' || x == '\\' || x == '/')) {
-					// possible intermediate characteres - double bond stereo
+					// possible intermediate characters - double bond stereo
 					// and bond types, and % = double-digit index marker
 					if (Character.isDigit(x)) {
 						// If a digit, then each digit is a separate index
@@ -490,6 +697,67 @@ public class SmilesHelpers {
 			return null;
 		}
 		return count;
+	}
+
+	public static Set<Integer> listUsedBondIDs(String smi) {
+		Set<Integer> bondIds = new HashSet<>();
+
+		for (int i = 0, l = smi.length(); i < l; i++) {
+			char x = smi.charAt(i);
+			if (x == '[') {
+				// skip to ]
+				while ((x = smi.charAt(i)) != ']') {
+					i++;
+				}
+			}
+			// Only count if immediately after an organicSMILESSubset member or
+			// ] or bond symbol (bond symbol added to handle e.g S(=O)=1)
+			if (x == ']' || bondSymbols.contains(x)
+					|| organicSMILESSubset
+							.contains(String.valueOf(Character.toUpperCase(x)))
+					|| ((i + 1) < l && organicSMILESSubset.contains(
+							new String(new char[] { Character.toUpperCase(x),
+									smi.charAt(i + 1) })))) {
+
+				// Possible starting place to look
+				if ((i + 1) < l && organicSMILESSubset.contains(
+						new String(new char[] { Character.toUpperCase(x),
+								smi.charAt(i + 1) }))) {
+					// Skip the second digit if a t character match found
+					i++;
+				}
+
+				while (++i < l && (Character.isDigit(x = smi.charAt(i))
+						|| x == '%' || x == '\\' || x == '/')) {
+					// possible intermediate characters - double bond stereo
+					// and bond types, and % = double-digit index marker
+					if (Character.isDigit(x)) {
+						// If a digit, then each digit is a separate index
+						bondIds.add(Character.getNumericValue(x));
+					} else if (x == '%') {
+						// The next 2 digits only are an index in the Daylight
+						// Specification
+						// Allow for only 1 being a digit, but dont look for 3
+						// or more
+						int id = 0;
+						int j = 0;
+						while (++i < l && j++ < 2
+								&& Character.isDigit(x = smi.charAt(i))) {
+							id *= 10;
+							id += Character.getNumericValue(x);
+						}
+						i--;
+						bondIds.add(id);
+					}
+					// Otherwise we have a bond type or stereomarker, which we
+					// just skip
+				}
+				// drop i by 1 to start loop again with true next character
+				i--;
+			}
+		}
+
+		return bondIds;
 	}
 
 	/**
@@ -888,6 +1156,28 @@ public class SmilesHelpers {
 	 * </ul>
 	 * </p>
 	 */
+
+	private static final Pattern DUMMY_ATOM_MATCH =
+			Pattern.compile("((?<!\\()[\\\\/])?" + "[:\\-=#]?"
+					+ "\\[[^\\[\\]]*?\\*[^\\[\\]]*?]");
+	private static final Pattern BRACKET_MATCH =
+			Pattern.compile("\\((%?[\\d]*)\\)");
+
+	public static String removeDummyAtoms(String smiles) {
+		// TODO: COMPLETE FIGURING OUT THE OPTIONS HERE!
+		String retVal = DUMMY_ATOM_MATCH.matcher(smiles).replaceAll("")
+				.replace("*", "");
+		Matcher m = BRACKET_MATCH.matcher(retVal);
+		while (m.find()) {
+			retVal = m.replaceAll(m.group(1));
+			m = BRACKET_MATCH.matcher(retVal);
+		}
+		retVal = retVal.replace("(\\)", "/").replace("(/)", "\\");
+		if (retVal.endsWith("\\") || retVal.endsWith("/")) {
+			retVal = retVal.substring(0, retVal.length() - 2);
+		}
+		return retVal;
+	}
 
 	private static final Pattern DUMMY_ATOM_ISOTOPE_UNLABELLED =
 			Pattern.compile("\\[(\\d+)\\*([^:\\[\\]])*\\]");
@@ -1426,5 +1716,237 @@ public class SmilesHelpers {
 			}
 		}
 		return sb.toString();
+	}
+
+	/**
+	 * Removes the first atom
+	 * 
+	 * @param smiles
+	 * @return {@code null} if the resulting SMILES starts with a branch
+	 */
+	public static String removeFirstAtom(String smiles) {
+		if (smiles == null || smiles.isEmpty()) {
+			return null;
+		}
+		int newStartIdx = 0;
+		if (smiles.charAt(0) == '[') {
+			while (smiles.charAt(newStartIdx) != ']') {
+				newStartIdx++;
+			}
+			newStartIdx++;
+		} else if (Arrays.binarySearch(ORGANIC_SUBSET_AROMATICS,
+				smiles.charAt(0)) >= 0 || smiles.charAt(0) == '*'
+				|| smiles.charAt(0) == 'T' || smiles.charAt(0) == 'D') {
+			newStartIdx++;
+		} else {
+			final Optional<String> firstElement = organicSMILESSubset.stream()
+					.filter(x -> smiles.startsWith(x)).findFirst();
+			if (firstElement.isPresent()) {
+				newStartIdx += firstElement.get().length();
+			}
+		}
+		if (Arrays.binarySearch(BOND_CHARS, smiles.charAt(newStartIdx)) >= 0) {
+			newStartIdx++;
+		}
+		if (smiles.charAt(newStartIdx) == '%') {
+			newStartIdx++;
+		}
+		while (Character.isDigit(smiles.charAt(newStartIdx))) {
+			newStartIdx++;
+		}
+		if (smiles.startsWith("(")) {
+			return null;
+		}
+		return smiles.substring(newStartIdx);
+	}
+
+	public static String removeLastAtom(String smiles) {
+		if (smiles == null || smiles.isEmpty()) {
+			return null;
+		}
+		int newEndIdx = smiles.length() - 1;
+		while (Character.isDigit(smiles.charAt(newEndIdx))
+				|| smiles.charAt(newEndIdx) == '%') {
+			newEndIdx--;
+		}
+		// if (smiles.charAt(newEndIdx) == '%') {
+		// newEndIdx--;
+		// }
+		if (Arrays.binarySearch(BOND_CHARS, smiles.charAt(newEndIdx)) >= 0) {
+			newEndIdx--;
+		}
+
+		if (smiles.charAt(newEndIdx) == ']') {
+			while (smiles.charAt(newEndIdx) != '[') {
+				newEndIdx--;
+			}
+			newEndIdx--;
+		} else if (Arrays.binarySearch(ORGANIC_SUBSET_AROMATICS,
+				smiles.charAt(newEndIdx)) >= 0
+				|| smiles.charAt(newEndIdx) == '*'
+				|| smiles.charAt(newEndIdx) == 'T'
+				|| smiles.charAt(newEndIdx) == 'D') {
+			newEndIdx--;
+		} else {
+			final int newEndIdx1 = newEndIdx;
+			final Optional<String> firstElement = organicSMILESSubset.stream()
+					.filter(x -> smiles.lastIndexOf(x) == newEndIdx1
+							- x.length() + 1)
+					.findFirst();
+			if (firstElement.isPresent()) {
+				newEndIdx -= firstElement.get().length();
+				// newEndIdx++;
+			}
+		}
+
+		return smiles.substring(0, newEndIdx + 1);
+	}
+
+	public static String cycliseEndAtoms(String smi) {
+		if (smi == null || smi.isEmpty()) {
+			return null;
+		}
+		Set<Integer> usedIds = listUsedBondIDs(smi);
+		int closureIndex = 1;
+		while (usedIds.contains(closureIndex)) {
+			closureIndex++;
+		}
+		String closureString = (closureIndex > 9 ? "%" : "") + closureIndex;
+		StringBuilder sb = new StringBuilder(smi);
+		int newStartIdx = 0;
+		if (smi.charAt(0) == '[') {
+			while (smi.charAt(newStartIdx) != ']') {
+				newStartIdx++;
+			}
+			newStartIdx++;
+		} else if (Arrays.binarySearch(ORGANIC_SUBSET_AROMATICS,
+				smi.charAt(0)) >= 0 || smi.charAt(0) == '*'
+				|| smi.charAt(0) == 'T' || smi.charAt(0) == 'D') {
+			newStartIdx++;
+		} else {
+			final Optional<String> firstElement = organicSMILESSubset.stream()
+					.filter(x -> smi.startsWith(x)).findFirst();
+			if (firstElement.isPresent()) {
+				newStartIdx += firstElement.get().length();
+			}
+		}
+		while (Character.isDigit(smi.charAt(newStartIdx))) {
+			newStartIdx++;
+		}
+		sb.insert(newStartIdx, closureString);
+		if (closureIndex < 10) {
+			// make sure we insert before any %nn closures
+		}
+		newStartIdx = sb.length() - 1;
+		while (Character.isDigit(sb.charAt(newStartIdx))
+				|| sb.charAt(newStartIdx) == '%') {
+			newStartIdx--;
+		}
+		sb.insert(newStartIdx + 1, closureString);
+		return sb.toString();
+	}
+
+	private static boolean hasElements(String smi, Pattern elementPattern) {
+		return elementPattern.matcher(smi).find();
+	}
+
+	private static final Pattern S_BLOCK_METALS_PATTERN = Pattern.compile(
+			"\\[[^\\]]*(?:Li|Na|K(?!r)|Rb|Cs|Fr|Be|Mg|Ca|Sr|Ba|Ra)[^\\[]*\\]");
+
+	public static boolean hasSBlockMetal(String smi) {
+		return hasElements(smi, S_BLOCK_METALS_PATTERN);
+	}
+
+	private static final Pattern D_BLOCK_METALS_PATTERN = Pattern.compile(
+			"\\[[^\\]]*(?:A[cgu]|Bh|C[dnoru]|D[bs]|Fe|H[fgs]|Ir|La|M[not]|N[bi]|"
+					+ "Os|P[dt]|R[efghu]|S[cg]|T[aci]|[VWY](?![a-z])|Z[nr])[^\\[]*\\]");
+
+	public static boolean hasDBlockMetal(String smi) {
+		return hasElements(smi, D_BLOCK_METALS_PATTERN);
+	}
+
+	private static final Pattern F_BLOCK_METALS_PATTERN = Pattern
+			.compile("\\[[^\\]]*(?:C[efm]|Dy|E[rsu]|Fm|Gd|Ho|L[ru]|Md|N[dop]|"
+					+ "P[amru]|Sm|T[bhm]|U(?![a-z])|Yb)[^\\[]*\\]");
+
+	public static boolean hasFBlockMetal(String smi) {
+		return hasElements(smi, F_BLOCK_METALS_PATTERN);
+	}
+
+	private static final Pattern P_BLOCK_METALS_PATTERN = Pattern.compile(
+			"\\[[^\\]]*(?:Al|Bi|Fl|Ga|In|Lv|Mc|Nh|Pb|Po|Sn)[^\\[]*\\]");
+
+	public static boolean hasPBlockMetal(String smi) {
+		return hasElements(smi, P_BLOCK_METALS_PATTERN);
+	}
+
+	public static boolean isOrganicSubsetOnly(String smi, boolean keepAnyAtom) {
+		boolean inComplexAtom = false;
+		for (int i = 0; i < smi.length(); i++) {
+			char c = smi.charAt(i);
+			if (c == '*' && !keepAnyAtom) {
+				// Any element symbol
+				return false;
+			} else if (c == '[') {
+				// Start of complex atom
+				inComplexAtom = true;
+				continue;
+			} else if (c == ']') {
+				// End of complex atom
+				inComplexAtom = false;
+				continue;
+			}
+
+			// If we are not in [] then must be organic
+			if (!inComplexAtom) {
+				continue;
+			}
+
+			if (!Character.isAlphabetic(c)) {
+				// Bonds, charges, isotopes, start/end elements, ring closures
+				// etc
+				continue;
+			}
+			if (c > 'Z') {
+				c = Character.toUpperCase(c);
+			}
+			if (c == 'N' || c == 'O' || c == 'P' || c == 'S' || c == 'F'
+					|| c == 'I' || c == 'H' || c == 'D' || c == 'T') {
+				// Check not part of 2-character
+				if (i + 1 < smi.length()) {
+					char c0 = smi.charAt(i + 1);
+					// If it is lowercase then it is 2-character
+					if (Character.isLowerCase(c0)) {
+						// And therefore not organic subset
+						return false;
+					}
+				}
+				// organic subset
+				continue;
+			}
+			if (c == 'C' || c == 'B') {
+				// Possible 2-character organics
+				if (i + 1 < smi.length()) {
+					char c0 = smi.charAt(i + 1);
+					if (!Character.isLowerCase(c0)) {
+						// Not a 2-character, so is organic subset
+						continue;
+					}
+					if ((c == 'C' && c0 == 'l') || (c == 'B' && c0 == 'r')) {
+						// 2 character organic subset, skip and continue
+						i++;
+						continue;
+					}
+				} else {
+					// Shortcut, as we are at the end of the string. continue
+					// would have same effect
+					return true;
+				}
+			}
+			// If we are here, then we didnt have an organic subset
+			return false;
+		}
+		// We made it
+		return true;
 	}
 }

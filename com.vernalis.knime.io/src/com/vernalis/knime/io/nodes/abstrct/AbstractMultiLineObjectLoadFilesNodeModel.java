@@ -56,6 +56,7 @@ import org.knime.core.node.streamable.PortInput;
 import org.knime.core.node.streamable.PortOutput;
 import org.knime.core.node.streamable.RowOutput;
 import org.knime.core.node.streamable.StreamableOperator;
+import org.knime.core.util.Pair;
 
 import com.vernalis.io.FileEncodingWithGuess;
 import com.vernalis.io.FileHelpers;
@@ -160,15 +161,23 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 				Map<String, AtomicLong> rowSuffixes =
 						Collections.synchronizedMap(new HashMap<>());
 				String[] files = m_files.getStringArrayValue();
+				double progPerFile = 1.0 / files.length;
 				LineBreak lineBreak =
 						LineBreak.valueOf(m_lineBreaksModel.getStringValue());
+				int fileIdx = 0;
 				for (String file : files) {
 					// Now, if it is a Location, convert to a URL
 					file = FileHelpers.forceURL(file);
 					File f = new File(file);
+					ExecutionContext exec0 =
+							exec.createSubExecutionContext(progPerFile);
 					try {
-						BufferedReader br =
-								FileHelpers.getReaderFromUrl(file, fileEnc);
+						Pair<BufferedReader, Long> lbr = FileHelpers
+								.getLengthedReaderFromUrl(file, fileEnc);
+						BufferedReader br = lbr.getFirst();
+						// FileHelpers.getReaderFromUrl(file, fileEnc);
+						double progPerByte = lbr.getSecond() > 0.0
+								? progPerFile / lbr.getSecond() : 0.0;
 						String newLineStr =
 								lineBreak == LineBreak.PRESERVE_INCOMING
 										? FileHelpers.getLineBreakFromReader(br)
@@ -218,7 +227,17 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 								cells = newObjCells;
 							}
 							out.push(new DefaultRow(rK, cells));
+							exec0.setProgress(
+									objReader.getBytesRead() * progPerByte,
+									String.format(
+											"Read estimated %,d of %,d bytes of file %,d of %,d files",
+											objReader.getBytesRead(),
+											lbr.getSecond(), fileIdx + 1,
+											files.length));
+							exec0.checkCanceled();
 						}
+					} catch (CanceledExecutionException e) {
+						throw e;
 					} catch (Exception e) {
 						getLogger().warn("Problem reading file '" + file + "': "
 								+ e.getMessage());
@@ -237,6 +256,7 @@ public abstract class AbstractMultiLineObjectLoadFilesNodeModel<T extends Multil
 						RowKey rK = generateRowKey(rowSuffixes, f);
 						out.push(new DefaultRow(rK, cells));
 					}
+					fileIdx++;
 				}
 				out.close();
 			}

@@ -77,4 +77,8 @@ public interface MultilineTextObjectReader<T extends MultilineTextObject> {
 	 */
 	boolean requireFinalDeliminatorAtEnd();
 
+	/**
+	 * @return the number of bytes read from the underlying stream
+	 */
+	long getBytesRead();
 }

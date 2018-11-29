@@ -89,9 +89,18 @@
      <node
      		category-path="/community/vernalis/misc/plate"
             factory-class="com.vernalis.nodes.misc.plateids.PlateWellIDSourceNodeFactory" />
-     <!-- node
-     		category-path="/community/vernalis/misc/plate"
-            factory-class="com.vernalis.nodes.misc.plateids.PlateWellIDMapUpwardsNodeFactory" / -->
+
+     <!-- v 1.18.0 -->     
+     <node
+     		category-path="/community/vernalis/misc/"
+            factory-class="com.vernalis.nodes.urlencode.UrlEncodeNodeFactory" />
+     <node
+     		category-path="/community/vernalis/misc/"
+            factory-class="com.vernalis.nodes.urlencode.UrlEncodeNodeFactory" />
+     <node
+     		category-path="/community/vernalis/misc/"
+            factory-class="com.vernalis.nodes.list2set.List2SetNodeFactory" />
+
       <!-- Deprecated Nodes -->
       <node
             category-path="/community/vernalis/fps"

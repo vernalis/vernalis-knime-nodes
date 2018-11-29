@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017,2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -17,11 +17,21 @@ package com.vernalis.knime.nodes;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.apache.xmlbeans.XmlCursor;
+import org.eclipse.equinox.p2.metadata.IInstallableUnit;
+import org.knime.core.eclipseUtil.OSGIHelper;
+import org.knime.core.node.NodeAndBundleInformation;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeModel;
 import org.knime.node2012.FullDescriptionDocument.FullDescription;
+import org.knime.node2012.KnimeNodeDocument.KnimeNode;
 import org.knime.node2012.OptionDocument.Option;
 import org.knime.node2012.TabDocument.Tab;
+import org.osgi.framework.Bundle;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Element;
 
 import com.vernalis.knime.misc.EitherOr;
 
@@ -32,8 +42,45 @@ import com.vernalis.knime.misc.EitherOr;
  *
  */
 public class NodeDescriptionUtils {
+
 	private NodeDescriptionUtils() {
 		// Utility Class - Do not Instantiate
+	}
+
+	/**
+	 * Method to add the guidelines about the rSMARTS specification
+	 * 
+	 * @param introCursor
+	 *            The cursor
+	 */
+	public static void addRSmartsGuidelines(XmlCursor introCursor) {
+		introCursor.beginElement("p");
+		introCursor.insertElementWithText("i",
+				"Guidelines for Custom (r)SMARTS Definition");
+		introCursor.insertElement("br");
+		introCursor.insertChars(
+				"An rSMARTS is no longer required, but may be specified if preferred for backwards compatibility. "
+						+ "If specified must comply with the following rules. "
+						+ "Otherwise, simply a match for two atoms separated by a single, acyclic bond must be provided");
+		introCursor.beginElement("ul");
+		introCursor.insertElementWithText("li",
+				"'>>' is required to separate reactants and products");
+		introCursor.insertElementWithText("li",
+				"Products require '[*]' to occur twice, for the attachment "
+						+ "points (the node will handle the tagging of these)");
+		introCursor.insertElementWithText("li",
+				"Reactants and products require exactly two atom mappings, e.g. "
+						+ ":1] and :2] (other values could be used).");
+		introCursor.insertElementWithText("li",
+				"The atom mappings must be two different values");
+		introCursor.insertElementWithText("li",
+				"The same atom mappings must be used for reactants and products");
+		introCursor.toEndToken();
+		introCursor.insertChars(
+				"rSMARTS not conforming to these guidelines will be "
+						+ "rejected during node configuration.");
+		introCursor.toEndToken();
+		introCursor.toNextToken();
 	}
 
 	/**
@@ -45,8 +92,8 @@ public class NodeDescriptionUtils {
 	 * @param optionDescription
 	 *            The description of the option
 	 */
-	public static void addOptionWithoutTab(FullDescription fullDesc, String optionName,
-			String optionDescription) {
+	public static void addOptionWithoutTab(FullDescription fullDesc,
+			String optionName, String optionDescription) {
 		Option opt = fullDesc.addNewOption();
 		configureOption(opt, optionName, optionDescription);
 	}
@@ -59,7 +106,8 @@ public class NodeDescriptionUtils {
 	 * @param optionDescription
 	 *            The description of the option
 	 */
-	public static void addOptionToTab(Tab tab, String optionName, String optionDescription) {
+	public static void addOptionToTab(Tab tab, String optionName,
+			String optionDescription) {
 		Option opt = tab.addNewOption();
 		configureOption(opt, optionName, optionDescription);
 	}
@@ -71,7 +119,8 @@ public class NodeDescriptionUtils {
 	 * @param optionName
 	 * @param optionDescription
 	 */
-	private static void configureOption(Option opt, String optionName, String optionDescription) {
+	private static void configureOption(Option opt, String optionName,
+			String optionDescription) {
 		opt.setName(optionName);
 		XmlCursor optCursor = opt.newCursor();
 		optCursor.toFirstContentToken();
@@ -101,9 +150,9 @@ public class NodeDescriptionUtils {
 	 * @param doi
 	 *            The DOI (will be linked too)
 	 */
-	public static void insertReference(XmlCursor introCursor, int refNumber, String authors,
-			String title, String journalAbbrev, int year, int volume, String pageRange,
-			String doi) {
+	public static void insertReference(XmlCursor introCursor, int refNumber,
+			String authors, String title, String journalAbbrev, int year,
+			int volume, String pageRange, String doi) {
 		introCursor.beginElement("p");
 		introCursor.insertChars(refNumber + ". " + authors + ", \"");
 		introCursor.insertElementWithText("i", title);
@@ -113,7 +162,8 @@ public class NodeDescriptionUtils {
 		introCursor.insertElementWithText("b", volume + ", ");
 		introCursor.insertChars(pageRange + " (DOI:");
 		introCursor.beginElement("a");
-		introCursor.insertAttributeWithValue("href", "http://dx.doi.org/" + doi);
+		introCursor.insertAttributeWithValue("href",
+				"http://dx.doi.org/" + doi);
 		introCursor.insertChars(doi);
 		introCursor.toEndToken();
 		introCursor.toNextToken();
@@ -133,13 +183,16 @@ public class NodeDescriptionUtils {
 		introCursor.beginElement("p");
 		introCursor.insertChars("This node was developed by ");
 		introCursor.beginElement("a");
-		introCursor.insertAttributeWithValue("href", "http://www.vernalis-research.com");
+		introCursor.insertAttributeWithValue("href",
+				"http://www.vernalis-research.com");
 		introCursor.insertChars("Vernalis Research");
 		introCursor.toEndToken();
 		introCursor.toNextToken();
-		introCursor.insertChars(". For feedback and more information, please contact ");
+		introCursor.insertChars(
+				". For feedback and more information, please contact ");
 		introCursor.beginElement("a");
-		introCursor.insertAttributeWithValue("href", "mailto:knime@vernalis.com");
+		introCursor.insertAttributeWithValue("href",
+				"mailto:knime@vernalis.com");
 		introCursor.insertChars("knime@vernalis.com");
 		introCursor.toEndToken();
 		introCursor.toNextToken();
@@ -165,19 +218,95 @@ public class NodeDescriptionUtils {
 			throws NoSuchElementException {
 		if (options != null && options.isPresent()) {
 			if (options.isLeft()) {
-				for (Entry<String, String> option : options.getLeft().entrySet()) {
-					addOptionWithoutTab(fullDesc, option.getKey(), option.getValue());
+				for (Entry<String, String> option : options.getLeft()
+						.entrySet()) {
+					addOptionWithoutTab(fullDesc, option.getKey(),
+							option.getValue());
 				}
 			} else {
-				for (Entry<String, Map<String, String>> tabEntry : options.getRight().entrySet()) {
+				for (Entry<String, Map<String, String>> tabEntry : options
+						.getRight().entrySet()) {
 					Tab tab = fullDesc.addNewTab();
 					tab.setName(tabEntry.getKey());
-					for (Entry<String, String> option : tabEntry.getValue().entrySet()) {
+					for (Entry<String, String> option : tabEntry.getValue()
+							.entrySet()) {
 						addOptionToTab(tab, option.getKey(), option.getValue());
 					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * Method to add the vendor bundle information to the node description. For
+	 * nodes with an XML Node description, this is performed dynamically,
+	 * however when the node description is supplied dynamically this needs to
+	 * be added manually
+	 * 
+	 * @param node
+	 *            The KnimeNode element
+	 * @param nodeFactory
+	 *            The {@link NodeFactory} instance
+	 * @throws DOMException
+	 */
+	public static void addBundleInformation(KnimeNode node,
+			NodeFactory<? extends NodeModel> nodeFactory) throws DOMException {
+		NodeAndBundleInformation nodeInfo =
+				new NodeAndBundleInformation(nodeFactory);
+
+		Element bundleElement = ((Element) node.getDomNode()).getOwnerDocument()
+				.createElement("osgi-info");
+		bundleElement.setAttribute("bundle-symbolic-name",
+				nodeInfo.getFeatureSymbolicName().orElse(
+						nodeInfo.getBundleSymbolicName().orElse("<Unknown>")));
+		bundleElement.setAttribute("bundle-name", nodeInfo.getFeatureName()
+				.orElse(nodeInfo.getBundleName().orElse("<Unknown>")));
+		bundleElement.setAttribute("bundle-vendor", nodeInfo.getFeatureVendor()
+				.orElse(nodeInfo.getBundleVendor().orElse("<Unknown>")));
+		bundleElement.setAttribute("factory-package",
+				nodeFactory.getClass().getPackage().getName());
+		((Element) node.getDomNode()).appendChild(bundleElement);
+	}
+
+	/**
+	 * Method to add the vendor bundle information to the node description. For
+	 * nodes with an XML Node description, this is performed dynamically,
+	 * however when the node description is supplied dynamically this needs to
+	 * be added manually. This version mirrors that in
+	 * {@link #addBundleInformation(KnimeNode, NodeFactory)}, which goes via an
+	 * intermediate {@link NodeAndBundleInformation} instance, but does not
+	 * require an instance of the {@link NodeFactory} class
+	 * 
+	 * @param node
+	 *            The KnimeNode element
+	 * @param nodeFactoryClazz
+	 *            The {@link NodeFactory} instance
+	 * @throws DOMException
+	 */
+	public static void addBundleInformation(KnimeNode node,
+			Class<? extends NodeFactory<?>> nodeFactoryClazz)
+			throws DOMException {
+		Element bundleElement = ((Element) node.getDomNode()).getOwnerDocument()
+				.createElement("osgi-info");
+		Bundle bundle = OSGIHelper.getBundle(nodeFactoryClazz);
+		if (bundle != null) {
+			Optional<IInstallableUnit> feature = OSGIHelper.getFeature(bundle);
+			bundleElement.setAttribute("bundle-symbolic-name", feature
+					.map(f -> f.getId()).orElse(bundle.getSymbolicName()));
+			bundleElement.setAttribute("bundle-name", feature
+					.map(f -> f.getProperty(IInstallableUnit.PROP_NAME, null))
+					.orElse(bundle.getHeaders().get("Bundle-Name")));
+			bundleElement.setAttribute("bundle-vendor", feature.map(
+					f -> f.getProperty(IInstallableUnit.PROP_PROVIDER, null))
+					.orElse(bundle.getHeaders().get("Bundle-Vendor")));
+		} else {
+			bundleElement.setAttribute("bundle-symbolic-name", "<Unknown>");
+			bundleElement.setAttribute("bundle-name", "<Unknown>");
+			bundleElement.setAttribute("bundle-vendor", "<Unknown>");
+		}
+		bundleElement.setAttribute("factory-package",
+				nodeFactoryClazz.getPackage().getName());
+		((Element) node.getDomNode()).appendChild(bundleElement);
 	}
 
 }

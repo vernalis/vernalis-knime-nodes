@@ -14,8 +14,8 @@
    along with this program; if not, see <http://www.gnu.org/licenses>
 -->
 <knimeNode icon="pdb_xml.png" type="Manipulator"
-	xmlns="http://knime.org/node/v2.8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://knime.org/node/v2.8 http://knime.org/node/v2.8.xsd">
+	xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
 	<name>PDB Connector Combine XML Queries</name>
 
 	<shortDescription>

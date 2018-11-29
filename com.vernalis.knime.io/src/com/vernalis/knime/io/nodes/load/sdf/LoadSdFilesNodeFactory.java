@@ -108,7 +108,7 @@ public class LoadSdFilesNodeFactory
 	@Override
 	public NodeDialogPane createNodeDialogPane() {
 		return new AbstractMultiLineObjectLoadFilesNodeDialog<>(SDFILE,
-				this.getClass().getName(), ".sd|.sdf");
+				this.getClass().getName(), ".sd|.sdf|.sd.gz|.sdf.gz");
 	}
 
 }

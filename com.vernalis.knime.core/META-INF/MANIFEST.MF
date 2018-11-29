@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.core;singleton:=true
-Bundle-Version: 1.17.3.qualifier
+Bundle-Version: 1.18.0.qualifier
 Bundle-ClassPath: vernaliscore.jar
 Bundle-Activator: com.vernalis.knime.core.VernalisCoreNodePlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.knime.workbench.core,
  org.knime.workbench.repository,
- org.knime.base
+ org.knime.base,
+ org.eclipse.equinox.p2.metadata
 Bundle-ActivationPolicy: lazy
 Export-Package: com.vernalis.exceptions,
  com.vernalis.io,

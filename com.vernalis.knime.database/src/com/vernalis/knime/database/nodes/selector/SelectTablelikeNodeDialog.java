@@ -71,6 +71,7 @@ public class SelectTablelikeNodeDialog extends DefaultNodeSettingsPane {
 	private SettingsModelString tableNameMdl;
 	private SettingsModelString schemaNameMdl;
 	private SettingsModelBoolean inclSchemaNameMdl;
+	private Map<String, SortedSet<String>> tables;
 
 	/**
 	 * Constructor
@@ -83,10 +84,9 @@ public class SelectTablelikeNodeDialog extends DefaultNodeSettingsPane {
 		schemaNameMdl = createSchemaNameModel();
 		inclSchemaNameMdl = createIncludeSchemaNamesModel();
 
-		// List the tables K = schema, V = list of tables for Schema
-		Map<String, SortedSet<String>> tables =
-				createTablesList(m_upstreamDbSettings, getCredentialsProvider(),
-						m_logger, tableTypeMdl.getStringValue());
+		tables = createTablesList(m_upstreamDbSettings,
+				getCredentialsProvider(), m_logger,
+				tableTypeMdl.getStringValue());
 
 		m_typeSelector = new DialogComponentStringSelection(tableTypeMdl,
 				TABLE_TYPE, Arrays.asList(TableTypes.getAllNames()), false,
@@ -106,7 +106,7 @@ public class SelectTablelikeNodeDialog extends DefaultNodeSettingsPane {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				updateModelsAfterTypeChange();
-				// fixComponentSizes();
+
 			}
 		});
 
@@ -115,17 +115,9 @@ public class SelectTablelikeNodeDialog extends DefaultNodeSettingsPane {
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				updateModelsAfterSchemaChange();
-				// fixComponentSizes();
+
 			}
 		});
-		// tableNameMdl.addChangeListener(new ChangeListener() {
-		//
-		// @Override
-		// public void stateChanged(ChangeEvent e) {
-		// fixComponentSizes();
-		//
-		// }
-		// });
 
 		updateModelsAfterTypeChange();
 		updateModelsAfterSchemaChange();
@@ -143,23 +135,19 @@ public class SelectTablelikeNodeDialog extends DefaultNodeSettingsPane {
 	/**
 	 */
 	protected void updateModelsAfterTypeChange() {
-		TreeMap<String, SortedSet<String>> options =
-				createTablesList(m_upstreamDbSettings, getCredentialsProvider(),
-						m_logger, tableTypeMdl.getStringValue());
-
-		if (options.containsKey(schemaNameMdl.getStringValue())) {
-			// Replace the Table selector first, otherwise the setting is
-			// over-written with the first value and then the true setting lost
+		tables = createTablesList(m_upstreamDbSettings,
+				getCredentialsProvider(), m_logger,
+				tableTypeMdl.getStringValue());
+		if (tables.containsKey(schemaNameMdl.getStringValue())) {
 			m_tableSelector.replaceListItems(
-					options.get(schemaNameMdl.getStringValue()), null);
+					tables.get(schemaNameMdl.getStringValue()), null);
 		}
-		m_schemaSelector.replaceListItems(options.keySet(), null);
-		// SettingsModel model = m_schemaSelector.getModel();
 		schemaNameMdl.setEnabled(true);
-		if (options.isEmpty()) {
+		if (tables.isEmpty()) {
 			schemaNameMdl.setEnabled(false);
-		} else if (options.size() == 1) {
-			String val = options.firstKey();
+			return;
+		} else if (tables.size() == 1) {
+			String val = tables.keySet().iterator().next();// first key
 			if (val.equals(INITIALIZING_DIALOG)
 					|| val.equals(NO_METADATA_AVAILABLE)
 					|| val.equals(NO_SCHEMAS) || (val.startsWith("<No ")
@@ -167,6 +155,7 @@ public class SelectTablelikeNodeDialog extends DefaultNodeSettingsPane {
 				schemaNameMdl.setEnabled(false);
 			}
 		}
+		m_schemaSelector.replaceListItems(tables.keySet(), null);
 		inclSchemaNameMdl.setEnabled(schemaNameMdl.isEnabled());
 	}
 
@@ -174,15 +163,12 @@ public class SelectTablelikeNodeDialog extends DefaultNodeSettingsPane {
 	 */
 	protected void updateModelsAfterSchemaChange() {
 		SortedSet<String> options =
-				createTablesList(m_upstreamDbSettings, getCredentialsProvider(),
-						m_logger, tableTypeMdl.getStringValue()).getOrDefault(
-								schemaNameMdl.getStringValue(),
-								new TreeSet<>(Collections.emptySet()));
-		m_tableSelector.replaceListItems(options, null);
-		// SettingsModel model = m_tableSelector.getModel();
+				tables.getOrDefault(schemaNameMdl.getStringValue(),
+						new TreeSet<>(Collections.emptySet()));
 		tableNameMdl.setEnabled(true);
 		if (options.isEmpty()) {
 			tableNameMdl.setEnabled(false);
+			return;
 		} else if (options.size() == 1) {
 			String val = options.iterator().next();
 			if (val.equals(INITIALIZING_DIALOG)
@@ -192,6 +178,8 @@ public class SelectTablelikeNodeDialog extends DefaultNodeSettingsPane {
 				tableNameMdl.setEnabled(false);
 			}
 		}
+		m_tableSelector.replaceListItems(options, null);
+
 	}
 
 	/**
@@ -261,22 +249,6 @@ public class SelectTablelikeNodeDialog extends DefaultNodeSettingsPane {
 		schemaSelectCombo.setPreferredSize(new Dimension(DROPDOWN_WIDTH,
 				schemaSelectCombo.getPreferredSize().height));
 		getPanel().revalidate();
-
-		// Dimension tabSelectPrefSize = tabSelectCombo.getPreferredSize();
-		// Dimension typeSelectPrefSize = tabTypeSelectCombo.getPreferredSize();
-		// Dimension schemaSelectPrefSize =
-		// schemaSelectCombo.getPreferredSize();
-		// int width = Math.max(
-		// Math.max(tabSelectPrefSize.width, typeSelectPrefSize.width),
-		// schemaSelectPrefSize.width);
-		// tabSelectCombo.setSize(width, tabSelectPrefSize.height);
-		// tabTypeSelectCombo.setSize(width, typeSelectPrefSize.height);
-		// schemaSelectCombo.setSize(width, schemaSelectPrefSize.height);
-		// // schemaSelectCombo.validate();
-		// // tabSelectCombo.validate();
-		// // tabTypeSelectCombo.validate();
-		// getPanel().repaint();
-
 	}
 
 	/**
@@ -373,7 +345,7 @@ public class SelectTablelikeNodeDialog extends DefaultNodeSettingsPane {
 	@Override
 	public void loadAdditionalSettingsFrom(NodeSettingsRO settings,
 			PortObjectSpec[] specs) throws NotConfigurableException {
-		super.loadAdditionalSettingsFrom(settings, specs);
+
 		for (PortObjectSpec pos : specs) {
 			// Look for the incoming connection port
 			if (pos instanceof DatabaseConnectionPortObjectSpec) {
@@ -385,18 +357,18 @@ public class SelectTablelikeNodeDialog extends DefaultNodeSettingsPane {
 					if (m_upstreamDbSettings != null) {
 						// At load, this will be null, and the settings will be
 						// lost if attempting to replace
-						Map<String, SortedSet<String>> tableNames =
-								createTablesList(m_upstreamDbSettings,
-										getCredentialsProvider(), m_logger,
-										tableTypeMdl.getStringValue());
-						m_schemaSelector.replaceListItems(tableNames.keySet(),
+						tables = createTablesList(m_upstreamDbSettings,
+								getCredentialsProvider(), m_logger,
+								tableTypeMdl.getStringValue());
+						m_schemaSelector.replaceListItems(tables.keySet(),
 								null);
 						m_tableSelector.replaceListItems(
-								tableNames.get(schemaNameMdl.getStringValue()),
+								tables.get(schemaNameMdl.getStringValue()),
 								null);
 						// Also, we lose the setting on first load if we do not
 						// call the loadSettings method here
-						m_tableSelector.loadSettingsFrom(settings, specs);
+						schemaNameMdl.loadSettingsFrom(settings);
+						tableNameMdl.loadSettingsFrom(settings);
 						break;
 					}
 				} catch (InvalidSettingsException e) {
@@ -406,6 +378,6 @@ public class SelectTablelikeNodeDialog extends DefaultNodeSettingsPane {
 			}
 		}
 		updateModelsAfterSchemaChange();
-		updateModelsAfterTypeChange();
+		// updateModelsAfterTypeChange();
 	}
 }

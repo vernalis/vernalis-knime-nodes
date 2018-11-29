@@ -101,7 +101,7 @@ import org.knime.core.util.MultiThreadWorker.ComputationTask;
  *            DataRow to perform the filter test on
  */
 public abstract class AbstractStreamableParallelisedFilterSplitterNodeModel<T>
-		extends NodeModel {
+		extends NodeModel implements SettingsModelRegistry {
 
 	private static final String KEEP_MISSING_CELLS = "Keep missing cells";
 	private static final String KEEP_MATCHES = "Keep matches";
@@ -152,12 +152,11 @@ public abstract class AbstractStreamableParallelisedFilterSplitterNodeModel<T>
 
 	}
 
-	protected final SettingsModelBoolean m_keepMissing =
-			createKeepMissingModel();
-	protected final SettingsModelBoolean m_keepMatches =
-			createKeepMatchingModel();
-
 	private final Set<SettingsModel> models = new HashSet<>();
+	protected final SettingsModelBoolean m_keepMissing =
+			registerSettingsModel(createKeepMissingModel());
+	protected final SettingsModelBoolean m_keepMatches =
+			registerSettingsModel(createKeepMatchingModel());
 
 	protected final boolean isSplitter;
 
@@ -171,8 +170,6 @@ public abstract class AbstractStreamableParallelisedFilterSplitterNodeModel<T>
 			boolean isSplitter) {
 		super(1, isSplitter ? 2 : 1);
 		this.isSplitter = isSplitter;
-		registerSettingsModel(m_keepMatches);
-		registerSettingsModel(m_keepMissing);
 	}
 
 	/**
@@ -462,17 +459,9 @@ public abstract class AbstractStreamableParallelisedFilterSplitterNodeModel<T>
 		return retVal;
 	}
 
-	/**
-	 * Convenience method to register {@link SettingsModel}s and have this class
-	 * handle the load/save/validate operations without subclasses requiring to
-	 * overwrite the load/save/validate settings methods
-	 * 
-	 * @param model
-	 *            The {@link SettingsModel} to register
-	 * @return true if the model was successfully registered.
-	 */
-	protected final boolean registerSettingsModel(SettingsModel model) {
-		return models.add(model);
+	@Override
+	public Set<SettingsModel> getModels() {
+		return models;
 	}
 
 	/**
@@ -486,21 +475,17 @@ public abstract class AbstractStreamableParallelisedFilterSplitterNodeModel<T>
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveSettingsTo(final NodeSettingsWO settings) {
-		for (SettingsModel model : models) {
-			model.saveSettingsTo(settings);
-		}
+	public void saveSettingsTo(final NodeSettingsWO settings) {
+		SettingsModelRegistry.super.saveSettingsTo(settings);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
+	public void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		for (SettingsModel model : models) {
-			model.loadSettingsFrom(settings);
-		}
+		SettingsModelRegistry.super.loadValidatedSettingsFrom(settings);
 
 	}
 
@@ -508,11 +493,9 @@ public abstract class AbstractStreamableParallelisedFilterSplitterNodeModel<T>
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings)
+	public void validateSettings(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		for (SettingsModel model : models) {
-			model.validateSettings(settings);
-		}
+		SettingsModelRegistry.super.validateSettings(settings);
 	}
 
 	/**

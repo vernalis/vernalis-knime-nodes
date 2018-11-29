@@ -15,12 +15,14 @@
 package com.vernalis.knime.mmp.nodes.rdkit.fragment2;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
+import org.RDKit.RDKFuncs;
 import org.RDKit.ROMol;
+import org.RDKit.RWMol;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.StringValue;
@@ -33,11 +35,13 @@ import org.knime.core.node.NodeModel;
 
 import com.vernalis.exceptions.RowExecutionException;
 import com.vernalis.knime.mmp.CombinationFinder;
-import com.vernalis.knime.mmp.MulticomponentSmilesFragmentParser;
 import com.vernalis.knime.mmp.RDKitBondIdentifier;
 import com.vernalis.knime.mmp.RDKitFragmentationUtils;
-import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationFactory;
-import com.vernalis.knime.mmp.fragmentors.ROMolFragmentFactory;
+import com.vernalis.knime.mmp.ToolkitException;
+import com.vernalis.knime.mmp.fragmentors.ClosedFactoryException;
+import com.vernalis.knime.mmp.fragmentors.RWMolFragmentationFactory;
+import com.vernalis.knime.mmp.frags.abstrct.AbstractMulticomponentFragmentationParser;
+import com.vernalis.knime.mmp.frags.abstrct.BondIdentifier;
 import com.vernalis.knime.parallel.MultiTableParallelResult;
 import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
 
@@ -118,14 +122,17 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 	 * @throws CanceledExecutionException
 	 */
 	@Override
-	protected MultiTableParallelResult fragmentRow(DataRow row, long index, int numCols, int molIdx,
-			boolean addFailReasons, ROMol bondMatch, int numCuts, boolean prochiralAsChiral,
-			boolean addHs, boolean stripHsAtEnd, boolean allowTwoCutsToBondValue,
+	protected MultiTableParallelResult fragmentRow(DataRow row, long index,
+			int numCols, int molIdx, boolean addFailReasons, ROMol bondMatch,
+			int numCuts, boolean prochiralAsChiral, boolean addHs,
+			boolean stripHsAtEnd, boolean allowTwoCutsToBondValue,
 			Integer maxNumVarAtm, Double minCnstToVarAtmRatio, int idColIdx,
-			boolean outputNumChgHAs, boolean outputHARatio, boolean addFingerprints,
-			int morganRadius, int fpLength, boolean useChirality, boolean useBondTypes,
-			SWIGObjectGarbageCollector swigGC, ExecutionContext exec, NodeLogger logger,
-			boolean verboseLogging) throws CanceledExecutionException {
+			boolean outputNumChgHAs, boolean outputHARatio,
+			boolean addFingerprints, int morganRadius, int fpLength,
+			boolean useChirality, boolean useBondTypes,
+			SWIGObjectGarbageCollector swigGC, ExecutionContext exec,
+			NodeLogger logger, boolean verboseLogging)
+			throws CanceledExecutionException {
 		MultiTableParallelResult retVal = new MultiTableParallelResult(2);
 
 		/*
@@ -135,32 +142,42 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 		DataCell molCell = row.getCell(molIdx);
 		if (molCell.isMissing()) {
 			// Deal with missing mols
-			retVal.addRowToTable((addFailReasons)
-					? new AppendedColumnRow(row, new StringCell("Missing value in Molecule Column"))
-					: row, 1);
+			retVal.addRowToTable(
+					(addFailReasons)
+							? new AppendedColumnRow(row,
+									new StringCell(
+											"Missing value in Molecule Column"))
+							: row,
+					1);
 			return retVal;
 		}
 
 		if (row.getCell(idColIdx).isMissing()) {
 			// Missing ID - causes problems later!
-			retVal.addRowToTable((addFailReasons)
-					? new AppendedColumnRow(row, new StringCell("Missing value in ID Column"))
-					: row, 1);
+			retVal.addRowToTable(
+					(addFailReasons)
+							? new AppendedColumnRow(row,
+									new StringCell(
+											"Missing value in ID Column"))
+							: row,
+					1);
 			return retVal;
 		}
 
 		ROMol roMol;
 		try {
-			roMol = swigGC.markForCleanup(getROMolFromCell(row.getCell(molIdx)), (int) index);
+			roMol = swigGC.markForCleanup(getROMolFromCell(row.getCell(molIdx)),
+					(int) index);
 		} catch (RowExecutionException e) {
 			// Log the failed row
 			if (verboseLogging) {
-				logger.info("Error parsing molecule (Row: " + row.getKey().getString() + ") "
-						+ e.getMessage());
+				logger.info("Error parsing molecule (Row: "
+						+ row.getKey().getString() + ") " + e.getMessage());
 			}
 			// And add it to the second output
 			retVal.addRowToTable((addFailReasons)
-					? new AppendedColumnRow(row, new StringCell(e.getMessage())) : row, 1);
+					? new AppendedColumnRow(row, new StringCell(e.getMessage()))
+					: row, 1);
 
 			return retVal;
 		}
@@ -169,9 +186,13 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 			// Deal with when we cannot get an ROMol object - e.g. for 'No
 			// Structure' Mol files
 			// And add it to the second output
-			retVal.addRowToTable((addFailReasons)
-					? new AppendedColumnRow(row, new StringCell("'No Structure' input molecule"))
-					: row, 1);
+			retVal.addRowToTable(
+					(addFailReasons)
+							? new AppendedColumnRow(row,
+									new StringCell(
+											"'No Structure' input molecule"))
+							: row,
+					1);
 			return retVal;
 		}
 
@@ -181,13 +202,11 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 		// ROMol_Vect from RDKFunc#getComponents()
 
 		if (roMol.MolToSmiles().contains(".")) {
-			retVal.addRowToTable(
-					(addFailReasons)
-							? new AppendedColumnRow(row,
-									new StringCell(
-											"Multi-component structures cannot be fragmented"))
-							: row,
-					1);
+			retVal.addRowToTable((addFailReasons)
+					? new AppendedColumnRow(row,
+							new StringCell(
+									"Multi-component structures cannot be fragmented"))
+					: row, 1);
 			return retVal;
 		}
 
@@ -195,90 +214,120 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 		 * Do the fragmentation and apply filters, adding rows as we go...
 		 */
 
-		DataCell idCell = new StringCell(((StringValue) row.getCell(idColIdx)).getStringValue());
+		DataCell idCell = new StringCell(
+				((StringValue) row.getCell(idColIdx)).getStringValue());
 
 		// Build a list of all the valid fragmentations
-		Set<MulticomponentSmilesFragmentParser> fragmentations = new TreeSet<>();
+		Set<AbstractMulticomponentFragmentationParser<RWMol>> fragmentations =
+				new TreeSet<>();
 
 		// Identify all the matching bonds (NB - Cuttable combos are picked
 		// later
-		Set<RDKitBondIdentifier> cuttableBonds =
-				RDKitFragmentationUtils.identifyAllMatchingBonds(roMol, bondMatch);
+		Set<RDKitBondIdentifier> cuttableBonds = RDKitFragmentationUtils
+				.identifyAllMatchingBonds(roMol, bondMatch);
+		RWMol rwMol = swigGC.markForCleanup(new RWMol(roMol), (int) index);
+		RWMolFragmentationFactory fragFactory = null;
+		try {
+			// Deal with 1 cut
 
-		// Deal with 1 cut
-		MoleculeFragmentationFactory fragFactory;
-		if (addHs) {
-			ROMol roMol2 = swigGC.markForCleanup(new ROMol(roMol), (int) index);
-			roMol2 = swigGC.markForCleanup(roMol2.addHs(false, false), (int) index);
-			fragFactory = new ROMolFragmentFactory(roMol2, stripHsAtEnd, verboseLogging,
-					maxNumVarAtm, minCnstToVarAtmRatio);
-			fragmentations.addAll(breakMoleculeAlongBonds(fragFactory,
-					RDKitFragmentationUtils.identifyAllMatchingBonds(roMol2, bondMatch),
-					prochiralAsChiral, exec, logger, verboseLogging));
+			if (addHs) {
+				RWMol rwMolH =
+						swigGC.markForCleanup(new RWMol(rwMol), (int) index);
+				RDKFuncs.addHs(rwMolH);
+				fragFactory = new RWMolFragmentationFactory(rwMolH, bondMatch,
+						stripHsAtEnd, false/* trick it! */, verboseLogging,
+						prochiralAsChiral, maxNumVarAtm, minCnstToVarAtmRatio,
+						50);
+				fragmentations.addAll(
+						fragFactory.breakMoleculeAlongMatchingBonds(exec, null,
+								null, null));
+				fragFactory.close();
 
-			// Now return the fragFactory to the main unhydrogenated molecule -
-			// and in which case we dont strip Hs
-			fragFactory = new ROMolFragmentFactory(roMol, false, verboseLogging, maxNumVarAtm,
-					minCnstToVarAtmRatio);
-		} else {
-			// Otherwise we just cut along every bond
-			fragFactory = new ROMolFragmentFactory(roMol, false, verboseLogging, maxNumVarAtm,
-					minCnstToVarAtmRatio);
-			fragmentations.addAll(breakMoleculeAlongBonds(fragFactory, cuttableBonds,
-					prochiralAsChiral, exec, logger, verboseLogging));
-		}
+				// Now return the fragFactory to the main unhydrogenated
+				// molecule -
+				// and in which case we dont strip Hs
+				fragFactory = new RWMolFragmentationFactory(rwMol, bondMatch,
+						false, false, verboseLogging, prochiralAsChiral,
+						maxNumVarAtm, minCnstToVarAtmRatio, 50);
+			} else {
+				// Otherwise we just cut along every bond
+				// fragFactory = new ROMolFragmentFactory(roMol, false,
+				// verboseLogging,
+				// maxNumVarAtm, minCnstToVarAtmRatio);
+				fragFactory = new RWMolFragmentationFactory(rwMol, bondMatch,
+						false, false, verboseLogging, prochiralAsChiral,
+						maxNumVarAtm, minCnstToVarAtmRatio, 50);
+				fragmentations.addAll(
+						fragFactory.breakMoleculeAlongMatchingBonds(exec, null,
+								null, null));
+			}
 
-		boolean couldCut = fragmentations.size() > 0;
-		// Check we have anything to do
-		if (!couldCut) {
-			// No bonds to cut
+			boolean couldCut = fragmentations.size() > 0;
+			// Check we have anything to do
+			if (!couldCut) {
+				// No bonds to cut
+				retVal.addRowToTable((addFailReasons)
+						? new AppendedColumnRow(row,
+								new StringCell(
+										"No matching bonds or found, or too few to cut"))
+						: row, 1);
+				return retVal;
+			}
+
+			// Deal with the special case of 2 cuts, and allowing *-* as a value
+			if (numCuts >= 2 && allowTwoCutsToBondValue) {
+				fragmentations.addAll(fragFactory
+						.breakMoleculeAlongMatchingBondsWithBondInsertion(exec,
+								null, null, null));
+			}
+
+			// Now generate the combinations of bonds to cut for 2 or more cuts,
+			// removing higher
+			// graphs of invalid triplets where appropriate
+			// Why doesnt this take cuttableBonds as an argument? - Because
+			// cuttable
+			// bonds change with number of cuts!
+			Set<Set<BondIdentifier>> bondCombos =
+					generateCuttableBondCombos(roMol, bondMatch, numCuts);
+			fragmentations.addAll(fragFactory.breakMoleculeAlongBondCombos(
+					bondCombos, prochiralAsChiral, exec, null, null, null,
+					m_Logger, verboseLogging));
+
+		} catch (ClosedFactoryException | ToolkitException
+				| IllegalArgumentException e) {
 			retVal.addRowToTable(
 					(addFailReasons)
-							? new AppendedColumnRow(row,
-									new StringCell("No matching bonds or found, or too few to cut"))
+							? new AppendedColumnRow(row, e.getMessage() == null
+									? new StringCell(
+											"Error fragmenting molecule: " + e
+													.getClass().getSimpleName())
+									: new StringCell(e.getMessage()))
 							: row,
 					1);
-			return retVal;
+		} finally {
+			if (fragFactory != null) {
+				fragFactory.close();
+			}
 		}
-
-		// Deal with the special case of 2 cuts, and allowing *-* as a value
-		if (numCuts >= 2 && allowTwoCutsToBondValue) {
-			fragmentations.addAll(doDoubleCutToSingleBond(fragFactory, cuttableBonds,
-					prochiralAsChiral, exec, logger, verboseLogging));
-		}
-
-		// Now generate the combinations of bonds to cut for 2 or more cuts,
-		// removing higher
-		// graphs of invalid triplets where appropriate
-		// Why doesnt this take cuttableBonds as an argument? - Because cuttable
-		// bonds change with number of cuts!
-		Set<Set<RDKitBondIdentifier>> bondCombos =
-				generateCuttableBondCombos(roMol, bondMatch, numCuts);
-		fragmentations.addAll(breakMoleculeAlongBondCombos(fragFactory, bondCombos,
-				prochiralAsChiral, exec, logger, verboseLogging));
 
 		// Now add the fragmentations to output rows. NB, we still need to
 		// filter as 1 cut will not be filtered, hence the
 		// 'smiParser.getNumCuts() > 1'
 		boolean addedFragmentations = false;
-		for (MulticomponentSmilesFragmentParser smiParser : fragmentations) {
-			if (smiParser.getNumCuts() > 1 || RDKitFragmentationUtils.filterFragment(
-					smiParser.getKey(), smiParser.getValue(), maxNumVarAtm, minCnstToVarAtmRatio)) {
-				addedFragmentations = true;
-				addRowToTable(retVal, stripHsAtEnd, idCell, smiParser, numCols, outputNumChgHAs,
-						outputHARatio, addFingerprints, morganRadius, fpLength, useChirality,
-						useBondTypes, isMulticut);
-			}
+		for (AbstractMulticomponentFragmentationParser<RWMol> smiParser : fragmentations) {
+			addedFragmentations = true;
+			addRowToTable(retVal, stripHsAtEnd, idCell, smiParser, numCols,
+					outputNumChgHAs, outputHARatio, addFingerprints,
+					morganRadius, fpLength, useChirality, useBondTypes,
+					isMulticut);
 		}
 		if (!addedFragmentations) {
 			// There were no valid fragmentatins after filtering
-			retVal.addRowToTable(
-					(addFailReasons)
-							? new AppendedColumnRow(row,
-									new StringCell(
-											"No fragmentations passed the specified filters"))
-							: row,
-					1);
+			retVal.addRowToTable((addFailReasons)
+					? new AppendedColumnRow(row,
+							new StringCell(
+									"No fragmentations passed the specified filters"))
+					: row, 1);
 		}
 
 		fragmentations.clear();
@@ -301,64 +350,22 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 	 * @throws IllegalArgumentException
 	 */
 	@Override
-	protected Set<Set<RDKitBondIdentifier>> generateCuttableBondCombos(ROMol roMol, ROMol bondMatch,
-			int numCuts) throws IllegalArgumentException {
+	protected Set<Set<BondIdentifier>> generateCuttableBondCombos(ROMol roMol,
+			ROMol bondMatch, int numCuts) throws IllegalArgumentException {
 
-		Collection<RDKitBondIdentifier> cuttableBonds;
+		Collection<BondIdentifier> cuttableBonds;
 		// Generate the combinations of upto numCuts bonds. NB we start at 2 as
 		// 1 is handled separately
-		Set<Set<RDKitBondIdentifier>> bondCombos = new LinkedHashSet<>();
-		Set<Set<RDKitBondIdentifier>> invalidTriplets = new LinkedHashSet<>();// Will
-																				// hold
-																				// valid
-																				// triplets
-		// once 3 or more cuts made
-		for (int i = 2; i <= numCuts; i++) {
-			cuttableBonds = RDKitFragmentationUtils.identifyAllCuttableBonds(roMol, bondMatch, i);
-			Set<Set<RDKitBondIdentifier>> newBondCombos =
-					CombinationFinder.getCombinationsFor(cuttableBonds, i);
-			if (i == 3) {
-				Iterator<Set<RDKitBondIdentifier>> iter = newBondCombos.iterator();
-				while (iter.hasNext()) {
-					Set<RDKitBondIdentifier> triplet = iter.next();
-					if (!RDKitFragmentationUtils.isValidCutTriplet(roMol, triplet)) {
-						// Invalid combo - remove and save for later rounds...
-						iter.remove();
-						invalidTriplets.add(triplet);
-					}
-				}
-			}
-			if (i > 3) {
-				Iterator<Set<RDKitBondIdentifier>> tripletIter = invalidTriplets.iterator();
-				while (tripletIter.hasNext()) {
-					Set<RDKitBondIdentifier> triplet = tripletIter.next();
-					// First check that all triplet bonds are still valid
-					boolean invalidTripletStillMakeable = true;
-					for (RDKitBondIdentifier bd : triplet) {
-						if (!cuttableBonds.contains(bd)) {
-							tripletIter.remove();
-							invalidTripletStillMakeable = false;
-							break;
-						}
-					}
+		Set<Set<BondIdentifier>> bondCombos = new LinkedHashSet<>();
 
-					if (invalidTripletStillMakeable) {
-						// Now check none of the new combos contain that triplet
-						Iterator<Set<RDKitBondIdentifier>> newCombosIter = newBondCombos.iterator();
-						while (newCombosIter.hasNext()) {
-							if (newCombosIter.next().containsAll(triplet)) {
-								newCombosIter.remove();
-							}
-						}
-						if (newBondCombos.size() == 0) {
-							break;
-						}
-					}
-				}
-				if (newBondCombos.size() <= 0) {
-					break;
-				}
-			}
+		for (int i = 2; i <= numCuts; i++) {
+			cuttableBonds = RDKitFragmentationUtils
+					.identifyAllCuttableBonds(roMol, bondMatch, i).stream()
+					.map(bi -> new BondIdentifier(bi.getStartIdx(),
+							bi.getEndIdx(), bi.getBondIdx()))
+					.collect(Collectors.toList());
+			Set<Set<BondIdentifier>> newBondCombos =
+					CombinationFinder.getCombinationsFor(cuttableBonds, i);
 			bondCombos.addAll(newBondCombos);
 		}
 

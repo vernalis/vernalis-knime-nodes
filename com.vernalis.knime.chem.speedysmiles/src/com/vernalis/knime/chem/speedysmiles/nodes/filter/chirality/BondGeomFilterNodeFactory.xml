@@ -16,9 +16,9 @@
 <knimeNode
 	icon="./SpeedySMILESdblbondgeomFilter.png"
 	type="Manipulator"
-	xmlns="http://knime.org/node/v2.8"
+	xmlns="http://knime.org/node/v3.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://knime.org/node/v2.10 http://knime.org/node/v2.10.xsd">
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
 	<name>Speedy SMILES Explicit Double Bond Geometry Filter</name>
 
 	<shortDescription>

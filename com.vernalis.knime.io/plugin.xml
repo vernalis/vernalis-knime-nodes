@@ -50,6 +50,10 @@
       <node
             category-path="/community/vernalis/io"
             factory-class="com.vernalis.knime.io.nodes.load.sdf.LoadSdFilesNodeFactory" />
+      <!-- Since 1.18.0 -->
+      <node
+            category-path="/community/vernalis/io"
+            factory-class="com.vernalis.knime.io.nodes.load.fasta.LoadFASTANodeFactory" />  
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
