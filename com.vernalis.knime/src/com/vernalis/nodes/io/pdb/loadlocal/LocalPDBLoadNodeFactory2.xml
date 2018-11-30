@@ -29,13 +29,7 @@
 						inspected for any
 						<a href="http://en.wikipedia.org/wiki/Byte_order_mark">BOM</a>
 						present, and if so, the following are recognised:
-						<br />
-						&#8226; UTF-8
-						<br />
-						&#8226; UTF-16 (Big- and Little Endian)
-						<br />
-						&#8226; UTF-32 (Big- and Little Endian)
-						<br />
+						UTF-8, UTF-16 (Big- and Little Endian), UTF-32 (Big- and Little Endian).
 					</li>
 					<li>
 						Finally, the default (UTF-8) is assumed. As UTF-8 is not

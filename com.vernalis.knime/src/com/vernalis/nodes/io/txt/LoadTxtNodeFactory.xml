@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<knimeNode icon="./Disk2knime.png" type="Manipulator"
-	xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<knimeNode
+	icon="./Disk2knime.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
 	<name>Load text-based files</name>
 
@@ -34,14 +37,8 @@
 						If none is available, then the first 4 bytes of the file are
 						inspected for any
 						<a href="http://en.wikipedia.org/wiki/Byte_order_mark">BOM</a>
-						present, and if so, the following are recognised:
-						<br />
-						&#8226; UTF-8
-						<br />
-						&#8226; UTF-16 (Big- and Little Endian)
-						<br />
-						&#8226; UTF-32 (Big- and Little Endian)
-						<br />
+						present, and if so, the following are recognised: UTF-8, UTF-16
+						(Big- and Little Endian), UTF-32 (Big- and Little Endian)
 					</li>
 					<li>
 						Finally, the default (UTF-8) is assumed. As UTF-8 is not
@@ -83,11 +80,15 @@
 	</fullDescription>
 
 	<ports>
-		<inPort index="0" name="In-Port 0">Input table containing the filepath or
+		<inPort
+			index="0"
+			name="In-Port 0">Input table containing the filepath or
 			URL column
 		</inPort>
 
-		<outPort index="0" name="Out-Port 0">Output table with the loaded files
+		<outPort
+			index="0"
+			name="Out-Port 0">Output table with the loaded files
 			added
 		</outPort>
 	</ports>
