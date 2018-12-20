@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode
+	icon="./Benchmarking_End_Mon.png"
+	type="LoopEnd"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Benchmark End (Memory Monitoring)</name>
+
+	<shortDescription>
+		Loop end for execution timing with memory monitoring
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				This node provides the end of a timing block for monitoring
+				performance of a node or nodes. It needs to be paired with a
+				corresponding Performance Monitoring Timing Start (Memory
+				monitoring) node. The node
+				passes through the last iteration's
+				occurrence of the input tables.
+				An additional flow variable port with
+				the following variable is
+				added:
+				<ul>
+					<li>Overall Start Time</li>
+					<li>Overall End Time</li>
+					<li>Number of executions</li>
+					<li>Best execution time</li>
+					<li>Worst execution time</li>
+					<li>Total execution time</li>
+					<li>Mean execution time</li>
+				</ul>
+				Execution can be halted either by the number of executions in the
+				loop start node being passed, or the optional timeout time (again
+				from the loop start node) being passed.
+			</p>
+			<p>NB The timeout will not halt intermediate node execution, only
+				prevent a new iteration starting.
+			</p>
+			<p>During loop execution, memory usage is monitored, and made
+				available at an output port</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="Input">Input Data Table
+		</inPort>
+		<outPort
+			index="0"
+			name="Flow variables with summary stats">
+			Flow variable port with summary
+			statistics added
+		</outPort>
+		<outPort
+			index="1"
+			name="Iteration timings">DataTable listing the timings for
+			each test iteration
+		</outPort>
+		<outPort
+			index="2"
+			name="Memory Usage">DataTable listing the memory usage during loop execution
+		</outPort>
+		<outPort
+			index="3"
+			name="Unmodified Output">Unmodified Data Table from final
+			iteration
+		</outPort>
+
+	</ports>
+</knimeNode>
