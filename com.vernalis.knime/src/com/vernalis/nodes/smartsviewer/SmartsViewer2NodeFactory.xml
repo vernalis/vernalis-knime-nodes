@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./Smartsviewer2_icon.png" type="Manipulator">
+    <name>SMARTSViewer</name>
+    
+    <shortDescription>
+        Retrieves a SMARTSViewer visualisation of a columns of SMARTS strings using the service at www.smartsviewer.de
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>Provides a <a href="http://http://smartsview.zbh.uni-hamburg.de/">SMARTSviewer</a> visualisation
+        of a column of SMARTs strings 
+        using the service provided by the University of Hamburg.  The node performs no validation
+        of the SMARTs strings prior to sending to the webservice. For more detailed information 
+        about the implementation see either the Help file at <a href="http://smartsview.zbh.uni-hamburg.de/smartsview/view">http://smartsview.zbh.uni-hamburg.de/smartsview/view</a>
+        or the following reference: <br />
+        K. Schomburg, H.-C. Ehrlich, K. Stierand, M.Rarey; 
+        <a href="http://dx.doi.org/10.1021/ci100209a">From Structure Diagrams to Visual Chemical Patterns</a>, <i>J. Chem. Inf. Model.</i>, 2010, <b>50</b>, pp 1529-1535
+		
+		<p>
+		The <i>Communication Error Settings</i> tab allows setting of behaviour relating to server communication problem handling. 
+		The values set are applied to each row in turn.  The server will only be contacted until a successful result is returned. 
+		The settings allow the user to control the behaviour of the node should the SMARTSviewer server be functioning incorrectly. 
+		<i>Note</i> that it is not currently possible to cancel execution during a row, so use long delay settings with care!
+		</p>
+		<p><i>
+		Note that SMARTs strings are transferred to the remote server unencrypted, and the the server
+        maintains an anonymous record of query SMARTs strings to aid future development.</i></p>
+		<p>This node was developed by <a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>.
+		For feedback and more information, please contact <a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+		</p>
+        </intro>
+        
+        <tab name="Options">
+        <option name="Select a column containing the SMARTs Strings">Select a column containing SMARTs strings for visualsation.  
+        No SMARTS validation is carried out prior to sending to the remote server, which will
+        return a blank image for invalid SMARTS strings</option>
+        <option name="Select legend type">Choose the desired legend type: Dynamic - detailed text description of each atom and bond;
+         Static - short description of how each symbol is depicted in the visualisation</option>
+        <option name="Select Visualisation modus">Element symbols uses text representation of the element symbols in the depiction</option>
+        </tab>
+        
+        <tab name="Communication Error Settings">
+            <option name="Number of retries to contact server">Set the number of times the server will be re-contacted following a failure.</option>
+            <option name="Delay between attempts (secs)">The delay period between each re-try</option>
+            <option name="Ignore server errors">If set, the node will return a 'missing value' cell for each row which failed to contact the server after the
+            defined number of attempts - allowing workflow execution to continue, otherwise node execution will fail.  
+            Setting a long delay interval (max 10 minutes) and large number of attempts
+            (max 20) allows the workflow a chance to restore functionality (it will take over 3 hours between the first and last attempt for each row in these circumstances)</option>
+            <option name="Restore Defaults">Restore the default server settings.</option>
+        </tab>
+
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="In port 0">Input port containing a column of SMARTS strings, either as String, SMARTS or Smiles format</inPort>
+        <!-- possibly more input ports here-->
+        <outPort index="0" name="Appended SMARTSViewer Renderings">The input table with the SMARTSViewer representations appended as a PNG column</outPort>
+        <!-- possibly more output ports here-->
+    </ports>    
+    <!--<views>
+        <view index="0" name="name of first view">Description of first view...</view>
+    </views>-->
+</knimeNode>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="com.vernalis.knime.testing.feature"
+      label="Vernalis Testing feature"
+      version="1.18.0.qualifier"
+      provider-name="Vernalis">
+
+   <description>
+      Testcases for Vernalis nodes.
+   </description>
+
+   <requires>
+      <import feature="org.knime.features.testingapplication" version="2.7.0" match="greaterOrEqual"/>
+      <import feature="org.knime.features.chem.types" version="2.7.0" match="greaterOrEqual"/>
+      <import feature="org.knime.features.dbdrivers" version="2.9.0" match="greaterOrEqual"/>
+      <import plugin="org.rdkit.knime.types"/>
+   </requires>
+
+</feature>
