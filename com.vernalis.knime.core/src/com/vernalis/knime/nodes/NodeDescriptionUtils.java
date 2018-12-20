@@ -248,24 +248,34 @@ public class NodeDescriptionUtils {
 	 * @param nodeFactory
 	 *            The {@link NodeFactory} instance
 	 * @throws DOMException
+	 * @Deprecated Do not use - broken in v3.7 upwards
 	 */
+	@SuppressWarnings("unchecked")
+	@Deprecated
 	public static void addBundleInformation(KnimeNode node,
 			NodeFactory<? extends NodeModel> nodeFactory) throws DOMException {
-		NodeAndBundleInformation nodeInfo =
-				new NodeAndBundleInformation(nodeFactory);
-
-		Element bundleElement = ((Element) node.getDomNode()).getOwnerDocument()
-				.createElement("osgi-info");
-		bundleElement.setAttribute("bundle-symbolic-name",
-				nodeInfo.getFeatureSymbolicName().orElse(
-						nodeInfo.getBundleSymbolicName().orElse("<Unknown>")));
-		bundleElement.setAttribute("bundle-name", nodeInfo.getFeatureName()
-				.orElse(nodeInfo.getBundleName().orElse("<Unknown>")));
-		bundleElement.setAttribute("bundle-vendor", nodeInfo.getFeatureVendor()
-				.orElse(nodeInfo.getBundleVendor().orElse("<Unknown>")));
-		bundleElement.setAttribute("factory-package",
-				nodeFactory.getClass().getPackage().getName());
-		((Element) node.getDomNode()).appendChild(bundleElement);
+		addBundleInformation(node,
+				(Class<? extends NodeFactory<?>>) nodeFactory.getClass());
+		// the following broke in KNIME 3.7.0 as NABI moved and was replaced
+		// with
+		// a subclass, NodeAndBundleInformationPersistor
+		// NodeAndBundleInformation nodeInfo =
+		// new NodeAndBundleInformation(nodeFactory);
+		//
+		// Element bundleElement = ((Element)
+		// node.getDomNode()).getOwnerDocument()
+		// .createElement("osgi-info");
+		// bundleElement.setAttribute("bundle-symbolic-name",
+		// nodeInfo.getFeatureSymbolicName().orElse(
+		// nodeInfo.getBundleSymbolicName().orElse("<Unknown>")));
+		// bundleElement.setAttribute("bundle-name", nodeInfo.getFeatureName()
+		// .orElse(nodeInfo.getBundleName().orElse("<Unknown>")));
+		// bundleElement.setAttribute("bundle-vendor",
+		// nodeInfo.getFeatureVendor()
+		// .orElse(nodeInfo.getBundleVendor().orElse("<Unknown>")));
+		// bundleElement.setAttribute("factory-package",
+		// nodeFactory.getClass().getPackage().getName());
+		// ((Element) node.getDomNode()).appendChild(bundleElement);
 	}
 
 	/**

@@ -2,7 +2,7 @@
 <feature
       id="com.vernalis.knime.feature"
       label="Vernalis KNIME Nodes"
-      version="1.18.0.qualifier"
+      version="1.18.1.qualifier"
       provider-name="Vernalis"
       plugin="com.vernalis.knime.core">
 
