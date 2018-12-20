@@ -1,0 +1,8 @@
+New in Version 1.11.0
+
+New Data row implementation
+New DataTable wrapper
+New Dialog components and Settings Models
+New Iterators (Tables and other)
+Updated Parallel Result containers
+Updated and New Native Object GC containers

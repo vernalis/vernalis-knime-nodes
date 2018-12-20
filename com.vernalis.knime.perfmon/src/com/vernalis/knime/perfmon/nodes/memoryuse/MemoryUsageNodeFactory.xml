@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./Memory_Chip.png" type="Manipulator"
+	xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Memory Use</name>
+
+	<shortDescription>
+		Node to record current memory use
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				This node records the current memory use in the JVM.  The output is sent both to a data table and to flow variables
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Input 0">Optional Flow Variable Connection to time the start
+		</inPort>
+		<outPort index="0" name="Flow variables with summary stats">
+			Flow variable port with memory use added
+		</outPort>
+		<outPort index="1" name="Memory use">DataTable listing memory use parameters
+		</outPort>
+		
+	</ports>
+</knimeNode>
