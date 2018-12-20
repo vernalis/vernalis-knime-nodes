@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./Align_to_PA.png" type="Manipulator"
+	xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Align to Inertial Principal Axes</name>
+
+	<shortDescription>
+        Node to align molecules to their inertial principal axes
+    </shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				The node moves the centre of mass to the origin and rotates the
+				molecule to align the co-ordinate axes with the inertial principal
+				axes (or inertial reference frame). The first principal axis will be
+				aligned to the x-axis.
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+
+		<option name="Select the SDF or MOL column containing the conformers">The input molecule column</option>
+		<option name="Remove input column">Remove the input molecule column from the output
+			table
+		</option>
+
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Molecules">SDF or Mol table of molecules for
+			processing
+		</inPort>
+		<outPort index="0" name="Aligned Molecules">Table with molecules aligned to their
+			Inertial Principal Axes
+		</outPort>
+	</ports>
+</knimeNode>

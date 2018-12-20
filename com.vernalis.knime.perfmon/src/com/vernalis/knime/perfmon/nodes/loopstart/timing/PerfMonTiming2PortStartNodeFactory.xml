@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./Benchmarking_Start.png" type="LoopStart"
+	xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Benchmark Start (2 ports)</name>
+
+	<shortDescription>
+		Loop start for execution timing
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>This node provides the start of a timing block for monitoring
+				performance of a node or nodes. It needs to be paired with a
+				corresponding Performance Monitoring Timing End node.
+			</p>
+			<p>The loop start allows the setting of a number of timing runs, and
+				an optional timeout
+			</p>
+			<p>NB The timeout will not halt intermediate node execution, only
+				prevent a new iteration starting one the corresponding loop end is
+				reached.
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Input 0">First Input Data Table
+		</inPort>
+		<inPort index="1" name="Input 1">Second Input Data Table
+		</inPort>
+
+		<outPort index="0" name="Unmodified Output 0">First Unmodified Data Table
+		</outPort>
+
+		<outPort index="1" name="Unmodified Output 1">Second Unmodified Data Table
+		</outPort>
+
+	</ports>
+
+</knimeNode>

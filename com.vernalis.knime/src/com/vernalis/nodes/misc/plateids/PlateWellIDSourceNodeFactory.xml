@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2018, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="./Plate_ID.png"
+	type="Source"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Plate Well IDs</name>
+
+	<shortDescription>
+		This node generates plate well IDs
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				This node generates 1 plate's worth of plate and well IDs to a table. The user selects
+				the plate size and fill direction. The node creates a table with the following columns:
+				<ol>
+					<li>
+						<tt>Plate Index</tt>
+						- a numerical plate index, starting a 1
+					</li>
+					<li>
+						<tt>Well Index</tt>
+						- a numerical well index within the current plate, starting at 1
+					</li>
+					<li>
+						<tt>Row Index</tt>
+						- a numerical row index within the current plate, starting at 1
+					</li>
+					<li>
+						<tt>Row ID</tt>
+						- an alphabetical row ID within the current plate, starting at 'A'
+					</li>
+					<li>
+						<tt>Column Index</tt>
+						- a numerical column index within the current plate, starting at 1
+					</li>
+					<li>
+						<tt>Well ID</tt>
+						- an alphanumeric Well ID combining the
+						<tt>Row ID</tt>
+						and
+						<tt>Column Index</tt>
+						fields, separated by the row-column deliminator. The node dialog
+						contains a live preview for this field for well A1
+					</li>
+					<li>
+						<tt>Plate/Well ID</tt>
+						- an alphanumeric Well ID prefixed with the Plate ID, plate prefix
+						and plate-row deliminator. The node dialog
+						contains a live preview
+						for this field for well A1
+					</li>
+				</ol>
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+
+		</intro>
+
+
+		<option name="Plate Size">The plate size to use - pick one of the standard
+			sizes
+		</option>
+		<option name="Fill Direction">Should the plate be filled row-wise (i.e.
+			A1-A2-A3...An B1-B2-B3... etc) or column-wise (ie.
+			A1-B2-C1...A2-C2-D2...)
+		</option>
+
+		<option name="&lt;Space&gt;-pad Row IDs">Should Row IDs be left-space-padded to the maximum
+			width required for the last row of the plate in the Plate/Well ID
+			column
+		</option>
+		<option name="First Plate Index">The index to be used for the first plate</option>
+		<option name="Wells to skip at start of plate(s)">
+			The number of blank wells to be left at the start
+			of each plate, e.g.
+			for a 96-well plate filled column-wise, to leave
+			a blank column at the
+			start, enter '
+			<tt>8</tt>
+			'. This value is between 0 and
+			one less than the number of wells on
+			the plate. Increasing it such
+			that the first well to use is beyond the
+			number of wells specified by
+			the '
+			<tt>Wells to skip at end of plate(s)</tt>
+			' setting will result in that setting being decreased to ensure that
+			there is always at least one well in use on the plate. If changing
+			the plate size puts the value entered beyond the last well of the
+			plate, it will be reduced to keep one plate well occupied
+		</option>
+		<option name="Wells to skip at end of plate(s)">
+			The number of blank wells to be left at the end
+			of each plate, e.g.
+			for a 96-well plate filled column-wise, to leave
+			a blank column at the
+			end, enter '
+			<tt>8</tt>
+			'. This value is between 0 and the maximum value for the plate size
+			such that at least one well is occupied, and may be changed by
+			changes to the plate size of '
+			<tt>Wells to skip at start of plate(s)</tt>
+			' settings to ensure at least one well is always available
+		</option>
+		<option name="0-pad Column IDs">Should the Column index be 0-padded to the
+			maximum
+			width required for the last column in the plate in the Well ID and
+			Plate/Well ID columns
+		</option>
+		<option name="Plate prefix">The prefix before the plate index in the
+			Plate/Well ID column
+		</option>
+		<option name="Plate:Row deliminator">The deliminator character(s) between the plate
+			index and the Row ID in the Plate/Well ID column
+		</option>
+		<option name="Row:Column deliminator">The deliminator character(s) between the Row ID
+			and Column Index in the Well ID and Plate/Well ID columns
+		</option>
+		<option name="Label Format Preview">This field contains live-updating previews of the
+			current format of the Well ID and Plate/Well ID columns for the well
+			A1
+		</option>
+	</fullDescription>
+
+	<ports>
+		
+		<outPort
+			index="0"
+			name="Well IDs">The table with plate well positions</outPort>
+	</ports>
+
+</knimeNode>
