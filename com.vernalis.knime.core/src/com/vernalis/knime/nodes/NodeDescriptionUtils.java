@@ -22,7 +22,6 @@ import java.util.Optional;
 import org.apache.xmlbeans.XmlCursor;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
 import org.knime.core.eclipseUtil.OSGIHelper;
-import org.knime.core.node.NodeAndBundleInformation;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
 import org.knime.node2012.FullDescriptionDocument.FullDescription;
@@ -241,7 +240,8 @@ public class NodeDescriptionUtils {
 	 * Method to add the vendor bundle information to the node description. For
 	 * nodes with an XML Node description, this is performed dynamically,
 	 * however when the node description is supplied dynamically this needs to
-	 * be added manually
+	 * be added manually. Redirects to
+	 * {@link #addBundleInformation(KnimeNode, Class)}
 	 * 
 	 * @param node
 	 *            The KnimeNode element
@@ -282,10 +282,8 @@ public class NodeDescriptionUtils {
 	 * Method to add the vendor bundle information to the node description. For
 	 * nodes with an XML Node description, this is performed dynamically,
 	 * however when the node description is supplied dynamically this needs to
-	 * be added manually. This version mirrors that in
-	 * {@link #addBundleInformation(KnimeNode, NodeFactory)}, which goes via an
-	 * intermediate {@link NodeAndBundleInformation} instance, but does not
-	 * require an instance of the {@link NodeFactory} class
+	 * be added manually. This version does not require an instance of the
+	 * {@link NodeFactory} class
 	 * 
 	 * @param node
 	 *            The KnimeNode element
