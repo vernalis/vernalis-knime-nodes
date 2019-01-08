@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2018 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -13,8 +13,6 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  *******************************************************************************/
 package com.vernalis.knime.core.memory;
-
-import static com.vernalis.knime.core.system.SystemUtils.getPID;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -30,6 +28,8 @@ import com.vernalis.knime.core.os.UnsupportedOperatingSystemException;
 import com.vernalis.knime.core.system.CommandExecutionException;
 import com.vernalis.knime.core.system.SystemCommandRunner;
 
+import static com.vernalis.knime.core.system.SystemUtils.getPID;
+
 /**
  * Utility class for methods relating to memory use
  * 
@@ -37,20 +37,30 @@ import com.vernalis.knime.core.system.SystemCommandRunner;
  * 
  */
 public class MemoryUtils {
+
 	/** Linux Result key */
 	private static final String RES = "RES";
 	/** Windows Result Key */
 	private static final String MEM_USAGE = "MEM USAGE";
-	/** Windows memory command */
-	private static final String WIN_MEM_CMD = "tasklist /FI \"PID eq %PID%\" /FO CSV";
+	/**
+	 * Windows memory command (Sets codepage to US English first to attempt to
+	 * fix locale-based errors parsing header. Thanks to Taka Ohshima at Infocom
+	 * for reporting the bug and suggesting the solution )
+	 */
+	private static final String WIN_MEM_CMD =
+			"cmd /c chcp 437 && tasklist /FI \"PID eq %PID%\" /FO CSV";
 	/** Linux memory command */
 	private static final String LINUX_MEM_CMD = "top -n 1 -b -p %PID%";
+	/** Linux memory command */
+	private static final String MAC_MEM_CMD = "top -l 1 -pid %PID%";
 	/** Constant multiplier for MB */
 	private static double MB = 1024.0 * 1024.0;
 	/** Regex to extract windows memory result */
-	private static final Pattern memPatt = Pattern.compile("([+\\-]?[\\d,\\.]+)(K|M|G)?");
+	private static final Pattern memPatt =
+			Pattern.compile("([+\\-]?[\\d,\\.]+)(K|M|G)?");
 	/** Node Logger Instance **/
-	private static final NodeLogger logger = NodeLogger.getLogger(MemoryUtils.class);
+	private static final NodeLogger logger =
+			NodeLogger.getLogger(MemoryUtils.class);
 
 	private MemoryUtils() {
 		// Don't instantiate
@@ -67,7 +77,8 @@ public class MemoryUtils {
 	 * @throws InterruptedException
 	 *             If {@link Thread#sleep(long)}) is interrupted
 	 */
-	public static void runHeavyGC(int numberOfGCs, int interGCDelayMS) throws InterruptedException {
+	public static void runHeavyGC(int numberOfGCs, int interGCDelayMS)
+			throws InterruptedException {
 		System.gc();
 
 		for (int i = 1; i < numberOfGCs; i++) {
@@ -90,47 +101,60 @@ public class MemoryUtils {
 	 *             If the system command failed to run
 	 */
 	public static double getSystemProcessMemory(OS os)
-			throws UnsupportedOperatingSystemException, CommandExecutionException {
+			throws UnsupportedOperatingSystemException,
+			CommandExecutionException {
 		SystemCommandRunner scr;
 		String delim;
 		switch (os) {
 		case LINUX:
+			scr = new SystemCommandRunner(
+					LINUX_MEM_CMD.replace("%PID%", "" + getPID()));
+			delim = "\\s+";
+			break;
 		case MAC:
-			scr = new SystemCommandRunner(LINUX_MEM_CMD.replace("%PID%", "" + getPID()));
+			scr = new SystemCommandRunner(
+					MAC_MEM_CMD.replace("%PID%", "" + getPID()));
 			delim = "\\s+";
 			break;
 		case WIN:
-			scr = new SystemCommandRunner(WIN_MEM_CMD.replace("%PID%", "" + getPID()));
+			scr = new SystemCommandRunner(
+					WIN_MEM_CMD.replace("%PID%", "" + getPID()));
 			delim = "\\\",\\\"";
 			break;
 		case OTHER:
 		default:
 			throw new UnsupportedOperatingSystemException();
 		}
-
 		scr.run();
 
 		// Parse the last 2 lines of the std out to the required results
 		String[] stdOutLines = scr.getStdOut().toUpperCase().split("\\n");
 		HashMap<String, String> returnValues = new HashMap<>();
 
-		String[] propNames = stdOutLines[stdOutLines.length - 2].trim().split(delim);
-		String[] propVals = stdOutLines[stdOutLines.length - 1].trim().split(delim);
+		String[] propNames =
+				stdOutLines[stdOutLines.length - 2].trim().split(delim);
+		String[] propVals =
+				stdOutLines[stdOutLines.length - 1].trim().split(delim);
 		for (int i = 0; i < propNames.length; i++) {
-			returnValues.put(propNames[i].replace("\"", ""), propVals[i].replace("\"", ""));
+			returnValues.put(propNames[i].replace("\"", ""),
+					propVals[i].replace("\"", ""));
 		}
 
 		// Now get the relevant property and convert to MB
 		// Windows 'MEM USAGE'
 		// Linux 'RES'
+		// Mac: 'MEM'
 		String result;
 		switch (os) {
 		case WIN:
 			result = returnValues.get(MEM_USAGE).replaceAll("\\s", "");
 			break;
 		case LINUX:
-		case MAC:
 			result = returnValues.get(RES).replaceAll("\\s", "");
+			break;
+		case MAC:
+			result = returnValues.get("MEM").replaceAll("\\s", "").replace("+",
+					"");
 			break;
 		default:
 			result = "-1";
@@ -146,9 +170,11 @@ public class MemoryUtils {
 				kB = NumberFormat.getInstance().parse(m.group(1)).doubleValue();
 			} catch (ParseException e) {
 				logger.error(
-						"Number parsing exception while getting process memory: " + e.getMessage());
+						"Number parsing exception while getting process memory: "
+								+ e.getMessage());
 				throw new CommandExecutionException(
-						"Number parsing exception while getting process memory: " + e.getMessage(),
+						"Number parsing exception while getting process memory: "
+								+ e.getMessage(),
 						e);
 			}
 
@@ -177,7 +203,8 @@ public class MemoryUtils {
 	 *             If the system command failed to run
 	 */
 	public static double getSystemProcessMemory()
-			throws UnsupportedOperatingSystemException, CommandExecutionException {
+			throws UnsupportedOperatingSystemException,
+			CommandExecutionException {
 		OS os = OperatingSystem.getInstance().getOS();
 		return getSystemProcessMemory(os);
 	}
