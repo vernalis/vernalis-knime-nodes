@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2018 Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2019 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -49,7 +49,6 @@ import com.vernalis.knime.mmp.FragmentationTypes;
 import com.vernalis.knime.mmp.IncomingExplicitHsOption;
 import com.vernalis.knime.mmp.IncomingMoleculeException;
 import com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin;
-import com.vernalis.knime.mmp.RDKitFragmentationUtils;
 import com.vernalis.knime.mmp.ToolkitException;
 import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
 
@@ -231,29 +230,35 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U>
 		}
 		if (hasRemoveHs) {
 			m_stripHsAtEnd = createStripHModel();
-			m_stripHsAtEnd.setEnabled(m_AddHs.isEnabled() && m_AddHs.getBooleanValue());
+			m_stripHsAtEnd.setEnabled(
+					m_AddHs.isEnabled() && m_AddHs.getBooleanValue());
 			m_incomingExplicitHsHandlingMdl = createIncomingExplicitHsModel();
-			m_incomingExplicitHsHandlingMdl.addChangeListener(new ChangeListener() {
+			m_incomingExplicitHsHandlingMdl
+					.addChangeListener(new ChangeListener() {
 
-				@Override
-				public void stateChanged(ChangeEvent e) {
-					try {
-						incomingExplicitHsOption = IncomingExplicitHsOption
-								.valueOf(m_incomingExplicitHsHandlingMdl.getStringValue());
-					} catch (Exception e1) {
-						logger.warn(
-								"Unrecognised option for incoming explicit H treatment - using default setting");
-						incomingExplicitHsOption = IncomingExplicitHsOption.getDefault();
-					}
-				}
-			});
+						@Override
+						public void stateChanged(ChangeEvent e) {
+							try {
+								incomingExplicitHsOption =
+										IncomingExplicitHsOption.valueOf(
+												m_incomingExplicitHsHandlingMdl
+														.getStringValue());
+							} catch (Exception e1) {
+								logger.warn(
+										"Unrecognised option for incoming explicit H treatment - using default setting");
+								incomingExplicitHsOption =
+										IncomingExplicitHsOption.getDefault();
+							}
+						}
+					});
 			try {
-				incomingExplicitHsOption = IncomingExplicitHsOption
-						.valueOf(m_incomingExplicitHsHandlingMdl.getStringValue());
+				incomingExplicitHsOption = IncomingExplicitHsOption.valueOf(
+						m_incomingExplicitHsHandlingMdl.getStringValue());
 			} catch (Exception e1) {
 				logger.warn(
 						"Unrecognised option for incoming explicit H treatment - using default setting");
-				incomingExplicitHsOption = IncomingExplicitHsOption.getDefault();
+				incomingExplicitHsOption =
+						IncomingExplicitHsOption.getDefault();
 			}
 		} else {
 			m_stripHsAtEnd = null;
@@ -684,7 +689,8 @@ public abstract class AbstractMMPFragmentationFactoryNodeModel<T, U>
 				&& fragType == FragmentationTypes.USER_DEFINED) {
 			fragSMIRKS = m_customSmarts.getStringValue();
 		}
-		String validation = fragUtilityFactory.validateMatcherSmarts(fragSMIRKS);
+		String validation =
+				fragUtilityFactory.validateMatcherSmarts(fragSMIRKS);
 		if (validation != null) {
 			throw new InvalidSettingsException(
 					"Invalid SMARTS Matcher - " + validation);

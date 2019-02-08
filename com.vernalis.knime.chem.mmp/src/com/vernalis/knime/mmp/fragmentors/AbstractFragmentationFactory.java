@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -55,7 +56,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	/**
 	 * Property name to flag incomping possible but not stereocentres
 	 */
-	protected static final String UNSPECIFIED_STEREOCENTRE = "UNSPECIFIED_STEREOCENTRE";
+	protected static final String UNSPECIFIED_STEREOCENTRE =
+			"UNSPECIFIED_STEREOCENTRE";
 
 	/**
 	 * Property name to flag incoming defined stereocentres
@@ -65,11 +67,13 @@ public abstract class AbstractFragmentationFactory<T, U>
 	/**
 	 * Property name to flag incoming possible but not stereo double bonds
 	 */
-	protected static final String UNSPECIFIED_DOUBLE_BOND = "UNSPECIFIED_DOUBLE_BOND";
+	protected static final String UNSPECIFIED_DOUBLE_BOND =
+			"UNSPECIFIED_DOUBLE_BOND";
 	/**
 	 * Property name to flag incoming assigned stereo double bonds
 	 */
-	protected static final String SPECIFIED_DOUBLE_BOND = "SPECIFIED_DOUBLE_BOND";
+	protected static final String SPECIFIED_DOUBLE_BOND =
+			"SPECIFIED_DOUBLE_BOND";
 	/**
 	 * Property name to hold isotopic label for attachment point until needed
 	 */
@@ -90,11 +94,16 @@ public abstract class AbstractFragmentationFactory<T, U>
 	protected Set<BondIdentifier> matchingBonds;
 	protected Map<Integer, Set<BondIdentifier>> cuttableBonds = new HashMap<>();
 	protected Map<Set<BondIdentifier>, Boolean> triplets = new HashMap<>();
-	protected Map<Set<BondIdentifier>, BitSet> valueAtomIDsLookup = new HashMap<>();
-	protected Map<BondIdentifier, BitSet> startLeafAtomIDsLookup = new HashMap<>();
-	protected Map<BondIdentifier, BitSet> endLeafAtomIDsLookup = new HashMap<>();
-	protected Map<Integer, Set<Set<BondIdentifier>>> cuttableBondCombos = new HashMap<>();
-	protected Map<Integer, Set<Set<BondIdentifier>>> invalidTriplets = new HashMap<>();
+	protected Map<Set<BondIdentifier>, BitSet> valueAtomIDsLookup =
+			new HashMap<>();
+	protected Map<BondIdentifier, BitSet> startLeafAtomIDsLookup =
+			new HashMap<>();
+	protected Map<BondIdentifier, BitSet> endLeafAtomIDsLookup =
+			new HashMap<>();
+	protected Map<Integer, Set<Set<BondIdentifier>>> cuttableBondCombos =
+			new HashMap<>();
+	protected Map<Integer, Set<Set<BondIdentifier>>> invalidTriplets =
+			new HashMap<>();
 	protected SizedBondCache<T> leafLookup;
 	protected BitSet possibleCreatedStereos;
 	protected BitSet atomsOfPossibleCreatedStereoDoubleBonds;
@@ -170,8 +179,9 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 *             This should never be thrown unless {@link #close()} is
 	 *             somehow called during instantiation
 	 */
-	public AbstractFragmentationFactory(T mol, U bondMatch, boolean removeHs, boolean isHAdded,
-			boolean verboseLogging, boolean treatProchiralAsChiral, Integer maxNumberChangingHAs,
+	public AbstractFragmentationFactory(T mol, U bondMatch, boolean removeHs,
+			boolean isHAdded, boolean verboseLogging,
+			boolean treatProchiralAsChiral, Integer maxNumberChangingHAs,
 			Double minCnstToVarAtmRatio, int maxLeafCacheSize)
 			throws ClosedFactoryException, ToolkitException {
 
@@ -196,7 +206,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 		bondOnlyValueComponent = getComponentFromSmiles("[501*][500*]", false);
 		leafLookup = new SizedBondCache<>(maxLeafCacheSize);
 		// If we are H-added always use index 500
-		hydrogenOnlyLeaf = this.isHAdded ? getComponentFromSmiles("[500*][H]", false) : null;
+		hydrogenOnlyLeaf = this.isHAdded
+				? getComponentFromSmiles("[500*][H]", false) : null;
 	}
 
 	/**
@@ -244,7 +255,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 *            '*' atoms?
 	 * @return The SMILES string
 	 */
-	protected abstract String molToSmiles(T mol, boolean removeIsotopicLabelsFromAP);
+	protected abstract String molToSmiles(T mol,
+			boolean removeIsotopicLabelsFromAP);
 
 	/**
 	 * This method is called during instantiation to calculate the number of
@@ -301,9 +313,10 @@ public abstract class AbstractFragmentationFactory<T, U>
 
 	@Override
 	public Set<AbstractMulticomponentFragmentationParser<T>> breakMoleculeAlongBondCombos(
-			Set<Set<BondIdentifier>> bondCombos, boolean prochiralAsChiral, ExecutionContext exec,
-			Color bondColour, Color keyColour, Color valueColour, NodeLogger logger,
-			boolean verboseLogging) throws CanceledExecutionException, ClosedFactoryException {
+			Set<Set<BondIdentifier>> bondCombos, boolean prochiralAsChiral,
+			ExecutionContext exec, Color bondColour, Color keyColour,
+			Color valueColour, NodeLogger logger, boolean verboseLogging)
+			throws CanceledExecutionException, ClosedFactoryException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -311,14 +324,15 @@ public abstract class AbstractFragmentationFactory<T, U>
 			throw new UnsupportedOperationException();
 		}
 		int count = 0;
-		Set<AbstractMulticomponentFragmentationParser<T>> retVal = new TreeSet<>();
+		Set<AbstractMulticomponentFragmentationParser<T>> retVal =
+				new TreeSet<>();
 		for (Set<BondIdentifier> bondSet : bondCombos) {
 			exec.checkCanceled();
 			count++;
 			if (verboseLogging) {
 				if (count % 50 == 0) {
-					logger.info("Fragmenting molecule: " + count + " of " + bondCombos.size()
-							+ " fragmentations tried");
+					logger.info("Fragmenting molecule: " + count + " of "
+							+ bondCombos.size() + " fragmentations tried");
 				}
 			}
 			try {
@@ -326,11 +340,14 @@ public abstract class AbstractFragmentationFactory<T, U>
 				final AbstractMulticomponentFragmentationParser<T> fragment =
 						rawFragmentMoleculeAlongBondCombos(bondSet);
 				if (fragment != null) {
-					if (bondColour != null || keyColour != null || valueColour != null) {
+					if (bondColour != null || keyColour != null
+							|| valueColour != null) {
 						try {
-							fragment.setRenderingCell(renderFragmentation(bondSet, bondColour,
-									keyColour, valueColour));
-						} catch (IOException | MoleculeFragmentationException e) {
+							fragment.setRenderingCell(
+									renderFragmentation(bondSet, bondColour,
+											keyColour, valueColour));
+						} catch (IOException
+								| MoleculeFragmentationException e) {
 							// Leave it as a missing cell - dont think we should
 							// be
 							// able to get here
@@ -343,8 +360,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 				logger.warn("Something strange happened... " + e.getMessage());
 			} catch (ToolkitException e) {
 				if (verboseLogging) {
-					logger.info("Unable to complete fragmentation: " + e.getMessage() == null ? ""
-							: e.getMessage());
+					logger.info("Unable to complete fragmentation: "
+							+ e.getMessage() == null ? "" : e.getMessage());
 				}
 			}
 		}
@@ -353,23 +370,26 @@ public abstract class AbstractFragmentationFactory<T, U>
 
 	@Override
 	public Set<AbstractMulticomponentFragmentationParser<T>> breakMoleculeAlongMatchingBonds(
-			ExecutionContext exec, Color breakingBondColour, Color keyColour, Color valueColour)
-			throws CanceledExecutionException, IllegalArgumentException, ToolkitException,
-			ClosedFactoryException {
+			ExecutionContext exec, Color breakingBondColour, Color keyColour,
+			Color valueColour) throws CanceledExecutionException,
+			IllegalArgumentException, ToolkitException, ClosedFactoryException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
-		Set<AbstractMulticomponentFragmentationParser<T>> retVal = new TreeSet<>();
+		Set<AbstractMulticomponentFragmentationParser<T>> retVal =
+				new TreeSet<>();
 		for (BondIdentifier bond : matchingBonds) {
 			exec.checkCanceled();
 
 			AbstractMulticomponentFragmentationParser<T> fragment =
 					rawFragmentMoleculeAlongBond(bond);
 			if (fragment != null) {
-				if (breakingBondColour != null || keyColour != null || valueColour != null) {
+				if (breakingBondColour != null || keyColour != null
+						|| valueColour != null) {
 					try {
-						fragment.setRenderingCell(renderFragmentation(Collections.singleton(bond),
-								breakingBondColour, keyColour, valueColour));
+						fragment.setRenderingCell(renderFragmentation(
+								Collections.singleton(bond), breakingBondColour,
+								keyColour, valueColour));
 					} catch (IOException | MoleculeFragmentationException e) {
 						// Leave it as a missing cell - dont think we should be
 						// able to get here
@@ -380,11 +400,12 @@ public abstract class AbstractFragmentationFactory<T, U>
 			// Now the reverse
 			fragment = rawFragmentMoleculeAlongBond(bond.getReverse());
 			if (fragment != null) {
-				if (breakingBondColour != null || keyColour != null || valueColour != null) {
+				if (breakingBondColour != null || keyColour != null
+						|| valueColour != null) {
 					try {
-						fragment.setRenderingCell(
-								renderFragmentation(Collections.singleton(bond.getReverse()),
-										breakingBondColour, keyColour, valueColour));
+						fragment.setRenderingCell(renderFragmentation(
+								Collections.singleton(bond.getReverse()),
+								breakingBondColour, keyColour, valueColour));
 					} catch (IOException | MoleculeFragmentationException e) {
 						// Leave it as a missing cell - dont think we should be
 						// able to get here
@@ -406,26 +427,28 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 */
 	@Override
 	public Set<AbstractMulticomponentFragmentationParser<T>> breakMoleculeAlongMatchingBondsWithBondInsertion(
-			ExecutionContext exec, Color bondColour, Color keyColour, Color valueColour)
-			throws CanceledExecutionException, IllegalArgumentException, ToolkitException,
-			ClosedFactoryException {
+			ExecutionContext exec, Color bondColour, Color keyColour,
+			Color valueColour) throws CanceledExecutionException,
+			IllegalArgumentException, ToolkitException, ClosedFactoryException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
 		if (isHAdded) {
 			throw new UnsupportedOperationException();
 		}
-		Set<AbstractMulticomponentFragmentationParser<T>> retVal = new TreeSet<>();
+		Set<AbstractMulticomponentFragmentationParser<T>> retVal =
+				new TreeSet<>();
 		for (BondIdentifier bond : matchingBonds) {
 			exec.checkCanceled();
 			final AbstractMulticomponentFragmentationParser<T> fragment =
 					rawFragmentMoleculeWithBondInsertion(bond);
 			if (fragment != null) {
-				if (bondColour != null || keyColour != null || valueColour != null) {
+				if (bondColour != null || keyColour != null
+						|| valueColour != null) {
 					try {
-						fragment.setRenderingCell(
-								renderFragmentation(BondIdentifierSelfpairSet.create(bond),
-										bondColour, keyColour, valueColour));
+						fragment.setRenderingCell(renderFragmentation(
+								BondIdentifierSelfpairSet.create(bond),
+								bondColour, keyColour, valueColour));
 					} catch (IOException | MoleculeFragmentationException e) {
 						// Leave it as a missing cell - dont think we should be
 						// able to get here
@@ -440,8 +463,9 @@ public abstract class AbstractFragmentationFactory<T, U>
 
 	@Override
 	public final AbstractMulticomponentFragmentationParser<T> fragmentMolecule(
-			Set<BondIdentifier> bonds) throws IllegalArgumentException,
-			MoleculeFragmentationException, ToolkitException, ClosedFactoryException {
+			Set<BondIdentifier> bonds)
+			throws IllegalArgumentException, MoleculeFragmentationException,
+			ToolkitException, ClosedFactoryException {
 		AbstractMulticomponentFragmentationParser<T> retVal =
 				rawFragmentMoleculeAlongBondCombos(bonds);
 		if (retVal == null) {
@@ -466,7 +490,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 *             If the {@link #close()} method has already been called
 	 */
 	protected AbstractMulticomponentFragmentationParser<T> rawFragmentMoleculeWithBondInsertion(
-			BondIdentifier bond) throws ToolkitException, ClosedFactoryException {
+			BondIdentifier bond)
+			throws ToolkitException, ClosedFactoryException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -492,13 +517,15 @@ public abstract class AbstractFragmentationFactory<T, U>
 				return null;
 			}
 			firstLeafComponent = createLeaf(leafAtomIDs, bond, 1L);
-			if (isChiral || (!hasUndefinedChirality && treatProchiralAsChiral)) {
+			if (isChiral
+					|| (!hasUndefinedChirality && treatProchiralAsChiral)) {
 				if (leafAtomIDs.intersects(possibleCreatedStereos)) {
 					assignAPChirality(firstLeafComponent, 1L);
 				}
 			}
 			if (hasNonflaggedDoubleBonds) {
-				if (leafAtomIDs.intersects(atomsOfPossibleCreatedStereoDoubleBonds)) {
+				if (leafAtomIDs
+						.intersects(atomsOfPossibleCreatedStereoDoubleBonds)) {
 					assignCreatedDblBondGeometry(firstLeafComponent, 1L);
 				}
 			}
@@ -525,13 +552,15 @@ public abstract class AbstractFragmentationFactory<T, U>
 				return null;
 			}
 			secondLeafComponent = createLeaf(leafAtomIDs, bond2, 1L);
-			if (isChiral || (!hasUndefinedChirality && treatProchiralAsChiral)) {
+			if (isChiral
+					|| (!hasUndefinedChirality && treatProchiralAsChiral)) {
 				if (leafAtomIDs.intersects(possibleCreatedStereos)) {
 					assignAPChirality(secondLeafComponent, 1L);
 				}
 			}
 			if (hasNonflaggedDoubleBonds) {
-				if (leafAtomIDs.intersects(atomsOfPossibleCreatedStereoDoubleBonds)) {
+				if (leafAtomIDs
+						.intersects(atomsOfPossibleCreatedStereoDoubleBonds)) {
 					assignCreatedDblBondGeometry(secondLeafComponent, 1L);
 				}
 			}
@@ -540,12 +569,14 @@ public abstract class AbstractFragmentationFactory<T, U>
 		}
 		leaflookupCount++;
 
-		secondLeafComponent = cloneComponent(leafLookup.get(bond2), localGCWave);
+		secondLeafComponent =
+				cloneComponent(leafLookup.get(bond2), localGCWave);
 		applyAPIsotopicLabels(secondLeafComponent, 501, localGCWave);
 		leafs.add(secondLeafComponent);
 
 		AbstractMulticomponentFragmentationParser<T> retVal =
-				createFragmentationParserFromComponents(leafs, bondOnlyValueComponent, localGCWave);
+				createFragmentationParserFromComponents(leafs,
+						bondOnlyValueComponent, localGCWave);
 		doCleanup(localGCWave);
 		return retVal;
 	}
@@ -560,7 +591,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 */
 	@Override
 	public final AbstractMulticomponentFragmentationParser<T> fragmentMoleculeWithBondInsertion(
-			BondIdentifier bond) throws IllegalArgumentException, MoleculeFragmentationException,
+			BondIdentifier bond)
+			throws IllegalArgumentException, MoleculeFragmentationException,
 			ToolkitException, ClosedFactoryException {
 		AbstractMulticomponentFragmentationParser<T> retVal =
 				rawFragmentMoleculeWithBondInsertion(bond);
@@ -585,8 +617,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 *             If the {@link #close()} method has already been called
 	 */
 	protected AbstractMulticomponentFragmentationParser<T> rawFragmentMoleculeAlongBond(
-			BondIdentifier bond)
-			throws IllegalArgumentException, ToolkitException, ClosedFactoryException {
+			BondIdentifier bond) throws IllegalArgumentException,
+			ToolkitException, ClosedFactoryException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -620,7 +652,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 			return null;
 		}
 
-		if (minCnstToVarAtmRatio != null && (1.0 * keyHAC / valueHAC) < minCnstToVarAtmRatio) {
+		if (minCnstToVarAtmRatio != null
+				&& (1.0 * keyHAC / valueHAC) < minCnstToVarAtmRatio) {
 			// There is a Minumum const/varying atom ratio filter, and it is
 			// violated
 			return null;
@@ -640,13 +673,15 @@ public abstract class AbstractFragmentationFactory<T, U>
 				// in this case too
 			} else {
 				value = createLeaf(valueAtomIDs, bond, 1L);
-				if (isChiral || (!hasUndefinedChirality && treatProchiralAsChiral)) {
+				if (isChiral
+						|| (!hasUndefinedChirality && treatProchiralAsChiral)) {
 					if (valueAtomIDs.intersects(possibleCreatedStereos)) {
 						assignAPChirality(value, 1L);
 					}
 				}
 				if (hasNonflaggedDoubleBonds) {
-					if (valueAtomIDs.intersects(atomsOfPossibleCreatedStereoDoubleBonds)) {
+					if (valueAtomIDs.intersects(
+							atomsOfPossibleCreatedStereoDoubleBonds)) {
 						assignCreatedDblBondGeometry(value, 1L);
 					}
 				}
@@ -682,13 +717,15 @@ public abstract class AbstractFragmentationFactory<T, U>
 				// applyAPIsotopicLabels(leaf, -1, 1L);
 			} else {
 				leaf = createLeaf(leafAtomIDs, bond.getReverse(), 1L);
-				if (isChiral || (!hasUndefinedChirality && treatProchiralAsChiral)) {
+				if (isChiral
+						|| (!hasUndefinedChirality && treatProchiralAsChiral)) {
 					if (leafAtomIDs.intersects(possibleCreatedStereos)) {
 						assignAPChirality(leaf, 1L);
 					}
 				}
 				if (hasNonflaggedDoubleBonds) {
-					if (leafAtomIDs.intersects(atomsOfPossibleCreatedStereoDoubleBonds)) {
+					if (leafAtomIDs.intersects(
+							atomsOfPossibleCreatedStereoDoubleBonds)) {
 						assignCreatedDblBondGeometry(leaf, 1L);
 					}
 				}
@@ -708,8 +745,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 		}
 
 		AbstractMulticomponentFragmentationParser<T> retVal =
-				createFragmentationParserFromComponents(Collections.singleton(leaf), value,
-						localGCWave);
+				createFragmentationParserFromComponents(
+						Collections.singleton(leaf), value, localGCWave);
 
 		doCleanup(localGCWave);
 		return retVal;
@@ -730,8 +767,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 *             If the {@link #close()} method has already been called
 	 */
 	protected AbstractMulticomponentFragmentationParser<T> rawFragmentMoleculeAlongBondCombos(
-			Set<BondIdentifier> bonds)
-			throws IllegalArgumentException, ToolkitException, ClosedFactoryException {
+			Set<BondIdentifier> bonds) throws IllegalArgumentException,
+			ToolkitException, ClosedFactoryException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -739,7 +776,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 			throw new UnsupportedOperationException();
 		}
 		if (bonds == null || bonds.isEmpty()) {
-			throw new IllegalArgumentException("At least one bond must be supplied");
+			throw new IllegalArgumentException(
+					"At least one bond must be supplied");
 		}
 
 		if (bonds.size() == 1) {
@@ -769,7 +807,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 			return null;
 		}
 
-		if (minCnstToVarAtmRatio != null && (1.0 * keyHAC / valueHAC) < minCnstToVarAtmRatio) {
+		if (minCnstToVarAtmRatio != null
+				&& (1.0 * keyHAC / valueHAC) < minCnstToVarAtmRatio) {
 			// There is a Minumum const/varying atom ratio filter, and it is
 			// violated
 			return null;
@@ -781,7 +820,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 		BitSet leafAtomIDs = null;
 		for (BondIdentifier bond : bonds) {
 			T leafComponent;
-			BondIdentifier bond2 = !valueAtomIDs.get(bond.getStartIdx()) ? bond : bond.getReverse();
+			BondIdentifier bond2 = !valueAtomIDs.get(bond.getStartIdx()) ? bond
+					: bond.getReverse();
 			if (!leafLookup.containsKey(bond2)) {
 				leafGenCount++;
 				try {
@@ -790,13 +830,15 @@ public abstract class AbstractFragmentationFactory<T, U>
 					return null;
 				}
 				leafComponent = createLeaf(leafAtomIDs, bond2, 1L);
-				if (isChiral || (!hasUndefinedChirality && treatProchiralAsChiral)) {
+				if (isChiral
+						|| (!hasUndefinedChirality && treatProchiralAsChiral)) {
 					if (leafAtomIDs.intersects(possibleCreatedStereos)) {
 						assignAPChirality(leafComponent, 1L);
 					}
 				}
 				if (hasNonflaggedDoubleBonds) {
-					if (leafAtomIDs.intersects(atomsOfPossibleCreatedStereoDoubleBonds)) {
+					if (leafAtomIDs.intersects(
+							atomsOfPossibleCreatedStereoDoubleBonds)) {
 						assignCreatedDblBondGeometry(leafComponent, 1L);
 					}
 				}
@@ -809,26 +851,30 @@ public abstract class AbstractFragmentationFactory<T, U>
 			leafs.add(leafComponent);
 		}
 
-		T valueComponent = createValueComponent(valueAtomIDs, bonds, localGCWave);
+		T valueComponent =
+				createValueComponent(valueAtomIDs, bonds, localGCWave);
 		if (isChiral || (!hasUndefinedChirality && treatProchiralAsChiral)) {
 			if (valueAtomIDs.intersects(possibleCreatedStereos)) {
 				assignAPChirality(valueComponent, 1L);
 			}
 		}
 		if (hasNonflaggedDoubleBonds) {
-			if (valueAtomIDs.intersects(atomsOfPossibleCreatedStereoDoubleBonds)) {
+			if (valueAtomIDs
+					.intersects(atomsOfPossibleCreatedStereoDoubleBonds)) {
 				assignCreatedDblBondGeometry(valueComponent, 1L);
 			}
 		}
 
 		if (hasDuplicateKeys(leafs)) {
-			canonicaliseDuplicateKeyComponents(valueComponent, leafs, localGCWave);
+			canonicaliseDuplicateKeyComponents(valueComponent, leafs,
+					localGCWave);
 		}
 
 		applyAPIsotopicLabels(valueComponent, -1, localGCWave);
 
 		AbstractMulticomponentFragmentationParser<T> retVal =
-				createFragmentationParserFromComponents(leafs, valueComponent, localGCWave);
+				createFragmentationParserFromComponents(leafs, valueComponent,
+						localGCWave);
 		doCleanup(localGCWave);
 		return retVal;
 	}
@@ -887,8 +933,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 *            The wave index to use for stored native objects
 	 * @return The value Component
 	 */
-	protected abstract T createValueComponent(BitSet valueAtomIDs, Set<BondIdentifier> bonds,
-			long localGCWave);
+	protected abstract T createValueComponent(BitSet valueAtomIDs,
+			Set<BondIdentifier> bonds, long localGCWave);
 
 	/**
 	 * Method to canonicalise duplicate key components
@@ -900,8 +946,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * @param localGCWave
 	 *            The wave index to use for stored native objects
 	 */
-	protected abstract void canonicaliseDuplicateKeyComponents(T valueComponent, Set<T> leafs,
-			long localGCWave);
+	protected abstract void canonicaliseDuplicateKeyComponents(T valueComponent,
+			Set<T> leafs, long localGCWave);
 
 	/**
 	 * Method to remove explicit H's from a leaf
@@ -939,7 +985,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * @param localGCWave
 	 *            The GC Wave for garbage collection
 	 */
-	protected abstract void applyAPIsotopicLabels(T component, int apIndex, long localGCWave);
+	protected abstract void applyAPIsotopicLabels(T component, int apIndex,
+			long localGCWave);
 
 	/**
 	 * Assigns double bond geometry to newly created asymmetric double bonds
@@ -950,7 +997,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * @param localGCWave
 	 *            The gc wave index
 	 */
-	protected abstract void assignCreatedDblBondGeometry(T component, long localGCWave);
+	protected abstract void assignCreatedDblBondGeometry(T component,
+			long localGCWave);
 
 	/**
 	 * This assigns chirality to unassigned potentially chiral C atoms which are
@@ -980,7 +1028,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 *            The wave index to use for stored native objects
 	 * @return The Leag
 	 */
-	protected abstract T createLeaf(BitSet listLeafAtomIds, BondIdentifier bond, long localGCWave);
+	protected abstract T createLeaf(BitSet listLeafAtomIds, BondIdentifier bond,
+			long localGCWave);
 
 	/**
 	 * Method to create a cloned copy of a molecule
@@ -1008,7 +1057,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	protected BitSet listValueAtomIds(Set<BondIdentifier> bonds)
 			throws IllegalArgumentException, MoleculeFragmentationException {
 		if (bonds == null || bonds.size() == 0) {
-			throw new IllegalArgumentException("At least one bond must be supplied");
+			throw new IllegalArgumentException(
+					"At least one bond must be supplied");
 		}
 		BitSet retVal = rawListValueAtomIds(bonds);
 		if (retVal == null) {
@@ -1060,8 +1110,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 								// check if is in same bond
 								boolean traverse = true;
 								for (BondIdentifier bond : bonds) {
-									if (bond.isToAtomWithIdx(atIdx)
-											&& bond.isToAtomWithIdx(bondedAtomIdx)) {
+									if (bond.isToAtomWithIdx(atIdx) && bond
+											.isToAtomWithIdx(bondedAtomIdx)) {
 										// Same bond - dont traverse
 										traverse = false;
 										apCount++;
@@ -1102,8 +1152,9 @@ public abstract class AbstractFragmentationFactory<T, U>
 				nextAtomLayer = new BitSet(numAtoms);
 				while (atomLayer.cardinality() > 0) {
 					visitedAtomIDs.or(atomLayer);
-					for (int atIdx = atomLayer.nextSetBit(0); atIdx >= 0; atIdx =
-							atomLayer.nextSetBit(atIdx + 1)) {
+					for (int atIdx =
+							atomLayer.nextSetBit(0); atIdx >= 0; atIdx =
+									atomLayer.nextSetBit(atIdx + 1)) {
 						for (int bondedAtomIdx : graphNeighbours[atIdx]) {
 							if (apatoms.get(atIdx)) {
 								if (!apatoms.get(bondedAtomIdx)) {
@@ -1116,7 +1167,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 									boolean traverse = true;
 									for (BondIdentifier bond : bonds) {
 										if (bond.isToAtomWithIdx(atIdx)
-												&& bond.isToAtomWithIdx(bondedAtomIdx)) {
+												&& bond.isToAtomWithIdx(
+														bondedAtomIdx)) {
 											// Same bond - dont traverse
 											traverse = false;
 											apCount++;
@@ -1165,7 +1217,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 *             If more then one attachment point is found in the graph walk
 	 *             from the indicated bond end
 	 */
-	protected BitSet listLeafAtomIds(BondIdentifier bond, boolean isFromStartAtom)
+	protected BitSet listLeafAtomIds(BondIdentifier bond,
+			boolean isFromStartAtom)
 			throws IllegalArgumentException, MoleculeFragmentationException {
 		if (bond == null) {
 			throw new IllegalArgumentException("A bond must be supplied");
@@ -1177,7 +1230,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 			int numAtoms = graphNeighbours.length;
 			BitSet visitedAtomIDs = new BitSet(numAtoms);
 			BitSet atomLayer = new BitSet(numAtoms);
-			atomLayer.set(isFromStartAtom ? bond.getStartIdx() : bond.getEndIdx());
+			atomLayer.set(
+					isFromStartAtom ? bond.getStartIdx() : bond.getEndIdx());
 			BitSet nextAtomLayer = new BitSet(numAtoms);
 			while (atomLayer.cardinality() > 0) {
 				visitedAtomIDs.or(atomLayer);
@@ -1220,7 +1274,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 				endLeafAtomIDsLookup.put(bond, visitedAtomIDs);
 			}
 		}
-		return isFromStartAtom ? startLeafAtomIDsLookup.get(bond) : endLeafAtomIDsLookup.get(bond);
+		return isFromStartAtom ? startLeafAtomIDsLookup.get(bond)
+				: endLeafAtomIDsLookup.get(bond);
 
 	}
 
@@ -1233,8 +1288,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * @throws ToolkitException
 	 *             If the underlying toolkit throws an exception
 	 */
-	protected synchronized Set<Set<BondIdentifier>> getInvalidTriplets(int numCuts)
-			throws ClosedFactoryException, ToolkitException {
+	protected synchronized Set<Set<BondIdentifier>> getInvalidTriplets(
+			int numCuts) throws ClosedFactoryException, ToolkitException {
 		if (numCuts < 3) {
 			return Collections.emptySet();
 		}
@@ -1243,11 +1298,13 @@ public abstract class AbstractFragmentationFactory<T, U>
 			Set<Set<BondIdentifier>> testTriplets = null;
 			if (numCuts == 3) {
 				if (cuttableBondCombos.containsKey(2)) {
-					testTriplets = getAddOneCombinations(matchingBonds, cuttableBondCombos.get(2));
+					testTriplets = getAddOneCombinations(matchingBonds,
+							cuttableBondCombos.get(2));
 				} else {
 					testTriplets = getNCombinations(3, matchingBonds);
 				}
-				Iterator<Set<BondIdentifier>> tripletIter = testTriplets.iterator();
+				Iterator<Set<BondIdentifier>> tripletIter =
+						testTriplets.iterator();
 				while (tripletIter.hasNext()) {
 					Set<BondIdentifier> triplet = tripletIter.next();
 					if (isValidCutTriplet(triplet)) {
@@ -1261,9 +1318,10 @@ public abstract class AbstractFragmentationFactory<T, U>
 				// bonds
 				Set<BondIdentifier> allowedBonds = null;
 				boolean allowedBondsAreNMinusOne = false;
-				for (int i = numCuts - 1; i > 0
-						&& (allowedBonds == null || testTriplets == null); i--) {
-					if (testTriplets != null && invalidTriplets.containsKey(i)) {
+				for (int i = numCuts - 1; i > 0 && (allowedBonds == null
+						|| testTriplets == null); i--) {
+					if (testTriplets != null
+							&& invalidTriplets.containsKey(i)) {
 						testTriplets = new HashSet<>(invalidTriplets.get(i));
 
 					}
@@ -1281,7 +1339,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 				}
 
 				if (allowedBonds != null) {
-					Iterator<Set<BondIdentifier>> tripletIter = testTriplets.iterator();
+					Iterator<Set<BondIdentifier>> tripletIter =
+							testTriplets.iterator();
 					while (tripletIter.hasNext()) {
 						if (allowedBonds.containsAll(tripletIter.next())) {
 							tripletIter.remove();
@@ -1320,26 +1379,32 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * generateCuttableBondCombos(int, int)
 	 */
 	@Override
-	public Set<Set<BondIdentifier>> generateCuttableBondCombos(int minNumCuts, int maxNumCuts)
-			throws IllegalArgumentException, ToolkitException, ClosedFactoryException {
+	public Set<Set<BondIdentifier>> generateCuttableBondCombos(int minNumCuts,
+			int maxNumCuts) throws IllegalArgumentException, ToolkitException,
+			ClosedFactoryException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
 		if (minNumCuts < 2) {
-			throw new IllegalArgumentException("minNumCuts should be 2 or higher");
+			throw new IllegalArgumentException(
+					"minNumCuts should be 2 or higher");
 		}
 		if (maxNumCuts < minNumCuts) {
-			throw new IllegalArgumentException("maxNumCuts should not be less than minNumCuts");
+			throw new IllegalArgumentException(
+					"maxNumCuts should not be less than minNumCuts");
 		}
 		if (isHAdded && maxNumCuts > 1) {
-			throw new IllegalArgumentException("Only 1 cut should be made to H-added molecules");
+			throw new IllegalArgumentException(
+					"Only 1 cut should be made to H-added molecules");
 		}
 
 		Set<Set<BondIdentifier>> bondCombos = new LinkedHashSet<>();
-		Map<Integer, Set<Set<BondIdentifier>>> bondCombosToCheck = new TreeMap<>();
+		Map<Integer, Set<Set<BondIdentifier>>> bondCombosToCheck =
+				new TreeMap<>();
 		// Generate the combinations of upto numCuts bonds. NB we start at 2 as
 		// 1 is handled separately
-		for (int n = minNumCuts; n <= maxNumCuts && n <= matchingBonds.size(); n++) {
+		for (int n = minNumCuts; n <= maxNumCuts
+				&& n <= matchingBonds.size(); n++) {
 			if (cuttableBondCombos.containsKey(n)) {
 				// We already have the combos, pre-checked for validity, for
 				// n-cuts, so simply use them
@@ -1360,14 +1425,16 @@ public abstract class AbstractFragmentationFactory<T, U>
 			// If n=1, then the 'combinations' are simply the singleton sets, so
 			// generate them and cache them
 			if (n == 1) {
-				Set<Set<BondIdentifier>> newCombos = createSetOfSingletonSets(bondsToCombinate);
+				Set<Set<BondIdentifier>> newCombos =
+						createSetOfSingletonSets(bondsToCombinate);
 				cuttableBondCombos.put(1, newCombos);
 				bondCombos.addAll(newCombos);
 				continue;
 			} else if (n == 2) {
 				// We need to find all pairwise combinations
 				// No need to check them - generate them and cache them
-				Set<Set<BondIdentifier>> newCombos = getNCombinations(n, bondsToCombinate);
+				Set<Set<BondIdentifier>> newCombos =
+						getNCombinations(n, bondsToCombinate);
 				bondCombos.addAll(newCombos);
 				cuttableBondCombos.put(2, newCombos);
 				continue;
@@ -1410,7 +1477,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 				newCombos = getNCombinations(n, bondsToCombinate);
 			} else {
 				// Generate the new combos from the n-1 combos
-				newCombos = getAddOneCombinations(bondsToCombinate, nMinusOneCombos);
+				newCombos = getAddOneCombinations(bondsToCombinate,
+						nMinusOneCombos);
 			}
 			if (newCombos.isEmpty()) {
 				break;
@@ -1438,14 +1506,15 @@ public abstract class AbstractFragmentationFactory<T, U>
 			Map<Integer, Set<Set<BondIdentifier>>> bondCombosToCheck)
 			throws ClosedFactoryException, ToolkitException {
 		for (Integer i : bondCombosToCheck.keySet()) {
-			final Set<Set<BondIdentifier>> uncheckedCombos = bondCombosToCheck.get(i);
+			final Set<Set<BondIdentifier>> uncheckedCombos =
+					bondCombosToCheck.get(i);
 			removeInvalidTriplets(uncheckedCombos, i);
 			// Add them to the result and to the cache so that the
 			// next call of
 			bondCombos.addAll(uncheckedCombos);
 			cuttableBondCombos.put(i, uncheckedCombos);
-			cuttableBonds.put(i,
-					uncheckedCombos.stream().flatMap(x -> x.stream()).collect(Collectors.toSet()));
+			cuttableBonds.put(i, uncheckedCombos.stream()
+					.flatMap(x -> x.stream()).collect(Collectors.toSet()));
 		}
 		bondCombosToCheck.clear();
 	}
@@ -1460,7 +1529,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 *            Existing combinations
 	 * @return The new combinations
 	 */
-	protected Set<Set<BondIdentifier>> getAddOneCombinations(Set<BondIdentifier> bondsToCombinate,
+	protected Set<Set<BondIdentifier>> getAddOneCombinations(
+			Set<BondIdentifier> bondsToCombinate,
 			Set<Set<BondIdentifier>> nMinusOneCombos) {
 		Set<Set<BondIdentifier>> newCombos;
 		newCombos = new HashSet<>();
@@ -1517,7 +1587,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * @return The bonds to combinate
 	 * @throws ClosedFactoryException
 	 */
-	protected Set<BondIdentifier> getBondsToCombinate(int n) throws ClosedFactoryException {
+	protected Set<BondIdentifier> getBondsToCombinate(int n)
+			throws ClosedFactoryException {
 		Set<BondIdentifier> bondsToCombinate;
 		if (n > 1 && cuttableBonds.containsKey(n - 1)) {
 			// We already know the cuttable bonds for n-1, so only use them
@@ -1539,8 +1610,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * @throws ToolkitException
 	 * @throws ClosedFactoryException
 	 */
-	protected void removeInvalidTriplets(Set<Set<BondIdentifier>> combos, Integer numCuts)
-			throws ClosedFactoryException, ToolkitException {
+	protected void removeInvalidTriplets(Set<Set<BondIdentifier>> combos,
+			Integer numCuts) throws ClosedFactoryException, ToolkitException {
 		for (Set<BondIdentifier> triplet : getInvalidTriplets(numCuts)) {
 			// Now check none of the combos contain that triplet
 			Iterator<Set<BondIdentifier>> combosIter = combos.iterator();
@@ -1563,10 +1634,11 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * generateCuttableBondCombos(int)
 	 */
 	@Override
-	public synchronized Set<Set<BondIdentifier>> generateCuttableBondCombos(int numCuts)
-			throws ToolkitException, ClosedFactoryException {
+	public synchronized Set<Set<BondIdentifier>> generateCuttableBondCombos(
+			int numCuts) throws ToolkitException, ClosedFactoryException {
 		if (isHAdded && numCuts > 1) {
-			throw new IllegalArgumentException("Only 1 cut should be made to H-added molecules");
+			throw new IllegalArgumentException(
+					"Only 1 cut should be made to H-added molecules");
 		}
 		if (!cuttableBondCombos.containsKey(numCuts)) {
 
@@ -1577,12 +1649,15 @@ public abstract class AbstractFragmentationFactory<T, U>
 				}
 			} else if (numCuts > 1) {
 				// If it's not then there are no bonds so return empty!
-				Set<Set<BondIdentifier>> nMinusOneCombos = generateCuttableBondCombos(numCuts - 1);
-				Set<BondIdentifier> cuttableBonds = identifyAllCuttableBonds(numCuts - 1);
+				Set<Set<BondIdentifier>> nMinusOneCombos =
+						generateCuttableBondCombos(numCuts - 1);
+				Set<BondIdentifier> cuttableBonds =
+						identifyAllCuttableBonds(numCuts - 1);
 				for (BondIdentifier newBond : cuttableBonds) {
 					for (Set<BondIdentifier> parentCombo : nMinusOneCombos) {
 						if (!parentCombo.contains(newBond)) {
-							Set<BondIdentifier> newCombo = new HashSet<>(parentCombo);
+							Set<BondIdentifier> newCombo =
+									new HashSet<>(parentCombo);
 							newCombo.add(newBond);
 							newBondCombos.add(newCombo);
 						}
@@ -1590,9 +1665,11 @@ public abstract class AbstractFragmentationFactory<T, U>
 				}
 				if (numCuts >= 3) {
 					// Now work through each invalid triplet in turn...
-					for (Set<BondIdentifier> triplet : getInvalidTriplets(numCuts)) {
+					for (Set<BondIdentifier> triplet : getInvalidTriplets(
+							numCuts)) {
 						// Now check none of the combos contain that triplet
-						Iterator<Set<BondIdentifier>> newCombosIter = newBondCombos.iterator();
+						Iterator<Set<BondIdentifier>> newCombosIter =
+								newBondCombos.iterator();
 						while (newCombosIter.hasNext()) {
 							if (newCombosIter.next().containsAll(triplet)) {
 								newCombosIter.remove();
@@ -1617,11 +1694,13 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * identifyAllCuttableBonds(int)
 	 */
 	@Override
-	public synchronized Set<BondIdentifier> identifyAllCuttableBonds(int numCuts)
-			throws ClosedFactoryException, ToolkitException {
+	public synchronized Set<BondIdentifier> identifyAllCuttableBonds(
+			int numCuts) throws ClosedFactoryException, ToolkitException {
 		if (!cuttableBonds.containsKey(numCuts)) {
-			cuttableBonds.put(numCuts, generateCuttableBondCombos(numCuts).stream()
-					.flatMap(x -> x.stream()).distinct().collect(Collectors.toSet()));
+			cuttableBonds.put(numCuts,
+					generateCuttableBondCombos(numCuts).stream()
+							.flatMap(x -> x.stream()).distinct()
+							.collect(Collectors.toSet()));
 		}
 		return cuttableBonds.get(numCuts);
 	}
@@ -1634,34 +1713,86 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * getMaximumNumberOfCuts()
 	 */
 	@Override
-	public int getMaximumNumberOfCuts(boolean allowTwoCutsToSingleBond)
+	public synchronized int getMaximumNumberOfCuts(
+			boolean allowTwoCutsToSingleBond)
 			throws ClosedFactoryException, ToolkitException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
 		if (maxCuts == null) {
 			Set<BondIdentifier> bonds = matchingBonds;
-			for (int i = isHAdded && !bonds.isEmpty() ? 1 : bonds.size(); i >= 0
-					&& maxCuts == null; i--) {
-				// Start with the most possible - the number of matching bonds,
-				// or 1 if hadded and has any matching bonds
-				// and
-				// work down
-				if (!generateCuttableBondCombos(i).isEmpty()) {
-					// If only 1 or two bonds, all possibilities are cuttable
-					if (i == 1 && allowTwoCutsToSingleBond) {
-						maxCuts = 2;
-					} else {
-						maxCuts = i;
+			if (bonds.isEmpty()) {
+				// No matching bonds
+				maxCuts = 0;
+			} else if (isHAdded && !bonds.isEmpty()) {
+				// H-Added factories should only perform 1 cut
+				maxCuts = 1;
+			} else if (bonds.size() == 1) {
+				// Only 1 matching bond, so this is another special case, of 1
+				maxCuts = 1;
+			} else {
+				// We need to blow the molecule apart and count leafs
+				long wave = getGCWave();
+				List<T> components = breakAllMatchingBonds(wave);
+				int leafCount = 0;
+				for (T comp : components) {
+					if (isLeaf(comp, wave)) {
+						leafCount++;
 					}
 				}
+				doCleanup(wave);
+				maxCuts = leafCount;
+				// for (int i = isHAdded && !bonds.isEmpty() ? 1 : bonds.size();
+				// i
+				// >= 0
+				// && maxCuts == null; i--) {
+				// // Start with the most possible - the number of matching
+				// bonds,
+				// // or 1 if hadded and has any matching bonds
+				// // and
+				// // work down
+				// if (!generateCuttableBondCombos(i).isEmpty()) {
+				// // If only 1 or two bonds, all possibilities are cuttable
+				// if (i == 1 && allowTwoCutsToSingleBond) {
+				// maxCuts = 2;
+				// } else {
+				// maxCuts = i;
+				// }
+				// }
+				// }
 			}
+			if (!isHAdded && allowTwoCutsToSingleBond && maxCuts == 1) {
+				maxCuts = 2;
+			}
+
 			if (maxCuts == null) {
 				maxCuts = 0;
 			}
 		}
 		return maxCuts;
 	}
+
+	/**
+	 * Method to check whether a marked component generated from
+	 * {@link #breakAllMatchingBonds(long)} is a leaf
+	 * 
+	 * @param component
+	 *            The component
+	 * @param wave
+	 *            TODO
+	 * @return {@code true} if component is a leaf (has only 1 attachment point)
+	 */
+	protected abstract boolean isLeaf(T component, long wave);
+
+	/**
+	 * @param wave
+	 *            TODO
+	 * @return A list of individual components resulting from marking and
+	 *         breaking every matching bond
+	 * @throws ClosedFactoryException
+	 */
+	protected abstract List<T> breakAllMatchingBonds(long wave)
+			throws ClosedFactoryException;
 
 	/*
 	 * (non-Javadoc)
@@ -1671,7 +1802,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * getMatchingBonds()
 	 */
 	@Override
-	public Set<BondIdentifier> getMatchingBonds() throws ClosedFactoryException {
+	public Set<BondIdentifier> getMatchingBonds()
+			throws ClosedFactoryException {
 		if (matchingBonds == null) {
 			matchingBonds = identifyAllMatchingBonds();
 		}
@@ -1706,11 +1838,13 @@ public abstract class AbstractFragmentationFactory<T, U>
 	@Override
 	public String toString() {
 		return this.getClass().getSimpleName() + (isClosed ? "[Closed]"
-				: " [mol=" + getMolSmiles() + ", isChiral=" + isChiral + ", hasUndefinedChirality="
-						+ hasUndefinedChirality + ", hasNonflaggedDoubleBonds="
-						+ hasNonflaggedDoubleBonds + ", verboseLogging=" + verboseLogging
-						+ ", removeHs=" + removeHs + ", maxNumberChangingHAs="
-						+ maxNumberChangingHAs + ", minCnstToVarAtmRatio=" + minCnstToVarAtmRatio
+				: " [mol=" + getMolSmiles() + ", isChiral=" + isChiral
+						+ ", hasUndefinedChirality=" + hasUndefinedChirality
+						+ ", hasNonflaggedDoubleBonds="
+						+ hasNonflaggedDoubleBonds + ", verboseLogging="
+						+ verboseLogging + ", removeHs=" + removeHs
+						+ ", maxNumberChangingHAs=" + maxNumberChangingHAs
+						+ ", minCnstToVarAtmRatio=" + minCnstToVarAtmRatio
 						+ ", HAC=" + HAC + "]");
 	}
 
@@ -1726,7 +1860,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 */
 	public static long numCombinations(int numObjects, int numSample) {
 		if (numSample > numObjects) {
-			throw new IllegalArgumentException("Cant have more objects in sample than in the set!");
+			throw new IllegalArgumentException(
+					"Cant have more objects in sample than in the set!");
 		}
 		if (numObjects < 1 || numSample < 1) {
 			throw new IllegalArgumentException(

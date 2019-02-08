@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017,2019 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -53,6 +53,7 @@ import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
  */
 public abstract class AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U>
 		extends AbstractMMPFragmentationFactoryNodeModel<T, U> {
+
 	protected final String[] newColumnNames;
 	protected final DataType[] newColumnTypes;
 	protected final boolean applyAddHsAlways;
@@ -78,11 +79,12 @@ public abstract class AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U
 	 *            The new column types
 	 */
 	public AbstractColumnRearrangerFragmentationFactoryNodeModel(
-			FragmentationUtilsFactory<T, U> fragUtilityFactory, boolean isMulticut,
-			boolean hasRemoveHs, boolean hasNumCuts, boolean applyAddHsAlways,
-			String[] newColumnNames, DataType[] newColumnTypes) {
-		this(fragUtilityFactory, isMulticut, hasRemoveHs, hasNumCuts, true, applyAddHsAlways,
-				newColumnNames, newColumnTypes);
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, boolean hasRemoveHs, boolean hasNumCuts,
+			boolean applyAddHsAlways, String[] newColumnNames,
+			DataType[] newColumnTypes) {
+		this(fragUtilityFactory, isMulticut, hasRemoveHs, hasNumCuts, true,
+				applyAddHsAlways, newColumnNames, newColumnTypes);
 	}
 
 	/**
@@ -106,25 +108,31 @@ public abstract class AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U
 	 *            The new column types
 	 */
 	public AbstractColumnRearrangerFragmentationFactoryNodeModel(
-			FragmentationUtilsFactory<T, U> fragUtilityFactory, boolean isMulticut,
-			boolean hasRemoveHs, boolean hasNumCuts, boolean hasTwoCutsToBond,
-			boolean applyAddHsAlways, String[] newColumnNames, DataType[] newColumnTypes) {
-		super(1, 1, fragUtilityFactory, isMulticut, hasRemoveHs, hasNumCuts, hasTwoCutsToBond);
-		if (newColumnNames == null || newColumnTypes == null || newColumnNames.length < 1
-				|| newColumnTypes.length < 1) {
-			throw new IllegalArgumentException("At least one new column must be specified!");
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isMulticut, boolean hasRemoveHs, boolean hasNumCuts,
+			boolean hasTwoCutsToBond, boolean applyAddHsAlways,
+			String[] newColumnNames, DataType[] newColumnTypes) {
+		super(1, 1, fragUtilityFactory, isMulticut, hasRemoveHs, hasNumCuts,
+				hasTwoCutsToBond);
+		if (newColumnNames == null || newColumnTypes == null
+				|| newColumnNames.length < 1 || newColumnTypes.length < 1) {
+			throw new IllegalArgumentException(
+					"At least one new column must be specified!");
 		}
 		if (newColumnNames.length != newColumnTypes.length) {
 			throw new IllegalArgumentException(
 					"The number of new column names must match the number of new column types!");
 		}
-		this.newColumnNames = Arrays.copyOf(newColumnNames, newColumnNames.length);
-		this.newColumnTypes = Arrays.copyOf(newColumnTypes, newColumnTypes.length);
+		this.newColumnNames =
+				Arrays.copyOf(newColumnNames, newColumnNames.length);
+		this.newColumnTypes =
+				Arrays.copyOf(newColumnTypes, newColumnTypes.length);
 		this.applyAddHsAlways = applyAddHsAlways;
 	}
 
 	@Override
-	protected DataTableSpec[] doConfigure(DataTableSpec[] inSpecs) throws InvalidSettingsException {
+	protected DataTableSpec[] doConfigure(DataTableSpec[] inSpecs)
+			throws InvalidSettingsException {
 		DataTableSpec in = inSpecs[0];
 		ColumnRearranger r;
 		try {
@@ -137,8 +145,8 @@ public abstract class AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U
 	}
 
 	@Override
-	protected BufferedDataTable[] doExecute(BufferedDataTable[] inData, ExecutionContext exec)
-			throws Exception {
+	protected BufferedDataTable[] doExecute(BufferedDataTable[] inData,
+			ExecutionContext exec) throws Exception {
 		BufferedDataTable in = inData[0];
 		ColumnRearranger r = createColumnRearranger(in.getDataTableSpec());
 		BufferedDataTable out = exec.createColumnRearrangeTable(in, r, exec);
@@ -173,10 +181,12 @@ public abstract class AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U
 	 * node.streamable.PartitionInfo, org.knime.core.node.port.PortObjectSpec[])
 	 */
 	@Override
-	public StreamableOperator createStreamableOperator(PartitionInfo partitionInfo,
-			PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+	public StreamableOperator createStreamableOperator(
+			PartitionInfo partitionInfo, PortObjectSpec[] inSpecs)
+			throws InvalidSettingsException {
 		try {
-			return createColumnRearranger((DataTableSpec) inSpecs[0]).createStreamableFunction();
+			return createColumnRearranger((DataTableSpec) inSpecs[0])
+					.createStreamableFunction();
 		} catch (ToolkitException e) {
 			throw new InvalidSettingsException(e);
 		}
@@ -185,16 +195,18 @@ public abstract class AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U
 	protected ColumnRearranger createColumnRearranger(DataTableSpec inSpec)
 			throws ToolkitException, InvalidSettingsException {
 		ColumnRearranger rearranger = new ColumnRearranger(inSpec);
-		DataColumnSpec[] newColSpecs = new DataColumnSpec[newColumnNames.length];
+		DataColumnSpec[] newColSpecs =
+				new DataColumnSpec[newColumnNames.length];
 		for (int i = 0; i < newColumnNames.length; i++) {
-			newColSpecs[i] = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(inSpec, newColumnNames[i]), newColumnTypes[i])
-							.createSpec();
+			newColSpecs[i] = new DataColumnSpecCreator(DataTableSpec
+					.getUniqueColumnName(inSpec, newColumnNames[i]),
+					newColumnTypes[i]).createSpec();
 		}
 
 		int molColIdx = inSpec.findColumnIndex(m_molColName.getStringValue());
 		matcher = getMatcherFromSMARTS(getFragmentationSMARTSMatch());
 		rearranger.append(new AbstractCellFactory(true, newColSpecs) {
+
 			AtomicLong rowIdx = new AtomicLong(1);
 
 			@Override
@@ -210,17 +222,24 @@ public abstract class AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U
 				final long rowIndex = rowIdx.getAndIncrement();
 				try {
 					T mol = getMoleculeFromRow(row, molColIdx, -1, rowIndex);
-					if (fragUtilityFactory.moleculeIsEmpty(mol)) {
+					if (fragUtilityFactory.moleculeIsEmpty(mol)
+							|| fragUtilityFactory
+									.moleculeIsMultiComponent(mol)) {
 						fragUtilityFactory.rowCleanup(rowIndex);
 						return retVal;
 					}
 					fragFactory = applyAddHsAlways && m_AddHs.getBooleanValue()
-							? fragUtilityFactory.createHAddedFragmentationFactory(mol, matcher,
-									false, verboseLogging, false, 0, 0.0, rowIndex)
-							: fragUtilityFactory.createFragmentationFactory(mol, matcher, false,
-									false, verboseLogging, false, 0, 0.0, cacheSize);
-					retVal = getResultColumns(mol, fragFactory, rowIndex, newColSpecs.length);
-				} catch (ToolkitException | RowExecutionException | IncomingMoleculeException e) {
+							? fragUtilityFactory
+									.createHAddedFragmentationFactory(mol,
+											matcher, false, verboseLogging,
+											false, 0, 0.0, rowIndex)
+							: fragUtilityFactory.createFragmentationFactory(mol,
+									matcher, false, false, verboseLogging,
+									false, 0, 0.0, cacheSize);
+					retVal = getResultColumns(mol, fragFactory, rowIndex,
+							newColSpecs.length);
+				} catch (ToolkitException | RowExecutionException
+						| IncomingMoleculeException e) {
 					logger.info(e.getMessage() + " (" + row.getKey() + ")");
 				} catch (Exception e) {
 					if (e instanceof RuntimeException) {
@@ -258,7 +277,7 @@ public abstract class AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U
 	 *             In the event of any errors processing the row
 	 */
 	protected abstract DataCell[] getResultColumns(T mol,
-			MoleculeFragmentationFactory2<T, U> fragFactory, long rowIndex, int newColCount)
-			throws RowExecutionException;
+			MoleculeFragmentationFactory2<T, U> fragFactory, long rowIndex,
+			int newColCount) throws RowExecutionException;
 
 }

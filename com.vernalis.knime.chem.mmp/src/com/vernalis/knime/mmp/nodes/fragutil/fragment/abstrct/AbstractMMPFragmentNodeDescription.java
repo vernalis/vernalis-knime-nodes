@@ -51,8 +51,6 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 
 	private final boolean isMulticut;
 	private final FragmentationUtilsFactory<T, U> fragUtilityFactory;
-	private final int version;
-
 	private static final int CURRENT_VERSION = 4;
 
 	/**
@@ -70,7 +68,6 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 		this.isMulticut = isMulticut;
 		this.fragUtilityFactory = fragUtilityFactory;
 		setIsDeprecated(version < CURRENT_VERSION);
-		this.version = version;
 	}
 
 	@Override

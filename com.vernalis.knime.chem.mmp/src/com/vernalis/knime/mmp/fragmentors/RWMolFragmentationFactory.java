@@ -85,7 +85,12 @@ import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector2WaveSupplier;
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
-public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMol, ROMol> {
+public class RWMolFragmentationFactory
+		extends AbstractFragmentationFactory<RWMol, ROMol> {
+
+	/** Property name for AP Count */
+	protected static final String AP_COUNT = "APCount";
+
 	protected static final double BREAK_ATOM_END_RADIUS_SCALE = 1.0;
 	/**
 	 * Wave ID to be used to objects to be persisted until the factory is closed
@@ -121,15 +126,18 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	 * @throws ClosedFactoryException
 	 * @throws ToolkitException
 	 */
-	public RWMolFragmentationFactory(RWMol mol, ROMol bondMatch, boolean removeHs, boolean isHAdded,
-			boolean verboseLogging, boolean treatProchiralAsChiral, Integer maxNumberChangingHAs,
+	public RWMolFragmentationFactory(RWMol mol, ROMol bondMatch,
+			boolean removeHs, boolean isHAdded, boolean verboseLogging,
+			boolean treatProchiralAsChiral, Integer maxNumberChangingHAs,
 			Double minCnstToVarAtmRatio, int maxLeafCacheSize)
 			throws ClosedFactoryException, ToolkitException {
-		super(mol, bondMatch, removeHs, isHAdded, verboseLogging, treatProchiralAsChiral,
-				maxNumberChangingHAs, minCnstToVarAtmRatio, maxLeafCacheSize);
-		dblBondMatch = getGc().markForCleanup(RWMol.MolFromSmarts("*=*"), ENDURANCE_WAVE_ID);
-		tetrahedralCarbonMatch =
-				getGc().markForCleanup(RWMol.MolFromSmarts("[C^3]"), ENDURANCE_WAVE_ID);
+		super(mol, bondMatch, removeHs, isHAdded, verboseLogging,
+				treatProchiralAsChiral, maxNumberChangingHAs,
+				minCnstToVarAtmRatio, maxLeafCacheSize);
+		dblBondMatch = getGc().markForCleanup(RWMol.MolFromSmarts("*=*"),
+				ENDURANCE_WAVE_ID);
+		tetrahedralCarbonMatch = getGc().markForCleanup(
+				RWMol.MolFromSmarts("[C^3]"), ENDURANCE_WAVE_ID);
 	}
 
 	/**
@@ -168,7 +176,8 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 		Set<Integer> stereoNones = new HashSet<>();
 		if (!RWMolFragmentationUtilsFactory.IS_PRE_SMILES_DBL_BOND_GEOMETRY_CHANGE) {
 			for (int i = 0; i < mol.getNumBonds(); i++) {
-				Bond bd = getGc().markForCleanup(mol.getBondWithIdx(i), ENDURANCE_WAVE_ID);
+				Bond bd = getGc().markForCleanup(mol.getBondWithIdx(i),
+						ENDURANCE_WAVE_ID);
 				if (bd.getBondType() == BondType.DOUBLE
 						&& bd.getStereo() == BondStereo.STEREONONE) {
 					stereoNones.add(i);
@@ -176,37 +185,51 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 			}
 		}
 		RDKFuncs.findPotentialStereoBonds(this.mol, false);
-		atomsOfPossibleCreatedStereoDoubleBonds = new BitSet((int) mol.getNumAtoms());
+		atomsOfPossibleCreatedStereoDoubleBonds =
+				new BitSet((int) mol.getNumAtoms());
 		// Now loop through the bonds
 		for (int i = 0; i < mol.getNumBonds(); i++) {
-			Bond bd = getGc().markForCleanup(mol.getBondWithIdx(i), ENDURANCE_WAVE_ID);
+			Bond bd = getGc().markForCleanup(mol.getBondWithIdx(i),
+					ENDURANCE_WAVE_ID);
 			if (bd.getBondType() == BondType.DOUBLE) {
-				if (getGc().markForCleanup(bd.getStereoAtoms(), ENDURANCE_WAVE_ID).size() > 0) {
+				if (getGc()
+						.markForCleanup(bd.getStereoAtoms(), ENDURANCE_WAVE_ID)
+						.size() > 0) {
 					// We only worry about double bonds which could be stereo
 					boolean isStereo = false;
 					// Check that it *could* be a stereobond - we only
 					// care about those that could be but arent
 					if (bd.getBondDir() != BondDir.EITHERDOUBLE) {
-						Bond_Vect bv = getGc().markForCleanup(getGc()
-								.markForCleanup(bd.getBeginAtom(), ENDURANCE_WAVE_ID).getBonds(),
+						Bond_Vect bv = getGc().markForCleanup(
+								getGc().markForCleanup(bd.getBeginAtom(),
+										ENDURANCE_WAVE_ID).getBonds(),
 								ENDURANCE_WAVE_ID);
 						for (int j = 0; j < bv.size(); j++) {
-							if (getGc().markForCleanup(bv.get(j), ENDURANCE_WAVE_ID)
+							if (getGc()
+									.markForCleanup(bv.get(j),
+											ENDURANCE_WAVE_ID)
 									.getBondDir() != BondDir.NONE
-									&& getGc().markForCleanup(bv.get(j), ENDURANCE_WAVE_ID)
+									&& getGc()
+											.markForCleanup(bv.get(j),
+													ENDURANCE_WAVE_ID)
 											.getBondDir() != BondDir.UNKNOWN) {
 								isStereo = true;
 								break;
 							}
 						}
 						if (!isStereo) {
-							bv = getGc().markForCleanup(getGc()
-									.markForCleanup(bd.getEndAtom(), ENDURANCE_WAVE_ID).getBonds(),
+							bv = getGc().markForCleanup(
+									getGc().markForCleanup(bd.getEndAtom(),
+											ENDURANCE_WAVE_ID).getBonds(),
 									ENDURANCE_WAVE_ID);
 							for (int j = 0; j < bv.size(); j++) {
-								if (getGc().markForCleanup(bv.get(j), ENDURANCE_WAVE_ID)
+								if (getGc()
+										.markForCleanup(bv.get(j),
+												ENDURANCE_WAVE_ID)
 										.getBondDir() != BondDir.NONE
-										&& getGc().markForCleanup(bv.get(j), ENDURANCE_WAVE_ID)
+										&& getGc()
+												.markForCleanup(bv.get(j),
+														ENDURANCE_WAVE_ID)
 												.getBondDir() != BondDir.UNKNOWN) {
 									isStereo = true;
 									break;
@@ -229,31 +252,47 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 					boolean startHasFlag = false;
 					boolean endHasFlag = false;
 					Bond_Vect bv = getGc().markForCleanup(
-							getGc().markForCleanup(bd.getBeginAtom(), ENDURANCE_WAVE_ID).getBonds(),
+							getGc().markForCleanup(bd.getBeginAtom(),
+									ENDURANCE_WAVE_ID).getBonds(),
 							ENDURANCE_WAVE_ID);
 					for (int j = 0; j < bv.size() && !startHasFlag; j++) {
-						if ((getGc().markForCleanup(bv.get(j), ENDURANCE_WAVE_ID)
+						if ((getGc()
+								.markForCleanup(bv.get(j), ENDURANCE_WAVE_ID)
 								.getBondType() == BondType.SINGLE
-								|| getGc().markForCleanup(bv.get(j), ENDURANCE_WAVE_ID)
+								|| getGc()
+										.markForCleanup(bv.get(j),
+												ENDURANCE_WAVE_ID)
 										.getBondType() == BondType.AROMATIC)
-								&& (getGc().markForCleanup(bv.get(j), ENDURANCE_WAVE_ID)
+								&& (getGc()
+										.markForCleanup(bv.get(j),
+												ENDURANCE_WAVE_ID)
 										.getBondDir() != BondDir.NONE
-										&& getGc().markForCleanup(bv.get(j), ENDURANCE_WAVE_ID)
+										&& getGc()
+												.markForCleanup(bv.get(j),
+														ENDURANCE_WAVE_ID)
 												.getBondDir() != BondDir.UNKNOWN)) {
 							startHasFlag = true;
 						}
 					}
 					bv = getGc().markForCleanup(
-							getGc().markForCleanup(bd.getEndAtom(), ENDURANCE_WAVE_ID).getBonds(),
+							getGc().markForCleanup(bd.getEndAtom(),
+									ENDURANCE_WAVE_ID).getBonds(),
 							ENDURANCE_WAVE_ID);
 					for (int j = 0; j < bv.size() && !endHasFlag; j++) {
-						if ((getGc().markForCleanup(bv.get(j), ENDURANCE_WAVE_ID)
+						if ((getGc()
+								.markForCleanup(bv.get(j), ENDURANCE_WAVE_ID)
 								.getBondType() == BondType.SINGLE
-								|| getGc().markForCleanup(bv.get(j), ENDURANCE_WAVE_ID)
+								|| getGc()
+										.markForCleanup(bv.get(j),
+												ENDURANCE_WAVE_ID)
 										.getBondType() == BondType.AROMATIC)
-								&& (getGc().markForCleanup(bv.get(j), ENDURANCE_WAVE_ID)
+								&& (getGc()
+										.markForCleanup(bv.get(j),
+												ENDURANCE_WAVE_ID)
 										.getBondDir() != BondDir.NONE
-										&& getGc().markForCleanup(bv.get(j), ENDURANCE_WAVE_ID)
+										&& getGc()
+												.markForCleanup(bv.get(j),
+														ENDURANCE_WAVE_ID)
 												.getBondDir() != BondDir.UNKNOWN)) {
 							endHasFlag = true;
 						}
@@ -262,9 +301,12 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 						bd.setProp(SPECIFIED_DOUBLE_BOND, "1");
 					}
 				}
-				if (!bd.hasProp(UNSPECIFIED_DOUBLE_BOND) && !bd.hasProp(SPECIFIED_DOUBLE_BOND)) {
-					atomsOfPossibleCreatedStereoDoubleBonds.set((int) bd.getBeginAtomIdx());
-					atomsOfPossibleCreatedStereoDoubleBonds.set((int) bd.getEndAtomIdx());
+				if (!bd.hasProp(UNSPECIFIED_DOUBLE_BOND)
+						&& !bd.hasProp(SPECIFIED_DOUBLE_BOND)) {
+					atomsOfPossibleCreatedStereoDoubleBonds
+							.set((int) bd.getBeginAtomIdx());
+					atomsOfPossibleCreatedStereoDoubleBonds
+							.set((int) bd.getEndAtomIdx());
 					hasNonflaggedDoubleBonds = true;
 				}
 			}
@@ -290,12 +332,15 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 		possibleCreatedStereos = new BitSet((int) mol.getNumAtoms());
 		// Now loop through the atoms
 		for (int i = 0; i < mol.getNumAtoms(); i++) {
-			Atom at = getGc().markForCleanup(mol.getAtomWithIdx(i), ENDURANCE_WAVE_ID);
-			if (at.hasProp("_ChiralityPossible") && (at.getChiralTag() == ChiralType.CHI_UNSPECIFIED
-					|| at.getChiralTag() == ChiralType.CHI_OTHER)) {
+			Atom at = getGc().markForCleanup(mol.getAtomWithIdx(i),
+					ENDURANCE_WAVE_ID);
+			if (at.hasProp("_ChiralityPossible")
+					&& (at.getChiralTag() == ChiralType.CHI_UNSPECIFIED
+							|| at.getChiralTag() == ChiralType.CHI_OTHER)) {
 				at.setProp(UNSPECIFIED_STEREOCENTRE, "1");
 				hasUndefinedChirality = true;
-			} else if (!isChiral && (at.getChiralTag() == ChiralType.CHI_TETRAHEDRAL_CCW
+			} else if (!isChiral && (at
+					.getChiralTag() == ChiralType.CHI_TETRAHEDRAL_CCW
 					|| at.getChiralTag() == ChiralType.CHI_TETRAHEDRAL_CW)) {
 				isChiral = true;
 			} else if (at.getAtomicNum() == 6 && !at.getIsAromatic()
@@ -308,7 +353,8 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	}
 
 	@Override
-	protected String molToSmiles(RWMol mol, boolean removeIsotopicLabelsFromAP) {
+	protected String molToSmiles(RWMol mol,
+			boolean removeIsotopicLabelsFromAP) {
 		String smi = mol.MolToSmiles(true);
 		if (removeIsotopicLabelsFromAP) {
 			smi = smi.replaceAll("\\[\\d+\\*\\]", "[*]");
@@ -318,12 +364,14 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	}
 
 	@Override
-	protected RWMol getComponentFromSmiles(String smiles, boolean moveAPIsotopesToAtomProperties)
-			throws ToolkitException {
-		final RWMol retVal = getGc().markForCleanup(RWMol.MolFromSmiles(smiles), ENDURANCE_WAVE_ID);
+	protected RWMol getComponentFromSmiles(String smiles,
+			boolean moveAPIsotopesToAtomProperties) throws ToolkitException {
+		final RWMol retVal = getGc().markForCleanup(RWMol.MolFromSmiles(smiles),
+				ENDURANCE_WAVE_ID);
 		if (moveAPIsotopesToAtomProperties) {
 			for (int atIdx = 0; atIdx < retVal.getNumAtoms(); atIdx++) {
-				Atom at = getGc().markForCleanup(retVal.getAtomWithIdx(atIdx), ENDURANCE_WAVE_ID);
+				Atom at = getGc().markForCleanup(retVal.getAtomWithIdx(atIdx),
+						ENDURANCE_WAVE_ID);
 				if (at.getAtomicNum() == 0 && at.getIsotope() != 0) {
 					at.setProp(AP_ISOTOPIC_LABEL, "" + at.getIsotope());
 					at.setIsotope(0);
@@ -349,7 +397,8 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	protected int[][] initialiseGraphNeighbours() {
 		int[][] retVal = new int[(int) mol.getNumAtoms()][];
 		for (int i = 0; i < mol.getNumAtoms(); i++) {
-			Atom at = getGc().markForCleanup(mol.getAtomWithIdx(i), ENDURANCE_WAVE_ID);
+			Atom at = getGc().markForCleanup(mol.getAtomWithIdx(i),
+					ENDURANCE_WAVE_ID);
 			Bond_Vect bonds = at.getBonds();
 			int[] connections = new int[(int) bonds.size()];
 			for (int j = 0; j < connections.length; j++) {
@@ -380,22 +429,25 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 			int newDirectionalBondBeginAtomIdx) {
 		// Get the candidate
 		// Only consider single bonds...
-		Bond_Vect possibleBonds = getGc().markForCleanup(
-				getGc().markForCleanup(component.getAtomWithIdx(newDirectionalBondBeginAtomIdx),
-						localGcWave).getBonds(),
-				localGcWave);
+		Bond_Vect possibleBonds = getGc().markForCleanup(getGc()
+				.markForCleanup(component.getAtomWithIdx(
+						newDirectionalBondBeginAtomIdx), localGcWave)
+				.getBonds(), localGcWave);
 		List<Integer> candidateAtomIds = new ArrayList<>();
 		for (int j = 0; j < possibleBonds.size(); j++) {
-			Bond bond = getGc().markForCleanup(possibleBonds.get(j), localGcWave);
+			Bond bond =
+					getGc().markForCleanup(possibleBonds.get(j), localGcWave);
 			if (bond.getBondType() == BondType.SINGLE) {
-				candidateAtomIds.add((int) bond.getOtherAtomIdx(newDirectionalBondBeginAtomIdx));
+				candidateAtomIds.add((int) bond
+						.getOtherAtomIdx(newDirectionalBondBeginAtomIdx));
 			}
 		}
 		// Pick the bond to the lowest indexed atom
 		Collections.sort(candidateAtomIds);
 		// Set arbitrarily a direction for the unassigned bond
-		getGc().markForCleanup(component.getBondBetweenAtoms(newDirectionalBondBeginAtomIdx,
-				candidateAtomIds.get(0)), localGcWave).setBondDir(BondDir.ENDUPRIGHT);
+		getGc().markForCleanup(component.getBondBetweenAtoms(
+				newDirectionalBondBeginAtomIdx, candidateAtomIds.get(0)),
+				localGcWave).setBondDir(BondDir.ENDUPRIGHT);
 	}
 
 	/**
@@ -411,18 +463,22 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	 *            for multiple components, and the method called recursively
 	 *            after splitting
 	 */
-	protected void canonicaliseDuplicateKeyComponents(RWMol value, long localGcWave,
-			RWMol... rwMols) {
+	protected void canonicaliseDuplicateKeyComponents(RWMol value,
+			long localGcWave, RWMol... rwMols) {
 
 		if (rwMols.length == 1) {
-			ROMol_Vect comps = getGc().markForCleanup(RDKFuncs.getMolFrags(rwMols[0],
-					false/* sanitize frags */, null/* frags to mol mapping */,
-					null/* Atoms in each frag mapping */, false/* copy confs */), localGcWave);
+			ROMol_Vect comps = getGc().markForCleanup(
+					RDKFuncs.getMolFrags(rwMols[0], false/* sanitize frags */,
+							null/* frags to mol mapping */,
+							null/* Atoms in each frag mapping */,
+							false/* copy confs */),
+					localGcWave);
 			if (comps.size() > 1) {
 				// We had a key with multiple components in a single molecule
 				RWMol[] comps2 = new RWMol[(int) comps.size()];
 				for (int i = 0; i < comps.size(); i++) {
-					comps2[i] = getGc().markForCleanup(new RWMol(comps.get(i)), localGcWave);
+					comps2[i] = getGc().markForCleanup(new RWMol(comps.get(i)),
+							localGcWave);
 				}
 
 				// Now canonicalise
@@ -456,18 +512,21 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 					// This component duplicates
 					TreeMap<Long, RWMol> sortedClashes = new TreeMap<>();
 					Set<Integer> availableIndices = new LinkedHashSet<>();
-					Map<RWMol, Integer> keyCompIndexLookup = new LinkedHashMap<>();
+					Map<RWMol, Integer> keyCompIndexLookup =
+							new LinkedHashMap<>();
 
 					for (RWMol comp : ent.getValue()) {
 						Integer apIdx = getAPIndex(comp, localGcWave);
-						Long atIdx = findIndexOfLabelledAtom(value, apIdx, localGcWave);
+						Long atIdx = findIndexOfLabelledAtom(value, apIdx,
+								localGcWave);
 						sortedClashes.put(atIdx, comp);
 						availableIndices.add(apIdx);
 						keyCompIndexLookup.put(comp, apIdx);
 					}
 
 					// Sort the available indices
-					List<Integer> availableIndices2 = new ArrayList<>(availableIndices);
+					List<Integer> availableIndices2 =
+							new ArrayList<>(availableIndices);
 					Collections.sort(availableIndices2);
 
 					// Now we need to rejig the indices on the actual molecule
@@ -476,13 +535,20 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 					for (Entry<Long, RWMol> ent1 : sortedClashes.entrySet()) {
 						int nextIndex = availableIndices2.get(i++);
 						// Change the index on the value
-						getGc().markForCleanup(value.getAtomWithIdx(ent1.getKey()), localGcWave)
+						getGc().markForCleanup(
+								value.getAtomWithIdx(ent1.getKey()),
+								localGcWave)
 								.setProp(AP_ISOTOPIC_LABEL, "" + nextIndex);
 						// And on the key component
-						getGc().markForCleanup(ent1.getValue()
-								.getAtomWithIdx(findIndexOfLabelledAtom(ent1.getValue(),
-										keyCompIndexLookup.get(ent1.getValue()), localGcWave)),
-								localGcWave).setProp(AP_ISOTOPIC_LABEL, "" + nextIndex);
+						getGc().markForCleanup(
+								ent1.getValue()
+										.getAtomWithIdx(findIndexOfLabelledAtom(
+												ent1.getValue(),
+												keyCompIndexLookup
+														.get(ent1.getValue()),
+												localGcWave)),
+								localGcWave)
+								.setProp(AP_ISOTOPIC_LABEL, "" + nextIndex);
 					}
 					availableIndices.clear();
 					availableIndices2.clear();
@@ -520,7 +586,8 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 		try {
 			valueComponent.sanitizeMol();
 		} catch (MolSanitizeException e) {
-			logger.warn("Unable to sanitize molecule during atom order canonicalisation");
+			logger.warn(
+					"Unable to sanitize molecule during atom order canonicalisation");
 		}
 		ROMol tmp = RDKFuncs.renumberAtoms(valueComponent, newIdxVect);
 
@@ -541,12 +608,15 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	 *            The GC wave for cleanup
 	 * @return The index of the AP atom with the specified index
 	 */
-	protected long findIndexOfLabelledAtom(ROMol valueComponent, int apIndex, long localGcWave) {
+	protected long findIndexOfLabelledAtom(ROMol valueComponent, int apIndex,
+			long localGcWave) {
 		long retVal = -1; // -1 -> Not fount
 		for (int i = 0; i < valueComponent.getNumAtoms(); i++) {
-			Atom at = getGc().markForCleanup(valueComponent.getAtomWithIdx(i), localGcWave);
+			Atom at = getGc().markForCleanup(valueComponent.getAtomWithIdx(i),
+					localGcWave);
 			if (at.getAtomicNum() == 0 && at.hasProp(AP_ISOTOPIC_LABEL)) {
-				int isotope = Integer.parseInt(at.getProp(AP_ISOTOPIC_LABEL).trim());
+				int isotope =
+						Integer.parseInt(at.getProp(AP_ISOTOPIC_LABEL).trim());
 				if (isotope == apIndex) {
 					retVal = at.getIdx();
 					break;
@@ -566,7 +636,8 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	protected int getAPIndex(ROMol comp, long localGcWave) {
 		int retVal = -1;
 		for (int i = 0; i < comp.getNumAtoms(); i++) {
-			Atom at = getGc().markForCleanup(comp.getAtomWithIdx(i), localGcWave);
+			Atom at =
+					getGc().markForCleanup(comp.getAtomWithIdx(i), localGcWave);
 			if (at.getAtomicNum() == 0 && at.hasProp(AP_ISOTOPIC_LABEL)) {
 				retVal = Integer.parseInt(at.getProp(AP_ISOTOPIC_LABEL).trim());
 				break;
@@ -576,7 +647,8 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	}
 
 	@Override
-	public Set<BondIdentifier> identifyAllMatchingBonds() throws ClosedFactoryException {
+	public Set<BondIdentifier> identifyAllMatchingBonds()
+			throws ClosedFactoryException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -591,10 +663,13 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 				int endId = bond.get(1).getSecond();
 				// If this is an H-Added factory, then we only match X-H bonds
 				// (any X)
-				if (!isHAdded || !(heavyAtomMask.get(startId) && heavyAtomMask.get(endId))) {
+				if (!isHAdded || !(heavyAtomMask.get(startId)
+						&& heavyAtomMask.get(endId))) {
 					int bondIdx =
-							(int) getGc().markForCleanup(mol.getBondBetweenAtoms(startId, endId),
-									ENDURANCE_WAVE_ID).getIdx();
+							(int) getGc()
+									.markForCleanup(mol.getBondBetweenAtoms(
+											startId, endId), ENDURANCE_WAVE_ID)
+									.getIdx();
 					retVal.add(new BondIdentifier(startId, endId, bondIdx,
 							isHAdded ? index : (index++)));
 				}
@@ -627,8 +702,10 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	@Override
 	public DataCell renderMatchingBonds(Color bondColour)
 			throws ClosedFactoryException, ToolkitException, IOException {
-		String svg = renderBondSetToSVGString(bondColour, identifyAllMatchingBonds());
-		return svg == null ? DataType.getMissingCell() : SvgCellFactory.create(svg);
+		String svg = renderBondSetToSVGString(bondColour,
+				identifyAllMatchingBonds());
+		return svg == null ? DataType.getMissingCell()
+				: SvgCellFactory.create(svg);
 	}
 
 	/*
@@ -641,8 +718,10 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	@Override
 	public DataCell renderCuttableBonds(Color bondColour, int numCuts)
 			throws ToolkitException, ClosedFactoryException, IOException {
-		String svg = renderBondSetToSVGString(bondColour, identifyAllCuttableBonds(numCuts));
-		return svg == null ? DataType.getMissingCell() : SvgCellFactory.create(svg);
+		String svg = renderBondSetToSVGString(bondColour,
+				identifyAllCuttableBonds(numCuts));
+		return svg == null ? DataType.getMissingCell()
+				: SvgCellFactory.create(svg);
 	}
 
 	/**
@@ -654,8 +733,8 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	 * @throws ClosedFactoryException
 	 * @throws ToolkitException
 	 */
-	protected String renderBondSetToSVGString(Color bondColour, Set<BondIdentifier> bonds)
-			throws ToolkitException {
+	protected String renderBondSetToSVGString(Color bondColour,
+			Set<BondIdentifier> bonds) throws ToolkitException {
 		Int_Vect mb = new Int_Vect();
 		// INT_DRAWCOLOUR_MAP colMap = new INT_DRAWCOLOUR_MAP();
 		ColourPalette colMap = new ColourPalette();
@@ -684,12 +763,15 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 				svg = svg.replaceAll("(?s)<svg:svg.*?>",
 						"<svg:svg contentScriptType=\"text/ecmascript\" zoomAndPan=\"magnify\"\n "
 								+ "xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n xmlns:svg=\"http://www.w3.org/2000/svg\" baseProfile=\"full\"\n "
-								+ "contentStyleType=\"text/css\" version=\"1.1\" width=\"" + width
+								+ "contentStyleType=\"text/css\" version=\"1.1\" width=\""
+								+ width
 								+ "px\"\n preserveAspectRatio=\"xMidYMid meet\"\n "
-								+ "xmlns:rdkit=\"http://www.rdkit.org/xml\" height=\"" + height
+								+ "xmlns:rdkit=\"http://www.rdkit.org/xml\" height=\""
+								+ height
 								+ "px\"\n xmlns=\"http://www.w3.org/2000/svg\">");
 				// Make the highlights have nice rounded ends
-				svg = svg.replaceAll("(<(svg:)?path .*?stroke-width:[\\d]+px;stroke-linecap:).*?;",
+				svg = svg.replaceAll(
+						"(<(svg:)?path .*?stroke-width:[\\d]+px;stroke-linecap:).*?;",
 						"$1round;");
 				// Apply transparency
 				// Locale.ROOT keeps '.' as decimal as required by SVG standard
@@ -713,12 +795,13 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	}
 
 	@Override
-	public DataCell renderFragmentation(Set<BondIdentifier> bonds, Color breakingBondColour,
-			Color keyColour, Color valueColour) throws IOException, IllegalArgumentException {
+	public DataCell renderFragmentation(Set<BondIdentifier> bonds,
+			Color breakingBondColour, Color keyColour, Color valueColour)
+			throws IOException, IllegalArgumentException {
 
 		try {
-			return SvgCellFactory.create(renderFragmentationToSVGString(breakingBondColour,
-					keyColour, valueColour, bonds));
+			return SvgCellFactory.create(renderFragmentationToSVGString(
+					breakingBondColour, keyColour, valueColour, bonds));
 		} catch (ToolkitException | MoleculeFragmentationException e) {
 			return DataType.getMissingCell();
 		}
@@ -745,20 +828,24 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	 * @throws MoleculeFragmentationException
 	 * @throws IllegalArgumentException
 	 */
-	protected String renderFragmentationToSVGString(Color bondColour, Color keyColour,
-			Color valueColour, Set<BondIdentifier> bonds)
+	protected String renderFragmentationToSVGString(Color bondColour,
+			Color keyColour, Color valueColour, Set<BondIdentifier> bonds)
 			throws ToolkitException, MoleculeFragmentationException {
 
 		long localGcWave = getGc().getNextWaveIndex();
-		Int_Vect bondsToHighlight = getGc().markForCleanup(new Int_Vect(), localGcWave);
-		Int_Vect atomsToHighlight = getGc().markForCleanup(new Int_Vect(), localGcWave);
+		Int_Vect bondsToHighlight =
+				getGc().markForCleanup(new Int_Vect(), localGcWave);
+		Int_Vect atomsToHighlight =
+				getGc().markForCleanup(new Int_Vect(), localGcWave);
 		// INT_DRAWCOLOUR_MAP bondColourMap =
 		// getGc().markForCleanup(new INT_DRAWCOLOUR_MAP(), localGcWave);
 		// INT_DRAWCOLOUR_MAP atomColourMap =
 		// getGc().markForCleanup(new INT_DRAWCOLOUR_MAP(), localGcWave);
 
-		ColourPalette bondColourMap = getGc().markForCleanup(new ColourPalette(), localGcWave);
-		ColourPalette atomColourMap = getGc().markForCleanup(new ColourPalette(), localGcWave);
+		ColourPalette bondColourMap =
+				getGc().markForCleanup(new ColourPalette(), localGcWave);
+		ColourPalette atomColourMap =
+				getGc().markForCleanup(new ColourPalette(), localGcWave);
 
 		boolean isBreakAlongBond = false;
 		if (bonds instanceof BondIdentifierSelfpairSet) {
@@ -770,11 +857,11 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 			}
 		}
 
-		DrawColour valueColor =
-				convertColorToRdkitColor(isBreakAlongBond ? keyColour : valueColour, localGcWave);
+		DrawColour valueColor = convertColorToRdkitColor(
+				isBreakAlongBond ? keyColour : valueColour, localGcWave);
 		DrawColour keyColor = convertColorToRdkitColor(keyColour, localGcWave);
-		DrawColour breakingBondColour =
-				convertColorToRdkitColor(isBreakAlongBond ? valueColour : bondColour, localGcWave);
+		DrawColour breakingBondColour = convertColorToRdkitColor(
+				isBreakAlongBond ? valueColour : bondColour, localGcWave);
 
 		String svg = null;
 		BitSet valueAtomIDs = null;
@@ -786,16 +873,22 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 				if (valueAtomIDs.cardinality() > 1) {
 					// Highlighting the bonds will do nicely, but now we need to
 					// list the bonds from the atoms
-					for (int leftAtomId = valueAtomIDs.nextSetBit(0); leftAtomId >= 0; leftAtomId =
-							valueAtomIDs.nextSetBit(leftAtomId + 1)) {
-						for (int rightAtomId = valueAtomIDs.nextSetBit(0); rightAtomId >= 0
-								&& rightAtomId < leftAtomId; rightAtomId =
-										valueAtomIDs.nextSetBit(rightAtomId + 1)) {
+					for (int leftAtomId = valueAtomIDs
+							.nextSetBit(0); leftAtomId >= 0; leftAtomId =
+									valueAtomIDs.nextSetBit(leftAtomId + 1)) {
+						for (int rightAtomId =
+								valueAtomIDs.nextSetBit(0); rightAtomId >= 0
+										&& rightAtomId < leftAtomId; rightAtomId =
+												valueAtomIDs.nextSetBit(
+														rightAtomId + 1)) {
 
 							Bond bond = getGc().markForCleanup(
-									mol.getBondBetweenAtoms(leftAtomId, rightAtomId), localGcWave);
+									mol.getBondBetweenAtoms(leftAtomId,
+											rightAtomId),
+									localGcWave);
 							if (bond != null) {
-								bondColourMap.set((int) bond.getIdx(), valueColor);
+								bondColourMap.set((int) bond.getIdx(),
+										valueColor);
 								bondsToHighlight.add((int) bond.getIdx());
 							}
 						}
@@ -806,23 +899,30 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 			// Now deal with the (optional) colour of the key
 			if (keyColor != null) {
 				for (BondIdentifier bond : bonds) {
-					leafAtomIDs = listLeafAtomIds(bond, valueAtomIDs.get(bond.getEndIdx()));
+					leafAtomIDs = listLeafAtomIds(bond,
+							valueAtomIDs.get(bond.getEndIdx()));
 					if (leafAtomIDs.cardinality() > 1) {
 						// Highlighting the bonds will do nicely, but now we
 						// need to
 						// list the bonds from the atoms
-						for (int leftAtomId =
-								leafAtomIDs.nextSetBit(0); leftAtomId >= 0; leftAtomId =
-										leafAtomIDs.nextSetBit(leftAtomId + 1)) {
-							for (int rightAtomId = leafAtomIDs.nextSetBit(0); rightAtomId >= 0
-									&& rightAtomId < leftAtomId; rightAtomId =
-											leafAtomIDs.nextSetBit(rightAtomId + 1)) {
+						for (int leftAtomId = leafAtomIDs
+								.nextSetBit(0); leftAtomId >= 0; leftAtomId =
+										leafAtomIDs
+												.nextSetBit(leftAtomId + 1)) {
+							for (int rightAtomId =
+									leafAtomIDs.nextSetBit(0); rightAtomId >= 0
+											&& rightAtomId < leftAtomId; rightAtomId =
+													leafAtomIDs.nextSetBit(
+															rightAtomId + 1)) {
 								Bond leafBond = getGc().markForCleanup(
-										mol.getBondBetweenAtoms(leftAtomId, rightAtomId),
+										mol.getBondBetweenAtoms(leftAtomId,
+												rightAtomId),
 										localGcWave);
 								if (leafBond != null) {
-									bondColourMap.set((int) leafBond.getIdx(), keyColor);
-									bondsToHighlight.add((int) leafBond.getIdx());
+									bondColourMap.set((int) leafBond.getIdx(),
+											keyColor);
+									bondsToHighlight
+											.add((int) leafBond.getIdx());
 								}
 							}
 						}
@@ -838,7 +938,8 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 							// int atomId = leafAtomIDs.nextSetBit(0);
 							atomsToHighlight.add(atomId);
 							atomColourMap.set(atomId, keyColor);
-						} else if (valueAtomIDs != null && valueAtomIDs.get(atomId)) {
+						} else if (valueAtomIDs != null
+								&& valueAtomIDs.get(atomId)) {
 							atomsToHighlight.add(atomId);
 							atomColourMap.set(atomId, valueColor);
 						}
@@ -850,7 +951,8 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 			if (breakingBondColour != null) {
 				for (BondIdentifier bond : bonds) {
 					bondsToHighlight.add((int) bond.getBondIdx());
-					bondColourMap.set((int) bond.getBondIdx(), breakingBondColour);
+					bondColourMap.set((int) bond.getBondIdx(),
+							breakingBondColour);
 				}
 			}
 
@@ -859,11 +961,12 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 			}
 
 			MolDraw2DSVG drawer = null;
-			drawer = getGc().markForCleanup(new MolDraw2DSVG(RENDERER_WIDTH, RENDERER_HEIGHT),
+			drawer = getGc().markForCleanup(
+					new MolDraw2DSVG(RENDERER_WIDTH, RENDERER_HEIGHT),
 					localGcWave);
 
-			drawer.drawMolecule(mol, atomsToHighlight, bondsToHighlight, atomColourMap,
-					bondColourMap);
+			drawer.drawMolecule(mol, atomsToHighlight, bondsToHighlight,
+					atomColourMap, bondColourMap);
 			drawer.finishDrawing();
 			svg = drawer.getDrawingText();
 			// This swaps the svg header to match the scaleable version in the
@@ -874,11 +977,14 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 						"<svg:svg contentScriptType=\"text/ecmascript\" zoomAndPan=\"magnify\"\n "
 								+ "xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n xmlns:svg=\"http://www.w3.org/2000/svg\" baseProfile=\"full\"\n "
 								+ "contentStyleType=\"text/css\" version=\"1.1\" width=\""
-								+ RENDERER_WIDTH + "px\"\n preserveAspectRatio=\"xMidYMid meet\"\n "
+								+ RENDERER_WIDTH
+								+ "px\"\n preserveAspectRatio=\"xMidYMid meet\"\n "
 								+ "xmlns:rdkit=\"http://www.rdkit.org/xml\" height=\""
-								+ RENDERER_HEIGHT + "px\"\n xmlns=\"http://www.w3.org/2000/svg\">");
+								+ RENDERER_HEIGHT
+								+ "px\"\n xmlns=\"http://www.w3.org/2000/svg\">");
 				// Make the highlights have nice rounded ends
-				svg = svg.replaceAll("(<(svg:)?path.*?stroke-width:[\\d]+px;stroke-linecap:).*?;",
+				svg = svg.replaceAll(
+						"(<(svg:)?path.*?stroke-width:[\\d]+px;stroke-linecap:).*?;",
 						"$1round;");
 				// Lazy qualifier before <svg:path gets us first matching which
 				// is in the highlights as they come before the bonds
@@ -886,10 +992,13 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 				// - see
 				// https://forum.knime.com/t/mmp-molecule-fragment-node-output-svg-cells-and-system-locale/10315
 				String radius = String.format(Locale.ROOT, "%.4f",
-						BREAK_ATOM_END_RADIUS_SCALE * Integer.parseInt(svg.replaceAll(
-								"(?s).*?<svg:path.*?;stroke:#(?!000000)[0-9A-F]{6};stroke-width:(\\d+)px;.*",
-								"$1")) / 2.0);
-				svg = svg.replaceAll("(<svg:ellipse cx='.*?' cy='.*?' rx=').*?' ry='.*?'",
+						BREAK_ATOM_END_RADIUS_SCALE
+								* Integer.parseInt(svg.replaceAll(
+										"(?s).*?<svg:path.*?;stroke:#(?!000000)[0-9A-F]{6};stroke-width:(\\d+)px;.*",
+										"$1"))
+								/ 2.0);
+				svg = svg.replaceAll(
+						"(<svg:ellipse cx='.*?' cy='.*?' rx=').*?' ry='.*?'",
 						"$1" + radius + "' ry='" + radius + "'");
 
 			}
@@ -910,12 +1019,14 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	 *            The GC wave for cleanup
 	 * @return The RDKit {@link DrawColour}
 	 */
-	protected DrawColour convertColorToRdkitColor(Color colour, long localGcWave) {
+	protected DrawColour convertColorToRdkitColor(Color colour,
+			long localGcWave) {
 		if (colour == null) {
 			return null;
 		}
 		float[] rgb = colour.getColorComponents(null);
-		return getGc().markForCleanup(new DrawColour(rgb[0], rgb[1], rgb[2]), localGcWave);
+		return getGc().markForCleanup(new DrawColour(rgb[0], rgb[1], rgb[2]),
+				localGcWave);
 	}
 
 	/*
@@ -946,15 +1057,16 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	protected AbstractMulticomponentFragmentationParser<RWMol> createFragmentationParserFromComponents(
 			Set<RWMol> leafs, RWMol valueComponent, long localGCWave) {
 		try {
-			return new RWMolMulticomponentFragmentationParser(valueComponent, leafs);
+			return new RWMolMulticomponentFragmentationParser(valueComponent,
+					leafs);
 		} catch (MoleculeFragmentationException | ToolkitException e) {
 			return null;
 		}
 	}
 
 	@Override
-	protected RWMol createValueComponent(BitSet valueAtomIDs, Set<BondIdentifier> bonds,
-			long localGCWave) {
+	protected RWMol createValueComponent(BitSet valueAtomIDs,
+			Set<BondIdentifier> bonds, long localGCWave) {
 		RWMol retVal = getGc().markForCleanup(new RWMol(mol), localGCWave);
 
 		Map<Integer, Integer> APLookup = new HashMap<>();
@@ -997,7 +1109,8 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	}
 
 	@Override
-	protected RWMol createLeaf(BitSet leafAtomIds, BondIdentifier bond, long localGCWave) {
+	protected RWMol createLeaf(BitSet leafAtomIds, BondIdentifier bond,
+			long localGCWave) {
 		RWMol retVal = getGc().markForCleanup(new RWMol(mol), localGCWave);
 		// Now we can loop down the atoms, processing each fragment side-by-side
 		// as we go..
@@ -1015,7 +1128,8 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 				if (bond.isToAtomWithIdx(atIdx)) {
 					// 2 - change it
 					Atom at = new Atom(0);
-					at.setProp(AP_ISOTOPIC_LABEL, "" + bond.getFragmentationIndex());
+					at.setProp(AP_ISOTOPIC_LABEL,
+							"" + bond.getFragmentationIndex());
 					retVal.replaceAtom(atIdx, at);
 					at.delete();
 				} else {
@@ -1078,8 +1192,10 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 				boolean needsResort = false;
 				for (RWMol comp : ent.getValue()) {
 					Integer apIdx = getAPIndex(comp, localGCWave);
-					Long atIdx = findIndexOfLabelledAtom(valueComponent, apIdx, localGCWave);
-					if (!sortedClashes.isEmpty() && atIdx.compareTo(sortedClashes.lastKey()) < 0) {
+					Long atIdx = findIndexOfLabelledAtom(valueComponent, apIdx,
+							localGCWave);
+					if (!sortedClashes.isEmpty()
+							&& atIdx.compareTo(sortedClashes.lastKey()) < 0) {
 						needsResort = true;
 					}
 					sortedClashes.put(atIdx, comp);
@@ -1091,15 +1207,19 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 					// objects
 					// We order the set of AP indices used by by the order that
 					// the atoms appear in the canonicalised value
-					Iterator<Integer> availableIndexIter = sortedAvailableIndices.iterator();
+					Iterator<Integer> availableIndexIter =
+							sortedAvailableIndices.iterator();
 					Iterator<Entry<Long, RWMol>> sortedClashesIter =
 							sortedClashes.entrySet().iterator();
-					while (availableIndexIter.hasNext() && sortedClashesIter.hasNext()) {
+					while (availableIndexIter.hasNext()
+							&& sortedClashesIter.hasNext()) {
 						Integer nextIndex = availableIndexIter.next();
 						Entry<Long, RWMol> ent1 = sortedClashesIter.next();
 						// Change the index on the value
-						getGc().markForCleanup(valueComponent.getAtomWithIdx(ent1.getKey()),
-								localGCWave).setProp(AP_ISOTOPIC_LABEL, "" + nextIndex);
+						getGc().markForCleanup(
+								valueComponent.getAtomWithIdx(ent1.getKey()),
+								localGCWave)
+								.setProp(AP_ISOTOPIC_LABEL, "" + nextIndex);
 
 					}
 				}
@@ -1116,18 +1236,22 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	}
 
 	@Override
-	protected void applyAPIsotopicLabels(RWMol component, int apIdx, long localGCWave) {
+	protected void applyAPIsotopicLabels(RWMol component, int apIdx,
+			long localGCWave) {
 		for (int i = 0; i < component.getNumAtoms(); i++) {
-			Atom at = getGc().markForCleanup(component.getAtomWithIdx(i), localGCWave);
+			Atom at = getGc().markForCleanup(component.getAtomWithIdx(i),
+					localGCWave);
 			if (at.getAtomicNum() == 0 && at.hasProp(AP_ISOTOPIC_LABEL)) {
-				at.setIsotope(
-						apIdx < 0 ? Integer.parseInt(at.getProp(AP_ISOTOPIC_LABEL).trim()) : apIdx);
+				at.setIsotope(apIdx < 0
+						? Integer.parseInt(at.getProp(AP_ISOTOPIC_LABEL).trim())
+						: apIdx);
 			}
 		}
 	}
 
 	@Override
-	protected void assignCreatedDblBondGeometry(RWMol component, long localGCWave) {
+	protected void assignCreatedDblBondGeometry(RWMol component,
+			long localGCWave) {
 
 		try {
 			component.sanitizeMol();
@@ -1136,27 +1260,28 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 			RDKFuncs.findPotentialStereoBonds(component, false);
 		} catch (MolSanitizeException e) {
 			if (verboseLogging) {
-				logger.info("Problem assigning double bond geometry" + e.message() == null ? ""
-						: e.message());
+				logger.info("Problem assigning double bond geometry"
+						+ e.message() == null ? "" : e.message());
 			}
 			return;
 		} catch (Exception e) {
 			if (verboseLogging) {
-				logger.info("Problem assigning double bond geometry" + e.getMessage() == null ? ""
-						: e.getMessage());
+				logger.info("Problem assigning double bond geometry"
+						+ e.getMessage() == null ? "" : e.getMessage());
 			}
 			return;
 		}
 
-		Match_Vect_Vect alkeneMatches =
-				getGc().markForCleanup(component.getSubstructMatches(dblBondMatch), localGCWave);
+		Match_Vect_Vect alkeneMatches = getGc().markForCleanup(
+				component.getSubstructMatches(dblBondMatch), localGCWave);
 		for (int i = 0; i < alkeneMatches.size(); i++) {
 			Match_Vect bond = alkeneMatches.get(i);
 			int startId = bond.get(0).getSecond();
 			int endId = bond.get(1).getSecond();
-			Bond bd = getGc().markForCleanup(component.getBondBetweenAtoms(startId, endId),
-					localGCWave);
-			if (!bd.hasProp(UNSPECIFIED_DOUBLE_BOND) && !bd.hasProp(SPECIFIED_DOUBLE_BOND)) {
+			Bond bd = getGc().markForCleanup(
+					component.getBondBetweenAtoms(startId, endId), localGCWave);
+			if (!bd.hasProp(UNSPECIFIED_DOUBLE_BOND)
+					&& !bd.hasProp(SPECIFIED_DOUBLE_BOND)) {
 				// We only worry about double bonds which were not assigned or
 				// known unassigned and
 				// could be, and are not now assigned
@@ -1169,22 +1294,30 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 					Bond endStereoBond = null;
 					for (int j = 0; j < stereoAtoms.size(); j++) {
 						if (beginStereoBond == null) {
-							beginStereoBond = getGc().markForCleanup(component.getBondBetweenAtoms(
-									bd.getBeginAtomIdx(), stereoAtoms.get(j)), localGCWave);
+							beginStereoBond = getGc().markForCleanup(
+									component.getBondBetweenAtoms(
+											bd.getBeginAtomIdx(),
+											stereoAtoms.get(j)),
+									localGCWave);
 						}
 						if (endStereoBond == null) {
-							endStereoBond = getGc().markForCleanup(component.getBondBetweenAtoms(
-									bd.getEndAtomIdx(), stereoAtoms.get(j)), localGCWave);
+							endStereoBond = getGc().markForCleanup(
+									component.getBondBetweenAtoms(
+											bd.getEndAtomIdx(),
+											stereoAtoms.get(j)),
+									localGCWave);
 						}
 					}
 
 					// For each end of the bond in turn we apply a label if none
 					// is provided
 					if (beginStereoBond.getBondDir() == BondDir.NONE) {
-						applyDirectionalBond(component, localGCWave, (int) bd.getBeginAtomIdx());
+						applyDirectionalBond(component, localGCWave,
+								(int) bd.getBeginAtomIdx());
 					}
 					if (endStereoBond.getBondDir() == BondDir.NONE) {
-						applyDirectionalBond(component, localGCWave, (int) bd.getEndAtomIdx());
+						applyDirectionalBond(component, localGCWave,
+								(int) bd.getEndAtomIdx());
 					}
 				}
 				stereoAtoms.delete();
@@ -1205,30 +1338,33 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 			RDKFuncs.assignStereochemistry(component, false, true, true);
 		} catch (MolSanitizeException e) {
 			if (verboseLogging) {
-				logger.info("Problem assigning double bond geometry" + e.message() == null ? ""
-						: e.message());
+				logger.info("Problem assigning double bond geometry"
+						+ e.message() == null ? "" : e.message());
 			}
 			return;
 		} catch (Exception e) {
 			if (verboseLogging) {
-				logger.info("Problem assigning double bond geometry" + e.getMessage() == null ? ""
-						: e.getMessage());
+				logger.info("Problem assigning double bond geometry"
+						+ e.getMessage() == null ? "" : e.getMessage());
 			}
 			return;
 		}
 
 		// Now check all atoms
-		Match_Vect_Vect cMatches = getGc()
-				.markForCleanup(component.getSubstructMatches(tetrahedralCarbonMatch), localGCWave);
+		Match_Vect_Vect cMatches = getGc().markForCleanup(
+				component.getSubstructMatches(tetrahedralCarbonMatch),
+				localGCWave);
 		for (int i = 0; i < cMatches.size(); i++) {
 			Match_Vect atom = cMatches.get(i);
 			int atomId = atom.get(0).getSecond();
 			// for (int i = 0; i < component.getNumAtoms(); i++) {
-			Atom at = getGc().markForCleanup(component.getAtomWithIdx(atomId), localGCWave);
+			Atom at = getGc().markForCleanup(component.getAtomWithIdx(atomId),
+					localGCWave);
 			// At present, only fix Carbon... (Otherwise e.g. MeP(=O)(OH)[*]
 			// is chiral!) and
 			if (at.getChiralTag() == ChiralType.CHI_UNSPECIFIED
-					&& !at.hasProp(UNSPECIFIED_STEREOCENTRE) && at.hasProp("_ChiralityPossible")) {
+					&& !at.hasProp(UNSPECIFIED_STEREOCENTRE)
+					&& at.hasProp("_ChiralityPossible")) {
 				// Just need to chose one assignment
 				// arbitrarily but consistently
 				at.setChiralTag(ChiralType.CHI_TETRAHEDRAL_CW);
@@ -1240,6 +1376,57 @@ public class RWMolFragmentationFactory extends AbstractFragmentationFactory<RWMo
 	@Override
 	protected RWMol cloneComponent(RWMol mol, long localGCWave) {
 		return getGc().markForCleanup(new RWMol(mol), localGCWave);
+	}
+
+	@Override
+	protected boolean isLeaf(RWMol component, long wave) {
+		int apCount = 0;
+		for (int i = 0; i < component.getNumAtoms(); i++) {
+			final Atom at =
+					getGc().markForCleanup(component.getAtomWithIdx(i), wave);
+			if (at.hasProp(AP_COUNT)) {
+				apCount += Integer.parseInt(at.getProp(AP_COUNT));
+			}
+		}
+		return apCount == 1;
+	}
+
+	@Override
+	protected List<RWMol> breakAllMatchingBonds(long wave)
+			throws ClosedFactoryException {
+
+		RWMol mol0 = getGc().markForCleanup(new RWMol(mol), wave);
+
+		for (BondIdentifier bd : getMatchingBonds()) {
+			final Atom at0 = getGc().markForCleanup(
+					mol0.getAtomWithIdx(bd.getStartIdx()), wave);
+			// All this because set/getIntProp isnt exposed in Java wrapper...
+			int count = (at0.hasProp(AP_COUNT))
+					? Integer.parseInt(at0.getProp(AP_COUNT)) : 0;
+			at0.setProp(AP_COUNT, String.format("%d", count + 1));
+
+			final Atom at1 = getGc()
+					.markForCleanup(mol0.getAtomWithIdx(bd.getEndIdx()), wave);
+			count = (at1.hasProp(AP_COUNT))
+					? Integer.parseInt(at1.getProp(AP_COUNT)) : 0;
+			at1.setProp(AP_COUNT, String.format("%d", count + 1));
+
+			mol0.removeBond(bd.getStartIdx(), bd.getEndIdx());
+
+		}
+
+		ROMol_Vect comps = getGc().markForCleanup(RDKFuncs.getMolFrags(mol0,
+				false/* sanitize frags */, null/* frags to mol mapping */,
+				null/* Atoms in each frag mapping */, false/* copy confs */),
+				wave);
+		List<RWMol> retVal = new ArrayList<>();
+		for (int i = 0; i < comps.size(); i++) {
+			retVal.add(getGc().markForCleanup(
+					new RWMol(getGc().markForCleanup(comps.get(i), wave)),
+					wave));
+		}
+		return retVal;
+
 	}
 
 }

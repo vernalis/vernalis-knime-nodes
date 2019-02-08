@@ -22,7 +22,7 @@ import com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMPFragmen
 
 /**
  * The node factory for the Multiple Cuts fragmentation node RDKit
- * implementaiton Added version 4 argument (SDR, 11-May-2018)
+ * implementation Added version 4 argument (SDR, 11-May-2018)
  * 
  * @author s.roughley
  * 
