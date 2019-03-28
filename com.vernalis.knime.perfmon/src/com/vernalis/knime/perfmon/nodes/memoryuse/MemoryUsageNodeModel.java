@@ -14,13 +14,6 @@
  ******************************************************************************/
 package com.vernalis.knime.perfmon.nodes.memoryuse;
 
-import static com.vernalis.knime.core.memory.MemoryUtils.getJVMAllocatedMemory;
-import static com.vernalis.knime.core.memory.MemoryUtils.getJVMFreeMemory;
-import static com.vernalis.knime.core.memory.MemoryUtils.getJVMMaxAvailableMemory;
-import static com.vernalis.knime.core.memory.MemoryUtils.getJVMUsedMemory;
-import static com.vernalis.knime.core.memory.MemoryUtils.getSystemProcessMemory;
-import static com.vernalis.knime.core.system.SystemUtils.getPID;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -53,25 +46,38 @@ import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import com.vernalis.knime.core.os.UnsupportedOperatingSystemException;
 import com.vernalis.knime.core.system.CommandExecutionException;
 
+import static com.vernalis.knime.core.memory.MemoryUtils.getJVMAllocatedMemory;
+import static com.vernalis.knime.core.memory.MemoryUtils.getJVMFreeMemory;
+import static com.vernalis.knime.core.memory.MemoryUtils.getJVMMaxAvailableMemory;
+import static com.vernalis.knime.core.memory.MemoryUtils.getJVMUsedMemory;
+import static com.vernalis.knime.core.memory.MemoryUtils.getSystemProcessMemory;
+import static com.vernalis.knime.core.system.SystemUtils.getPID;
+
 /**
  * @author s.roughley
  * 
  */
 public class MemoryUsageNodeModel extends NodeModel {
+
 	/**
 	 * @param nrInDataPorts
 	 * @param nrOutDataPorts
 	 */
 	protected MemoryUsageNodeModel() {
 		super(new PortType[] { FlowVariablePortObject.TYPE_OPTIONAL },
-				new PortType[] { FlowVariablePortObject.TYPE, BufferedDataTable.TYPE });
+				new PortType[] { FlowVariablePortObject.TYPE,
+						BufferedDataTable.TYPE });
 		// TODO Auto-generated constructor stub
 	}
 
-	protected static final String ERROR_PROCESSING_COMMAND_RESULT = "Error processing command result: ";
-	protected static final String ERROR_RUNNING_COMMAND = "Error running command.  Returned: ";
-	protected static final String MAC_OS_WARNING = "Mac OS not explicitly supported.  Will try Linux command";
-	public static final String UNSUPPORTED_OPERATING_SYSTEM = "Unsupported Operating System";
+	protected static final String ERROR_PROCESSING_COMMAND_RESULT =
+			"Error processing command result: ";
+	protected static final String ERROR_RUNNING_COMMAND =
+			"Error running command.  Returned: ";
+	protected static final String MAC_OS_WARNING =
+			"Mac OS not explicitly supported.  Will try Linux command";
+	public static final String UNSUPPORTED_OPERATING_SYSTEM =
+			"Unsupported Operating System";
 
 	protected NodeLogger m_logger = NodeLogger.getLogger(this.getClass());
 
@@ -82,9 +88,11 @@ public class MemoryUsageNodeModel extends NodeModel {
 	 * PortObjectSpec[])
 	 */
 	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
+			throws InvalidSettingsException {
 		initialiseFlowVars();
-		return new PortObjectSpec[] { FlowVariablePortObjectSpec.INSTANCE, getDataTableSpec() };
+		return new PortObjectSpec[] { FlowVariablePortObjectSpec.INSTANCE,
+				getDataTableSpec() };
 	}
 
 	/*
@@ -95,7 +103,8 @@ public class MemoryUsageNodeModel extends NodeModel {
 	 * [], org.knime.core.node.ExecutionContext)
 	 */
 	@Override
-	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec) throws Exception {
+	protected PortObject[] execute(PortObject[] inObjects,
+			ExecutionContext exec) throws Exception {
 
 		RowKey key = new RowKey("Memory Use (MB)");
 		DataCell[] cells;
@@ -105,10 +114,12 @@ public class MemoryUsageNodeModel extends NodeModel {
 			m_logger.error(UNSUPPORTED_OPERATING_SYSTEM);
 			throw new Exception(e.getMessage());
 		}
-		BufferedDataContainer dc = exec.createDataContainer((DataTableSpec) getDataTableSpec());
+		BufferedDataContainer dc =
+				exec.createDataContainer((DataTableSpec) getDataTableSpec());
 		dc.addRowToTable(new DefaultRow(key, cells));
 		dc.close();
-		return new PortObject[] { FlowVariablePortObject.INSTANCE, dc.getTable() };
+		return new PortObject[] { FlowVariablePortObject.INSTANCE,
+				dc.getTable() };
 	}
 
 	/**
@@ -118,17 +129,23 @@ public class MemoryUsageNodeModel extends NodeModel {
 		// TODO Auto-generated method stub
 		DataColumnSpec[] colSpecs = new DataColumnSpec[6];
 		int colIdx = 0;
-		colSpecs[colIdx++] = new DataColumnSpecCreator("JVM PID", IntCell.TYPE).createSpec();
-		colSpecs[colIdx++] = new DataColumnSpecCreator("System JVM process Memory (MB)",
-				DoubleCell.TYPE).createSpec();
-		colSpecs[colIdx++] = new DataColumnSpecCreator("Max. Available Memory (MB)",
-				DoubleCell.TYPE).createSpec();
-		colSpecs[colIdx++] = new DataColumnSpecCreator("Currently Allocated Memory (MB)",
-				DoubleCell.TYPE).createSpec();
-		colSpecs[colIdx++] = new DataColumnSpecCreator("Used Memory (MB)", DoubleCell.TYPE)
-				.createSpec();
-		colSpecs[colIdx++] = new DataColumnSpecCreator("Free Memory (MB)", DoubleCell.TYPE)
-				.createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("JVM PID", IntCell.TYPE).createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("System JVM process Memory (MB)",
+						DoubleCell.TYPE).createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("Max. Available Memory (MB)",
+						DoubleCell.TYPE).createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("Currently Allocated Memory (MB)",
+						DoubleCell.TYPE).createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("Used Memory (MB)", DoubleCell.TYPE)
+						.createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("Free Memory (MB)", DoubleCell.TYPE)
+						.createSpec();
 
 		return new DataTableSpec(colSpecs);
 	}
@@ -137,7 +154,8 @@ public class MemoryUsageNodeModel extends NodeModel {
 	 * @throws UnsupportedOperatingSystemException
 	 * @throws CommandExecutionException
 	 */
-	protected DataCell[] getDataRow() throws UnsupportedOperatingSystemException {
+	protected DataCell[] getDataRow()
+			throws UnsupportedOperatingSystemException {
 		DataCell[] cells = new DataCell[6];
 		Arrays.fill(cells, DataType.getMissingCell());
 		int colIdx = 0;
@@ -148,7 +166,10 @@ public class MemoryUsageNodeModel extends NodeModel {
 			cells[colIdx++] = new DoubleCell(mem);
 			pushFlowVariableDouble("System JVM process Memory (MB)", mem);
 		} catch (CommandExecutionException e) {
-			m_logger.info("Unable to retrieve system process memory: " + e.getMessage());
+			m_logger.info("Unable to retrieve system process memory: "
+					+ e.getMessage());
+			setWarningMessage("Unable to retrieve system process memory: "
+					+ e.getMessage());
 		}
 		mem = getJVMMaxAvailableMemory();
 		cells[colIdx++] = new DoubleCell(mem);
@@ -220,7 +241,8 @@ public class MemoryUsageNodeModel extends NodeModel {
 	 * NodeSettingsRO)
 	 */
 	@Override
-	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		// nothing
 
 	}

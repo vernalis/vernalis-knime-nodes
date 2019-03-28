@@ -46,7 +46,9 @@ import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionToTab;
  * @param <V>
  *            The type of the reaction/transform object
  */
-public class AbstractApplyTransformNodeDescription<T, U, V> extends NodeDescription {
+public class AbstractApplyTransformNodeDescription<T, U, V>
+		extends NodeDescription {
+
 	private final TransformUtilityFactory<T, U, V> transformUtilityFactory;
 
 	/**
@@ -63,7 +65,7 @@ public class AbstractApplyTransformNodeDescription<T, U, V> extends NodeDescript
 
 	@Override
 	public String getIconPath() {
-		return getClass().getResource("MMPApplyTransforms.png").getFile();
+		return "MMPApplyTransforms.png";
 	}
 
 	@Override
@@ -97,7 +99,8 @@ public class AbstractApplyTransformNodeDescription<T, U, V> extends NodeDescript
 
 	@Override
 	public String getNodeName() {
-		return "Apply Transforms (" + transformUtilityFactory.getToolkitName() + ") (Experimental)";
+		return "Apply Transforms (" + transformUtilityFactory.getToolkitName()
+				+ ") (Experimental)";
 	}
 
 	@Override
@@ -197,8 +200,8 @@ public class AbstractApplyTransformNodeDescription<T, U, V> extends NodeDescript
 						+ "table can also be passed through. In the case of transform table columns, these will be "
 						+ "grouped on the transform into collection cells.");
 		introCursor.beginElement("p");
-		introCursor
-				.insertChars("NB - Multiple different but overlapping transforms may transform a "
+		introCursor.insertChars(
+				"NB - Multiple different but overlapping transforms may transform a "
 						+ "molecule into the same structure - the node does not check for this "
 						+ "scenario (e.g. [*:1]-!@OC>>[*:1]OC(F)(F)F and "
 						+ "[*:1]-!@C>>[*:1]C(F)(F)F) will both transform PhOMe to PhOCF");
@@ -224,7 +227,8 @@ public class AbstractApplyTransformNodeDescription<T, U, V> extends NodeDescript
 		tab.setName("Transform Options");
 
 		addOptionToTab(tab, "Select transform column",
-				"The column containing the rSMARTS Transforms for " + "each Matched Pair");
+				"The column containing the rSMARTS Transforms for "
+						+ "each Matched Pair");
 		addOptionToTab(tab, "Transforms are sorted",
 				"Checking this indicates that the transform table "
 						+ "is pre-sorted by the rSMARTS column. Checking this option when it is "
@@ -251,14 +255,16 @@ public class AbstractApplyTransformNodeDescription<T, U, V> extends NodeDescript
 						+ "environments matching the attachment point key fingerprints "
 						+ "according to the criteria specified?");
 		addOptionToTab(tab, "First Key Attachment point Fingerprint Column",
-				"The first attachment point column index for the " + "transform reactant ('(L)')");
+				"The first attachment point column index for the "
+						+ "transform reactant ('(L)')");
 		addOptionToTab(tab, "Similarity metric settings",
 				"The similarity comparison type. For the "
 						+ "asymmetric Tversky similarity, the similarity comparison is from the "
 						+ "transform fingerprint to the molecule fingerprint");
 		addOptionToTab(tab, "Threshold", "The minimum similarity to allow");
 		addOptionToTab(tab, "Alpha", "Tversky similarity \u03B1 coefficient");
-		addOptionToTab(tab, "Beta", "The Tversky similarity \u03B2 coefficient");
+		addOptionToTab(tab, "Beta",
+				"The Tversky similarity \u03B2 coefficient");
 		addOptionToTab(tab, "AP Fingerprint Comparison Type",
 				"When there is more than 1 cut, this setting "
 						+ "determines how the comparison will be performed - requiring all "

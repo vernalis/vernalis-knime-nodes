@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2019 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,7 +14,7 @@
  ******************************************************************************/
 package com.vernalis.knime.perfmon.nodes.loopstart.timing.memory;
 
-import com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMemMonTimingStartNodeFactory;
+import com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeFactory;
 
 /**
  * <code>NodeFactory</code> for the "TimingStart" Node. Loop start for execution
@@ -23,10 +23,10 @@ import com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMemMonTimingS
  * @author S. Roughley
  */
 public class PerfMemMonTiming3PortStartNodeFactory
-		extends AbstractPerfMemMonTimingStartNodeFactory {
+		extends AbstractPerfMonTimingStartNodeFactory {
 
 	public PerfMemMonTiming3PortStartNodeFactory() {
-		super(3);
+		super(3, true);
 	}
 
 }

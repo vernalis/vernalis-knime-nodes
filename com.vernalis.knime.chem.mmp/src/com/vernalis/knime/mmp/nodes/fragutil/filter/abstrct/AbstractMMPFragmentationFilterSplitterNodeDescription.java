@@ -46,7 +46,9 @@ import static com.vernalis.knime.nodes.NodeDescriptionUtils.insertReference;
  * @param <U>
  *            The matcher object type
  */
-public class AbstractMMPFragmentationFilterSplitterNodeDescription<T, U> extends NodeDescription {
+public class AbstractMMPFragmentationFilterSplitterNodeDescription<T, U>
+		extends NodeDescription {
+
 	private final boolean isSplitter;
 	private final FragmentationUtilsFactory<T, U> fragUtilityFactory;
 
@@ -58,7 +60,8 @@ public class AbstractMMPFragmentationFilterSplitterNodeDescription<T, U> extends
 	 *            filter, 1 output port)
 	 */
 	public AbstractMMPFragmentationFilterSplitterNodeDescription(
-			FragmentationUtilsFactory<T, U> fragUtilityFactory, boolean isSplitter) {
+			FragmentationUtilsFactory<T, U> fragUtilityFactory,
+			boolean isSplitter) {
 		super();
 		this.isSplitter = isSplitter;
 		this.fragUtilityFactory = fragUtilityFactory;
@@ -66,9 +69,8 @@ public class AbstractMMPFragmentationFilterSplitterNodeDescription<T, U> extends
 
 	@Override
 	public String getIconPath() {
-		return getClass()
-				.getResource(isSplitter ? "MMP_Prefilter_Splitter.png" : "MMP_Prefilter_Filter.png")
-				.getFile();
+		return isSplitter ? "MMP_Prefilter_Splitter.png"
+				: "MMP_Prefilter_Filter.png";
 	}
 
 	@Override
@@ -111,7 +113,8 @@ public class AbstractMMPFragmentationFilterSplitterNodeDescription<T, U> extends
 		case 1:
 			if (isSplitter) {
 				return "Molecules which cannot be fragmented according to the Schema. Molecules not readable by "
-						+ fragUtilityFactory.getToolkitName() + " will also fail";
+						+ fragUtilityFactory.getToolkitName()
+						+ " will also fail";
 			}
 		default:
 			return null;
@@ -159,7 +162,8 @@ public class AbstractMMPFragmentationFilterSplitterNodeDescription<T, U> extends
 		node.setIcon(getIconPath());
 		node.setName(getNodeName());
 		node.setType(KnimeNode.Type.MANIPULATOR);
-		node.setShortDescription("This node prefilters molecules prior to Matched Pair Finding");
+		node.setShortDescription(
+				"This node prefilters molecules prior to Matched Pair Finding");
 		FullDescription fullDesc = node.addNewFullDescription();
 		Intro intro = fullDesc.addNewIntro();
 
@@ -174,15 +178,17 @@ public class AbstractMMPFragmentationFilterSplitterNodeDescription<T, U> extends
 
 		addRSmartsGuidelines(introCursor);
 
-		introCursor.insertElementWithText("p", "The algorithm is implemented using the "
-				+ fragUtilityFactory.getToolkitName() + " toolkit");
+		introCursor.insertElementWithText("p",
+				"The algorithm is implemented using the "
+						+ fragUtilityFactory.getToolkitName() + " toolkit");
 
 		addDevelopedByVernalis(introCursor);
 
 		insertReference(introCursor, 1, "J. Hussain and C Rea",
 				"Computationally efficient algorithm to identify matched molecular pairs"
 						+ " (MMPs) in large datasets",
-				"J. Chem. Inf. Model.", 2010, 50, "339-348", "10.1021/ci900450m");
+				"J. Chem. Inf. Model.", 2010, 50, "339-348",
+				"10.1021/ci900450m");
 
 		insertReference(introCursor, 2, "S. D. Roughley and A. M. Jordan",
 				"The Medicinal Chemist’s Toolbox: An Analysis of Reactions Used in the Pursuit of Drug Candidates",
@@ -196,12 +202,14 @@ public class AbstractMMPFragmentationFilterSplitterNodeDescription<T, U> extends
 		introCursor.insertChars("An Overview of RDKit");
 		introCursor.toEndToken();
 		introCursor.toNextToken();
-		introCursor.insertChars(" (http://www.rdkit.org/docs/Overview.html#the-contrib-directory) "
-				+ "(section entitled 'mmpa')");
+		introCursor.insertChars(
+				" (http://www.rdkit.org/docs/Overview.html#the-contrib-directory) "
+						+ "(section entitled 'mmpa')");
 		introCursor.toEndToken();
 		introCursor.toNextToken();
 
-		insertReference(introCursor, 4, "N. M. O'Boyle, J. Bostrom, R. A. Sayle and A. Gill",
+		insertReference(introCursor, 4,
+				"N. M. O'Boyle, J. Bostrom, R. A. Sayle and A. Gill",
 				"Using Matched Molecular Series as a Predictive Tool To Optimize Biological Activity",
 				"J. Med. Chem.", 2014, 57, "2704-2713", "10.1021/jm500022q");
 
@@ -213,7 +221,8 @@ public class AbstractMMPFragmentationFilterSplitterNodeDescription<T, U> extends
 				"Select the required fragmentation option");
 		addOptionWithoutTab(fullDesc, "User SMARTS",
 				"The optional user-defined (r)SMARTS (see above for details)");
-		addOptionWithoutTab(fullDesc, "Number of cuts", "Select the number of cuts (1-10)");
+		addOptionWithoutTab(fullDesc, "Number of cuts",
+				"Select the number of cuts (1-10)");
 		addOptionWithoutTab(fullDesc, "Add H's prior to fragmentation",
 				"If checked, pairs with -H as a substituent will be included. "
 						+ "This is recommended for when the number of cuts is 1, "

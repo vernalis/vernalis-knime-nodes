@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2019 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -35,24 +35,27 @@ import org.knime.core.node.workflow.FlowVariable.Scope;
 
 import com.vernalis.knime.perfmon.MemoryPerformanceMonitoringLoopEnd;
 import com.vernalis.knime.perfmon.MemoryPerformanceMonitoringLoopStart;
-import com.vernalis.knime.perfmon.PerformanceMonitoringLoopStart;
 
 /**
+ * Node model for memory monitoring benchmarking loop ends
+ * 
  * @author s.roughley
  *
  */
-public class AbstractMemMonPerfLoopEndNodeModel extends
-		AbstractPerfMonTimingEndNodeModel implements
-		MemoryPerformanceMonitoringLoopEnd {
+public class AbstractMemMonPerfLoopEndNodeModel
+		extends AbstractPerfMonTimingEndNodeModel
+		implements MemoryPerformanceMonitoringLoopEnd {
 
 	/**
 	 * @param portType
+	 *            The type of port to use
 	 * @param numPorts
+	 *            The number of ports
 	 */
 	public AbstractMemMonPerfLoopEndNodeModel(PortType portType,
 			Integer numPorts) {
-		super(createInputPortArray(portType, numPorts), createOutputPortArray(
-				portType, numPorts));
+		super(createInputPortArray(portType, numPorts),
+				createOutputPortArray(portType, numPorts));
 	}
 
 	/**
@@ -79,6 +82,7 @@ public class AbstractMemMonPerfLoopEndNodeModel extends
 		retVal[2] = BufferedDataTable.TYPE;
 		return retVal;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -88,13 +92,13 @@ public class AbstractMemMonPerfLoopEndNodeModel extends
 	 * org.knime.core.node.ExecutionContext)
 	 */
 	@Override
-	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-			throws Exception {
+	protected PortObject[] execute(PortObject[] inObjects,
+			ExecutionContext exec) throws Exception {
 
 		// Get the loop start node - we've already checked the type in the
 		// configure method
-		MemoryPerformanceMonitoringLoopStart loopStartNode = (MemoryPerformanceMonitoringLoopStart) this
-				.getLoopStartNode();
+		MemoryPerformanceMonitoringLoopStart loopStartNode =
+				(MemoryPerformanceMonitoringLoopStart) this.getLoopStartNode();
 
 		// Get the end time
 		Date endTime = new Date();
@@ -102,7 +106,8 @@ public class AbstractMemMonPerfLoopEndNodeModel extends
 		Date startTime = loopStartNode.getStartDate();
 
 		// Process the current time
-		Double durationSeconds = (endTime.getTime() - startTime.getTime()) / 1000.0;
+		Double durationSeconds =
+				(endTime.getTime() - startTime.getTime()) / 1000.0;
 		m_runningTotal += durationSeconds;
 		m_bestTime = Math.min(m_bestTime, durationSeconds);
 		m_worstTime = Math.max(m_worstTime, durationSeconds);
@@ -114,21 +119,22 @@ public class AbstractMemMonPerfLoopEndNodeModel extends
 		// Log progress
 		m_logger.info("Iteration " + m_currentIteration + " completed in "
 				+ durationSeconds + " secs.");
-		m_logger.info("Cumulative total execution time ("
-				+ (++m_currentIteration) + " iterations): " + m_runningTotal
-				+ " secs.");
+		m_logger.info(
+				"Cumulative total execution time (" + (++m_currentIteration)
+						+ " iterations): " + m_runningTotal + " secs.");
 		m_logger.info("Current Mean execution time (" + m_currentIteration
 				+ " iterations): " + m_runningTotal / m_currentIteration);
 
 		// pushFlowVariableInt("Iteration", m_currentIteration);
-		DataRow newOutRow = createOutputRow(startTime, endTime, durationSeconds);
+		DataRow newOutRow = createOutputRow(startTime, endTime, durationSeconds,
+				loopStartNode.getReportNodeTimes(),
+				loopStartNode.getProbeSubnodeTimes());
 		m_resultContainer.addRowToTable(newOutRow);
-		pushFlowVariableDouble("Mean Execution Time (s)", m_runningTotal
-				/ (m_currentIteration));
+		pushFlowVariableDouble("Mean Execution Time (s)",
+				m_runningTotal / (m_currentIteration));
 
-		if (loopStartNode.terminateLoop()
-				|| (loopStartNode.hasTimeoutEnabled() && loopStartNode
-						.getTimeoutDuration() < m_runningTotal)) {
+		if (loopStartNode.terminateLoop() || (loopStartNode.hasTimeoutEnabled()
+				&& loopStartNode.getTimeoutDuration() < m_runningTotal)) {
 			// Update the logger
 			if (!loopStartNode.terminateLoop()) {
 				m_logger.info("Loop terminated as cumulative running time ("
@@ -146,7 +152,8 @@ public class AbstractMemMonPerfLoopEndNodeModel extends
 
 			// Pass on all the variables except the global constant types and
 			// the loop iteration counter
-			Map<String, FlowVariable> inFlowVars = getAvailableInputFlowVariables();
+			Map<String, FlowVariable> inFlowVars =
+					getAvailableInputFlowVariables();
 			for (Entry<String, FlowVariable> flowVar : inFlowVars.entrySet()) {
 				FlowVariable fvar = flowVar.getValue();
 				String fvName = flowVar.getKey();
@@ -176,8 +183,8 @@ public class AbstractMemMonPerfLoopEndNodeModel extends
 			pushFlowVariableDouble("Total Execution Time (s)", m_runningTotal);
 			pushFlowVariableDouble("Best Execution Time (s)", m_bestTime);
 			pushFlowVariableDouble("Worst Execution Time (s)", m_worstTime);
-			pushFlowVariableDouble("Mean Execution Time (s)", m_runningTotal
-					/ m_currentIteration);
+			pushFlowVariableDouble("Mean Execution Time (s)",
+					m_runningTotal / m_currentIteration);
 
 			m_resultContainer.close();
 			BufferedDataTable table = m_resultContainer.getTable();
@@ -205,10 +212,10 @@ public class AbstractMemMonPerfLoopEndNodeModel extends
 		// Check that the loop start is valid
 		NodeModel loopStart = (NodeModel) this.getLoopStartNode();
 		if (loopStart != null
-				&& !(loopStart instanceof PerformanceMonitoringLoopStart)) {
+				&& !(loopStart instanceof MemoryPerformanceMonitoringLoopStart)) {
 			throw new InvalidSettingsException(
 					"Loop Start must be a 'Memory Performance monitoring Loop Start'; "
-							+ loopStart.getClass().getName()
+							+ loopStart.getClass().getSimpleName()
 							+ " is not a valid loop start");
 		}
 		return super.configure(inSpecs);
@@ -225,8 +232,8 @@ public class AbstractMemMonPerfLoopEndNodeModel extends
 	@Override
 	protected PortObject[] getOutputObjects(BufferedDataTable table,
 			PortObject[] inObjects) throws Exception {
-		List<PortObject> retVal = new ArrayList<>(Arrays.asList(super
-				.getOutputObjects(table, inObjects)));
+		List<PortObject> retVal = new ArrayList<>(
+				Arrays.asList(super.getOutputObjects(table, inObjects)));
 		retVal.add(2,
 				((MemoryPerformanceMonitoringLoopStart) getLoopStartNode())
 						.getTimingTable());
@@ -242,9 +249,10 @@ public class AbstractMemMonPerfLoopEndNodeModel extends
 	 * #getOutputSpecs(org.knime.core.node.port.PortObjectSpec[])
 	 */
 	@Override
-	protected PortObjectSpec[] getOutputSpecs(PortObjectSpec[] inSpecs) {
-		List<PortObjectSpec> retVal = new ArrayList<>(Arrays.asList(super
-				.getOutputSpecs(inSpecs)));
+	protected PortObjectSpec[] getOutputSpecs(PortObjectSpec[] inSpecs,
+			boolean reportNodeTimes) {
+		List<PortObjectSpec> retVal = new ArrayList<>(
+				Arrays.asList(super.getOutputSpecs(inSpecs, reportNodeTimes)));
 		retVal.add(2,
 				((MemoryPerformanceMonitoringLoopStart) getLoopStartNode())
 						.createMonitorTableSpec());

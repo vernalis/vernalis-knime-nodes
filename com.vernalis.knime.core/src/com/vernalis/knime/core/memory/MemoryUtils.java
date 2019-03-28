@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2018 Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2019 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -127,70 +127,77 @@ public class MemoryUtils {
 		}
 		scr.run();
 
-		// Parse the last 2 lines of the std out to the required results
-		String[] stdOutLines = scr.getStdOut().toUpperCase().split("\\n");
-		HashMap<String, String> returnValues = new HashMap<>();
+		try {
+			// Parse the last 2 lines of the std out to the required results
+			String[] stdOutLines = scr.getStdOut().toUpperCase().split("\\n");
+			HashMap<String, String> returnValues = new HashMap<>();
 
-		String[] propNames =
-				stdOutLines[stdOutLines.length - 2].trim().split(delim);
-		String[] propVals =
-				stdOutLines[stdOutLines.length - 1].trim().split(delim);
-		for (int i = 0; i < propNames.length; i++) {
-			returnValues.put(propNames[i].replace("\"", ""),
-					propVals[i].replace("\"", ""));
-		}
-
-		// Now get the relevant property and convert to MB
-		// Windows 'MEM USAGE'
-		// Linux 'RES'
-		// Mac: 'MEM'
-		String result;
-		switch (os) {
-		case WIN:
-			result = returnValues.get(MEM_USAGE).replaceAll("\\s", "");
-			break;
-		case LINUX:
-			result = returnValues.get(RES).replaceAll("\\s", "");
-			break;
-		case MAC:
-			result = returnValues.get("MEM").replaceAll("\\s", "").replace("+",
-					"");
-			break;
-		default:
-			result = "-1";
-			break;
-		}
-		double multiplier = 1;
-		double kB = -1;
-		Matcher m = memPatt.matcher(result);
-		if (m.find()) {
-			// Use the following to ensure correct current locale parsing of
-			// '.' and ','
-			try {
-				kB = NumberFormat.getInstance().parse(m.group(1)).doubleValue();
-			} catch (ParseException e) {
-				logger.error(
-						"Number parsing exception while getting process memory: "
-								+ e.getMessage());
-				throw new CommandExecutionException(
-						"Number parsing exception while getting process memory: "
-								+ e.getMessage(),
-						e);
+			String[] propNames =
+					stdOutLines[stdOutLines.length - 2].trim().split(delim);
+			String[] propVals =
+					stdOutLines[stdOutLines.length - 1].trim().split(delim);
+			for (int i = 0; i < propNames.length; i++) {
+				returnValues.put(propNames[i].replace("\"", ""),
+						propVals[i].replace("\"", ""));
 			}
 
-			switch (m.group(2) == null ? "K" : m.group(2)) {
-			case "M":
-				multiplier = 1024;
+			// Now get the relevant property and convert to MB
+			// Windows 'MEM USAGE'
+			// Linux 'RES'
+			// Mac: 'MEM'
+			String result;
+			switch (os) {
+			case WIN:
+				result = returnValues.get(MEM_USAGE).replaceAll("\\s", "");
 				break;
-			case "G":
-				multiplier = 1024 * 1024;
-			case "K":
+			case LINUX:
+				result = returnValues.get(RES).replaceAll("\\s", "");
+				break;
+			case MAC:
+				result = returnValues.get("MEM").replaceAll("\\s", "")
+						.replace("+", "");
+				break;
 			default:
+				result = "-1";
 				break;
 			}
+			double multiplier = 1;
+			double kB = -1;
+			Matcher m = memPatt.matcher(result);
+			if (m.find()) {
+				// Use the following to ensure correct current locale parsing of
+				// '.' and ','
+				try {
+					kB = NumberFormat.getInstance().parse(m.group(1))
+							.doubleValue();
+				} catch (ParseException e) {
+					logger.error(
+							"Number parsing exception while getting process memory: "
+									+ e.getMessage());
+					throw new CommandExecutionException(
+							"Number parsing exception while getting process memory: "
+									+ e.getMessage(),
+							e);
+				}
+
+				switch (m.group(2) == null ? "K" : m.group(2)) {
+				case "M":
+					multiplier = 1024;
+					break;
+				case "G":
+					multiplier = 1024 * 1024;
+				case "K":
+				default:
+					break;
+				}
+			}
+			kB *= multiplier;
+			return kB / 1024.0;
+		} catch (Exception e) {
+			throw new CommandExecutionException(
+					"Error obtaining system process memory - " + e.getMessage(),
+					e);
 		}
-		kB *= multiplier;
-		return kB / 1024.0;
 	}
 
 	/**

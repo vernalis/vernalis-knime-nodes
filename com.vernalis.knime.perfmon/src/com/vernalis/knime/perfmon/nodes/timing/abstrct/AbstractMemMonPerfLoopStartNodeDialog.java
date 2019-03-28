@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2019 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -18,16 +18,20 @@ import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 
 /**
+ * Node dialog for memory monitoring benchmarking loop start nodes
+ * 
  * @author s.roughley
  *
  */
-public class AbstractMemMonPerfLoopStartNodeDialog extends
-		AbstractPerfMonTimingStartNodeDialog {
+public class AbstractMemMonPerfLoopStartNodeDialog
+		extends AbstractPerfMonTimingStartNodeDialog {
 
-		public AbstractMemMonPerfLoopStartNodeDialog() {
+	public AbstractMemMonPerfLoopStartNodeDialog() {
 		super();
+		createNewGroup("Memory monitoring");
 		addDialogComponent(new DialogComponentNumber(getMonitoringDelayModel(),
 				"Interval between memory monitoring checks (ms)", 1000));
+		closeCurrentGroup();
 	}
 
 	/**

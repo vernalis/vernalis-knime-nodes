@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2019 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -24,7 +24,9 @@ import org.knime.core.node.workflow.LoopStartNodeTerminator;
  * @author s.roughley
  * 
  */
-public interface PerformanceMonitoringLoopStart extends LoopStartNodeTerminator {
+public interface PerformanceMonitoringLoopStart
+		extends LoopStartNodeTerminator {
+
 	/** Get the Start of execution time */
 	public Date getStartDate();
 
@@ -33,4 +35,13 @@ public interface PerformanceMonitoringLoopStart extends LoopStartNodeTerminator 
 
 	/** Get the timeout. Should return -1 if the enabled status is false */
 	public int getTimeoutDuration();
+
+	/** Should the loop end report individual node timings in loop body */
+	public boolean getReportNodeTimes();
+
+	/**
+	 * If the loop end is reporting individual node timings, should it probe
+	 * subnodes (i.e. wrapped metanodes)?
+	 */
+	public boolean getProbeSubnodeTimes();
 }

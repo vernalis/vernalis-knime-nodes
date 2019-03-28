@@ -4,7 +4,7 @@ All nodes were developed solely at Vernalis Research Ltd (Cambridge, UK)
 
 For feedback and more information, please contact knime@vernalis.com
 
-Copyright (C) 2014-15, Vernalis (R&D) Ltd (All other content)
+Copyright (C) 2014-2019, Vernalis (R&D) Ltd (All other content)
 
 These KNIME Nodes are free software: you can redistribute
 it and/or modify it under the terms of the GNU General Public

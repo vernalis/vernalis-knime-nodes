@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2019 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,17 +14,18 @@
  ******************************************************************************/
 package com.vernalis.knime.perfmon.nodes.loopend.timing.memory;
 
-import com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMemMonTimingEndNodeFactory;
+import com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingEndNodeFactory;
 
 /**
  * <code>NodeFactory</code> for the 1 port timing/memory monitoring loop end
  *
  * @author S. Roughley
  */
-public class PerfMemMonTiming1PortEndNodeFactory extends AbstractPerfMemMonTimingEndNodeFactory {
+public class PerfMemMonTiming1PortEndNodeFactory
+		extends AbstractPerfMonTimingEndNodeFactory {
 
 	public PerfMemMonTiming1PortEndNodeFactory() {
-		super(1);
+		super(1, true);
 	}
 
 }

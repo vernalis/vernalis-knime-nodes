@@ -46,7 +46,9 @@ import static com.vernalis.knime.nodes.NodeDescriptionUtils.insertReference;
  * @param <U>
  *            The matcher type parameter
  */
-public class AbstractMMPCuttableBondsRenderNodeDescription<T, U> extends NodeDescription {
+public class AbstractMMPCuttableBondsRenderNodeDescription<T, U>
+		extends NodeDescription {
+
 	private final FragmentationUtilsFactory<T, U> fragUtilityFactory;
 
 	/**
@@ -63,7 +65,7 @@ public class AbstractMMPCuttableBondsRenderNodeDescription<T, U> extends NodeDes
 
 	@Override
 	public String getIconPath() {
-		return getClass().getResource("MMPMarkBonds.png").getFile();
+		return "MMPMarkBonds.png";
 	}
 
 	@Override
@@ -93,7 +95,8 @@ public class AbstractMMPCuttableBondsRenderNodeDescription<T, U> extends NodeDes
 
 	@Override
 	public String getNodeName() {
-		return "MMP Show Cuttable Bonds (" + fragUtilityFactory.getToolkitName() + ")";
+		return "MMP Show Cuttable Bonds (" + fragUtilityFactory.getToolkitName()
+				+ ")";
 	}
 
 	@Override
@@ -160,15 +163,17 @@ public class AbstractMMPCuttableBondsRenderNodeDescription<T, U> extends NodeDes
 
 		addRSmartsGuidelines(introCursor);
 
-		introCursor.insertElementWithText("p", "The algorithm is implemented using the "
-				+ fragUtilityFactory.getToolkitName() + " toolkit");
+		introCursor.insertElementWithText("p",
+				"The algorithm is implemented using the "
+						+ fragUtilityFactory.getToolkitName() + " toolkit");
 
 		addDevelopedByVernalis(introCursor);
 
 		insertReference(introCursor, 1, "J. Hussain and C Rea",
 				"Computationally efficient algorithm to identify matched molecular pairs"
 						+ " (MMPs) in large datasets",
-				"J. Chem. Inf. Model.", 2010, 50, "339-348", "10.1021/ci900450m");
+				"J. Chem. Inf. Model.", 2010, 50, "339-348",
+				"10.1021/ci900450m");
 
 		insertReference(introCursor, 2, "S. D. Roughley and A. M. Jordan",
 				"The Medicinal Chemist’s Toolbox: An Analysis of Reactions Used in the Pursuit of Drug Candidates",
@@ -182,12 +187,14 @@ public class AbstractMMPCuttableBondsRenderNodeDescription<T, U> extends NodeDes
 		introCursor.insertChars("An Overview of RDKit");
 		introCursor.toEndToken();
 		introCursor.toNextToken();
-		introCursor.insertChars(" (http://www.rdkit.org/docs/Overview.html#the-contrib-directory) "
-				+ "(section entitled 'mmpa')");
+		introCursor.insertChars(
+				" (http://www.rdkit.org/docs/Overview.html#the-contrib-directory) "
+						+ "(section entitled 'mmpa')");
 		introCursor.toEndToken();
 		introCursor.toNextToken();
 
-		insertReference(introCursor, 4, "N. M. O'Boyle, J. Bostrom, R. A. Sayle and A. Gill",
+		insertReference(introCursor, 4,
+				"N. M. O'Boyle, J. Bostrom, R. A. Sayle and A. Gill",
 				"Using Matched Molecular Series as a Predictive Tool To Optimize Biological Activity",
 				"J. Med. Chem.", 2014, 57, "2704-2713", "10.1021/jm500022q");
 
@@ -199,7 +206,8 @@ public class AbstractMMPCuttableBondsRenderNodeDescription<T, U> extends NodeDes
 				"Select the required fragmentation option");
 		addOptionWithoutTab(fullDesc, "User SMARTS",
 				"The optional user-defined (r)SMARTS (see above for details)");
-		addOptionWithoutTab(fullDesc, "Number of cuts", "Select the number of cuts (1-10)");
+		addOptionWithoutTab(fullDesc, "Number of cuts",
+				"Select the number of cuts (1-10)");
 		addOptionWithoutTab(fullDesc,
 				"Allow 2 cuts along single bond giving a single bond as 'value'?",
 				"If selected, for the 2 cuts case, 1 bond can be cut twice, "

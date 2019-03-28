@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, Vernalis (R&D) Ltd
+ * Copyright (c) 2018, 2019 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -57,8 +57,12 @@ final class AmixPeakList implements MultilineTextObject {
 			.compile("! (TITLE|DATE|USER|HOST|spectrum)\\s*(?::|=)\\s*(.*)");
 
 	private static final DataColumnSpec[] NEW_COL_SPECS;
+	// This format appears to be written on Windows systems
 	private static final SimpleDateFormat AMIX_DATE_FORMAT =
 			new SimpleDateFormat("EEE yyyy-MM-dd HH:mm:ss");
+	// This format appears to be written on Linux systems
+	private static final SimpleDateFormat AMIX_DATE_FORMAT_2 =
+			new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy");
 	static {
 		NEW_COL_SPECS = new DataColumnSpec[11];
 		int i = 0;
@@ -203,8 +207,15 @@ final class AmixPeakList implements MultilineTextObject {
 								.collect(Collectors.joining(lineSeparator)));
 		retVal[i++] = title == null || title.isEmpty()
 				? DataType.getMissingCell() : new StringCell(title);
-		retVal[i++] = date == null || date.isEmpty() ? DataType.getMissingCell()
-				: DateAndTimeCellFactory.create(date, AMIX_DATE_FORMAT);
+		DataCell dateCell;
+		try {
+			dateCell = date == null || date.isEmpty()
+					? DataType.getMissingCell()
+					: DateAndTimeCellFactory.create(date, AMIX_DATE_FORMAT);
+		} catch (IllegalArgumentException e) {
+			dateCell = DateAndTimeCellFactory.create(date, AMIX_DATE_FORMAT_2);
+		}
+		retVal[i++] = dateCell;
 		retVal[i++] = user == null || user.isEmpty() ? DataType.getMissingCell()
 				: new StringCell(user);
 		retVal[i++] = host == null || host.isEmpty() ? DataType.getMissingCell()

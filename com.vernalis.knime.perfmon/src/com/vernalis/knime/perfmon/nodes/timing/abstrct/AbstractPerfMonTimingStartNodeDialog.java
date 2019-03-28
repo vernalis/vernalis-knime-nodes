@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2019 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -27,9 +27,16 @@ import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
  * @author s.roughley
  *
  */
-public class AbstractPerfMonTimingStartNodeDialog extends DefaultNodeSettingsPane {
+public class AbstractPerfMonTimingStartNodeDialog
+		extends DefaultNodeSettingsPane {
+
+	private static final String PROBE_WRAPPED_METANODES_TIMINGS =
+			"Probe wrapped metanodes timings";
+	private static final String REPORT_NODE_TIMES = "Report node times";
 	private final SettingsModelBoolean m_timeCutout;
 	private final SettingsModelIntegerBounded m_maxTime;
+	private final SettingsModelBoolean reportLoopBodyNodesMdl;
+	private final SettingsModelBoolean probeSubnodesModel;
 
 	public AbstractPerfMonTimingStartNodeDialog() {
 		super();
@@ -46,10 +53,48 @@ public class AbstractPerfMonTimingStartNodeDialog extends DefaultNodeSettingsPan
 
 			}
 		});
+
+		createNewGroup("Timeout");
 		addDialogComponent(new DialogComponentBoolean(m_timeCutout,
 				"Stop tests after timeout period?"));
 		addDialogComponent(new DialogComponentNumber(m_maxTime,
 				"Maximum total time (s)", 10));
+		closeCurrentGroup();
+
+		createNewGroup("Loop-body nodes");
+		reportLoopBodyNodesMdl = createLoopBodyNodesModel();
+		probeSubnodesModel = createProbeSubnodesModel();
+		probeSubnodesModel.setEnabled(reportLoopBodyNodesMdl.getBooleanValue());
+		reportLoopBodyNodesMdl.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				probeSubnodesModel
+						.setEnabled(reportLoopBodyNodesMdl.getBooleanValue());
+
+			}
+		});
+
+		addDialogComponent(new DialogComponentBoolean(reportLoopBodyNodesMdl,
+				REPORT_NODE_TIMES));
+		addDialogComponent(new DialogComponentBoolean(probeSubnodesModel,
+				PROBE_WRAPPED_METANODES_TIMINGS));
+		closeCurrentGroup();
+
+	}
+
+	/**
+	 * @return The settings model for probing wrapped metanodes timings
+	 */
+	static SettingsModelBoolean createProbeSubnodesModel() {
+		return new SettingsModelBoolean(PROBE_WRAPPED_METANODES_TIMINGS, false);
+	}
+
+	/**
+	 * @return The settings model for reporting loop body node timings
+	 */
+	static SettingsModelBoolean createLoopBodyNodesModel() {
+		return new SettingsModelBoolean(REPORT_NODE_TIMES, false);
 	}
 
 	/**

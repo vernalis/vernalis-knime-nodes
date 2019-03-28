@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2019 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -13,10 +13,6 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
 package com.vernalis.knime.perfmon.nodes.timing.abstrct;
-
-import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createIterationsModel;
-import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createMaxTimeModel;
-import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createTimeCutoutModel;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,24 +35,37 @@ import org.knime.core.node.port.PortType;
 
 import com.vernalis.knime.perfmon.PerformanceMonitoringLoopStart;
 
+import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createIterationsModel;
+import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createLoopBodyNodesModel;
+import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createMaxTimeModel;
+import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createProbeSubnodesModel;
+import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createTimeCutoutModel;
+
 /**
  * This is the model implementation of Performance TimingStart. Loop start for
  * execution timing
  * 
- * @author S. Roughley knime@vernalis.com
+ * @author S. Roughley <s.roughley@vernalis.com>
  */
-public class AbstractPerfMonTimingStartNodeModel extends NodeModel implements
-		PerformanceMonitoringLoopStart {
+public class AbstractPerfMonTimingStartNodeModel extends NodeModel
+		implements PerformanceMonitoringLoopStart {
+
 	private Date m_StartTime;
 	protected Integer m_iteration;
-	protected static NodeLogger m_logger = NodeLogger
-			.getLogger(AbstractPerfMonTimingStartNodeModel.class);
+	protected static NodeLogger m_logger =
+			NodeLogger.getLogger(AbstractPerfMonTimingStartNodeModel.class);
 
 	// Settings Models
-	protected final SettingsModelIntegerBounded m_maxIterations = createIterationsModel();
+	protected final SettingsModelIntegerBounded m_maxIterations =
+			createIterationsModel();
 	protected final SettingsModelBoolean m_useTimeout = createTimeCutoutModel();
-	protected final SettingsModelIntegerBounded m_timeOut = createMaxTimeModel();
-
+	protected final SettingsModelIntegerBounded m_timeOut =
+			createMaxTimeModel();
+	// since 1.19.0
+	protected final SettingsModelBoolean reportLoopNodesMdl =
+			createLoopBodyNodesModel();
+	protected final SettingsModelBoolean probeSubnodesMdl =
+			createProbeSubnodesModel();
 
 	/**
 	 * Constructor for the node model.
@@ -66,9 +75,11 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel implements
 	 * @param numPorts
 	 *            The number of ports
 	 */
-	public AbstractPerfMonTimingStartNodeModel(PortType portType, int numPorts) {
+	public AbstractPerfMonTimingStartNodeModel(PortType portType,
+			int numPorts) {
 		super(createPorts(portType, numPorts), createPorts(portType, numPorts));
 		m_timeOut.setEnabled(m_useTimeout.getBooleanValue());
+		probeSubnodesMdl.setEnabled(reportLoopNodesMdl.getBooleanValue());
 	}
 
 	/**
@@ -174,6 +185,8 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel implements
 		m_maxIterations.saveSettingsTo(settings);
 		m_useTimeout.saveSettingsTo(settings);
 		m_timeOut.saveSettingsTo(settings);
+		reportLoopNodesMdl.saveSettingsTo(settings);
+		probeSubnodesMdl.saveSettingsTo(settings);
 	}
 
 	/*
@@ -188,6 +201,7 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel implements
 		m_maxIterations.validateSettings(settings);
 		m_useTimeout.validateSettings(settings);
 		m_timeOut.validateSettings(settings);
+		// Dont validate new settings models
 	}
 
 	/*
@@ -203,6 +217,19 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel implements
 		m_maxIterations.loadSettingsFrom(settings);
 		m_useTimeout.loadSettingsFrom(settings);
 		m_timeOut.loadSettingsFrom(settings);
+		try {
+			reportLoopNodesMdl.loadSettingsFrom(settings);
+		} catch (Exception e) {
+			// Do nothing - these will assume default settings matching legacy
+			// behaviour
+		}
+
+		try {
+			probeSubnodesMdl.loadSettingsFrom(settings);
+		} catch (Exception e) {
+			// Do nothing - these will assume default settings matching legacy
+			// behaviour
+		}
 	}
 
 	/*
@@ -224,14 +251,15 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel implements
 	 * [], org.knime.core.node.ExecutionContext)
 	 */
 	@Override
-	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-			throws Exception {
+	protected PortObject[] execute(PortObject[] inObjects,
+			ExecutionContext exec) throws Exception {
 		// if (m_loopEndNodeModel == null) {
 		// NodeModel lEnd = (NodeModel) this.getLoopEndNode();
 		// if (lEnd != null && lEnd instanceof PerformanceMonitoringLoopEnd) {
 		// m_loopEndNodeModel = (PerformanceMonitoringLoopEnd) lEnd;
 		// } else {
-		// m_logger.error("Loop must end with Performance monitoring loop end node");
+		// m_logger.error("Loop must end with Performance monitoring loop end
+		// node");
 		// throw new Exception(
 		// "Loop must end with Performance monitoring loop end node");
 		// }
@@ -260,5 +288,15 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel implements
 				(m_timeOut.isEnabled()) ? m_timeOut.getIntValue() : -1);
 		// Just pass through
 		return inSpecs;
+	}
+
+	@Override
+	public boolean getReportNodeTimes() {
+		return reportLoopNodesMdl.getBooleanValue();
+	}
+
+	@Override
+	public boolean getProbeSubnodeTimes() {
+		return getReportNodeTimes() && probeSubnodesMdl.getBooleanValue();
 	}
 }

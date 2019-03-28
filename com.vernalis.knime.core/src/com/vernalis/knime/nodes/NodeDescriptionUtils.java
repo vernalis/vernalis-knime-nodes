@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017,2018 Vernalis (R&D) Ltd
+ * Copyright (c) 2017,2019 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -315,6 +315,21 @@ public class NodeDescriptionUtils {
 		bundleElement.setAttribute("factory-package",
 				nodeFactoryClazz.getPackage().getName());
 		((Element) node.getDomNode()).appendChild(bundleElement);
+	}
+
+	/**
+	 * Method to add a new tab to a node description
+	 * 
+	 * @param fullDesc
+	 *            The full description object of the node description
+	 * @param tabName
+	 *            The name of the new tab
+	 * @return The new tab
+	 */
+	public static Tab createTab(FullDescription fullDesc, String tabName) {
+		Tab retVal = fullDesc.addNewTab();
+		retVal.setName(tabName);
+		return retVal;
 	}
 
 }

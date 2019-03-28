@@ -73,9 +73,7 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 	@Override
 	public String getIconPath() {
 		// Otherwise it is relative to the path of the node factory class
-		return getClass()
-				.getResource(isMulticut ? "MMPMultiFrag.png" : "MMPFrag.png")
-				.getFile();
+		return isMulticut ? "MMPMultiFrag.png" : "MMPFrag.png";
 	}
 
 	@Override
