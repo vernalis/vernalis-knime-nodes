@@ -994,7 +994,7 @@ public class RWMolFragmentationFactory
 				String radius = String.format(Locale.ROOT, "%.4f",
 						BREAK_ATOM_END_RADIUS_SCALE
 								* Integer.parseInt(svg.replaceAll(
-										"(?s).*?<svg:path.*?;stroke:#(?!000000)[0-9A-F]{6};stroke-width:(\\d+)px;.*",
+										"(?s).*?<(?:svg:)?path.*?;stroke:#(?!000000)[0-9A-F]{6};stroke-width:(\\d+)px;.*",
 										"$1"))
 								/ 2.0);
 				svg = svg.replaceAll(
