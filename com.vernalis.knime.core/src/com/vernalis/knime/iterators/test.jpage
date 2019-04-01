@@ -1,9 +1,0 @@
-java.util.List<Integer> q = java.util.Arrays.asList(new Integer[] {1,2,3,5,6,7,9,11,15,16/*,19,23*/});
-java.util.List<Integer> r = java.util.Arrays.asList(new Integer[] {0,3,4,7,8,11,15/*,18*/});
-com.vernalis.knime.internal.iterators.PairIterator<Integer> iter = new com.vernalis.knime.internal.iterators.PairwiseIterable<Integer>(q,r,java.util.Comparator.<Integer>naturalOrder(),true).iterator();
-System.out.println("Queries:\t"+q);System.out.println("Reference:\t"+r);while(iter.hasNext()){
-	System.out.print("Skipped queries:\t"+iter.skippedQueries()+";\t");
-	System.out.print("Skipped references:\t"+iter.skippedReferences()+";\t");
-	System.out.println("Next match:\t"+iter.next());
-	System.out.println("---------");
-}System.out.println("Tail Skipped queries:\t"+iter.skippedQueries()+";\t");System.out.println("Tail Skipped references:\t"+iter.skippedReferences()+";\t");
