@@ -38,7 +38,7 @@ public class SmartsviewerHelper {
 	 * The base url for the webservice
 	 */
 	private static final String SMARTSVIEW_SERVICE_ENTRY =
-			"http://smartsview.zbh.uni-hamburg.de/smartsview/auto/";
+			"https://smartsview.zbh.uni-hamburg.de/auto/";
 
 	/**
 	 * Function to generate a URL for the SMARTSViewer query based on the
@@ -55,8 +55,8 @@ public class SmartsviewerHelper {
 	 *            The SMARTS query string
 	 * @return A String containing the query url
 	 */
-	public static String getSMARTSViewerURL(String imageType, String visModus, String Legend,
-			String SMARTS) {
+	public static String getSMARTSViewerURL(String imageType, String visModus,
+			String Legend, String SMARTS) {
 		/*
 		 * Function to build correct SMARTSviewer url from specified user
 		 * options For details see
