@@ -96,10 +96,19 @@
             factory-class="com.vernalis.nodes.urlencode.UrlEncodeNodeFactory" />
      <node
      		category-path="/community/vernalis/misc/"
-            factory-class="com.vernalis.nodes.urlencode.UrlEncodeNodeFactory" />
+            factory-class="com.vernalis.nodes.urlencode.UrlDecodeNodeFactory" />
      <node
      		category-path="/community/vernalis/misc/"
             factory-class="com.vernalis.nodes.list2set.List2SetNodeFactory" />
+    <!-- v 1.20.0 -->
+     <node
+           category-path="/community/vernalis/misc/"
+           factory-class="com.vernalis.nodes.set2list.Set2ListNodeFactory">
+     </node>
+     <node
+           category-path="/community/vernalis/misc/"
+           factory-class="com.vernalis.nodes.collection2string.ColToStringNodeFactory">
+     </node>
 
       <!-- Deprecated Nodes -->
       <node

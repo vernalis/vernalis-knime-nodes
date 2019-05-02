@@ -32,6 +32,8 @@ import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
+import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 
 import com.vernalis.knime.perfmon.PerformanceMonitoringLoopStart;
 
@@ -66,6 +68,7 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel
 			createLoopBodyNodesModel();
 	protected final SettingsModelBoolean probeSubnodesMdl =
 			createProbeSubnodesModel();
+	protected final PortType portType;
 
 	/**
 	 * Constructor for the node model.
@@ -77,9 +80,14 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel
 	 */
 	public AbstractPerfMonTimingStartNodeModel(PortType portType,
 			int numPorts) {
-		super(createPorts(portType, numPorts), createPorts(portType, numPorts));
+		// Flow variable loop start ports are optional inputs
+		super(createPorts(
+				portType == FlowVariablePortObject.TYPE
+						? FlowVariablePortObject.TYPE_OPTIONAL : portType,
+				numPorts), createPorts(portType, numPorts));
 		m_timeOut.setEnabled(m_useTimeout.getBooleanValue());
 		probeSubnodesMdl.setEnabled(reportLoopNodesMdl.getBooleanValue());
+		this.portType = portType;
 	}
 
 	/**
@@ -268,8 +276,31 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel
 		m_StartTime = new Date();
 		pushFlowVariableInt("currentIteration", m_iteration++);
 		pushFlowVariableInt("maxIterations", m_maxIterations.getIntValue());
-		// Just pass through
-		return inObjects;
+
+		// Just pass through, handling optional inputs
+		// For some reason, this bombs on Jenkins server, so we need to do it
+		// the pre-Streams way...
+		// return Arrays.stream(inObjects)
+		// .map(p -> p == null ? portType == FlowVariablePortObject.TYPE
+		// ? FlowVariablePortObject.INSTANCE
+		// : InactiveBranchPortObject.INSTANCE : p)
+		// .toArray(PortObject[]::new);
+		PortObject[] retVal = new PortObject[inObjects.length];
+		for (int pIdx = 0; pIdx < retVal.length; pIdx++) {
+			if (inObjects[pIdx] == null) {
+				// Nothing connected to optional input
+				if (portType == FlowVariablePortObject.TYPE
+						|| portType == FlowVariablePortObject.TYPE_OPTIONAL) {
+					retVal[pIdx] = FlowVariablePortObject.INSTANCE;
+				} else {
+					retVal[pIdx] = InactiveBranchPortObject.INSTANCE;
+				}
+			} else {
+				// Something connected - pass it through
+				retVal[pIdx] = inObjects[pIdx];
+			}
+		}
+		return retVal;
 	}
 
 	/*

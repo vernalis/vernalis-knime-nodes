@@ -1,6 +1,6 @@
-/*
+/**************************************************************************
  * ------------------------------------------------------------------------
- *  Copyright (C) 2013, Vernalis (R&D) Ltd
+ *  Copyright (C) 2013, 2019 Vernalis (R&D) Ltd
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License, Version 3, as
@@ -14,13 +14,18 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>.
  * ------------------------------------------------------------------------
- */
+ **************************************************************************/
 package com.vernalis.nodes.io.txt;
+
+import javax.swing.JFileChooser;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.knime.core.data.StringValue;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
+import org.knime.core.node.defaultnodesettings.DialogComponentFileChooser;
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
@@ -28,19 +33,21 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 /**
  * <code>NodeDialog</code> for the "SaveTxtLocal" Node. Node to save a PDB cell
  * column (as string) to a local file with path specified in a second column
- * 
- * This node dialog derives from {@link DefaultNodeSettingsPane} which allows
- * creation of a simple dialog with standard components. If you need a more
- * complex dialog please derive directly from
- * {@link org.knime.core.node.NodeDialogPane}.
- * 
- * @author SDR
  */
 public class SaveTxtLocalNodeDialog extends DefaultNodeSettingsPane {
 
 	/**
-	 * New pane for configuring the SavePDBLocal node. TODO: Ideally we would
-	 * deal with the possibility that the input column is a PDB Celltype
+	 * Settings model key and dialog text
+	 */
+	private static final String PARENT_DIRECTORY = "Parent Directory";
+	/**
+	 * Settings model key and dialog text
+	 */
+	private static final String SAVE_ALL_FILES_IN_PARENT_FOLDER =
+			"Save all files in parent folder";
+
+	/**
+	 * New pane for configuring the SavePDBLocal node.
 	 */
 	@SuppressWarnings("unchecked")
 	protected SaveTxtLocalNodeDialog() {
@@ -61,13 +68,53 @@ public class SaveTxtLocalNodeDialog extends DefaultNodeSettingsPane {
 				"Enter name of column for file paths:", 0, true,
 				StringValue.class));
 
-		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
-				SaveTxtLocalNodeModel.CFG_OVERWRITE, true), "Overwrite files?"));
+		final SettingsModelBoolean useParentFolderModel =
+				createUseParentFolderModel();
+		addDialogComponent(new DialogComponentBoolean(useParentFolderModel,
+				SAVE_ALL_FILES_IN_PARENT_FOLDER));
+		final SettingsModelString folderNameModel = createFolderNameModel();
+		final DialogComponentFileChooser fileChooser =
+				new DialogComponentFileChooser(folderNameModel,
+						getClass().getName(), JFileChooser.SAVE_DIALOG, true,
+						createFlowVariableModel(folderNameModel));
+		fileChooser.setBorderTitle(PARENT_DIRECTORY);
+		addDialogComponent(fileChooser);
+		useParentFolderModel.addChangeListener(new ChangeListener() {
 
-		addDialogComponent(new DialogComponentString(new SettingsModelString(
-				SaveTxtLocalNodeModel.CFG_SUCCESS_COLUMN_NAME, null),
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				folderNameModel
+						.setEnabled(useParentFolderModel.getBooleanValue());
+
+			}
+		});
+		folderNameModel.setEnabled(useParentFolderModel.getBooleanValue());
+
+		addDialogComponent(
+				new DialogComponentBoolean(
+						new SettingsModelBoolean(
+								SaveTxtLocalNodeModel.CFG_OVERWRITE, true),
+						"Overwrite files?"));
+
+		addDialogComponent(new DialogComponentString(
+				new SettingsModelString(
+						SaveTxtLocalNodeModel.CFG_SUCCESS_COLUMN_NAME, null),
 				"Enter name of column for save successful flag:"));
 
 		closeCurrentGroup();
+	}
+
+	/**
+	 * @return Settings model for the parent directory option
+	 */
+	static SettingsModelString createFolderNameModel() {
+		return new SettingsModelString(PARENT_DIRECTORY, null);
+	}
+
+	/**
+	 * @return Settings model for the use parent directory option
+	 */
+	static SettingsModelBoolean createUseParentFolderModel() {
+		return new SettingsModelBoolean(SAVE_ALL_FILES_IN_PARENT_FOLDER, false);
 	}
 }

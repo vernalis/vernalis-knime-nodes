@@ -62,9 +62,10 @@
 		</intro>
 
 
-		<option name="Select a column contaning the PDB paths">Select the column containing the file paths or
+		<option name="Select a column containing the PDB paths">Select the column containing the file paths or
 			URLs
 		</option>
+		<option name="Remove input column">If checked, the input column containing the paths is removed</option>
 		<option name="PDB File column name">Enter name of column for PDB cells</option>
 
 	</fullDescription>

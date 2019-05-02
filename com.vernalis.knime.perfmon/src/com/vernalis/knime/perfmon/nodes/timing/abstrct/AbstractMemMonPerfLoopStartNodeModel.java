@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2019 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -53,23 +53,26 @@ import com.vernalis.knime.perfmon.MemoryPerformanceMonitoringLoopStart;
  * @author s.roughley
  * 
  */
-public class AbstractMemMonPerfLoopStartNodeModel extends
-		AbstractPerfMonTimingStartNodeModel implements
-		MemoryPerformanceMonitoringLoopStart {
+@SuppressWarnings("deprecation")
+public class AbstractMemMonPerfLoopStartNodeModel
+		extends AbstractPerfMonTimingStartNodeModel
+		implements MemoryPerformanceMonitoringLoopStart {
 
 	boolean isMonitoring = false;
 	BufferedDataContainer m_monitoringContainer = null;
 	private Thread m_monitorThread = null;
 
 	protected Integer m_previousIteration = null;
-	protected SettingsModelIntegerBounded m_monitoringIntervalMS = getMonitoringDelayModel();
+	protected SettingsModelIntegerBounded m_monitoringIntervalMS =
+			getMonitoringDelayModel();
 	protected Long m_iterationStartTime = null;
 
 	/**
 	 * @param portType
 	 * @param numPorts
 	 */
-	public AbstractMemMonPerfLoopStartNodeModel(PortType portType, int numPorts) {
+	public AbstractMemMonPerfLoopStartNodeModel(PortType portType,
+			int numPorts) {
 		super(portType, numPorts);
 	}
 
@@ -82,8 +85,8 @@ public class AbstractMemMonPerfLoopStartNodeModel extends
 	 * org.knime.core.node.ExecutionContext)
 	 */
 	@Override
-	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec)
-			throws Exception {
+	protected PortObject[] execute(PortObject[] inObjects,
+			ExecutionContext exec) throws Exception {
 		startMonitoring(m_monitoringIntervalMS.getIntValue(), exec);
 		try {
 			return super.execute(inObjects, exec);
@@ -104,10 +107,11 @@ public class AbstractMemMonPerfLoopStartNodeModel extends
 	public void startMonitoring(int msDelay, ExecutionContext exec) {
 		if (!isMonitoring) {
 			isMonitoring = true;
-			m_monitoringContainer = exec
-					.createDataContainer(createMonitorTableSpec());
-			m_monitorThread = ThreadUtils.threadWithContext(new MonitorMemory(
-					msDelay), "Performance Monitoring Memory Monitor Thread");
+			m_monitoringContainer =
+					exec.createDataContainer(createMonitorTableSpec());
+			m_monitorThread =
+					ThreadUtils.threadWithContext(new MonitorMemory(msDelay),
+							"Performance Monitoring Memory Monitor Thread");
 			m_monitorThread.setDaemon(true);
 			m_monitorThread.start();
 		}
@@ -171,24 +175,30 @@ public class AbstractMemMonPerfLoopStartNodeModel extends
 	public DataTableSpec createMonitorTableSpec() {
 		DataColumnSpec[] colSpecs = new DataColumnSpec[8];
 		int colIdx = 0;
-		colSpecs[colIdx++] = new DataColumnSpecCreator("Date and Time",
-				DateAndTimeCell.TYPE).createSpec();
-		colSpecs[colIdx++] = new DataColumnSpecCreator(
-				"Time since start of iteratoin", DateAndTimeCell.TYPE)
-				.createSpec();
-		colSpecs[colIdx++] = new DataColumnSpecCreator("Iteration",
-				IntCell.TYPE).createSpec();
-		colSpecs[colIdx++] = new DataColumnSpecCreator(
-				"System JVM process Memory (MB)", DoubleCell.TYPE).createSpec();
-		colSpecs[colIdx++] = new DataColumnSpecCreator(
-				"Max. Available Memory (MB)", DoubleCell.TYPE).createSpec();
-		colSpecs[colIdx++] = new DataColumnSpecCreator(
-				"Currently Allocated Memory (MB)", DoubleCell.TYPE)
-				.createSpec();
-		colSpecs[colIdx++] = new DataColumnSpecCreator("Used Memory (MB)",
-				DoubleCell.TYPE).createSpec();
-		colSpecs[colIdx++] = new DataColumnSpecCreator("Free Memory (MB)",
-				DoubleCell.TYPE).createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("Date and Time", DateAndTimeCell.TYPE)
+						.createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("Time since start of iteratoin",
+						DateAndTimeCell.TYPE).createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("Iteration", IntCell.TYPE)
+						.createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("System JVM process Memory (MB)",
+						DoubleCell.TYPE).createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("Max. Available Memory (MB)",
+						DoubleCell.TYPE).createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("Currently Allocated Memory (MB)",
+						DoubleCell.TYPE).createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("Used Memory (MB)", DoubleCell.TYPE)
+						.createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("Free Memory (MB)", DoubleCell.TYPE)
+						.createSpec();
 
 		return new DataTableSpec(colSpecs);
 	}
@@ -209,10 +219,10 @@ public class AbstractMemMonPerfLoopStartNodeModel extends
 			m_iterationStartTime = now;
 			m_previousIteration = m_iteration;
 		}
-		cells[colIdx++] = new DateAndTimeCell(new Date().getTime(), true, true,
-				true);
-		cells[colIdx++] = new DateAndTimeCell(now - m_iterationStartTime,
-				false, true, true);
+		cells[colIdx++] =
+				new DateAndTimeCell(new Date().getTime(), true, true, true);
+		cells[colIdx++] = new DateAndTimeCell(now - m_iterationStartTime, false,
+				true, true);
 		cells[colIdx++] = new IntCell(m_iteration);
 		Double mem;
 		try {
@@ -302,6 +312,7 @@ public class AbstractMemMonPerfLoopStartNodeModel extends
 	}
 
 	private class MonitorMemory implements Runnable {
+
 		private final int msDelay;
 		private int rowIdx = 0;
 
@@ -324,8 +335,8 @@ public class AbstractMemMonPerfLoopStartNodeModel extends
 				try {
 					Thread.sleep(msDelay);
 				} catch (InterruptedException e) {
-					m_logger.warn("Monitoring thread interrupted: "
-							+ e.getMessage());
+					m_logger.warn(
+							"Monitoring thread interrupted: " + e.getMessage());
 					break;
 				}
 				synchronized (m_monitoringContainer) {

@@ -67,11 +67,28 @@
             category-path="/community/vernalis/testing/benchmarking"
             factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.memory.PerfMemMonTiming3PortEndNodeFactory">
       </node>
+             <node
+             category-path="/community/vernalis/testing/benchmarking"
+             deprecated="false"
+             factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.FlowVarPerfMonTimingEndNodeFactory">
+       </node>
+       <node
+             category-path="/community/vernalis/testing/benchmarking"
+             deprecated="false"
+             factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.memory.FlowVarPerfMemMonTimingEndNodeFactory">
+       </node>
       <node
-            category-path="/community/vernalis/testing/"
+            category-path="/community/vernalis/testing"
             deprecated="false"
             factory-class="com.vernalis.knime.perfmon.nodes.testing.missingvals.EmptyColumnTestNodeFactory">
       </node>
+      <node
+            category-path="/community/vernalis/testing/benchmarking"
+            factory-class="com.vernalis.knime.perfmon.nodes.loopstart.timing.FlowVarPerfMonTimingStartNodeFactory"/>
+      <node
+            category-path="/community/vernalis/testing/benchmarking"
+            factory-class="com.vernalis.knime.perfmon.nodes.loopstart.timing.memory.FlowVarPerfMemMonTimingStartNodeFactory"/>
+     
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">

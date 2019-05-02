@@ -1,27 +1,29 @@
-/*
- * ------------------------------------------------------------------------
- *  Copyright (C) 2013, Vernalis (R&D) Ltd
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License, Version 3, as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, see <http://www.gnu.org/licenses>.
- * ------------------------------------------------------------------------
- */
+/**
+  * ------------------------------------------------------------------------
+  *  Copyright (C) 2013, 2019 Vernalis (R&D) Ltd
+  *
+  *  This program is free software; you can redistribute it and/or modify
+  *  it under the terms of the GNU General Public License, Version 3, as
+  *  published by the Free Software Foundation.
+  *
+  *  This program is distributed in the hope that it will be useful, but
+  *  WITHOUT ANY WARRANTY; without even the implied warranty of
+  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  *  GNU General Public License for more details.
+  *
+  *  You should have received a copy of the GNU General Public License
+  *  along with this program; if not, see <http://www.gnu.org/licenses>.
+  * ------------------------------------------------------------------------
+  */
 package com.vernalis.nodes.io.txt;
 
 import org.knime.core.data.StringValue;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
+import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentButtonGroup;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 import com.vernalis.io.FileEncodingWithGuess;
@@ -40,7 +42,12 @@ import com.vernalis.io.FileEncodingWithGuess;
 public class LoadTxtNodeDialog extends DefaultNodeSettingsPane {
 
 	/**
-	 * New pane for configuring the LoadAEVs node.
+	 * Settings key and dialog text for remove input column
+	 */
+	private static final String REMOVE_INPUT_COLUMN = "Remove input column";
+
+	/**
+	 * New pane for configuring the Load Text files node.
 	 */
 	@SuppressWarnings("unchecked")
 	protected LoadTxtNodeDialog() {
@@ -48,22 +55,35 @@ public class LoadTxtNodeDialog extends DefaultNodeSettingsPane {
 		createNewGroup("File Paths");
 		addDialogComponent(new DialogComponentColumnNameSelection(
 				new SettingsModelString(LoadTxtNodeModel.CFG_PATH_COLUMN_NAME,
-						null), "Select a column containing the file paths:", 0,
-				true, StringValue.class));
+						null),
+				"Select a column containing the file paths:", 0, true,
+				StringValue.class));
+
+		addDialogComponent(new DialogComponentBoolean(
+				createRemoveInputColumnMdl(), REMOVE_INPUT_COLUMN));
 
 		addDialogComponent(new DialogComponentButtonGroup(
 				new SettingsModelString(LoadTxtNodeModel.CFG_ENCODING,
 						FileEncodingWithGuess.getDefaultMethod()
-								.getActionCommand()), "Select file encoding",
-				true, FileEncodingWithGuess.values()));
-		
+								.getActionCommand()),
+				"Select file encoding", true, FileEncodingWithGuess.values()));
+
 		closeCurrentGroup();
 
 		createNewGroup("Destination Column:");
-		addDialogComponent(new DialogComponentString(new SettingsModelString(
-				LoadTxtNodeModel.CFG_FILE_COLUMN_NAME, "Text File"),
+		addDialogComponent(new DialogComponentString(
+				new SettingsModelString(LoadTxtNodeModel.CFG_FILE_COLUMN_NAME,
+						"Text File"),
 				"Enter name of column for loaded files:"));
 
 		closeCurrentGroup();
+	}
+
+	/**
+	 * @return Settings model for the 'Remove input column' option
+	 */
+	static SettingsModelBoolean createRemoveInputColumnMdl() {
+		// False matches legacy behaviour
+		return new SettingsModelBoolean(REMOVE_INPUT_COLUMN, false);
 	}
 }

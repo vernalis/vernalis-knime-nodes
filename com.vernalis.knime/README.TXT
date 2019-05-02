@@ -17,7 +17,7 @@ For feedback and more information, please contact knime@vernalis.com
 
 Copyright (C) 2012, Vernalis (R&D) Ltd and Enspiral Discovery Limited (PDB Connector)
 and
-Copyright (C) 2013-14, Vernalis (R&D) Ltd (All other content)
+Copyright (C) 2013-19, Vernalis (R&D) Ltd (All other content)
 
 These KNIME Nodes are free software: you can redistribute
 it and/or modify it under the terms of the GNU General Public

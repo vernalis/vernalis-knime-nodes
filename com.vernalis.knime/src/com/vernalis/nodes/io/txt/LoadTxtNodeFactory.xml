@@ -69,6 +69,8 @@
 		<option name="Select filepath column">Select the column containing the paths or URLs to
 			the files
 		</option>
+		<option name="Remove input column">If checked, the input column containing the paths
+			is removed</option>
 		<option name="Select file encoding">Select the required file encoding method. The
 			default 'Guess' option performs as described above. Choosing other
 			options may result in nonsense being returned

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2018, Vernalis (R&D) Ltd
+ * Copyright (c) 2013, 2019, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -96,9 +96,9 @@ public class FileHelpers {
 	 *            Filepath of the file to test
 	 * @return True if the container folder exists
 	 */
-	public static Boolean checkContainerFolderExists(String PathToFile) {
+	public static boolean checkContainerFolderExists(String PathToFile) {
 		File f = new File(PathToFile);
-		f = new File(f.getParent());
+		f = f.getParentFile();
 		return f.exists();
 	}
 
@@ -111,9 +111,14 @@ public class FileHelpers {
 	 * @return True if the folder was successfully created (NB will return False
 	 *         if already exists)
 	 */
-	public static Boolean createContainerFolder(String PathToFile) {
+	public static synchronized boolean createContainerFolder(
+			String PathToFile) {
 		File f = new File(PathToFile);
-		f = new File(f.getParent());
+		f = f.getParentFile();
+		if (f.exists()) {
+			// It now exists, even if it didnt previously!
+			return true;
+		}
 		return f.mkdirs();
 	}
 

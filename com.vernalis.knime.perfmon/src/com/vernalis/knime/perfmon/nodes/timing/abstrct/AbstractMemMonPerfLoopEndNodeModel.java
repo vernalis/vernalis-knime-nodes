@@ -118,12 +118,13 @@ public class AbstractMemMonPerfLoopEndNodeModel
 
 		// Log progress
 		m_logger.info("Iteration " + m_currentIteration + " completed in "
-				+ durationSeconds + " secs.");
-		m_logger.info(
-				"Cumulative total execution time (" + (++m_currentIteration)
-						+ " iterations): " + m_runningTotal + " secs.");
+				+ String.format("%.3f secs.", durationSeconds));
+		m_logger.info("Cumulative total execution time ("
+				+ (++m_currentIteration) + " iterations): "
+				+ String.format("%.3f secs.", m_runningTotal));
 		m_logger.info("Current Mean execution time (" + m_currentIteration
-				+ " iterations): " + m_runningTotal / m_currentIteration);
+				+ " iterations): " + String.format("%.3f secs.",
+						m_runningTotal / m_currentIteration));
 
 		// pushFlowVariableInt("Iteration", m_currentIteration);
 		DataRow newOutRow = createOutputRow(startTime, endTime, durationSeconds,

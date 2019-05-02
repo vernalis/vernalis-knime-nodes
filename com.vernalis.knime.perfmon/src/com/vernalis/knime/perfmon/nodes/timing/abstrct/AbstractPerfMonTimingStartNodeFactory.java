@@ -92,8 +92,8 @@ public class AbstractPerfMonTimingStartNodeFactory
 	 * @param portType
 	 *            The port type
 	 */
-	public AbstractPerfMonTimingStartNodeFactory(int numPorts, boolean isMemMon,
-			PortType portType) {
+	public AbstractPerfMonTimingStartNodeFactory(int numPorts,
+			boolean isMemMon, PortType portType) {
 		this(numPorts, isMemMon, portType, portType.getName());
 	}
 
@@ -109,8 +109,8 @@ public class AbstractPerfMonTimingStartNodeFactory
 	 * @param portTypeDescription
 	 *            The port type as shown in the node description
 	 */
-	public AbstractPerfMonTimingStartNodeFactory(int numPorts, boolean isMemMon,
-			PortType portType, String portTypeDescription) {
+	public AbstractPerfMonTimingStartNodeFactory(int numPorts,
+			boolean isMemMon, PortType portType, String portTypeDescription) {
 		super(true);
 		this.numPorts = numPorts;
 		this.isMemMon = isMemMon;

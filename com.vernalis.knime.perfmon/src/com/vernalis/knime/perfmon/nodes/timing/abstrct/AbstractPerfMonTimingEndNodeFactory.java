@@ -183,6 +183,10 @@ public abstract class AbstractPerfMonTimingEndNodeFactory
 			@Override
 			public String getNodeName() {
 				StringBuilder sb = new StringBuilder("Benchmark End");
+				if (getPortType() != BufferedDataTable.TYPE) {
+					sb.append(" (").append(getPortTypeDescription())
+							.append(')');
+				}
 				if (isMemMon()) {
 					sb.append(" (Memory Monitoring)");
 				}
