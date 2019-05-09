@@ -100,7 +100,7 @@ public class LoadTxtNodeModel extends SimpleStreamableFunctionNodeModel {
 		// column spec of the appended column
 		DataColumnSpec newColSpec =
 				new DataColumnSpecCreator(
-						DataTableSpec.getUniqueColumnName(in,
+						DataTableSpec.getUniqueColumnName(c.createSpec(),
 								m_FilecolumnName.getStringValue()),
 						StringCell.TYPE).createSpec();
 
