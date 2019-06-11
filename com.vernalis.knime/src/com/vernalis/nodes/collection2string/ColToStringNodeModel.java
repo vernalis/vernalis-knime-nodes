@@ -94,8 +94,12 @@ public class ColToStringNodeModel
 				replaceInputsMdl.getBooleanValue() ? "" : " (String)";
 		final DataColumnSpec[] newColSpecs = new DataColumnSpec[colIdx.length];
 		for (int i = 0; i < newColSpecs.length; i++) {
-			String newColName = DataTableSpec.getUniqueColumnName(spec,
-					spec.getColumnSpec(colIdx[i]).getName() + colNameSuffix);
+			String newColName =
+					spec.getColumnSpec(colIdx[i]).getName() + colNameSuffix;
+			if (!replaceInputsMdl.getBooleanValue()) {
+				newColName =
+						DataTableSpec.getUniqueColumnName(spec, newColName);
+			}
 			newColSpecs[i] =
 					new DataColumnSpecCreator(newColName, StringCell.TYPE)
 							.createSpec();
