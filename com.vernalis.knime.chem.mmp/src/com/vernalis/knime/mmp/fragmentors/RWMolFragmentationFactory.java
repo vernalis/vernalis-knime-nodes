@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2015, 2019, Vernalis (R&D) Ltd
  * This program is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License, Version 3, as 
  * published by the Free Software Foundation.
@@ -433,20 +433,31 @@ public class RWMolFragmentationFactory
 				.markForCleanup(component.getAtomWithIdx(
 						newDirectionalBondBeginAtomIdx), localGcWave)
 				.getBonds(), localGcWave);
-		List<Integer> candidateAtomIds = new ArrayList<>();
+		BitSet candidateAtomIds = new BitSet();
+		BitSet aromaticCandidates = new BitSet();
 		for (int j = 0; j < possibleBonds.size(); j++) {
 			Bond bond =
 					getGc().markForCleanup(possibleBonds.get(j), localGcWave);
+			// System.out.println(bond.getBeginAtomIdx() + " <--> "
+			// + bond.getEndAtomIdx() + "\t" + bond.getIsAromatic() + "\t"
+			// + bond.getBondDir() + "\t" + bond.getBondType());
 			if (bond.getBondType() == BondType.SINGLE) {
-				candidateAtomIds.add((int) bond
+				candidateAtomIds.set((int) bond
+						.getOtherAtomIdx(newDirectionalBondBeginAtomIdx));
+			} else if (bond.getBondType() == BondType.AROMATIC) {
+				aromaticCandidates.set((int) bond
 						.getOtherAtomIdx(newDirectionalBondBeginAtomIdx));
 			}
 		}
+
+		if (candidateAtomIds.isEmpty()) {
+			candidateAtomIds.or(aromaticCandidates);
+		}
 		// Pick the bond to the lowest indexed atom
-		Collections.sort(candidateAtomIds);
+		// Collections.sort(candidateAtomIds);
 		// Set arbitrarily a direction for the unassigned bond
 		getGc().markForCleanup(component.getBondBetweenAtoms(
-				newDirectionalBondBeginAtomIdx, candidateAtomIds.get(0)),
+				newDirectionalBondBeginAtomIdx, candidateAtomIds.nextSetBit(0)),
 				localGcWave).setBondDir(BondDir.ENDUPRIGHT);
 	}
 
