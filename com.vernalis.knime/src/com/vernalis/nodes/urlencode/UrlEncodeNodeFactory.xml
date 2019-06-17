@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (c) 2018, Vernalis (R&D) Ltd
+	This program is free software; you can redistribute it and/or modify it
+	under the terms of the GNU General Public License, Version 3, as
+	published by the Free Software Foundation.
+
+	This program is distributed in the hope that it will be useful, but
+	WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="urldencode.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+
+	<name>URL Encode</name>
+
+	<shortDescription>
+		This node URL-encodes strings
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p> This node URL-encodes strings, e.g. those
+				characters other than
+				a-z, A-Z, 0-9 and '.', '-', '*', and '_' have
+				are encoded
+				by two digit
+				hexadecimal representations, e.g. ')'
+				becomes '%29'.
+				Space characters
+				are encoded as '+'.
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+
+		</intro>
+
+
+		<option name="Input Column">The column containing the strings to encode
+		</option>
+		<option name="Removed Input Column">Should the input column be removed?</option>
+		<option name="Output Type">The type of the output column. If URI is selected,
+			no guarantee is made that the contents are valid URIs
+		</option>
+		<option name="Charset encoding">The name of the charset to use for encoding
+		</option>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="Strings">The incoming table of strings</inPort>
+		<outPort
+			index="0"
+			name="URL-Encoded Strings">The table with URL-encoded strings appended
+		</outPort>
+	</ports>
+
+</knimeNode>

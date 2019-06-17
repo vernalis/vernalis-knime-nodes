@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode
+	icon="./col2str.png"
+	type="Manipulator">
+	<name>Collection to String</name>
+
+	<shortDescription>
+		Converts one or more collection (list or set) columns
+		to strings
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>The node converts one or more collection columns to a string
+				representation. Each individual cell in the collection is converted
+				using its 'toString()' method. Missing cells within collections can
+				optionally be skipped. The separator string between cells can be
+				changed. Individual cells can have prefixes and/or suffixes, and the
+				entire collection can have a prefix and/or suffix. Any of these can
+				include 'special' characters e.g. \t (tab), \n (new line) etc., or
+				be left empty
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+		</intro>
+
+		<option name="Collection Columns">The List or Set column(s) to convert to strings
+		</option>
+		<option name="Replace input columns?">Should the input columns be replaced in situ? If
+			not, new String columns will be appended to the table, with the
+			suffix ' (String)' added to their name(s)
+		</option>
+		<option name="Skip missing values in collections?">Should missing value cells in collections be
+			skipped or included in the output String
+		</option>
+		<option name="Prefix">The prefix which is placed at the start of the
+			whole string
+		</option>
+		<option name="Cell Prefix">The prefix which is placed before each individual
+			cell representation
+		</option>
+		<option name="Separator">The character(s) to be placed between each cell
+		</option>
+		<option name="Cell Suffix">The suffix which is placed after each individual
+			cell representation
+		</option>
+		<option name="Suffix">The suffix which is placed at the end of the
+			whole string
+		</option>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="Collection column(s)">Table containing one or more collection (Set or List) columns
+		</inPort>
+		<outPort
+			index="0"
+			name="Stringified Collections">Table containing the input table with selected collection
+			columns converted to Strings
+		</outPort>
+	</ports>
+
+</knimeNode>
