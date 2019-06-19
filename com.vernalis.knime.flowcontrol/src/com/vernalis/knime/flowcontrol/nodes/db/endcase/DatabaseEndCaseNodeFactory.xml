@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./dbEndCase.png" type="Manipulator"
+	xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Database End CASE</name>
+
+	<shortDescription>
+        Database connection End CASE node to collect inactive and active branches and return an active port
+    </shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>This node provides a database connection equivalent of the End IF node.
+			</p>
+			<p>NOTE - if multiple active ports are present, they cannot be
+				combined, and the node behaviour is
+				governed by the settings in the node dialog.
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+		<option name="Select the behaviour when there are multiple active branches">Select the mode behaviour if multiple active
+			branches are terminated by the node.
+		</option>
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="First input port">First input port</inPort>
+		<inPort index="1" name="Second (optional) input port">Second (optional) input port</inPort>
+		<inPort index="2" name="Third (optional) input port">Third (optional) input port</inPort>
+		<outPort index="0" name="Output port">Output port</outPort>
+
+	</ports>
+
+</knimeNode>
