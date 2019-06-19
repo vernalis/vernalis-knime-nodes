@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension point="org.knime.workbench.repository.nodes">
+      <node
+            category-path="/community/vernalis/rcsb"
+            deprecated="true"
+            factory-class="com.vernalis.pdbconnector.PdbConnectorNodeFactory" />
+      <node
+            category-path="/community/vernalis/rcsb"
+            deprecated="true"
+            factory-class="com.vernalis.pdbconnector.PdbConnectorXmlQueryNodeFactory"
+            />
+   	  <node 
+   	  		category-path="/community/vernalis/rcsb" 
+   	  		factory-class="com.vernalis.pdbconnector.nodes.describehet.PdbDescribeHetNodeFactory" />
+	  <node 
+	  		category-path="/community/vernalis/rcsb" 
+			factory-class="com.vernalis.pdbconnector.nodes.smilesquery.PdbSmilesQueryNodeFactory" />
+<node
+      category-path="/community/vernalis/rcsb"
+      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorNodeFactory2"
+      />
+<node
+      category-path="/community/vernalis/rcsb"
+      deprecated="false"
+      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorQueryOnlyNodeFactory"
+     />
+<node
+      category-path="/community/vernalis/rcsb"
+      deprecated="false"
+      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorXmlQueryNodeFactory2"
+     />
+<node
+      category-path="/community/vernalis/rcsb"
+      deprecated="false"
+      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorXmlQueryOnlyNodeFactory"
+      />
+<node
+      category-path="/community/vernalis/rcsb"
+      deprecated="false"
+      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbCustomReportNodeFactory"
+     />
+<node
+      category-path="/community/vernalis/rcsb"
+      deprecated="false"
+      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbQueryBuilderNodeFactory"
+     />
+<node
+      category-path="/community/vernalis/rcsb"
+      deprecated="false"
+      factory-class="com.vernalis.pdbconnector.nodes.combinequery.CombineQueryNodeFactory"
+     />
+      <node
+            category-path="/community/vernalis/rcsb"
+            deprecated="true"
+            factory-class="com.vernalis.rcsb.io.nodes.source.RCSBsDownloadNodeFactory"
+          />
+      <node
+            category-path="/community/vernalis/rcsb"
+            factory-class="com.vernalis.rcsb.io.nodes.source.RCSBsDownload2NodeFactory"
+            />
+      <node
+            after="RCSBsDownloadNodeFactory"
+            category-path="/community/vernalis/rcsb"
+            deprecated="true"
+            factory-class="com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownloadNodeFactory"
+           />
+      <node
+            after="RCSBsDownloadNodeFactory"
+            category-path="/community/vernalis/rcsb"
+            factory-class="com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownload2NodeFactory"
+            />
+</extension>
+   <extension point="org.knime.workbench.repository.categories">
+      <category description="Vernalis Nodes for RCSB query and reporting" icon="icons/RCSB_PDB.png" level-id="rcsb" name="RCSB PDB Tools" path="/community/vernalis/">
+      </category>
+   </extension>
+   <extension
+         point="org.knime.core.NodeFactoryClassMapper">
+      <NodeFactoryClassMapper
+            classMapper="com.vernalis.rcsb.io.helpers.RCSBIONodeFactoryClassMapper">
+      </NodeFactoryClassMapper>
+   </extension>
+</plugin>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2018, Vernalis (R&D) Ltd This program is free software; 
+	you can redistribute it and/or modify it under the terms of the GNU General 
+	Public License, Version 3, as published by the Free Software Foundation. 
+	This program is distributed in the hope that it will be useful, but WITHOUT 
+	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+	FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. 
+	You should have received a copy of the GNU General Public License along with 
+	this program; if not, see <http://www.gnu.org/licenses> -->
+<knimeNode
+	icon="./SpeedySMILES_clean_bonds.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Speedy SMILES Clean Bonds</name>
+
+
+	<shortDescription>
+		Node to clean unnecessary bonds.
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				This node cleans unecessary bonds:
+				<ul>
+					<li>Single bonds - only retained then they are between two aromatic
+						atoms
+					</li>
+					<li>Aromatic bonds - all removed</li>
+				</ul>
+				This is to comply with the suggestion in OpenSMILES that these bond
+				types are implicit, and so the only need for them is for an explicit
+				single bond between two aromatic atoms
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+
+		<option name="Select SMILES column">The SMILES column, containing molecules</option>
+		<option name="Remove input columns">If checked, then the input column is removed
+		</option>
+
+
+	</fullDescription>
+
+
+	<ports>
+		<inPort
+			index="0"
+			name="SMILES">SMILES
+		</inPort>
+
+		<outPort
+			index="0"
+			name="Cleaned">SMILES with bonds cleaned
+		</outPort>
+	</ports>
+
+</knimeNode>
