@@ -14,33 +14,6 @@
  ******************************************************************************/
 package com.vernalis.knime.mmp.nodes.pairgen.abstrct;
 
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createAllowHiliteModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createAllowSelfTransformsModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createFilterByDeltaHACModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createForceSingleAcyclicsModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createFragKeyModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createFragValueModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createGraphDistDblFilterCutoffModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createGraphDistFpColnameModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createGraphDistIntFilterCutoffModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createHACDeltaRangeModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createIDModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createIncludeGraphSimilarityModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createLMinusRModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createLdbRModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createLeftPassThroughColsModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createOutputChangingHACountsModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createOutputHARatiosModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createOutputKeyModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createRMinusLModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createRdbLModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createRightPassThroughColsModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createShowDeltaHACModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createShowReverseTransformsModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createShowSmartsTransformsModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createSortedKeysModel;
-import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createValueGraphDistFilterModel;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -126,56 +99,101 @@ import com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage;
 import com.vernalis.knime.mmp.transform.TransformUtils;
 import com.vernalis.knime.parallel.SingleTableParallelResult;
 
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createAllowHiliteModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createAllowSelfTransformsModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createFilterByDeltaHACModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createForceSingleAcyclicsModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createFragKeyModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createFragValueModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createGraphDistDblFilterCutoffModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createGraphDistFpColnameModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createGraphDistIntFilterCutoffModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createHACDeltaRangeModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createIDModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createIncludeGraphSimilarityModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createLMinusRModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createLdbRModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createLeftPassThroughColsModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createOutputChangingHACountsModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createOutputHARatiosModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createOutputKeyModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createRMinusLModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createRdbLModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createRightPassThroughColsModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createShowDeltaHACModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createShowReverseTransformsModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createShowSmartsTransformsModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createSortedKeysModel;
+import static com.vernalis.knime.mmp.nodes.pairgen.abstrct.AbstractMatchedPairsFromFragmentsNodeDialog.createValueGraphDistFilterModel;
+
 /**
  * The node model for the Abstract matched pairs from fragments node
  * 
  * @author s.roughley
  * 
  */
-abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeModel {
+abstract public class AbstractMatchedPairsFromFragmentsNodeModel
+		extends NodeModel {
 
 	protected final SettingsModelString m_FragKeyColName = createFragKeyModel();
 	protected final SettingsModelBoolean m_keysAreSorted;
 	protected final SettingsModelString m_IDColName = createIDModel();
-	protected final SettingsModelString m_FragValColName = createFragValueModel();
+	protected final SettingsModelString m_FragValColName =
+			createFragValueModel();
 	protected final SettingsModelBoolean m_hiliteMdl = createAllowHiliteModel();
-	protected final SettingsModelBoolean m_filterByDeltaHACMdl = createFilterByDeltaHACModel();
-	protected final SettingsModelIntegerRange m_hacDeltaRangeMdl = createHACDeltaRangeModel();
-	protected final SettingsModelBoolean m_showHACDeltaMdl = createShowDeltaHACModel();
-	protected final SettingsModelString m_GraphDistCutoffType = createValueGraphDistFilterModel();
+	protected final SettingsModelBoolean m_filterByDeltaHACMdl =
+			createFilterByDeltaHACModel();
+	protected final SettingsModelIntegerRange m_hacDeltaRangeMdl =
+			createHACDeltaRangeModel();
+	protected final SettingsModelBoolean m_showHACDeltaMdl =
+			createShowDeltaHACModel();
+	protected final SettingsModelString m_GraphDistCutoffType =
+			createValueGraphDistFilterModel();
 	protected final SettingsModelDoubleBoundedRerangable m_GraphDistDblCutOff =
 			createGraphDistDblFilterCutoffModel();
 	protected final SettingsModelIntegerBoundedRerangable m_GraphDistIntCutOff =
 			createGraphDistIntFilterCutoffModel();
-	protected final SettingsModelString m_graphDistFpColName = createGraphDistFpColnameModel();
-	protected final SettingsModelBoolean m_inclGraphDistDists = createIncludeGraphSimilarityModel();
-	protected final SettingsModelBoolean m_includeUnchangingPortions = createOutputKeyModel();
-	protected final SettingsModelBoolean m_includeHACount = createOutputChangingHACountsModel();
-	protected final SettingsModelBoolean m_includeHARatio = createOutputHARatiosModel();
+	protected final SettingsModelString m_graphDistFpColName =
+			createGraphDistFpColnameModel();
+	protected final SettingsModelBoolean m_inclGraphDistDists =
+			createIncludeGraphSimilarityModel();
+	protected final SettingsModelBoolean m_includeUnchangingPortions =
+			createOutputKeyModel();
+	protected final SettingsModelBoolean m_includeHACount =
+			createOutputChangingHACountsModel();
+	protected final SettingsModelBoolean m_includeHARatio =
+			createOutputHARatiosModel();
 	protected final SettingsModelBoolean m_showReverseTransforms =
 			createShowReverseTransformsModel();
 	protected final SettingsModelBoolean m_includeReactionSMARTS =
 			createShowSmartsTransformsModel();
-	protected final SettingsModelBoolean m_requireAcyclicSMARTS = createForceSingleAcyclicsModel();
-	protected final SettingsModelBoolean m_AllowSelfTransforms = createAllowSelfTransformsModel();
-	protected final SettingsModelColumnFilter2 m_LeftMinusRightColumns = createLMinusRModel();
-	protected final SettingsModelColumnFilter2 m_RightMinusLeftColumns = createRMinusLModel();
-	protected final SettingsModelColumnFilter2 m_LeftDivbyRightColumns = createLdbRModel();
-	protected final SettingsModelColumnFilter2 m_RightDivbyLeftColumns = createRdbLModel();
+	protected final SettingsModelBoolean m_requireAcyclicSMARTS =
+			createForceSingleAcyclicsModel();
+	protected final SettingsModelBoolean m_AllowSelfTransforms =
+			createAllowSelfTransformsModel();
+	protected final SettingsModelColumnFilter2 m_LeftMinusRightColumns =
+			createLMinusRModel();
+	protected final SettingsModelColumnFilter2 m_RightMinusLeftColumns =
+			createRMinusLModel();
+	protected final SettingsModelColumnFilter2 m_LeftDivbyRightColumns =
+			createLdbRModel();
+	protected final SettingsModelColumnFilter2 m_RightDivbyLeftColumns =
+			createRdbLModel();
 	protected final SettingsModelColumnFilter2 m_LeftPassThroughColumns =
 			createLeftPassThroughColsModel();
 	protected final SettingsModelColumnFilter2 m_RightPassThroughColumns =
 			createRightPassThroughColsModel();
 
 	/** The NodeLogger Instance */
-	static final protected NodeLogger m_logger =
-			NodeLogger.getLogger(AbstractMatchedPairsFromFragmentsNodeModel.class);
+	static final protected NodeLogger m_logger = NodeLogger
+			.getLogger(AbstractMatchedPairsFromFragmentsNodeModel.class);
 
 	/** The output table spec */
 	protected DataTableSpec m_outSpec;
 	protected int numCols;
-	protected int[] leftKeepColIdxs, rightWithLeftKeepColIdxs, rightOnlyKeepColIdxs, lMinRColIdxs,
-			rMinLColIdxs, lDivRColIdxs, rDivLColIdxs;
+	protected int[] leftKeepColIdxs, rightWithLeftKeepColIdxs,
+			rightOnlyKeepColIdxs, lMinRColIdxs, rMinLColIdxs, lDivRColIdxs,
+			rDivLColIdxs;
 
 	protected IPreferenceStore prefStore = null;
 
@@ -188,7 +206,8 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 
 	// Highlighting fields
 	/** Mapping from the input row to fragments */
-	protected final HiLiteTranslator topHiLiteTranslator = new HiLiteTranslator();
+	protected final HiLiteTranslator topHiLiteTranslator =
+			new HiLiteTranslator();
 	protected final HiLiteTranslator bottomHiLiteTranslator;
 	protected static final String HILITE_KEY = "HiLiteMapping";
 	protected static final String SETTINGS_FILE_NAME = "internals";
@@ -200,7 +219,8 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 	 * @param presortTableByKey
 	 *            Should the table be presorted by key
 	 */
-	public AbstractMatchedPairsFromFragmentsNodeModel(boolean presortTableByKey) {
+	public AbstractMatchedPairsFromFragmentsNodeModel(
+			boolean presortTableByKey) {
 		this(presortTableByKey, false);
 	}
 
@@ -237,32 +257,38 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				m_hacDeltaRangeMdl.setEnabled(m_filterByDeltaHACMdl.getBooleanValue());
-				m_showHACDeltaMdl.setBooleanValue(m_filterByDeltaHACMdl.getBooleanValue());
+				m_hacDeltaRangeMdl
+						.setEnabled(m_filterByDeltaHACMdl.getBooleanValue());
+				m_showHACDeltaMdl.setBooleanValue(
+						m_filterByDeltaHACMdl.getBooleanValue());
 			}
 		});
 		m_hacDeltaRangeMdl.setEnabled(m_filterByDeltaHACMdl.getBooleanValue());
-		m_showHACDeltaMdl.setBooleanValue(m_filterByDeltaHACMdl.getBooleanValue());
+		m_showHACDeltaMdl
+				.setBooleanValue(m_filterByDeltaHACMdl.getBooleanValue());
 
 		m_includeReactionSMARTS.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				m_requireAcyclicSMARTS.setEnabled(m_includeReactionSMARTS.getBooleanValue());
+				m_requireAcyclicSMARTS
+						.setEnabled(m_includeReactionSMARTS.getBooleanValue());
 
 			}
 		});
-		m_requireAcyclicSMARTS.setEnabled(m_includeReactionSMARTS.getBooleanValue());
+		m_requireAcyclicSMARTS
+				.setEnabled(m_includeReactionSMARTS.getBooleanValue());
 
-		prefStore = MatchedPairsMultipleCutsNodePlugin.getDefault().getPreferenceStore();
+		prefStore = MatchedPairsMultipleCutsNodePlugin.getDefault()
+				.getPreferenceStore();
 		prefStore.addPropertyChangeListener(new IPropertyChangeListener() {
 
 			@Override
 			public void propertyChange(PropertyChangeEvent event) {
 
 				// Re-load the settings
-				verboseLogging =
-						prefStore.getBoolean(MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING);
+				verboseLogging = prefStore.getBoolean(
+						MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING);
 				queueSize = MatchedPairPreferencePage.getQueueSize();
 				numThreads = MatchedPairPreferencePage.getThreadsCount();
 
@@ -279,7 +305,8 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 			}
 		});
 
-		verboseLogging = prefStore.getBoolean(MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING);
+		verboseLogging = prefStore
+				.getBoolean(MatchedPairPreferencePage.MMP_PREF_VERBOSE_LOGGING);
 		queueSize = MatchedPairPreferencePage.getQueueSize();
 		numThreads = MatchedPairPreferencePage.getThreadsCount();
 
@@ -312,7 +339,8 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 		final BufferedDataContainer dc0 = exec.createDataContainer(m_outSpec);
 
 		// Empty Tables
-		if (inData[0].size() == 0 || (inData.length > 1 && inData[1].size() == 0)) {
+		if (inData[0].size() == 0
+				|| (inData.length > 1 && inData[1].size() == 0)) {
 			dc0.close();
 			return new BufferedDataTable[] { dc0.getTable() };
 		}
@@ -322,10 +350,12 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 		ExecutionContext exec1;
 		if (presortTableByKey && !m_keysAreSorted.getBooleanValue()) {
 			tables = new BufferedDataTable[inData.length];
-			exec.setMessage("Pre-Sorting table(s) by fragmentation keys / values");
+			exec.setMessage(
+					"Pre-Sorting table(s) by fragmentation keys / values");
 			for (int i = 0; i < inData.length; i++) {
 				double tableProg = 0.25 / inData.length;
-				ExecutionContext exec0 = exec.createSubExecutionContext(tableProg);
+				ExecutionContext exec0 =
+						exec.createSubExecutionContext(tableProg);
 				tables[i] = getSortedTable(inData[i], exec0);
 			}
 			exec1 = exec.createSubExecutionContext(0.75);
@@ -336,46 +366,54 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 
 		// Col IDxs
 		DataTableSpec inSpec = inData[0].getDataTableSpec();
-		final int keyColIdx = inSpec.findColumnIndex(m_FragKeyColName.getStringValue());
-		final int valColIdx = inSpec.findColumnIndex(m_FragValColName.getStringValue());
-		final int idColIdx = inSpec.findColumnIndex(m_IDColName.getStringValue());
+		final int keyColIdx =
+				inSpec.findColumnIndex(m_FragKeyColName.getStringValue());
+		final int valColIdx =
+				inSpec.findColumnIndex(m_FragValColName.getStringValue());
+		final int idColIdx =
+				inSpec.findColumnIndex(m_IDColName.getStringValue());
 		final int graphFpColIdx = m_graphDistFpColName.isEnabled()
-				? inSpec.findColumnIndex(m_graphDistFpColName.getStringValue()) : -1;
+				? inSpec.findColumnIndex(m_graphDistFpColName.getStringValue())
+				: -1;
 
 		// If we are a presorting table implementation then we are going to
 		// process the table in chunks of matching keys, otherwise we are going
 		// row-wise
-		GroupIterableDataTable[] groupTables = new GroupIterableDataTable[tables.length];
+		GroupIterableDataTable[] groupTables =
+				new GroupIterableDataTable[tables.length];
 		for (int i = 0; i < tables.length; i++) {
-			groupTables[i] =
-					new GroupIterableDataTable(tables[i], presortTableByKey ? keyColIdx : -1);
+			groupTables[i] = new GroupIterableDataTable(tables[i],
+					presortTableByKey ? keyColIdx : -1);
 		}
 
 		Map<RowKey, Set<RowKey>> topMapping = new HashMap<>();
-		Map<RowKey, Set<RowKey>> bottomMapping = hasTwoInputs ? new HashMap<>() : topMapping;
+		Map<RowKey, Set<RowKey>> bottomMapping =
+				hasTwoInputs ? new HashMap<>() : topMapping;
 		DuplicateChecker dupCheck = new DuplicateChecker();
 
-		exec.setMessage(
-				"Generating pairs using " + numThreads + " threads (queue size " + queueSize + ")");
-		m_logger.info(
-				"Generating pairs using " + numThreads + " threads (queue size " + queueSize + ")");
+		exec.setMessage("Generating pairs using " + numThreads
+				+ " threads (queue size " + queueSize + ")");
+		m_logger.info("Generating pairs using " + numThreads
+				+ " threads (queue size " + queueSize + ")");
 		if (!presortTableByKey || groupTables.length == 1) {
 			final long numRows = inData[groupTables.length - 1].size();
 			MultiThreadWorker<List<DataRow>, List<SingleTableParallelResult>> processor =
-					new MultiThreadWorker<List<DataRow>, List<SingleTableParallelResult>>(queueSize,
-							numThreads) {
+					new MultiThreadWorker<List<DataRow>, List<SingleTableParallelResult>>(
+							queueSize, numThreads) {
+
 						long rowsDone = 0;
 						double numComparisons = numRows * (numRows - 1);
 
 						@Override
 						protected void processFinished(ComputationTask task)
-								throws ExecutionException, CancellationException,
-								InterruptedException {
+								throws ExecutionException,
+								CancellationException, InterruptedException {
 
 							// task.get().stream().forEachOrdered(x ->
 							// x.addRowsToTable(dc0));
 
-							for (SingleTableParallelResult outTable : task.get()) {
+							for (SingleTableParallelResult outTable : task
+									.get()) {
 								for (DataRow outRow : outTable) {
 									RowKey toKey = outRow.getKey();
 									int idx = 0;
@@ -386,38 +424,46 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 											break;
 										} catch (DuplicateKeyException e) {
 											toKey = new RowKey(idx == 0
-													? toKey.getString() + "_(#" + (idx++) + ")"
-													: toKey.getString().replaceAll(
-															"(.*_\\(#)[\\d]+\\)",
-															"$1" + (idx++) + ")"));
+													? toKey.getString() + "_(#"
+															+ (idx++) + ")"
+													: toKey.getString()
+															.replaceAll(
+																	"(.*_\\(#)[\\d]+\\)",
+																	"$1" + (idx++)
+																			+ ")"));
 											changed = true;
 										} catch (IOException e) {
 											throw new ExecutionException(e);
 										}
 									}
 									if (changed) {
-										dc0.addRowToTable(new DefaultRow(toKey, outRow));
+										dc0.addRowToTable(
+												new DefaultRow(toKey, outRow));
 									} else {
 										dc0.addRowToTable(outRow);
 									}
 									if (m_hiliteMdl.getBooleanValue()) {
 										RowKey lKey, rKey;
 										if (outRow instanceof KnowsParentRowIDsDataRow) {
-											lKey = ((KnowsParentRowIDsDataRow) outRow).getLeftKey();
+											lKey = ((KnowsParentRowIDsDataRow) outRow)
+													.getLeftKey();
 											rKey = ((KnowsParentRowIDsDataRow) outRow)
 													.getRightKey();
 										} else {
 											// we have to try to guess, which is
 											// dangerous...
-											final String[] keyParts = toKey.getString().split("_");
+											final String[] keyParts = toKey
+													.getString().split("_");
 											lKey = new RowKey(keyParts[0]);
 											rKey = new RowKey(keyParts[1]);
 										}
-										HashSet<RowKey> topSet = new HashSet<>();
+										HashSet<RowKey> topSet =
+												new HashSet<>();
 										topSet.add(lKey);
 										topMapping.put(toKey, topSet);
 										if (!bottomMapping.containsKey(toKey)) {
-											bottomMapping.put(toKey, new HashSet<>());
+											bottomMapping.put(toKey,
+													new HashSet<>());
 										}
 										bottomMapping.get(toKey).add(rKey);
 									}
@@ -432,12 +478,17 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 							// Otherwise we assume in grouping that the progress
 							// is more
 							// linear (well, we cant really do much else)
-							double progress = presortTableByKey || inData.length > 1
-									? 1.0 * rowsDone / numRows
-									: rowsDone * (rowsDone - 1) / numComparisons;
+							double progress =
+									presortTableByKey || inData.length > 1
+											? 1.0 * rowsDone / numRows
+											: rowsDone * (rowsDone - 1)
+													/ numComparisons;
 							exec1.setProgress(progress,
-									"Processed " + rowsDone + " of " + numRows + (presortTableByKey
-											? " (" + task.getIndex() + " key sets)" : ""));
+									"Processed " + rowsDone + " of " + numRows
+											+ (presortTableByKey
+													? " (" + task.getIndex()
+															+ " key sets)"
+													: ""));
 							try {
 								exec1.checkCanceled();
 							} catch (CanceledExecutionException e) {
@@ -446,9 +497,10 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 						}
 
 						@Override
-						protected List<SingleTableParallelResult> compute(List<DataRow> in,
-								long index) throws Exception {
-							List<SingleTableParallelResult> retVal = new ArrayList<>();
+						protected List<SingleTableParallelResult> compute(
+								List<DataRow> in, long index) throws Exception {
+							List<SingleTableParallelResult> retVal =
+									new ArrayList<>();
 							if (presortTableByKey && in.size() == 1) {
 								// Only 1 row means no pairs possible - ~2.5%
 								// time
@@ -460,8 +512,10 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 								// against
 								// rest
 								// of group or whole table
-								retVal.add(processRow(row, presortTableByKey ? in : tables[0],
-										keyColIdx, valColIdx, idColIdx, graphFpColIdx, exec));
+								retVal.add(processRow(row,
+										presortTableByKey ? in : tables[0],
+										keyColIdx, valColIdx, idColIdx,
+										graphFpColIdx, exec));
 								exec1.checkCanceled();
 							}
 							return retVal;
@@ -471,7 +525,8 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 			try {
 				processor.run(groupTables[groupTables.length - 1]);
 			} catch (InterruptedException e) {
-				CanceledExecutionException cee = new CanceledExecutionException(e.getMessage());
+				CanceledExecutionException cee =
+						new CanceledExecutionException(e.getMessage());
 				cee.initCause(e);
 				throw cee;
 			} catch (ExecutionException e) {
@@ -491,19 +546,22 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 			MultiThreadWorker<Pair<List<DataRow>, List<DataRow>>, List<SingleTableParallelResult>> processor =
 					new MultiThreadWorker<Pair<List<DataRow>, List<DataRow>>, List<SingleTableParallelResult>>(
 							queueSize, numThreads) {
+
 						long rowsDone = 0;
 
 						@Override
 						protected List<SingleTableParallelResult> compute(
-								Pair<List<DataRow>, List<DataRow>> in, long index)
-								throws Exception {
-							List<SingleTableParallelResult> retVal = new ArrayList<>();
+								Pair<List<DataRow>, List<DataRow>> in,
+								long index) throws Exception {
+							List<SingleTableParallelResult> retVal =
+									new ArrayList<>();
 							for (DataRow row : in.getFirst()) {
 								// Process query table rows (1st in pair, 2nd
 								// input) against reference table(2nd in pair,
 								// 1st input)
-								retVal.add(processRow(row, in.getSecond(), keyColIdx, valColIdx,
-										idColIdx, graphFpColIdx, exec));
+								retVal.add(processRow(row, in.getSecond(),
+										keyColIdx, valColIdx, idColIdx,
+										graphFpColIdx, exec));
 								exec1.checkCanceled();
 							}
 							return retVal;
@@ -512,9 +570,10 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 						@Override
 						protected void processFinished(
 								MultiThreadWorker<Pair<List<DataRow>, List<DataRow>>, List<SingleTableParallelResult>>.ComputationTask task)
-								throws ExecutionException, CancellationException,
-								InterruptedException {
-							for (SingleTableParallelResult outTable : task.get()) {
+								throws ExecutionException,
+								CancellationException, InterruptedException {
+							for (SingleTableParallelResult outTable : task
+									.get()) {
 								for (DataRow outRow : outTable) {
 									RowKey toKey = outRow.getKey();
 									int idx = 0;
@@ -525,38 +584,46 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 											break;
 										} catch (DuplicateKeyException e) {
 											toKey = new RowKey(idx == 0
-													? toKey.getString() + "_(#" + (idx++) + ")"
-													: toKey.getString().replaceAll(
-															"(.*_\\(#)[\\d]+\\)",
-															"$1" + (idx++) + ")"));
+													? toKey.getString() + "_(#"
+															+ (idx++) + ")"
+													: toKey.getString()
+															.replaceAll(
+																	"(.*_\\(#)[\\d]+\\)",
+																	"$1" + (idx++)
+																			+ ")"));
 											changed = true;
 										} catch (IOException e) {
 											throw new ExecutionException(e);
 										}
 									}
 									if (changed) {
-										dc0.addRowToTable(new DefaultRow(toKey, outRow));
+										dc0.addRowToTable(
+												new DefaultRow(toKey, outRow));
 									} else {
 										dc0.addRowToTable(outRow);
 									}
 									if (m_hiliteMdl.getBooleanValue()) {
 										RowKey lKey, rKey;
 										if (outRow instanceof KnowsParentRowIDsDataRow) {
-											lKey = ((KnowsParentRowIDsDataRow) outRow).getLeftKey();
+											lKey = ((KnowsParentRowIDsDataRow) outRow)
+													.getLeftKey();
 											rKey = ((KnowsParentRowIDsDataRow) outRow)
 													.getRightKey();
 										} else {
 											// we have to try to guess, which is
 											// dangerous...
-											final String[] keyParts = toKey.getString().split("_");
+											final String[] keyParts = toKey
+													.getString().split("_");
 											lKey = new RowKey(keyParts[0]);
 											rKey = new RowKey(keyParts[1]);
 										}
-										HashSet<RowKey> topSet = new HashSet<>();
+										HashSet<RowKey> topSet =
+												new HashSet<>();
 										topSet.add(lKey);
 										topMapping.put(toKey, topSet);
 										if (!bottomMapping.containsKey(toKey)) {
-											bottomMapping.put(toKey, new HashSet<>());
+											bottomMapping.put(toKey,
+													new HashSet<>());
 										}
 										bottomMapping.get(toKey).add(rKey);
 									}
@@ -566,8 +633,11 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 							rowsDone += task.getInput().getFirst().size();
 							double progress = 1.0 * rowsDone / numRows;
 							exec1.setProgress(progress,
-									"Processed " + rowsDone + " of " + numRows + (presortTableByKey
-											? " (" + task.getIndex() + " key sets)" : ""));
+									"Processed " + rowsDone + " of " + numRows
+											+ (presortTableByKey
+													? " (" + task.getIndex()
+															+ " key sets)"
+													: ""));
 							try {
 								exec1.checkCanceled();
 							} catch (CanceledExecutionException e) {
@@ -580,39 +650,51 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 				// We define a comparator which performs comparison on the
 				// Smiles String of the Fragmentation key of the first entry in
 				// two lists
-				Comparator<List<DataRow>> comp = new Comparator<List<DataRow>>() {
+				Comparator<List<DataRow>> comp =
+						new Comparator<List<DataRow>>() {
 
-					@Override
-					public int compare(List<DataRow> leftRows, List<DataRow> rightRows) {
-						// We want to know that they have the same Fragment Key.
-						// As they are both grouping iterators we check the
-						// first row
-						// By definition neither list can be empty so we can
-						// safely use get(0)
-						DataCell leftKeyCell = leftRows.get(0).getCell(keyColIdx);
-						DataCell rightKeyCell = rightRows.get(0).getCell(keyColIdx);
-						if (leftKeyCell.isMissing() && rightKeyCell.isMissing()) {
-							return 0;
-						}
-						if (leftKeyCell.isMissing()) {
-							// missing is high - we used sortMissingToEnd!
-							return +1;
-						}
-						if (rightKeyCell.isMissing()) {
-							return -1;
-						}
-						// Now just compare be SMILES
-						return ((SmilesValue) leftKeyCell).getSmilesValue()
-								.compareTo(((SmilesValue) rightKeyCell).getSmilesValue());
-					}
-				};
+							@Override
+							public int compare(List<DataRow> leftRows,
+									List<DataRow> rightRows) {
+								// We want to know that they have the same
+								// Fragment Key.
+								// As they are both grouping iterators we check
+								// the
+								// first row
+								// By definition neither list can be empty so we
+								// can
+								// safely use get(0)
+								DataCell leftKeyCell =
+										leftRows.get(0).getCell(keyColIdx);
+								DataCell rightKeyCell =
+										rightRows.get(0).getCell(keyColIdx);
+								if (leftKeyCell.isMissing()
+										&& rightKeyCell.isMissing()) {
+									return 0;
+								}
+								if (leftKeyCell.isMissing()) {
+									// missing is high - we used
+									// sortMissingToEnd!
+									return +1;
+								}
+								if (rightKeyCell.isMissing()) {
+									return -1;
+								}
+								// Now just compare be SMILES
+								return ((SmilesValue) leftKeyCell)
+										.getSmilesValue()
+										.compareTo(((SmilesValue) rightKeyCell)
+												.getSmilesValue());
+							}
+						};
 				// Create a pairwise iterator which 'locks' the two incoming
 				// table iterators together by their fragmentation keys
-				PairwiseIterable<List<DataRow>> pairs =
-						new PairwiseIterable<>(groupTables[1], groupTables[0], comp);
+				PairwiseIterable<List<DataRow>> pairs = new PairwiseIterable<>(
+						groupTables[1], groupTables[0], comp);
 				processor.run(pairs);
 			} catch (InterruptedException e) {
-				CanceledExecutionException cee = new CanceledExecutionException(e.getMessage());
+				CanceledExecutionException cee =
+						new CanceledExecutionException(e.getMessage());
 				cee.initCause(e);
 				throw cee;
 			} catch (ExecutionException e) {
@@ -631,7 +713,8 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 		if (m_hiliteMdl.getBooleanValue()) {
 			topHiLiteTranslator.setMapper(new DefaultHiLiteMapper(topMapping));
 			if (hasTwoInputs) {
-				bottomHiLiteTranslator.setMapper(new DefaultHiLiteMapper(bottomMapping));
+				bottomHiLiteTranslator
+						.setMapper(new DefaultHiLiteMapper(bottomMapping));
 			}
 		}
 		return new BufferedDataTable[] { dc0.getTable() };
@@ -650,14 +733,15 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 	 * @throws CanceledExecutionException
 	 *             if the sorting was cancelled by the user
 	 */
-	protected BufferedDataTable getSortedTable(final BufferedDataTable inDataTable,
-			final ExecutionContext exec) throws CanceledExecutionException {
+	protected BufferedDataTable getSortedTable(
+			final BufferedDataTable inDataTable, final ExecutionContext exec)
+			throws CanceledExecutionException {
 		exec.setMessage("Pre-Sorting table by Fragment key");
 		List<String> sortCols = new ArrayList<>();
 		sortCols.add(m_FragKeyColName.getStringValue());
 		sortCols.add(m_FragValColName.getStringValue());
-		BufferedDataTableSorter sorter = new BufferedDataTableSorter(inDataTable, sortCols,
-				new boolean[] { true, true }, false);
+		BufferedDataTableSorter sorter = new BufferedDataTableSorter(
+				inDataTable, sortCols, new boolean[] { true, true }, false);
 		return sorter.sort(exec);
 	}
 
@@ -686,16 +770,19 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 	 *         rightRows
 	 * @throws CanceledExecutionException
 	 */
-	protected SingleTableParallelResult processRow(DataRow leftRow, Iterable<DataRow> rightRows,
-			int keyColIdx, int valColIdx, int idColIdx, int graphFPColIdx, ExecutionContext exec)
+	protected SingleTableParallelResult processRow(DataRow leftRow,
+			Iterable<DataRow> rightRows, int keyColIdx, int valColIdx,
+			int idColIdx, int graphFPColIdx, ExecutionContext exec)
 			throws CanceledExecutionException {
-		SingleTableParallelResult retVal = new SingleTableParallelResult(exec, m_outSpec);
+		SingleTableParallelResult retVal =
+				new SingleTableParallelResult(exec, m_outSpec);
 
 		DataCell leftKeyCell = leftRow.getCell(keyColIdx);
 		DataCell leftValCell = leftRow.getCell(valColIdx);
 		DataCell leftIDCell = leftRow.getCell(idColIdx);
 
-		if (leftKeyCell.isMissing() || leftValCell.isMissing() || leftIDCell.isMissing()) {
+		if (leftKeyCell.isMissing() || leftValCell.isMissing()
+				|| leftIDCell.isMissing()) {
 			// Skip rows with missing keys or values
 			return retVal;
 		}
@@ -712,13 +799,14 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 
 		// Get the Left ID and key
 		String leftID = ((StringValue) leftIDCell).getStringValue();
-		SimpleFragmentKey leftKey =
-				new SimpleFragmentKey(((SmilesValue) leftKeyCell).getSmilesValue());
+		SimpleFragmentKey leftKey = new SimpleFragmentKey(
+				((SmilesValue) leftKeyCell).getSmilesValue());
 
+		// TODO: Maybe check here for leftKey being 'empty'?
 		applyFingerprintToKey(leftKey, leftRow);
 
-		SimpleFragmentValue leftVal =
-				new SimpleFragmentValue(((SmilesValue) leftValCell).getSmilesValue(), leftID, true);
+		SimpleFragmentValue leftVal = new SimpleFragmentValue(
+				((SmilesValue) leftValCell).getSmilesValue(), leftID, true);
 
 		int leftHAC = leftVal.getNumberChangingAtoms();
 
@@ -728,12 +816,14 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 		DataRow rightRow;
 		// Loop through the right rows (the reference table in 2 table versions)
 		while (iter.hasNext()
-				&& (!(rightRow = iter.next()).getKey().equals(leftRow.getKey()) || hasTwoInputs)) {
+				&& (!(rightRow = iter.next()).getKey().equals(leftRow.getKey())
+						|| hasTwoInputs)) {
 			DataCell rightKeyCell = rightRow.getCell(keyColIdx);
 			DataCell rightValCell = rightRow.getCell(valColIdx);
 			DataCell rightIDCell = rightRow.getCell(idColIdx);
 
-			if (rightKeyCell.isMissing() || rightValCell.isMissing() || rightIDCell.isMissing()) {
+			if (rightKeyCell.isMissing() || rightValCell.isMissing()
+					|| rightIDCell.isMissing()) {
 				// Skip rows with missing keys or values
 				continue;
 			}
@@ -741,12 +831,13 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 			// Get the Right ID, key and Fingerprints
 			String rightID = ((StringValue) rightIDCell).getStringValue();
 
-			if (leftID.equals(rightID) && !m_AllowSelfTransforms.getBooleanValue()) {
+			if (leftID.equals(rightID)
+					&& !m_AllowSelfTransforms.getBooleanValue()) {
 				continue;
 			}
 
-			SimpleFragmentKey rightKey =
-					new SimpleFragmentKey(((SmilesValue) rightKeyCell).getSmilesValue());
+			SimpleFragmentKey rightKey = new SimpleFragmentKey(
+					((SmilesValue) rightKeyCell).getSmilesValue());
 
 			if (leftKey.getNumComponents() != rightKey.getNumComponents()) {
 				continue;
@@ -759,7 +850,8 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 			}
 
 			SimpleFragmentValue rightVal = new SimpleFragmentValue(
-					((SmilesValue) rightValCell).getSmilesValue(), rightID, true);
+					((SmilesValue) rightValCell).getSmilesValue(), rightID,
+					true);
 			if (leftVal.equals(rightVal)) {
 				// Everything is valid, but this is not a 'transform'!
 				continue;
@@ -777,7 +869,8 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 					// If reverse transforms are allowed we need to check fully
 					// later
 					int deltaHAC = Math.abs(rightHAC - leftHAC);
-					if (deltaHAC > Math.max(Math.abs(m_hacDeltaRangeMdl.getMaxRange()),
+					if (deltaHAC > Math.max(
+							Math.abs(m_hacDeltaRangeMdl.getMaxRange()),
 							Math.abs(m_hacDeltaRangeMdl.getMinRange()))) {
 						// Too big a change in HAC - cant pass
 						continue;
@@ -792,17 +885,20 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 					continue;
 				}
 				rightGraphFP = (ByteVectorValue) rightGraphDistFPCell;
-				Number dOrS = graphDistFPComparisonType.calculateDistSim(leftGraphFP, rightGraphFP);
+				Number dOrS = graphDistFPComparisonType
+						.calculateDistSim(leftGraphFP, rightGraphFP);
 				if (graphDistFPComparisonType.isDistance()) {
 					// Distance
 					if (graphDistFPComparisonType.isInteger()) {
 						// Int
-						if (dOrS.intValue() > m_GraphDistIntCutOff.getIntValue()) {
+						if (dOrS.intValue() > m_GraphDistIntCutOff
+								.getIntValue()) {
 							continue;
 						}
 					} else {
 						// Double
-						if (dOrS.doubleValue() > m_GraphDistDblCutOff.getDoubleValue()) {
+						if (dOrS.doubleValue() > m_GraphDistDblCutOff
+								.getDoubleValue()) {
 							continue;
 						}
 					}
@@ -810,12 +906,14 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 					// Similarity
 					if (graphDistFPComparisonType.isInteger()) {
 						// Int
-						if (dOrS.intValue() < m_GraphDistIntCutOff.getIntValue()) {
+						if (dOrS.intValue() < m_GraphDistIntCutOff
+								.getIntValue()) {
 							continue;
 						}
 					} else {
 						// Double
-						if (dOrS.doubleValue() < m_GraphDistDblCutOff.getDoubleValue()) {
+						if (dOrS.doubleValue() < m_GraphDistDblCutOff
+								.getDoubleValue()) {
 							continue;
 						}
 					}
@@ -827,24 +925,28 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 			// required by the user settings, and so we can consider
 			// whether the two rows are a pair
 			applyFingerprintToKey(rightKey, rightRow);
-			if (rowsArePair(leftRow, rightRow, leftKey, rightKey, leftVal, rightVal, leftID,
-					rightID)) {
+			if (rowsArePair(leftRow, rightRow, leftKey, rightKey, leftVal,
+					rightVal, leftID, rightID)) {
 
 				int deltaHAC = rightHAC - leftHAC;
 				if ((!m_filterByDeltaHACMdl.getBooleanValue())
 						|| !(deltaHAC > m_hacDeltaRangeMdl.getMaxRange()
-								|| deltaHAC < m_hacDeltaRangeMdl.getMinRange())) {
-					retVal.addRowToTable(createOutRow(leftRow, rightRow, leftVal, rightVal, leftKey,
-							rightKey, leftGraphFP, rightGraphFP));
+								|| deltaHAC < m_hacDeltaRangeMdl
+										.getMinRange())) {
+					retVal.addRowToTable(createOutRow(leftRow, rightRow,
+							leftVal, rightVal, leftKey, rightKey, leftGraphFP,
+							rightGraphFP));
 				}
 
 				if (m_showReverseTransforms.getBooleanValue()) {
 					deltaHAC *= -1;
 					if (!m_filterByDeltaHACMdl.getBooleanValue()
 							|| !(deltaHAC > m_hacDeltaRangeMdl.getMaxRange()
-									|| deltaHAC < m_hacDeltaRangeMdl.getMinRange())) {
-						retVal.addRowToTable(createOutRow(rightRow, leftRow, rightVal, leftVal,
-								rightKey, leftKey, rightGraphFP, leftGraphFP));
+									|| deltaHAC < m_hacDeltaRangeMdl
+											.getMinRange())) {
+						retVal.addRowToTable(createOutRow(rightRow, leftRow,
+								rightVal, leftVal, rightKey, leftKey,
+								rightGraphFP, leftGraphFP));
 					}
 				}
 			}
@@ -902,8 +1004,9 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 	 * @return <code>true</code> if the rows constitute a pair
 	 */
 	protected abstract boolean rowsArePair(DataRow leftRow, DataRow rightRow,
-			SimpleFragmentKey leftKey, SimpleFragmentKey rightKey, SimpleFragmentValue leftVal,
-			SimpleFragmentValue rightVal, String leftID, String rightID);
+			SimpleFragmentKey leftKey, SimpleFragmentKey rightKey,
+			SimpleFragmentValue leftVal, SimpleFragmentValue rightVal,
+			String leftID, String rightID);
 
 	/*
 	 * (non-Javadoc)
@@ -913,33 +1016,42 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 	 * [])
 	 */
 	@Override
-	protected DataTableSpec[] configure(DataTableSpec[] inSpecs) throws InvalidSettingsException {
+	protected DataTableSpec[] configure(DataTableSpec[] inSpecs)
+			throws InvalidSettingsException {
 
 		if (inSpecs.length > 1) {
 			if (!inSpecs[0].equalStructure(inSpecs[1])) {
-				throw new InvalidSettingsException("The two input tables must have the same spec");
+				throw new InvalidSettingsException(
+						"The two input tables must have the same spec");
 			}
 		}
 
 		// Try autoguessing the 3 column names and validating selection
-		m_FragKeyColName
-				.setStringValue(guessColumnName(inSpecs[0], m_FragKeyColName.getStringValue(),
-						SmilesCellFactory.TYPE, "'Key'", inSpecs[0].getNumColumns() - 1));
-		m_IDColName.setStringValue(guessColumnName(inSpecs[0], m_IDColName.getStringValue(),
-				StringCell.TYPE, "ID", inSpecs[0].getNumColumns() - 1));
+		m_FragKeyColName.setStringValue(guessColumnName(inSpecs[0],
+				m_FragKeyColName.getStringValue(), SmilesCellFactory.TYPE,
+				"'Key'", inSpecs[0].getNumColumns() - 1));
+		m_IDColName.setStringValue(
+				guessColumnName(inSpecs[0], m_IDColName.getStringValue(),
+						StringCell.TYPE, "ID", inSpecs[0].getNumColumns() - 1));
 
 		// Start looking from the fragment before
-		m_FragValColName
-				.setStringValue(guessColumnName(inSpecs[0], m_FragValColName.getStringValue(),
-						SmilesCellFactory.TYPE, "'Value'", inSpecs[0].getNumColumns() - 1));
+		m_FragValColName.setStringValue(guessColumnName(inSpecs[0],
+				m_FragValColName.getStringValue(), SmilesCellFactory.TYPE,
+				"'Value'", inSpecs[0].getNumColumns() - 1));
 
 		// Now check the 2 SMILES columns are different
-		if (m_FragKeyColName.getStringValue().equals(m_FragValColName.getStringValue())) {
+		if (m_FragKeyColName.getStringValue()
+				.equals(m_FragValColName.getStringValue())) {
 			// If they are not, then try looking from column before the key for
 			// a new value
-			m_FragValColName.setStringValue(guessColumnName(inSpecs[0],
-					m_FragValColName.getStringValue(), SmilesCell.TYPE, "'Value'",
-					inSpecs[0].findColumnIndex(m_FragKeyColName.getStringValue()) - 1));
+			m_FragValColName
+					.setStringValue(
+							guessColumnName(inSpecs[0],
+									m_FragValColName.getStringValue(),
+									SmilesCell.TYPE, "'Value'",
+									inSpecs[0].findColumnIndex(
+											m_FragKeyColName.getStringValue())
+											- 1));
 		}
 
 		graphDistFPComparisonType = ValueGraphDistanceFingerprintComparisonType
@@ -975,45 +1087,51 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 	 *         model, or a guessed name of the correct type
 	 * @throws InvalidSettingsException
 	 */
-	protected String guessColumnName(DataTableSpec spec, String nameFromSettingsModel,
-			DataType type, String substringMatch, int startColIdx) throws InvalidSettingsException {
+	protected String guessColumnName(DataTableSpec spec,
+			String nameFromSettingsModel, DataType type, String substringMatch,
+			int startColIdx) throws InvalidSettingsException {
 		DataColumnSpec colSpec = spec.getColumnSpec(nameFromSettingsModel);
 		String retVal = nameFromSettingsModel;
 		if (colSpec == null) {
 			if (startColIdx < 0 || startColIdx >= spec.getNumColumns()) {
 				// Run out of columns of the appropriate type, or supplied too
 				// high an index
-				m_logger.error("Not enough columns of the required type in the input table");
+				m_logger.error(
+						"Not enough columns of the required type in the input table");
 				throw new InvalidSettingsException(
 						"Not enough columns of the required type in the input table");
 			}
 			// No column selected, or selected column not found - autoguess!
 			for (int i = startColIdx; i >= 0; i--) {
 				// Reverse order to select most recently added
-				if (spec.getColumnSpec(i).getType().isCompatible(type.getPreferredValueClass())
-						&& (substringMatch == null
-								|| spec.getColumnSpec(i).getName().indexOf(substringMatch) >= 0)) {
+				if (spec.getColumnSpec(i).getType()
+						.isCompatible(type.getPreferredValueClass())
+						&& (substringMatch == null || spec.getColumnSpec(i)
+								.getName().indexOf(substringMatch) >= 0)) {
 					retVal = (spec.getColumnSpec(i).getName());
-					m_logger.warn("No column selected. " + retVal + " auto-selected.");
+					m_logger.warn("No column selected. " + retVal
+							+ " auto-selected.");
 					break;
 				}
 				// If we are here when i = 0, then no suitable column found
 				if (i == 0) {
-					m_logger.error(
-							"No molecule column of the accepted" + " input formats was found.");
+					m_logger.error("No molecule column of the accepted"
+							+ " input formats was found.");
 					throw new InvalidSettingsException(
-							"No molecule column of the accepted" + " input formats was found.");
+							"No molecule column of the accepted"
+									+ " input formats was found.");
 				}
 			}
 
 		} else {
 			// We had a selected column, now lets see if it is a compatible type
-			if (!colSpec.getType().isCompatible(type.getPreferredValueClass())) {
+			if (!colSpec.getType()
+					.isCompatible(type.getPreferredValueClass())) {
 				// The column is not compatible with one of the accepted types
-				m_logger.error(
-						"The column " + retVal + " is not one of the accepted" + " input formats");
-				throw new InvalidSettingsException(
-						"The column " + retVal + " is not one of the accepted" + " input formats");
+				m_logger.error("The column " + retVal
+						+ " is not one of the accepted" + " input formats");
+				throw new InvalidSettingsException("The column " + retVal
+						+ " is not one of the accepted" + " input formats");
 			}
 		}
 		return retVal;
@@ -1025,7 +1143,8 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 
 		final List<DataColumnSpec> specs = new ArrayList<>();
 
-		specs.add(createColSpec("Transformation", MMPConstants.DEFAULT_TRANSFORM_TYPE, null));
+		specs.add(createColSpec("Transformation",
+				MMPConstants.DEFAULT_TRANSFORM_TYPE, null));
 		specs.add(createColSpec("ID (Left)", StringCell.TYPE, null));
 		specs.add(createColSpec("ID (Right)", StringCell.TYPE, null));
 		specs.add(createColSpec("Left Fragment",
@@ -1035,30 +1154,38 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 		if (m_includeUnchangingPortions.getBooleanValue()) {
 			if (showBothKeys) {
 				specs.add(createColSpec("Key (Left)",
-						MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE, null));
+						MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE,
+						null));
 				specs.add(createColSpec("Key (Right)",
-						MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE, null));
+						MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE,
+						null));
 			} else {
-				specs.add(createColSpec("Key", MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE,
+				specs.add(createColSpec("Key",
+						MMPConstants.DEFAULT_OUTPUT_MOLECULE_COMPONENT_TYPE,
 						null));
 			}
 		}
 		if (m_includeHACount.getBooleanValue()) {
-			specs.add(createColSpec("Changing Heavy Atoms (Left)", IntCell.TYPE, null));
-			specs.add(createColSpec("Changing Heavy Atoms (Right)", IntCell.TYPE, null));
+			specs.add(createColSpec("Changing Heavy Atoms (Left)", IntCell.TYPE,
+					null));
+			specs.add(createColSpec("Changing Heavy Atoms (Right)",
+					IntCell.TYPE, null));
 		}
 		if (m_includeHARatio.getBooleanValue()) {
-			specs.add(createColSpec("Ratio of Changing / Unchanging Heavy Atoms (Left)",
+			specs.add(createColSpec(
+					"Ratio of Changing / Unchanging Heavy Atoms (Left)",
 					DoubleCell.TYPE, null));
-			specs.add(createColSpec("Ratio of Changing / Unchanging Heavy Atoms (Right)",
+			specs.add(createColSpec(
+					"Ratio of Changing / Unchanging Heavy Atoms (Right)",
 					DoubleCell.TYPE, null));
 		}
 		if (m_includeReactionSMARTS.getBooleanValue()) {
-			specs.add(
-					createColSpec("Transformation Reaction SMARTS", SmartsCellFactory.TYPE, null));
+			specs.add(createColSpec("Transformation Reaction SMARTS",
+					SmartsCellFactory.TYPE, null));
 		}
 
-		if (m_filterByDeltaHACMdl.getBooleanValue() && m_showHACDeltaMdl.getBooleanValue()) {
+		if (m_filterByDeltaHACMdl.getBooleanValue()
+				&& m_showHACDeltaMdl.getBooleanValue()) {
 			specs.add(createColSpec("Delta HAC", IntCell.TYPE, null));
 		}
 		if (m_GraphDistCutoffType.isEnabled()
@@ -1070,78 +1197,106 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 					graphDistFPComparisonType.getDataType(), null));
 		}
 
-		List<String> rightPassThroughNames = new ArrayList<>(
-				Arrays.asList(m_RightPassThroughColumns.applyTo(inTableSpec).getIncludes()));
+		List<String> rightPassThroughNames = new ArrayList<>(Arrays.asList(
+				m_RightPassThroughColumns.applyTo(inTableSpec).getIncludes()));
 		rightPassThroughNames.remove(m_FragKeyColName.getStringValue());
 		rightPassThroughNames.remove(m_FragValColName.getStringValue());
 		rightPassThroughNames.remove(m_IDColName.getStringValue());
-		for (String name : m_LeftPassThroughColumns.applyTo(inTableSpec).getIncludes()) {
+		for (String name : m_LeftPassThroughColumns.applyTo(inTableSpec)
+				.getIncludes()) {
 			// Dont pass through ID and Frag Key/Value cols
 			if (!name.equals(m_FragKeyColName.getStringValue())
 					&& !name.equals(m_IDColName.getStringValue())
 					&& !name.equals(m_FragValColName.getStringValue())) {
 				final DataColumnSpec inSpec = inTableSpec.getColumnSpec(name);
-				specs.add(createColSpec(name + " (L)", inSpec.getType(), inSpec.getProperties()));
+				specs.add(createColSpec(name + " (L)", inSpec.getType(),
+						inSpec.getProperties()));
 				if (rightPassThroughNames.contains(name)) {
 					// Keep L/R pairs together
-					specs.add(
-							createColSpec(name + " (R)", inSpec.getType(), inSpec.getProperties()));
+					specs.add(createColSpec(name + " (R)", inSpec.getType(),
+							inSpec.getProperties()));
 					rightPassThroughNames.remove(name);
 				}
 			}
 		}
 
-		rightPassThroughNames.stream().map(x -> inTableSpec.getColumnSpec(x)).forEach(x -> specs
-				.add(createColSpec(x.getName() + " (R)", x.getType(), x.getProperties())));
+		rightPassThroughNames.stream().map(x -> inTableSpec.getColumnSpec(x))
+				.forEach(x -> specs.add(createColSpec(x.getName() + " (R)",
+						x.getType(), x.getProperties())));
 
-		Arrays.stream(m_LeftMinusRightColumns.applyTo(inTableSpec).getIncludes())
+		Arrays.stream(
+				m_LeftMinusRightColumns.applyTo(inTableSpec).getIncludes())
 				.map(x -> inTableSpec.getColumnSpec(x)).forEachOrdered(
-						x -> specs.add(createColSpec(x.getName() + " (L-R)", x.getType(), null)));
-		Arrays.stream(m_RightMinusLeftColumns.applyTo(inTableSpec).getIncludes())
-				.forEachOrdered(x -> specs.add(
-						createColSpec(x + " (R-L)", inTableSpec.getColumnSpec(x).getType(), null)));
-		Arrays.stream(m_LeftDivbyRightColumns.applyTo(inTableSpec).getIncludes())
-				.forEachOrdered(x -> specs.add(
-						createColSpec(x + " (L/R)", inTableSpec.getColumnSpec(x).getType(), null)));
-		Arrays.stream(m_RightDivbyLeftColumns.applyTo(inTableSpec).getIncludes())
-				.forEachOrdered(x -> specs.add(
-						createColSpec(x + " (R/L)", inTableSpec.getColumnSpec(x).getType(), null)));
+						x -> specs.add(createColSpec(x.getName() + " (L-R)",
+								x.getType(), null)));
+		Arrays.stream(
+				m_RightMinusLeftColumns.applyTo(inTableSpec).getIncludes())
+				.forEachOrdered(x -> specs.add(createColSpec(x + " (R-L)",
+						inTableSpec.getColumnSpec(x).getType(), null)));
+		Arrays.stream(
+				m_LeftDivbyRightColumns.applyTo(inTableSpec).getIncludes())
+				.forEachOrdered(x -> specs.add(createColSpec(x + " (L/R)",
+						inTableSpec.getColumnSpec(x).getType(), null)));
+		Arrays.stream(
+				m_RightDivbyLeftColumns.applyTo(inTableSpec).getIncludes())
+				.forEachOrdered(x -> specs.add(createColSpec(x + " (R/L)",
+						inTableSpec.getColumnSpec(x).getType(), null)));
 
 		populatePassThroughIndices(inTableSpec);
 
 		addImplentationColSpecs(inTableSpec, specs);
 		uniquifyNames(specs);
-		return new DataTableSpec(specs.toArray(new DataColumnSpec[specs.size()]));
+		return new DataTableSpec(
+				specs.toArray(new DataColumnSpec[specs.size()]));
 	}
 
 	private final void populatePassThroughIndices(DataTableSpec inTableSpec) {
-		leftKeepColIdxs = Arrays.stream(m_LeftPassThroughColumns.applyTo(inTableSpec).getIncludes())
+		leftKeepColIdxs = Arrays
+				.stream(m_LeftPassThroughColumns.applyTo(inTableSpec)
+						.getIncludes())
 				.filter(name -> !name.equals(m_FragKeyColName.getStringValue())
 						&& !name.equals(m_IDColName.getStringValue())
 						&& !name.equals(m_FragValColName.getStringValue()))
-				.mapToInt(x -> inTableSpec.findColumnIndex(x)).sorted().toArray();
+				.mapToInt(x -> inTableSpec.findColumnIndex(x)).sorted()
+				.toArray();
 		rightWithLeftKeepColIdxs = Arrays
-				.stream(m_RightPassThroughColumns.applyTo(inTableSpec).getIncludes())
+				.stream(m_RightPassThroughColumns.applyTo(inTableSpec)
+						.getIncludes())
 				.filter(name -> !name.equals(m_FragKeyColName.getStringValue())
 						&& !name.equals(m_IDColName.getStringValue())
 						&& !name.equals(m_FragValColName.getStringValue()))
 				.mapToInt(x -> inTableSpec.findColumnIndex(x))
-				.filter(x -> Arrays.binarySearch(leftKeepColIdxs, x) >= 0).sorted().toArray();
+				.filter(x -> Arrays.binarySearch(leftKeepColIdxs, x) >= 0)
+				.sorted().toArray();
 		rightOnlyKeepColIdxs = Arrays
-				.stream(m_RightPassThroughColumns.applyTo(inTableSpec).getIncludes())
+				.stream(m_RightPassThroughColumns.applyTo(inTableSpec)
+						.getIncludes())
 				.filter(name -> !name.equals(m_FragKeyColName.getStringValue())
 						&& !name.equals(m_IDColName.getStringValue())
 						&& !name.equals(m_FragValColName.getStringValue()))
 				.mapToInt(x -> inTableSpec.findColumnIndex(x))
-				.filter(x -> Arrays.binarySearch(leftKeepColIdxs, x) < 0).sorted().toArray();
-		lMinRColIdxs = Arrays.stream(m_LeftMinusRightColumns.applyTo(inTableSpec).getIncludes())
-				.mapToInt(x -> inTableSpec.findColumnIndex(x)).sorted().toArray();
-		rMinLColIdxs = Arrays.stream(m_RightMinusLeftColumns.applyTo(inTableSpec).getIncludes())
-				.mapToInt(x -> inTableSpec.findColumnIndex(x)).sorted().toArray();
-		lDivRColIdxs = Arrays.stream(m_LeftDivbyRightColumns.applyTo(inTableSpec).getIncludes())
-				.mapToInt(x -> inTableSpec.findColumnIndex(x)).sorted().toArray();
-		rDivLColIdxs = Arrays.stream(m_RightDivbyLeftColumns.applyTo(inTableSpec).getIncludes())
-				.mapToInt(x -> inTableSpec.findColumnIndex(x)).sorted().toArray();
+				.filter(x -> Arrays.binarySearch(leftKeepColIdxs, x) < 0)
+				.sorted().toArray();
+		lMinRColIdxs = Arrays
+				.stream(m_LeftMinusRightColumns.applyTo(inTableSpec)
+						.getIncludes())
+				.mapToInt(x -> inTableSpec.findColumnIndex(x)).sorted()
+				.toArray();
+		rMinLColIdxs = Arrays
+				.stream(m_RightMinusLeftColumns.applyTo(inTableSpec)
+						.getIncludes())
+				.mapToInt(x -> inTableSpec.findColumnIndex(x)).sorted()
+				.toArray();
+		lDivRColIdxs = Arrays
+				.stream(m_LeftDivbyRightColumns.applyTo(inTableSpec)
+						.getIncludes())
+				.mapToInt(x -> inTableSpec.findColumnIndex(x)).sorted()
+				.toArray();
+		rDivLColIdxs = Arrays
+				.stream(m_RightDivbyLeftColumns.applyTo(inTableSpec)
+						.getIncludes())
+				.mapToInt(x -> inTableSpec.findColumnIndex(x)).sorted()
+				.toArray();
 	}
 
 	private final void uniquifyNames(List<DataColumnSpec> specs) {
@@ -1158,9 +1313,10 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 					uniquifier++;
 				}
 				names.add(result);
-				retVal.add(createColSpec(result, spec.getType(), spec.getProperties()));
-				m_logger.info("Duplicate name '" + spec.getName() + "' encountered; Uniquified to '"
-						+ result + "'");
+				retVal.add(createColSpec(result, spec.getType(),
+						spec.getProperties()));
+				m_logger.info("Duplicate name '" + spec.getName()
+						+ "' encountered; Uniquified to '" + result + "'");
 				changedAny = true;
 			} else {
 				names.add(spec.getName());
@@ -1203,8 +1359,8 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 	 *            The column {@link DataType}
 	 * @return A {@link DataColumnSpec}
 	 */
-	protected static final DataColumnSpec createColSpec(String colName, DataType colType,
-			DataColumnProperties colProps) {
+	protected static final DataColumnSpec createColSpec(String colName,
+			DataType colType, DataColumnProperties colProps) {
 
 		final DataColumnSpecCreator dataColumnSpecCreator =
 				new DataColumnSpecCreator(colName, colType);
@@ -1261,13 +1417,14 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 	 *            The index of the number of cuts column
 	 * @return The data row for the transform
 	 */
-	protected DataRow createOutRow(DataRow leftRow, DataRow rightRow, SimpleFragmentValue leftVal,
-			SimpleFragmentValue rightVal, SimpleFragmentKey leftKey, SimpleFragmentKey rightKey,
+	protected DataRow createOutRow(DataRow leftRow, DataRow rightRow,
+			SimpleFragmentValue leftVal, SimpleFragmentValue rightVal,
+			SimpleFragmentKey leftKey, SimpleFragmentKey rightKey,
 			ByteVectorValue leftGraphFP, ByteVectorValue rightGraphFP) {
 
 		List<DataCell> cells = new ArrayList<>();
-		cells.add(SmilesCellFactory
-				.createAdapterCell(leftVal.getSMILES() + ">>" + rightVal.getSMILES()));
+		cells.add(SmilesCellFactory.createAdapterCell(
+				leftVal.getSMILES() + ">>" + rightVal.getSMILES()));
 		cells.add(leftVal.getIDCell());
 		cells.add(rightVal.getIDCell());
 		cells.add(leftVal.getSMILESCell());
@@ -1287,21 +1444,22 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 			cells.add(rightKey.getConstantToVaryingAtomRatioCell(rightVal));
 		}
 		if (m_includeReactionSMARTS.getBooleanValue()) {
-			cells.add(SmartsCellFactory
-					.createAdapterCell(TransformUtils.convertSmirksToReactionSmarts(
+			cells.add(SmartsCellFactory.createAdapterCell(
+					TransformUtils.convertSmirksToReactionSmarts(
 							leftVal.getSMILES() + ">>" + rightVal.getSMILES(),
 							m_requireAcyclicSMARTS.getBooleanValue())));
 		}
 
-		if (m_filterByDeltaHACMdl.getBooleanValue() && m_showHACDeltaMdl.getBooleanValue()) {
-			cells.add(new IntCell(
-					rightVal.getNumberChangingAtoms() - leftVal.getNumberChangingAtoms()));
+		if (m_filterByDeltaHACMdl.getBooleanValue()
+				&& m_showHACDeltaMdl.getBooleanValue()) {
+			cells.add(new IntCell(rightVal.getNumberChangingAtoms()
+					- leftVal.getNumberChangingAtoms()));
 		}
 		if (m_GraphDistCutoffType.isEnabled()
 				&& graphDistFPComparisonType != ValueGraphDistanceFingerprintComparisonType.NONE
 				&& m_inclGraphDistDists.getBooleanValue()) {
-			cells.add(
-					graphDistFPComparisonType.getDistanceSimilarityCell(leftGraphFP, rightGraphFP));
+			cells.add(graphDistFPComparisonType
+					.getDistanceSimilarityCell(leftGraphFP, rightGraphFP));
 		}
 
 		// Handle pass-through and diff/div cols
@@ -1317,20 +1475,21 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 		Arrays.stream(rightOnlyKeepColIdxs)
 				.forEachOrdered(rIdx -> cells.add(rightRow.getCell(rIdx)));
 
-		Arrays.stream(lMinRColIdxs).forEachOrdered(
-				idx -> cells.add(substractCells(leftRow.getCell(idx), rightRow.getCell(idx))));
-		Arrays.stream(rMinLColIdxs).forEachOrdered(
-				idx -> cells.add(substractCells(rightRow.getCell(idx), leftRow.getCell(idx))));
-		Arrays.stream(rDivLColIdxs).forEachOrdered(
-				idx -> cells.add(divideCells(leftRow.getCell(idx), rightRow.getCell(idx))));
-		Arrays.stream(lDivRColIdxs).forEachOrdered(
-				idx -> cells.add(divideCells(rightRow.getCell(idx), leftRow.getCell(idx))));
+		Arrays.stream(lMinRColIdxs).forEachOrdered(idx -> cells.add(
+				substractCells(leftRow.getCell(idx), rightRow.getCell(idx))));
+		Arrays.stream(rMinLColIdxs).forEachOrdered(idx -> cells.add(
+				substractCells(rightRow.getCell(idx), leftRow.getCell(idx))));
+		Arrays.stream(rDivLColIdxs).forEachOrdered(idx -> cells
+				.add(divideCells(leftRow.getCell(idx), rightRow.getCell(idx))));
+		Arrays.stream(lDivRColIdxs).forEachOrdered(idx -> cells
+				.add(divideCells(rightRow.getCell(idx), leftRow.getCell(idx))));
 
-		addImplementationColCells(cells, leftRow, rightRow, leftVal, rightVal, leftKey, rightKey);
-		RowKey newRowKey =
-				new RowKey(leftRow.getKey().getString() + "_" + rightRow.getKey().getString());
-		return new KnowsParentRowIDsDataRow(new DefaultRow(newRowKey, cells), leftRow.getKey(),
-				rightRow.getKey());
+		addImplementationColCells(cells, leftRow, rightRow, leftVal, rightVal,
+				leftKey, rightKey);
+		RowKey newRowKey = new RowKey(leftRow.getKey().getString() + "_"
+				+ rightRow.getKey().getString());
+		return new KnowsParentRowIDsDataRow(new DefaultRow(newRowKey, cells),
+				leftRow.getKey(), rightRow.getKey());
 	}
 
 	/**
@@ -1354,11 +1513,13 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 	 * @param rightKey
 	 *            The right fragment key
 	 */
-	protected abstract void addImplementationColCells(List<DataCell> cells, DataRow leftRow,
-			DataRow rightRow, SimpleFragmentValue leftVal, SimpleFragmentValue rightVal,
-			SimpleFragmentKey leftKey, SimpleFragmentKey rightKey);
+	protected abstract void addImplementationColCells(List<DataCell> cells,
+			DataRow leftRow, DataRow rightRow, SimpleFragmentValue leftVal,
+			SimpleFragmentValue rightVal, SimpleFragmentKey leftKey,
+			SimpleFragmentKey rightKey);
 
-	private final DataCell divideCells(DataCell dividendCell, DataCell divisorCell) {
+	private final DataCell divideCells(DataCell dividendCell,
+			DataCell divisorCell) {
 		if (dividendCell.isMissing() || divisorCell.isMissing()) {
 			return DataType.getMissingCell();
 		}
@@ -1368,7 +1529,8 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 
 	}
 
-	private final DataCell substractCells(DataCell minuendCell, DataCell subtrahendCell) {
+	private final DataCell substractCells(DataCell minuendCell,
+			DataCell subtrahendCell) {
 		if (minuendCell.isMissing() || subtrahendCell.isMissing()) {
 			return DataType.getMissingCell();
 		}
@@ -1384,11 +1546,14 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 		} else if (minuendCell instanceof ComplexNumberCell) {
 			return new ComplexNumberCell(
 					((ComplexNumberValue) minuendCell).getRealValue()
-							- ((ComplexNumberValue) subtrahendCell).getRealValue(),
+							- ((ComplexNumberValue) subtrahendCell)
+									.getRealValue(),
 					((ComplexNumberValue) minuendCell).getImaginaryValue()
-							- ((ComplexNumberValue) subtrahendCell).getImaginaryValue());
+							- ((ComplexNumberValue) subtrahendCell)
+									.getImaginaryValue());
 		}
-		m_logger.error("Something went wrong - unimplented cell type in subtraction");
+		m_logger.error(
+				"Something went wrong - unimplented cell type in subtraction");
 		return DataType.getMissingCell();
 	}
 
@@ -1406,11 +1571,13 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 		NodeSettingsRO settings = NodeSettings.loadFromXML(in);
 		try {
 			if (m_hiliteMdl.getBooleanValue()) {
-				NodeSettingsRO mapSet = settings.getNodeSettings(HILITE_KEY + "_top");
+				NodeSettingsRO mapSet =
+						settings.getNodeSettings(HILITE_KEY + "_top");
 				topHiLiteTranslator.setMapper(DefaultHiLiteMapper.load(mapSet));
 				if (hasTwoInputs) {
 					mapSet = settings.getNodeSettings(HILITE_KEY + "_bottom");
-					bottomHiLiteTranslator.setMapper(DefaultHiLiteMapper.load(mapSet));
+					bottomHiLiteTranslator
+							.setMapper(DefaultHiLiteMapper.load(mapSet));
 				}
 			}
 		} catch (InvalidSettingsException e) {
@@ -1429,11 +1596,14 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 			throws IOException, CanceledExecutionException {
 		NodeSettings settings = new NodeSettings("FragmentToPair");
 		if (m_hiliteMdl.getBooleanValue()) {
-			NodeSettingsWO mapSet = settings.addNodeSettings(HILITE_KEY + "_top");
-			((DefaultHiLiteMapper) topHiLiteTranslator.getMapper()).save(mapSet);
+			NodeSettingsWO mapSet =
+					settings.addNodeSettings(HILITE_KEY + "_top");
+			((DefaultHiLiteMapper) topHiLiteTranslator.getMapper())
+					.save(mapSet);
 			if (hasTwoInputs) {
 				mapSet = settings.addNodeSettings(HILITE_KEY + "_bottom");
-				((DefaultHiLiteMapper) bottomHiLiteTranslator.getMapper()).save(mapSet);
+				((DefaultHiLiteMapper) bottomHiLiteTranslator.getMapper())
+						.save(mapSet);
 			}
 		}
 		File f = new File(internDir, SETTINGS_FILE_NAME);
@@ -1487,7 +1657,8 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 	 * NodeSettingsRO)
 	 */
 	@Override
-	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(NodeSettingsRO settings)
+			throws InvalidSettingsException {
 
 		m_FragKeyColName.validateSettings(settings);
 		if (m_keysAreSorted != null) {
@@ -1589,12 +1760,14 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel extends NodeMod
 
 				m_GraphDistDblCutOff.setEnabled(false);
 				m_GraphDistIntCutOff.setEnabled(true);
-				m_GraphDistIntCutOff.setBounds(graphDistFPComparisonType.getMinimum().intValue(),
+				m_GraphDistIntCutOff.setBounds(
+						graphDistFPComparisonType.getMinimum().intValue(),
 						graphDistFPComparisonType.getMaximum().intValue());
 			} else {
 				m_GraphDistIntCutOff.setEnabled(false);
 				m_GraphDistDblCutOff.setEnabled(true);
-				m_GraphDistDblCutOff.setBounds(graphDistFPComparisonType.getMinimum().doubleValue(),
+				m_GraphDistDblCutOff.setBounds(
+						graphDistFPComparisonType.getMinimum().doubleValue(),
 						graphDistFPComparisonType.getMaximum().doubleValue());
 			}
 		}

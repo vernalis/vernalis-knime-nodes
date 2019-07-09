@@ -38,7 +38,8 @@ import com.vernalis.knime.mmp.MMPConstants;
  * @param <T>
  *            The type of the molecule object
  */
-public abstract class AbstractFragmentKey<T> implements Comparable<AbstractFragmentKey<T>> {
+public abstract class AbstractFragmentKey<T>
+		implements Comparable<AbstractFragmentKey<T>> {
 
 	protected ArrayList<AbstractLeaf<T>> m_keyComponents;
 
@@ -76,6 +77,7 @@ public abstract class AbstractFragmentKey<T> implements Comparable<AbstractFragm
 			addSMILESComponent(keyAsString);
 		} catch (IllegalArgumentException iae) {
 			// Do nothing - null arguments are allowed!
+			// TODO: We need to handle this a bit better really
 		}
 	}
 
@@ -88,7 +90,8 @@ public abstract class AbstractFragmentKey<T> implements Comparable<AbstractFragm
 	 */
 	public void addSMILESComponent(String smiles) {
 		if (smiles == null) {
-			throw new IllegalArgumentException("A non-null string must be supplied");
+			throw new IllegalArgumentException(
+					"A non-null string must be supplied");
 		}
 		if (smiles.indexOf(".") < 0) {
 			m_keyComponents.add(getLeafFromString(smiles));
@@ -217,8 +220,10 @@ public abstract class AbstractFragmentKey<T> implements Comparable<AbstractFragm
 	 * {@link AbstractFragmentKey}) to varying (HAs from the
 	 * {@link AbstractFragmentValue}) heavy atoms
 	 */
-	public double getConstantToVaryingAtomRatio(AbstractFragmentValue<T> value) {
-		return (double) this.calcHAC() / (double) value.getNumberChangingAtoms();
+	public double getConstantToVaryingAtomRatio(
+			AbstractFragmentValue<T> value) {
+		return (double) this.calcHAC()
+				/ (double) value.getNumberChangingAtoms();
 	}
 
 	/**
@@ -226,7 +231,8 @@ public abstract class AbstractFragmentKey<T> implements Comparable<AbstractFragm
 	 * {@link AbstractFragmentKey}) to varying (HAs from the
 	 * {@link AbstractFragmentValue}) heavy atoms as a {@link DoubleCell}
 	 */
-	public DataCell getConstantToVaryingAtomRatioCell(AbstractFragmentValue<T> value) {
+	public DataCell getConstantToVaryingAtomRatioCell(
+			AbstractFragmentValue<T> value) {
 		return new DoubleCell(getConstantToVaryingAtomRatio(value));
 	}
 
@@ -237,7 +243,8 @@ public abstract class AbstractFragmentKey<T> implements Comparable<AbstractFragm
 	 *            The index (1-based)
 	 * @return The {@link AbstractLeaf}
 	 */
-	public AbstractLeaf<T> getLeafWithIdx(int idx) throws IndexOutOfBoundsException {
+	public AbstractLeaf<T> getLeafWithIdx(int idx)
+			throws IndexOutOfBoundsException {
 		// Firstly, we sort in descending order
 		Collections.sort(m_keyComponents, Collections.reverseOrder());
 		return m_keyComponents.get(idx - 1);
@@ -252,8 +259,8 @@ public abstract class AbstractFragmentKey<T> implements Comparable<AbstractFragm
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((m_keyComponents == null) ? 0 : (this.getKeyAsString()).hashCode());
+		result = prime * result + ((m_keyComponents == null) ? 0
+				: (this.getKeyAsString()).hashCode());
 		return result;
 	}
 

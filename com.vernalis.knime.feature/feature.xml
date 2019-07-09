@@ -2,7 +2,7 @@
 <feature
       id="com.vernalis.knime.feature"
       label="Vernalis KNIME Nodes"
-      version="1.20.3.qualifier"
+      version="1.20.4.qualifier"
       provider-name="Vernalis Research Ltd, Cambridge, UK"
       plugin="com.vernalis.knime.core">
 
