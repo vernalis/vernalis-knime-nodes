@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./FlowControlfvifswitch_16x16.png" type="Manipulator"
+	xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Flow Variable IF Switch</name>
+
+	<shortDescription>
+        Flow variable IF switch to alter active branch of flow variable ports
+    </shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>This node provides a flow variable equivalent of the IF Switch
+				node
+			</p>
+			<p>
+				NOTE - Due to the way in which flow variables are handled within
+				KNIME, no matter which
+				the active branch, the flow variable values for any existing flow
+				variables beyond the corresponding
+				"end" node will be those at the top-most port of the "end" node. New
+				variables created in any active branch will
+				retain their correct values. If both branches are active and create a
+				variable with the same name, the
+				the value in the upper port of the "end" node will again be used. If
+				you need to change the value of
+				existing variables, please either use
+				a new flow variable, or use a
+				<i>variable to tablerow</i>
+				node before a conventional
+				<i>End IF</i>
+				node.
+			</p>
+
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+
+		</intro>
+
+
+		<option name="Select active port(s)">Select the active output port(s)</option>
+
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Flow Variable in port">Flow Variable input port</inPort>
+		<outPort index="0" name="First output port">First flow variable output port
+		</outPort>
+		<outPort index="1" name="Second output port">Second flow variable output port
+		</outPort>
+	</ports>
+
+</knimeNode>
