@@ -15,6 +15,7 @@
 
 package com.vernalis.io;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -310,6 +311,11 @@ public class FileHelpers {
 			is = new GZIPInputStream(is);
 		}
 
+		// Ensure that we can mark/reset if we need to try the BOM
+		if (fileEncoding == FileEncodingWithGuess.GUESS
+				&& !is.markSupported()) {
+			is = new BufferedInputStream(is);
+		}
 		String encoding = guessEncoding(fileEncoding, uc, is);
 
 		// Now set up a buffered reader to read it
@@ -345,6 +351,9 @@ public class FileHelpers {
 		if (fileEncoding == FileEncodingWithGuess.GUESS) {
 			encoding = DEFAULT_ENCODING;
 
+			if (!is.markSupported()) {
+				is = new BufferedInputStream(is);
+			}
 			if (contentType != null && !contentType.equals("content/unknown")) {
 				int chsIndex = contentType.indexOf("charset=");
 				if (chsIndex != -1) {
