@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode
+	icon="./GenericLoopStartTimed.png"
+	type="LoopStart"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Generic Run-for-time Loop Start</name>
+
+	<shortDescription>
+        Loop start node to repeatedly process entire input table until a specified time period has elapsed.
+    </shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>Loop start node to repeatedly process entire input table until a
+				specified time period has elapsed. The user can
+				specify the time
+				period
+				(dd:hh:mm:ss) after which the last iteration
+				will start before.
+				The loop will execute until that time period has
+				elapsed.
+				If connected
+				to a Run-to-time Loop end, the unprocessed rows table will be empty
+				for this node as all rows are processed repeatedly on each loop
+				iteration.
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+		<option name="Run time (dd:hh:mm:ss):">The time period after which execution will finish
+			(dd:hh:mm:ss)
+		</option>
+		<option name="Start value of iteration counter">Allows the user to manually set the value at
+			which the iteration
+			counter will start (does not affect the
+			processing of the table!)
+		</option>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="In Data">Input table to process</inPort>
+		<outPort
+			index="0"
+			name="Chunked Data">Unchanged input table</outPort>
+	</ports>
+</knimeNode>

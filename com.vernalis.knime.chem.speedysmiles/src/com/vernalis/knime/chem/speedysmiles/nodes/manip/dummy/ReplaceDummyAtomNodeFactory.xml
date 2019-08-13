@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2018, Vernalis (R&D) Ltd
+     This program is free software; you can redistribute it and/or modify it 
+     under the terms of the GNU General Public License, Version 3, as 
+     published by the Free Software Foundation.
+     
+     This program is distributed in the hope that it will be useful, but 
+     WITHOUT ANY WARRANTY; without even the implied warranty of 
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+     See the GNU General Public License for more details.
+     
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, see <http://www.gnu.org/licenses>
+ -->
+<knimeNode
+	icon="./SpeedySMILES_dummy2element.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Speedy SMILES Replace Dummy Atom</name>
+
+
+	<shortDescription>
+		Node to replace dummy atoms with an alternative atom
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>This node replaces dummy atoms with an alternative supplied
+				element symbol. No validation of the element symbol is carried out
+				beyond removing surrounding '[' and ']' characters, which will be
+				reapplied if the dummy atom is not surround with '[' and ']', and
+				the replacement is not an organic subset atom. An empty string is
+				not a valid replacement
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+
+		<option name="Select SMILES column">The SMILES column, containing molecules</option>
+		<option name="Remove input columns">If checked, then the input column is removed
+		</option>
+		<option name="Dummy Atom Replacement">The replacement text</option>
+
+	</fullDescription>
+
+
+	<ports>
+		<inPort
+			index="0"
+			name="SMILES">SMILES with dummy atoms
+		</inPort>
+
+		<outPort
+			index="0"
+			name="SMILES with replaced Dummy Atoms">SMILES with dummy atoms replaced
+		</outPort>
+	</ports>
+
+</knimeNode>

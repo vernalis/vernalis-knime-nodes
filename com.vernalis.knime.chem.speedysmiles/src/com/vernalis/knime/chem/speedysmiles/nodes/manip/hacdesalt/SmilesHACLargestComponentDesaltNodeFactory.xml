@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2016, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+    This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="./SpeedySMILESdesalt.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+
+
+	<name>Speedy SMILES De-salt</name>
+
+	<shortDescription>
+		Node to find largest component of SMILES by Heavy
+		Atom Count
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>This node desalts SMILES strings by splitting into their
+				individual components and counting the number of heavy atoms in each
+				component. The component(s) with the most heavy atoms (HAC) are
+				kept. In the event of more the 1 component having the same HAC, then
+				the behaviour depends on the Tie-break settings
+			</p>
+			<p>
+				<b>NB</b>
+				This is a crude but fast algorithm. Certain cases (e.g. 'C1.C1') may
+				give erroneous results. Such cases can be detected using the 'Speedy
+				SMILES Remove Broken Bonds' filter or splitter node
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+		<tab name="Column Settings">
+			<option name="Select SMILES column">The SMILES column, containing molecules</option>
+			<option name="Remove input column">If ticked, the input SMILES column will be
+				removed
+				from the output table
+			</option>
+		</tab>
+		<tab name="Tie-break behaviour">
+			<option name="Keep only 1st unique component">If checked, then only a single SMILES component
+				will be kept in the case of more than 1 component having the same
+				highest
+				HAC. The selection will be arbitrarily the first entry in the
+				internal
+				storage (which may not be the first encountered in the
+				string). Otherwise, all the tied components will be returned in a
+				collection cell.
+			</option>
+			<option name="Keep the longest SMILES String">If only keeping 1 component, if this option is
+				checked, then the longest SMILES String will be kept in the event of
+				more than 1 component having the same highest
+				HAC.
+			</option>
+		</tab>
+
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="SMILES Cells">Input Table containing a SMILES Column
+		</inPort>
+
+		<outPort
+			index="0"
+			name="De-salted SMILES Cells">Input Table with de-salted,
+			single-component SMILES cells
+		</outPort>
+	</ports>
+
+</knimeNode>
