@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./FlowVarLoopStartToTimed.png" type="LoopStart"
+	xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Table Row To Variable Run-to-time Loop Start</name>
+
+	<shortDescription>
+        Timed Loop start tablerow to variable node. Will run until a specified time of day has passed.
+    </shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>Loop start tablerow to variable node, which will run until a
+				specified time of day has passed. The user can
+				specify the node
+				behaviour in the event of missing values, and the time
+				(hh:mm) at
+				which the last iteration will start
+				before. The loop will execute
+				until that time is reached, when no further
+				rows will be processed.
+				If connected to a Run-to-time Loop end, the unprocessed rows will be
+				available directly in the final port of the loop end node.
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+
+		<tab name="Missing Variable Values">
+			<option name="Fail">Node execution will fail on encountering a
+				missing value
+			</option>
+			<option name="Use defaults">Default values will be substituted on
+				encountering a missing value
+			</option>
+			<option name="Skip (Add to unprocessed rows table)">Node execution will skip a row on encountering a
+				missing value.
+				The skipped row will be included in the 'unprocessed
+				rows' table of a
+				closing Timed Loop node.
+			</option>
+			<option name="Skip (Don't add to unprocessed rows table)">Node execution will skip a row on encountering a
+				missing value.
+			</option>
+			<option name="Default Integer Value">The default value to be used for missing values
+				in Integer columns
+			</option>
+			<option name="Default Double Value">The default value to be used for missing values
+				in Double columns
+			</option>
+			<option name="Default String Value">The default value to be used for missing values
+				in String columns
+			</option>
+		</tab>
+		<tab name="Expiry time">
+			<option name="End time (hh:mm):">The time at which execution will finish (hh : mm)
+			</option>
+			<option name="Run to tomorrow">If the expiry time has already passed today at
+				the time of loop execution commencement
+				it will run until that time
+				tomorrow
+			</option>
+			<option name="Run through weekend">If the expiry time (accounting for the 'Run to
+				tomorrow' setting) is on a
+				Saturday or Sunday, then the loop will run
+				until that time on the following
+				Monday
+			</option>
+			<option name="Start value of iteration counter">Allows the user to manually set the value at
+				which the iteration
+				counter will start (does not affect the
+				processing of the table!)
+			</option>
+		</tab>
+
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="In Data">Input table to process</inPort>
+		<outPort index="0" name="Variable connection">The current variables</outPort>
+	</ports>
+</knimeNode>
