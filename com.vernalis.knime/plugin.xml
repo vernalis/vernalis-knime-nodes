@@ -145,6 +145,11 @@
             deprecated="true"
             factory-class="com.vernalis.nodes.misc.randomnos.RandomNumbersNodeFactory"
            />
+      <node
+            category-path="/community/vernalis/misc/"
+            deprecated="false"
+            factory-class="com.vernalis.nodes.misc.trimtable.TrimTableNodeFactory">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">

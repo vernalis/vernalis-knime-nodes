@@ -65,7 +65,7 @@ public class AbstractMMPCuttableBondsRenderNodeDescription<T, U>
 
 	@Override
 	public String getIconPath() {
-		return "MMPMarkBonds.png";
+		return getClass().getResource("MMPMarkBonds.png").getFile();
 	}
 
 	@Override

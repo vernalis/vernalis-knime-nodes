@@ -65,7 +65,7 @@ public class AbstractApplyTransformNodeDescription<T, U, V>
 
 	@Override
 	public String getIconPath() {
-		return "MMPApplyTransforms.png";
+		return getClass().getResource("MMPApplyTransforms.png").getFile();
 	}
 
 	@Override

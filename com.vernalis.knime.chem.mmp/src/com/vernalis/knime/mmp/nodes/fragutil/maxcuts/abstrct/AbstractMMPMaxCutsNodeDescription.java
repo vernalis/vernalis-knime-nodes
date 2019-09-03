@@ -64,7 +64,7 @@ public class AbstractMMPMaxCutsNodeDescription<T, U> extends NodeDescription {
 
 	@Override
 	public String getIconPath() {
-		return "MMPMaxNumCuts.png";
+		return getClass().getResource("MMPMaxNumCuts.png").getFile();
 	}
 
 	@Override

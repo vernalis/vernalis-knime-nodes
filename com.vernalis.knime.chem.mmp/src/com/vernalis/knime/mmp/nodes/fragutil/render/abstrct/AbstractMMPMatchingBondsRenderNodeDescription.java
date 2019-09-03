@@ -66,7 +66,7 @@ public class AbstractMMPMatchingBondsRenderNodeDescription<T, U>
 	@Override
 	public String getIconPath() {
 		// Otherwise it is relative to the path of the node factory class
-		return "MMPMarkBonds.png";
+		return getClass().getResource("MMPMarkBonds.png").getFile();
 	}
 
 	@Override
