@@ -164,8 +164,7 @@ public abstract class AbstractMoleculePropertyCalcNodeModel<T>
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.vernalis.knime.internal.nodes.propcalc.AbstractPropertyCalcNodeModel#
+	 * @see com.vernalis.knime.nodes.propcalc.AbstractPropertyCalcNodeModel#
 	 * getContainerObjFromCell(org.knime.core.data.DataCell)
 	 */
 	@Override

@@ -15,8 +15,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.rdkit.knime.types;bundle-version="[3.8.0,4.0.0)",
  com.vernalis.knime.core;bundle-version="[1.6.0,2.0.0)",
  com.vernalis.knime.chem.core;bundle-version="[1.22.0,2.0.0)",
- org.knime.ext.jfreechart,
- com.vernalis.knime.internal.jfcplot.core
+ org.knime.ext.jfreechart;bundle-version="[3.7.0,5.0.0)",
+ com.vernalis.knime.jfcplot.core;bundle-version="[1.22.0,2.0.0)"
 Bundle-ActivationPolicy: lazy
 Export-Package: 
  com.vernalis.knime.chem.pmi,

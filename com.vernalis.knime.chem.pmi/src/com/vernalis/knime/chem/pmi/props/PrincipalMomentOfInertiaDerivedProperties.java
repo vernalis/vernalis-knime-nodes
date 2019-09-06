@@ -60,12 +60,6 @@ public enum PrincipalMomentOfInertiaDerivedProperties
 			DALTON + DELIMINATOR + ANGSTROM_SQUARED, null,
 			new String[] { "I" + SUBSCRIPT_1 }, 0.0, Double.POSITIVE_INFINITY) {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.vernalis.knime.internal.pmi.props.
-		 * CalculatedPropertyInterface #calculate(java.lang.Object)
-		 */
 		@Override
 		public DataCell calculate(PMI input) {
 			return new DoubleCell(input.I1());
@@ -77,12 +71,6 @@ public enum PrincipalMomentOfInertiaDerivedProperties
 			DALTON + DELIMINATOR + ANGSTROM_SQUARED, null,
 			new String[] { "I" + SUBSCRIPT_2 }, 0.0, Double.POSITIVE_INFINITY) {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.vernalis.knime.internal.pmi.props.
-		 * CalculatedPropertyInterface #calculate(java.lang.Object)
-		 */
 		@Override
 		public DataCell calculate(PMI input) {
 			return new DoubleCell(input.I2());
@@ -94,12 +82,6 @@ public enum PrincipalMomentOfInertiaDerivedProperties
 			DALTON + DELIMINATOR + ANGSTROM_SQUARED, null,
 			new String[] { "I" + SUBSCRIPT_3 }, 0.0, Double.POSITIVE_INFINITY) {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.vernalis.knime.internal.pmi.props.
-		 * CalculatedPropertyInterface #calculate(java.lang.Object)
-		 */
 		@Override
 		public DataCell calculate(PMI input) {
 			return new DoubleCell(input.I3());
@@ -111,12 +93,6 @@ public enum PrincipalMomentOfInertiaDerivedProperties
 			+ ")", UNITLESS, new String[] { SAUER_AND_SCHWARTZ }, null, 0.0,
 			1.0) {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.vernalis.knime.internal.pmi.props.
-		 * CalculatedPropertyInterface #calculate(java.lang.Object)
-		 */
 		@Override
 		public DataCell calculate(PMI input) {
 			if (input.I3() == 0.0) {
@@ -131,12 +107,6 @@ public enum PrincipalMomentOfInertiaDerivedProperties
 			+ ")", UNITLESS, new String[] { SAUER_AND_SCHWARTZ }, null, 0.5,
 			1.0) {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.vernalis.knime.internal.pmi.props.
-		 * CalculatedPropertyInterface #calculate(java.lang.Object)
-		 */
 		@Override
 		public DataCell calculate(PMI input) {
 			if (input.I3() == 0.0) {
@@ -150,12 +120,6 @@ public enum PrincipalMomentOfInertiaDerivedProperties
 	Sigma_npr("npr1 + npr2", UNITLESS, new String[] { "" },
 			new String[] { "Flatsum", "npr1+npr2", SIGMA + "npr" }, 1.0, 2.0) {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.vernalis.knime.internal.pmi.props.
-		 * CalculatedPropertyInterface #calculate(java.lang.Object)
-		 */
 		@Override
 		public DataCell calculate(PMI input) {
 
@@ -214,12 +178,6 @@ public enum PrincipalMomentOfInertiaDerivedProperties
 			+ "disc-shaped ~1", UNITLESS, new String[] { ARTECA_REV_COMP_CHEM },
 			new String[] { OMEGA + "A" }, 0.0, 1.0) {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.vernalis.knime.internal.pmi.props.
-		 * CalculatedPropertyInterface #calculate(java.lang.Object)
-		 */
 		@Override
 		public DataCell calculate(PMI input) {
 
@@ -241,12 +199,6 @@ public enum PrincipalMomentOfInertiaDerivedProperties
 			new String[] { LISTER_ET_AL_INTERNAL_ROTATION_AND_INVERSION },
 			new String[] { "S<sub>I</sub>" }, 0.0, 1.0) {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.vernalis.knime.internal.pmi.props.
-		 * CalculatedPropertyInterface #calculate(java.lang.Object)
-		 */
 		@Override
 		public DataCell calculate(PMI input) {
 			return new DoubleCell(input.I2() / (input.I1() * input.I3()));
@@ -262,12 +214,6 @@ public enum PrincipalMomentOfInertiaDerivedProperties
 			new String[] { ARTECA_REV_COMP_CHEM }, new String[] { EPSILON },
 			0.0, 1.0) {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.vernalis.knime.internal.pmi.props.
-		 * CalculatedPropertyInterface #calculate(java.lang.Object)
-		 */
 		@Override
 		public DataCell calculate(PMI input) {
 			double num = Math.pow(
@@ -281,12 +227,6 @@ public enum PrincipalMomentOfInertiaDerivedProperties
 			new String[] { "RG", "Radius of Gyration", "Gyradius" }, 0.0,
 			Double.POSITIVE_INFINITY) {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.vernalis.knime.internal.pmi.props.
-		 * CalculatedPropertyInterface #calculate(java.lang.Object)
-		 */
 		@Override
 		public DataCell calculate(PMI input) {
 			if (input.MWt() == null) {
@@ -505,78 +445,36 @@ public enum PrincipalMomentOfInertiaDerivedProperties
 		this.max = max;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.vernalis.knime.internal.pmi.props.CalculatedPropertyInterface
-	 * #getName()
-	 */
 	@Override
 	public String getName() {
 		return this.name().replace("_", " ");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.vernalis.knime.internal.pmi.props.CalculatedPropertyInterface
-	 * #getDescription()
-	 */
 	@Override
 	public String getDescription() {
 		return description;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.vernalis.knime.internal.pmi.props.CalculatedPropertyInterface
-	 * #getReferences()
-	 */
 	@Override
 	public String[] getReferences() {
 		return refs;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.vernalis.knime.internal.pmi.props.CalculatedPropertyInterface
-	 * #getAliases()
-	 */
 	@Override
 	public String[] getAliases() {
 		return aliases;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.vernalis.knime.internal.pmi.props.CalculatedPropertyInterface
-	 * #getMinimum()
-	 */
 	@Override
 	public Number getMinimum() {
 		return min;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.vernalis.knime.internal.pmi.props.CalculatedPropertyInterface
-	 * #getMaximum()
-	 */
 	@Override
 	public Number getMaximum() {
 		return max;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.vernalis.knime.internal.pmi.props.CalculatedPropertyInterface
-	 * #getUnits()
-	 */
 	@Override
 	public String getUnits() {
 		return units;
