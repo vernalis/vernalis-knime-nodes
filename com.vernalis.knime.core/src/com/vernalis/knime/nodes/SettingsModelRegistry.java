@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, Vernalis (R&D) Ltd
+ * Copyright (c) 2018, 2019 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,10 +14,13 @@
  ******************************************************************************/
 package com.vernalis.knime.nodes;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeLogger;
@@ -97,6 +100,76 @@ public interface SettingsModelRegistry {
 		return models;
 	}
 
+	default int getValidatedColumnSelectionModelColumnIndex(
+			SettingsModelString model, ColumnFilter filter, DataTableSpec spec,
+			Pattern preferredPattern, boolean matchWholeName, NodeLogger logger,
+			boolean dontAllowDuplicatesWithAvoid,
+			SettingsModelString... modelsToAvoid)
+			throws InvalidSettingsException {
+		List<String> colNames = spec.stream()
+				.filter(col -> filter.includeColumn(col))
+				.map(colSpec -> colSpec.getName()).collect(Collectors.toList());
+
+		// Ensure we have a column selected
+		if (isStringModelFilled(model)) {
+			// We have a selection - check it is present and correct...
+			if (!spec.containsName(model.getStringValue())) {
+				throw new InvalidSettingsException(
+						"The selected column (" + model.getStringValue()
+								+ ") is not present in the incoming table");
+			} else if (!colNames.contains(model.getStringValue())) {
+				throw new InvalidSettingsException(
+						"The selected column (" + model.getStringValue()
+								+ ") is not of the correct type");
+			}
+			StringBuilder warningBuilder = new StringBuilder();
+			for (SettingsModelString modelToAvoid : modelsToAvoid) {
+				if (model.getStringValue()
+						.equals(modelToAvoid.getStringValue())) {
+					if (warningBuilder.length() == 0) {
+						warningBuilder.append("Column selection for '")
+								.append(model.getKey()).append("' (")
+								.append(model.getStringValue())
+								.append(") is also selected for ");
+					} else {
+						warningBuilder.append(", ");
+					}
+					warningBuilder.append('\'').append(modelToAvoid.getKey())
+							.append('\'');
+				}
+			}
+			if (warningBuilder.length() > 0) {
+				if (dontAllowDuplicatesWithAvoid) {
+					throw new InvalidSettingsException(
+							warningBuilder.toString());
+				}
+				logger.warn(warningBuilder.toString());
+			}
+		} else {
+			// No column selected - guess, avoiding duplicates
+			Arrays.stream(modelsToAvoid).filter(x -> x.getStringValue() != null)
+					.forEach(x -> colNames.remove(x.getStringValue()));
+			if (colNames.isEmpty()) {
+				throw new InvalidSettingsException(filter.allFilteredMsg());
+			}
+			// Try to match the regex first
+			List<String> regexMatches = colNames.stream()
+					.filter(x -> matchWholeName
+							? preferredPattern.matcher(x).matches()
+							: preferredPattern.matcher(x).find())
+					.collect(Collectors.toList());
+			if (!regexMatches.isEmpty()) {
+				model.setStringValue(regexMatches.get(regexMatches.size() - 1));
+			} else {
+				model.setStringValue(colNames.get(colNames.size() - 1));
+			}
+			logger.warn("No column selected - guessed '"
+					+ model.getStringValue() + "'");
+
+		}
+		return spec.findColumnIndex(model.getStringValue());
+	}
+
 	/**
 	 * Method to check that the table spec contains a column of the name
 	 * supplied in the settings model, and that the selected column is of the
@@ -118,38 +191,10 @@ public interface SettingsModelRegistry {
 	 */
 	default int getValidatedColumnSelectionModelColumnIndex(
 			SettingsModelString model, ColumnFilter filter, DataTableSpec spec,
-			NodeLogger logger) throws InvalidSettingsException {
-
-		// Ensure we have a ph4 column selected
-		if (!isStringModelFilled(model)) {
-			// No column selected - guess...
-			for (int i = spec.getNumColumns() - 1; i >= 0; i--) {
-				final DataColumnSpec columnSpec = spec.getColumnSpec(i);
-				if (filter.includeColumn(columnSpec)) {
-					model.setStringValue(columnSpec.getName());
-					logger.warn("No column selected - guessed '"
-							+ model.getStringValue() + "'");
-					break;
-				}
-				if (i == 0) {
-					throw new InvalidSettingsException(filter.allFilteredMsg());
-				}
-			}
-		} else {
-			// We have a selection - check it is present and correct...
-			final DataColumnSpec columnSpec =
-					spec.getColumnSpec(model.getStringValue());
-			if (columnSpec == null) {
-				throw new InvalidSettingsException(
-						"The selected column (" + model.getStringValue()
-								+ ") is not present in the incoming table");
-			} else if (!filter.includeColumn(columnSpec)) {
-				throw new InvalidSettingsException(
-						"The selected column (" + model.getStringValue()
-								+ ") is not of the correct type");
-			}
-		}
-		return spec.findColumnIndex(model.getStringValue());
+			NodeLogger logger, SettingsModelString... modelsToAvoid)
+			throws InvalidSettingsException {
+		return getValidatedColumnSelectionModelColumnIndex(model, filter, spec,
+				Pattern.compile(".*"), true, logger, false, modelsToAvoid);
 	}
 
 	/**

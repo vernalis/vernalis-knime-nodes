@@ -2,7 +2,7 @@
 <feature
       id="com.vernalis.knime.feature"
       label="Vernalis KNIME Nodes"
-      version="1.21.0.qualifier"
+      version="1.22.0.qualifier"
       provider-name="Vernalis Research Ltd, Cambridge, UK"
       plugin="com.vernalis.knime.core">
 
@@ -29,7 +29,7 @@ along with the KNIME Nodes.  If not, see &amp;lt;http://www.gnu.org/licenses/&am
    </copyright>
 
    <license url="http://www.gnu.org/licenses/gpl-3.0.html">
-GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
+      GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. &lt;https://fsf.org/&gt;
  Everyone is permitted to copy and distribute verbatim copies
@@ -772,6 +772,12 @@ Public License instead of this License.  But first, please read
 
    <plugin
          id="com.vernalis.knime.misc.gc"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="com.vernalis.knime.chem.core"
          download-size="0"
          install-size="0"
          version="0.0.0"/>

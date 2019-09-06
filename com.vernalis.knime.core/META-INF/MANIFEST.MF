@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.core;singleton:=true
-Bundle-Version: 1.21.0.qualifier
+Bundle-Version: 1.22.0.qualifier
 Bundle-ClassPath: vernaliscore.jar
 Bundle-Activator: com.vernalis.knime.core.VernalisCoreNodePlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -23,13 +23,16 @@ Export-Package: com.vernalis.exceptions,
  com.vernalis.knime.data.datarow,
  com.vernalis.knime.data.datatable,
  com.vernalis.knime.dialog.components,
+ com.vernalis.knime.dist,
  com.vernalis.knime.iterators,
  com.vernalis.knime.misc,
  com.vernalis.knime.nodes,
+ com.vernalis.knime.nodes.propcalc,
  com.vernalis.knime.parallel,
  com.vernalis.knime.preferences,
  com.vernalis.knime.prefs.fieldeditors,
  com.vernalis.knime.swiggc,
+ com.vernalis.knime.util.math,
  com.vernalis.rest
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 

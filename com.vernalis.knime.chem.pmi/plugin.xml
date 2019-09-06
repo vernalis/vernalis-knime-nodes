@@ -2,18 +2,42 @@
 <?eclipse version="3.0"?>
 <plugin>
 <extension point="org.knime.workbench.repository.nodes">
-	<node category-path="/community/vernalis/pmi" 
-		factory-class="com.vernalis.knime.chem.pmi.nodes.pmi2.Pmi2NodeFactory"/>
-	<node category-path="/community/vernalis/pmi"
+	<node
+       category-path="/community/vernalis/chem/pmi"
+       deprecated="true"
+       factory-class="com.vernalis.knime.chem.pmi.nodes.pmi2.Pmi2NodeFactory"/>
+	<node category-path="/community/vernalis/chem/pmi"
 		factory-class="com.vernalis.knime.chem.pmi.nodes.transform.toprincaxes.AlignToPrincipalAxesNodeFactory"
 		/>
+ <node
+       category-path="/community/vernalis/chem//pmi"
+       deprecated="false"
+       factory-class="com.vernalis.knime.chem.pmi.nodes.props.pmiderived.PmiDerivedPropsNodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/chem/pmi/plot"
+       deprecated="false"
+       factory-class="com.vernalis.knime.chem.pmi.nodes.plot.scatter.PMIScatterPlotNodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/chem/pmi/plot"
+       deprecated="false"
+       factory-class="com.vernalis.knime.chem.pmi.nodes.plot.convexhull.PMIHullPlotNodeFactory">
+ </node>
 </extension>
 <extension point="org.knime.workbench.repository.categories">
 	<category description="Nodes relating to PMI plotting"
 		icon="icons/PMI_icon.png"
 		level-id="pmi"
 		name="Principal Moments of Inertia (PMIs)"
-		path="/community/vernalis/">
+		path="/community/vernalis/chem/">
 	</category>
+ <category
+       icon="icons/PMI_icon2.png"
+       level-id="plot"
+       locked="true"
+       name="PMI Plotting"
+       path="/community/vernalis/chem/pmi/">
+ </category>
 </extension>   
 </plugin>
