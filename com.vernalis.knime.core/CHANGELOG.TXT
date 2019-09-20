@@ -1,0 +1,12 @@
+v1.23.0 20-Sept-2019
+--------------------
+
+* Added fill(boolean[], boolean) method to ArrayUtils
+* Added of(boolean, int) method to ArrayUtils
+* Added set of copy(T[]) methods to ArrayUtils (including primitives int, short, byte, char, boolean, long, float, double versions)
+* Added DoubleSummary class
+* Removed blocks of commented out code from AbstractSimpleStreamableFunctionNodeModel
+* Added static helper class TableFactory to NodeDescriptionUtils class
+* Added NestedCounterIterator class
+* Added DialogComponentGroup class
+* Added LimitedTreeSet class

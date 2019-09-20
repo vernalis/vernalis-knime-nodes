@@ -37,12 +37,28 @@ public interface Point<T extends Point<T>>
 	 *            The dimension
 	 * @return The coordinate for the dimension
 	 */
-	public double getCoordinate(int dim);
+	public default double getCoordinate(int dim) {
+		return getCoordinates()[dim];
+	};
 
 	/**
 	 * @return an array of the point coordinates
 	 */
 	double[] getCoordinates();
+
+	/**
+	 * Optional operation to set a coordinate value
+	 * 
+	 * @param dim
+	 *            The dimension
+	 * @param val
+	 *            The new coordinate value
+	 * @throws UnsupportedOperationException
+	 */
+	default void setCoordinate(int dim, double val)
+			throws UnsupportedOperationException {
+		throw new UnsupportedOperationException();
+	}
 
 	/**
 	 * Treating two points as a pair of vectors, calculate the dot product
@@ -114,6 +130,10 @@ public interface Point<T extends Point<T>>
 	 */
 	@Override
 	public default double getDistance(T o) {
+		if (o == null || getNumDimensions() != o.getNumDimensions()) {
+			throw new IllegalArgumentException(
+					"Another point must have the same number of dimensions!");
+		}
 		double dist = 0.0;
 		for (int d = 0; d < getNumDimensions(); d++) {
 			double delta = getCoordinate(d) - o.getCoordinate(d);

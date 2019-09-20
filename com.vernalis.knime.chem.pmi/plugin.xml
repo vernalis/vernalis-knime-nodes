@@ -24,6 +24,11 @@
        deprecated="false"
        factory-class="com.vernalis.knime.chem.pmi.nodes.plot.convexhull.PMIHullPlotNodeFactory">
  </node>
+ <node
+       category-path="/community/vernalis/chem/pmi/plot"
+       deprecated="false"
+       factory-class="com.vernalis.knime.chem.pmi.nodes.plot.kerneldensity.PMIKernelDensityPlotNodeFactory">
+ </node>
 </extension>
 <extension point="org.knime.workbench.repository.categories">
 	<category description="Nodes relating to PMI plotting"

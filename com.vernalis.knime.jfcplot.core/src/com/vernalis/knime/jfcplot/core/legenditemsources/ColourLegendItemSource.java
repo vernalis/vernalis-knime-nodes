@@ -40,7 +40,31 @@ public class ColourLegendItemSource implements LegendItemSource {
 	private final LegendItemCollection lic = new LegendItemCollection();
 
 	/**
-	 * Constructor
+	 * Constructor from a map of colours and names
+	 * 
+	 * @param colours
+	 *            The colour/name pairings
+	 * @param size
+	 *            The size of plot symbol
+	 * @param shape
+	 *            The shape to use in the legend
+	 */
+	public ColourLegendItemSource(Map<String, Color> colours, double size,
+			Shape shape) {
+		ShapeTranslator shapeTrans = new ShapeTranslator((float) size);
+		colours.entrySet()
+				.forEach(series -> lic.add(new LegendItem(series.getKey(), null,
+						null, null, true, shapeTrans.getAWTShape(shape), true,
+						series.getValue(), true, series.getValue(),
+						new BasicStroke(1.0f), false,
+						new Rectangle2D.Double(-size / 2.0, -size / 2.0, size,
+								size),
+						new BasicStroke(1.0f), series.getValue())));
+	}
+
+	/**
+	 * Convenience constructor from a collection of
+	 * {@link SimpleShapeDrawableDataObject}
 	 * 
 	 * @param dataSeries
 	 *            The {@link SimpleShapeDrawableDataObject} collection
@@ -55,20 +79,12 @@ public class ColourLegendItemSource implements LegendItemSource {
 			Shape shape) {
 
 		// We need a unique mapping of labels to colour
-		Map<String, Color> colours = dataSeries.stream()
+		this(dataSeries.stream()
 				.collect(Collectors.toMap(
 						SimpleShapeDrawableDataObject::getColourLabel,
 						SimpleShapeDrawableDataObject::getColour,
-						(col0, col1) -> col0));
-		ShapeTranslator shapeTrans = new ShapeTranslator((float) size);
-		colours.entrySet()
-				.forEach(series -> lic.add(new LegendItem(series.getKey(), null,
-						null, null, true, shapeTrans.getAWTShape(shape), true,
-						series.getValue(), true, series.getValue(),
-						new BasicStroke(1.0f), false,
-						new Rectangle2D.Double(-size / 2.0, -size / 2.0, size,
-								size),
-						new BasicStroke(1.0f), series.getValue())));
+						(col0, col1) -> col0)),
+				size, shape);
 
 	}
 

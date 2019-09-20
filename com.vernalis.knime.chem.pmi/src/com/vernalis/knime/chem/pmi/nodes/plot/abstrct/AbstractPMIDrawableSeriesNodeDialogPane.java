@@ -50,9 +50,10 @@ public class AbstractPMIDrawableSeriesNodeDialogPane
 
 	static final String SCATTER_OPTIONS = "Scatter Options";
 	static final String PMI_OPTIONS = "PMI Options";
-	static final String SHOW_FULL_TRIANGLE = "Show full triangle";
-	static final String TRIANGLE_BOUNDS_COLOUR = "Triangle bounds colour";
-	static final String VERTEX_LABEL_COLOUR = "Vertex label colour";
+	public static final String SHOW_FULL_TRIANGLE = "Show full triangle";
+	public static final String TRIANGLE_BOUNDS_COLOUR =
+			"Triangle bounds colour";
+	public static final String VERTEX_LABEL_COLOUR = "Vertex label colour";
 	static final String DEFAULT_SHAPE = "Default Shape";
 	static final String ITEM_SIZE = "Item size";
 	static final String SHOW_COLOUR_GRADIENT_LEGEND =
@@ -61,9 +62,9 @@ public class AbstractPMIDrawableSeriesNodeDialogPane
 	static final String SHOW_SHAPE_NOMINAL_COLOURS_LEGEND =
 			"Show Shape/Nominal Colours Legend";
 	static final String SHOW_SIZE_LEGEND = "Show Size legend";
-	protected static final String N_PMI2_I2_I3_COLUMN =
+	public static final String N_PMI2_I2_I3_COLUMN =
 			"nPMI2 (I2/I3, npr2) column";
-	protected static final String N_PMI1_I1_I3_COLUMN =
+	public static final String N_PMI1_I1_I3_COLUMN =
 			"nPMI1 (I1/I3, npr1) column";
 	protected SettingsModelBoolean sizeLegendMdl;
 	protected SettingsModelBoolean shapeLegendMdl;
@@ -252,7 +253,7 @@ public class AbstractPMIDrawableSeriesNodeDialogPane
 	/**
 	 * @return The Settings model for the {@value #VERTEX_LABEL_COLOUR} setting
 	 */
-	static final SettingsModelColor getVertexColourModel() {
+	public static final SettingsModelColor getVertexColourModel() {
 		return new SettingsModelColor(VERTEX_LABEL_COLOUR, Color.RED);
 	}
 
@@ -260,14 +261,14 @@ public class AbstractPMIDrawableSeriesNodeDialogPane
 	 * @return The Settings model for the {@value #TRIANGLE_BOUNDS_COLOUR}
 	 *         setting
 	 */
-	static SettingsModelColor getTriangleColourModel() {
+	public static SettingsModelColor getTriangleColourModel() {
 		return new SettingsModelColor(TRIANGLE_BOUNDS_COLOUR, Color.BLACK);
 	}
 
 	/**
 	 * @return The Settings model for the {@value #SHOW_FULL_TRIANGLE} setting
 	 */
-	static SettingsModelBoolean createShowFullTriangleModel() {
+	public static SettingsModelBoolean createShowFullTriangleModel() {
 		return new SettingsModelBoolean(SHOW_FULL_TRIANGLE, true);
 	}
 

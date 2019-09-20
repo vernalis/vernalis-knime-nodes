@@ -271,9 +271,9 @@ public class AbstractPMIDrawableSeriesPlotNodeModel<T extends DrawableDataObject
 	protected final SettingsModelBoolean sizeLegendMdl = registerSettingsModel(
 			AbstractPMIDrawableSeriesNodeDialogPane.getSizeLegendModel());
 
-	protected static final Pattern NPR1_PATTERN = Pattern
+	public static final Pattern NPR1_PATTERN = Pattern
 			.compile("^(I1\\s*/\\s*I3|npr1|nPMI1).*", Pattern.CASE_INSENSITIVE);
-	protected static final Pattern NPR2_PATTERN = Pattern
+	public static final Pattern NPR2_PATTERN = Pattern
 			.compile("^(I2\\s*/\\s*I3|npr2|nPMI2).*", Pattern.CASE_INSENSITIVE);
 
 	/** column indices that specify which columns are used. */

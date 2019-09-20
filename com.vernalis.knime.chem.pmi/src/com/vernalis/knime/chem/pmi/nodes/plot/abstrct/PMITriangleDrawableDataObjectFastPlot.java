@@ -88,10 +88,11 @@ public class PMITriangleDrawableDataObjectFastPlot
 	 * @param edgeColour
 	 *            The colour of the vertex edge labels
 	 */
-	PMITriangleDrawableDataObjectFastPlot(Collection<DrawableDataObject> data,
-			AttributedString xAxisLabel, double xAxisMin, double xAxisMax,
-			AttributedString yAxisLabel, double yAxisMin, double yAxisMax,
-			Color vertexLabelColour, Color edgeColour) {
+	public PMITriangleDrawableDataObjectFastPlot(
+			Collection<DrawableDataObject> data, AttributedString xAxisLabel,
+			double xAxisMin, double xAxisMax, AttributedString yAxisLabel,
+			double yAxisMin, double yAxisMax, Color vertexLabelColour,
+			Color edgeColour) {
 		super(data, xAxisLabel, xAxisMin, xAxisMax, yAxisLabel, yAxisMin,
 				yAxisMax);
 		this.pmiTriangle = PmiTriangleBondsDrawableDataObject.get(edgeColour,
@@ -125,11 +126,12 @@ public class PMITriangleDrawableDataObjectFastPlot
 	 * @param edgeColour
 	 *            The colour of the vertex edge labels
 	 */
-	PMITriangleDrawableDataObjectFastPlot(Collection<DrawableDataObject> data,
-			AttributedString xAxisLabel, double xRangeEndFrac,
-			DoubleSummaryStatistics xDataDss, AttributedString yAxisLabel,
-			double yRangeEndFrac, DoubleSummaryStatistics yDataDss,
-			Color vertexLabelColour, Color edgeColour) {
+	public PMITriangleDrawableDataObjectFastPlot(
+			Collection<DrawableDataObject> data, AttributedString xAxisLabel,
+			double xRangeEndFrac, DoubleSummaryStatistics xDataDss,
+			AttributedString yAxisLabel, double yRangeEndFrac,
+			DoubleSummaryStatistics yDataDss, Color vertexLabelColour,
+			Color edgeColour) {
 		super(data, xAxisLabel, xRangeEndFrac, xDataDss, yAxisLabel,
 				yRangeEndFrac, yDataDss);
 		this.pmiTriangle = PmiTriangleBondsDrawableDataObject.get(edgeColour,
@@ -160,10 +162,11 @@ public class PMITriangleDrawableDataObjectFastPlot
 	 * @param edgeColour
 	 *            The colour of the vertex edge labels
 	 */
-	PMITriangleDrawableDataObjectFastPlot(Collection<DrawableDataObject> data,
-			String xAxisLabel, double xAxisMin, double xAxisMax,
-			String yAxisLabel, double yAxisMin, double yAxisMax,
-			Color vertexLabelColour, Color edgeColour) {
+	public PMITriangleDrawableDataObjectFastPlot(
+			Collection<DrawableDataObject> data, String xAxisLabel,
+			double xAxisMin, double xAxisMax, String yAxisLabel,
+			double yAxisMin, double yAxisMax, Color vertexLabelColour,
+			Color edgeColour) {
 		super(data, xAxisLabel, xAxisMin, xAxisMax, yAxisLabel, yAxisMin,
 				yAxisMax);
 		this.pmiTriangle = PmiTriangleBondsDrawableDataObject.get(edgeColour,
@@ -197,11 +200,12 @@ public class PMITriangleDrawableDataObjectFastPlot
 	 * @param edgeColour
 	 *            The colour of the vertex edge labels
 	 */
-	PMITriangleDrawableDataObjectFastPlot(Collection<DrawableDataObject> data,
-			String xAxisLabel, double xRangeEndFrac,
-			DoubleSummaryStatistics xDataDss, String yAxisLabel,
-			double yRangeEndFrac, DoubleSummaryStatistics yDataDss,
-			Color vertexLabelColour, Color edgeColour) {
+	public PMITriangleDrawableDataObjectFastPlot(
+			Collection<DrawableDataObject> data, String xAxisLabel,
+			double xRangeEndFrac, DoubleSummaryStatistics xDataDss,
+			String yAxisLabel, double yRangeEndFrac,
+			DoubleSummaryStatistics yDataDss, Color vertexLabelColour,
+			Color edgeColour) {
 		super(data, xAxisLabel, xRangeEndFrac, xDataDss, yAxisLabel,
 				yRangeEndFrac, yDataDss);
 		this.pmiTriangle = PmiTriangleBondsDrawableDataObject.get(edgeColour,

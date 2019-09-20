@@ -14,6 +14,8 @@
  ******************************************************************************/
 package com.vernalis.knime.nodes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
@@ -32,6 +34,7 @@ import org.osgi.framework.Bundle;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 
+import com.vernalis.knime.misc.ArrayUtils;
 import com.vernalis.knime.misc.EitherOr;
 
 /**
@@ -256,26 +259,6 @@ public class NodeDescriptionUtils {
 			NodeFactory<? extends NodeModel> nodeFactory) throws DOMException {
 		addBundleInformation(node,
 				(Class<? extends NodeFactory<?>>) nodeFactory.getClass());
-		// the following broke in KNIME 3.7.0 as NABI moved and was replaced
-		// with
-		// a subclass, NodeAndBundleInformationPersistor
-		// NodeAndBundleInformation nodeInfo =
-		// new NodeAndBundleInformation(nodeFactory);
-		//
-		// Element bundleElement = ((Element)
-		// node.getDomNode()).getOwnerDocument()
-		// .createElement("osgi-info");
-		// bundleElement.setAttribute("bundle-symbolic-name",
-		// nodeInfo.getFeatureSymbolicName().orElse(
-		// nodeInfo.getBundleSymbolicName().orElse("<Unknown>")));
-		// bundleElement.setAttribute("bundle-name", nodeInfo.getFeatureName()
-		// .orElse(nodeInfo.getBundleName().orElse("<Unknown>")));
-		// bundleElement.setAttribute("bundle-vendor",
-		// nodeInfo.getFeatureVendor()
-		// .orElse(nodeInfo.getBundleVendor().orElse("<Unknown>")));
-		// bundleElement.setAttribute("factory-package",
-		// nodeFactory.getClass().getPackage().getName());
-		// ((Element) node.getDomNode()).appendChild(bundleElement);
 	}
 
 	/**
@@ -332,4 +315,69 @@ public class NodeDescriptionUtils {
 		return retVal;
 	}
 
+	/**
+	 * A helper class to build a paragraph with a table inserted
+	 * 
+	 * @author S.Roughley knime@vernalis.com
+	 *
+	 */
+	public static class TableFactory {
+
+		private String[] columnTitles;
+		private String preTableText, postTableText;
+		private List<String[]> tableRows = new ArrayList<>();
+
+		public TableFactory(String... columnTitles) {
+			this.columnTitles = ArrayUtils.copy(columnTitles);
+		}
+
+		public TableFactory setPreTableText(String str) {
+			this.preTableText = str.isEmpty() ? null : str;
+			return this;
+		}
+
+		public TableFactory setPostTableText(String str) {
+			this.postTableText = str.isEmpty() ? null : str;
+			return this;
+		}
+
+		public TableFactory addRowToTable(String... str) {
+			this.tableRows.add(ArrayUtils.copy(str));
+			return this;
+		}
+
+		public void buildTable(XmlCursor introCursor) {
+			introCursor.beginElement("p");
+			if (preTableText != null && !preTableText.isEmpty()) {
+				introCursor.insertChars(preTableText);
+			}
+			introCursor.beginElement("table");
+			introCursor.insertAttributeWithValue("class", "introtable");
+			introCursor.insertAttributeWithValue("style", "width:100%");
+			introCursor.beginElement("tr");
+			for (String columnTitle : columnTitles) {
+				introCursor.insertElementWithText("th", columnTitle);
+			}
+			introCursor.toEndToken();
+			introCursor.toNextToken();// tr
+
+			for (String[] row : tableRows) {
+				introCursor.beginElement("tr");
+				for (String cell : row) {
+					introCursor.insertElementWithText("td", cell);
+				}
+
+				introCursor.toEndToken();
+				introCursor.toNextToken();
+			}
+
+			introCursor.toEndToken();
+			introCursor.toNextToken();// End of table
+			if (postTableText != null && !postTableText.isEmpty()) {
+				introCursor.insertChars(postTableText);
+			}
+			introCursor.toEndToken();
+			introCursor.toNextToken();// End of para
+		}
+	}
 }

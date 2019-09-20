@@ -16,6 +16,7 @@ package com.vernalis.knime.jfcplot.core.drawabledataobject;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.geom.Rectangle2D;
 import java.util.stream.DoubleStream;
 
@@ -90,10 +91,11 @@ public class SimpleShapeDrawableDataObject implements DrawableDataObject,
 		} else {
 			shape = ShapeUtilities.createTranslatedShape(shape, transX, transY);
 		}
+		Paint oldPaint = g2.getPaint();
 		g2.setPaint(shapeColour);
 		g2.draw(shape);
 		g2.fill(shape);
-
+		g2.setPaint(oldPaint);
 	}
 
 	@Override

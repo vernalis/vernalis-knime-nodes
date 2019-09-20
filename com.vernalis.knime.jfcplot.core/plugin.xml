@@ -20,9 +20,9 @@
          point="org.knime.workbench.repository.categories">
       <category
             icon="icons/plot.png"
-            level-id="plotting"
+            level-id="plot"
             locked="false"
-            name="Plotting"
+            name="Plotting (Views)"
             path="/community/vernalis/">
       </category>
    </extension>

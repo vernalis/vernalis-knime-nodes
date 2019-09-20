@@ -281,6 +281,7 @@ public class PMIHullPlotNodeModel
 			return Collections.singleton(legend);
 
 		default:
+			assert false;// Shouldnt get here
 			return Collections.emptySet();
 		}
 

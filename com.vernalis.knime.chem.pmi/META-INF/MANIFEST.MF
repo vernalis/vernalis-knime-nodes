@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.chem.pmi;singleton:=true
-Bundle-Version: 1.22.0.qualifier
+Bundle-Version: 1.23.0.qualifier
 Bundle-ClassPath: pmi.jar
 Bundle-Activator: com.vernalis.knime.chem.pmi.PmiNodePlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -16,7 +16,8 @@ Require-Bundle: org.eclipse.core.runtime,
  com.vernalis.knime.core;bundle-version="[1.6.0,2.0.0)",
  com.vernalis.knime.chem.core;bundle-version="[1.22.0,2.0.0)",
  org.knime.ext.jfreechart;bundle-version="[3.7.0,5.0.0)",
- com.vernalis.knime.jfcplot.core;bundle-version="[1.22.0,2.0.0)"
+ com.vernalis.knime.jfcplot.core;bundle-version="[1.22.0,2.0.0)",
+ com.vernalis.knime.plot.jfreechart
 Bundle-ActivationPolicy: lazy
 Export-Package: 
  com.vernalis.knime.chem.pmi,

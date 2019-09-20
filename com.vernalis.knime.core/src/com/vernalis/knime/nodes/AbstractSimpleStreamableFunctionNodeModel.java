@@ -46,77 +46,10 @@ public abstract class AbstractSimpleStreamableFunctionNodeModel extends
 		super();
 	}
 
-	// /**
-	// * Method to store non-null {@link SettingsModel}s for saving/loading
-	// *
-	// * @param model
-	// * The model
-	// * @return The model unchanged
-	// */
-	// @Override
-	// public <T extends SettingsModel> T registerSettingsModel(T model) {
-	// if (model != null) {
-	// models.add(model);
-	// }
-	// return model;
-	// }
-
 	@Override
 	public Set<SettingsModel> getModels() {
 		return models;
 	}
-
-	// /**
-	// * Method to store multiple {@link SettingsModel}s for saving/loading
-	// *
-	// * @param models
-	// * an {@link Iterable} of models
-	// * @return the unchanged models
-	// */
-	// @Override
-	// public final <T extends Iterable<U>, U extends SettingsModel> T
-	// registerModels(
-	// T models) {
-	// for (U model : models) {
-	// if (model != null) {
-	// registerSettingsModel(model);
-	// }
-	// }
-	// return models;
-	// }
-	//
-	// /**
-	// * Method to store multiple models passed as the values of a {@link Map}
-	// for
-	// * saving / loading
-	// *
-	// * @param models
-	// * a {@link Map} of the models
-	// * @return the unchanged map
-	// */
-	// @Override
-	// public final <T extends Map<?, V>, V extends SettingsModel> T
-	// registerMapValuesModels(
-	// T models) {
-	// registerModels(models.values());
-	// return models;
-	// }
-	//
-	// /**
-	// * Method to store multiple models passed as the keys of a {@link Map} for
-	// * saving / loading
-	// *
-	// * @param models
-	// * a {@link Map} of the models
-	// * @return the unchanged map
-	// */
-	// @Override
-	// public final <T extends Map<K, ?>, K extends SettingsModel> T
-	// registerMapKeysModels(
-	// T models) {
-	// registerModels(models.keySet());
-	// return models;
-	// }
 
 	@Override
 	public void saveSettingsTo(NodeSettingsWO settings) {
@@ -136,75 +69,5 @@ public abstract class AbstractSimpleStreamableFunctionNodeModel extends
 			throws InvalidSettingsException {
 		SettingsModelRegistry.super.loadValidatedSettingsFrom(settings);
 	}
-
-	// /**
-	// * Method to check that a {@link SettingsModelString} contains a value
-	// (i.e.
-	// * a non-{@code null} non-empty String
-	// *
-	// * @param stringModel
-	// * The {@link SettingsModelString} to test
-	// * @return {@code true} if a value is provided
-	// */
-	// @Override
-	// public boolean isStringModelFilled(SettingsModelString stringModel) {
-	// return stringModel.getStringValue() != null
-	// && !stringModel.getStringValue().isEmpty();
-	// }
-
-	// /**
-	// * Method to check that the table spec contains a column of the name
-	// * supplied in the settings model, and that the selected column is of the
-	// * required type. If no column is selected (the model contains either
-	// * {@code null} or an empty string), then an attempt is made to guess by
-	// * picking the last column of the required type
-	// *
-	// * @param model
-	// * The model to validate
-	// * @param filter
-	// * The {@link ColumnFilter} which the column must pass
-	// * @param spec
-	// * The {@link DataTableSpec} to check against
-	// * @return The column index of a (guessed) validated column
-	// * @throws InvalidSettingsException
-	// * If the column could not be validated or guessed
-	// */
-	// @Override
-	// public final int getValidatedColumnSelectionModelColumnIndex(
-	// SettingsModelString model, ColumnFilter filter, DataTableSpec spec,
-	// NodeLogger logger)
-	// throws InvalidSettingsException {
-	//
-	// // Ensure we have a ph4 column selected
-	// if (!isStringModelFilled(model)) {
-	// // No column selected - guess...
-	// for (int i = spec.getNumColumns() - 1; i >= 0; i--) {
-	// final DataColumnSpec columnSpec = spec.getColumnSpec(i);
-	// if (filter.includeColumn(columnSpec)) {
-	// model.setStringValue(columnSpec.getName());
-	// setWarningMessage("No column selected - guessed '"
-	// + model.getStringValue() + "'");
-	// break;
-	// }
-	// if (i == 0) {
-	// throw new InvalidSettingsException(filter.allFilteredMsg());
-	// }
-	// }
-	// } else {
-	// // We have a selection - check it is present and correct...
-	// final DataColumnSpec columnSpec =
-	// spec.getColumnSpec(model.getStringValue());
-	// if (columnSpec == null) {
-	// throw new InvalidSettingsException(
-	// "The selected column (" + model.getStringValue()
-	// + ") is not present in the incoming table");
-	// } else if (!filter.includeColumn(columnSpec)) {
-	// throw new InvalidSettingsException(
-	// "The selected column (" + model.getStringValue()
-	// + ") is not of the correct type");
-	// }
-	// }
-	// return spec.findColumnIndex(model.getStringValue());
-	// }
 
 }

@@ -58,6 +58,12 @@ import static com.vernalis.knime.nodes.NodeDescriptionUtils.createTab;
 public abstract class AbstractPMIDrawableSeriesPlotNodeDescription
 		extends NodeDescription {
 
+	public static final String SHOW_FULL_TRIANGLE_DESCRIPTION =
+			"Should the full PMI triangle always be shown?";
+	public static final String TRIANGLE_BOUND_COLOUR_DESCRIPTION =
+			"The colour of the bounding triangle on the PMI Plot";
+	public static final String VERTEX_LABEL_COLOUR_DESCRIPTION =
+			"The colour of the vertex labels ('Rod', 'Disc', 'Sphere') on the PMI plot";
 	private final String iconName, nodeName;
 	private final int scatterPortId;
 	private final String[] portNames;
@@ -176,12 +182,10 @@ public abstract class AbstractPMIDrawableSeriesPlotNodeDescription
 		Tab tab = portNames.length > 0 ? createTab(fullDesc, PMI_OPTIONS)
 				: createTab(fullDesc, SCATTER_OPTIONS);
 		addOptionToTab(tab, VERTEX_LABEL_COLOUR,
-				"The colour of the vertex labels ('Rod', 'Disc', 'Sphere') on the PMI plot");
+				VERTEX_LABEL_COLOUR_DESCRIPTION);
 		addOptionToTab(tab, TRIANGLE_BOUNDS_COLOUR,
-				"The colour of the bounding triangle on the PMI Plot");
-		addOptionToTab(tab, SHOW_FULL_TRIANGLE,
-				"Should the full PMI triangle always be shown?");
-
+				TRIANGLE_BOUND_COLOUR_DESCRIPTION);
+		addOptionToTab(tab, SHOW_FULL_TRIANGLE, SHOW_FULL_TRIANGLE_DESCRIPTION);
 		if (portNames.length > 0) {
 			tab = createTab(fullDesc, SCATTER_OPTIONS);
 		}

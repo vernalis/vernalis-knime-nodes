@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.core;singleton:=true
-Bundle-Version: 1.22.0.qualifier
+Bundle-Version: 1.23.0.qualifier
 Bundle-ClassPath: vernaliscore.jar
 Bundle-Activator: com.vernalis.knime.core.VernalisCoreNodePlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -16,6 +16,7 @@ Bundle-ActivationPolicy: lazy
 Export-Package: com.vernalis.exceptions,
  com.vernalis.io,
  com.vernalis.knime.core,
+ com.vernalis.knime.core.collections,
  com.vernalis.knime.core.memory,
  com.vernalis.knime.core.os,
  com.vernalis.knime.core.system,
