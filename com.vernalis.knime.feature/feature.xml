@@ -788,4 +788,10 @@ Public License instead of this License.  But first, please read
          install-size="0"
          version="0.0.0"/>
 
+   <plugin
+         id="com.vernalis.knime.plot.jfreechart"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
 </feature>
