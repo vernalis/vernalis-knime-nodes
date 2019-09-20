@@ -179,6 +179,19 @@ public class KernelDensity2DPlotNodeModel extends
 			yAutoRngMdl = null;
 		}
 
+		numContoursMdl.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				fillContoursMdl.setEnabled(numContoursMdl.getIntValue() > 0);
+				contourIntervalSchemaMdl
+						.setEnabled(numContoursMdl.getIntValue() > 0);
+			}
+		});
+
+		fillContoursMdl.setEnabled(numContoursMdl.getIntValue() > 0);
+		contourIntervalSchemaMdl.setEnabled(numContoursMdl.getIntValue() > 0);
+
 	}
 
 	/**
