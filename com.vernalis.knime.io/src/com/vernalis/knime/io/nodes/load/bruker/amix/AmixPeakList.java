@@ -207,14 +207,9 @@ final class AmixPeakList implements MultilineTextObject {
 								.collect(Collectors.joining(lineSeparator)));
 		retVal[i++] = title == null || title.isEmpty()
 				? DataType.getMissingCell() : new StringCell(title);
-		DataCell dateCell;
-		try {
-			dateCell = date == null || date.isEmpty()
-					? DataType.getMissingCell()
-					: DateAndTimeCellFactory.create(date, AMIX_DATE_FORMAT);
-		} catch (IllegalArgumentException e) {
-			dateCell = DateAndTimeCellFactory.create(date, AMIX_DATE_FORMAT_2);
-		}
+		DataCell dateCell = date == null || date.isEmpty()
+				? DataType.getMissingCell() : parseDate(date);
+
 		retVal[i++] = dateCell;
 		retVal[i++] = user == null || user.isEmpty() ? DataType.getMissingCell()
 				: new StringCell(user);
@@ -256,6 +251,16 @@ final class AmixPeakList implements MultilineTextObject {
 				? DataType.getMissingCell()
 				: CollectionCellFactory.createListCell(annotation);
 		return retVal;
+
+	}
+
+	@SuppressWarnings("deprecation")
+	private static synchronized DataCell parseDate(String date) {
+		try {
+			return DateAndTimeCellFactory.create(date, AMIX_DATE_FORMAT);
+		} catch (IllegalArgumentException e) {
+			return DateAndTimeCellFactory.create(date, AMIX_DATE_FORMAT_2);
+		}
 
 	}
 

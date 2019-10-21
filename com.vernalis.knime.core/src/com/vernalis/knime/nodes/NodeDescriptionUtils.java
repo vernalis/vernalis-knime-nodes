@@ -50,6 +50,54 @@ public class NodeDescriptionUtils {
 	}
 
 	/**
+	 * Method to insert a sub-heading into the node description
+	 * 
+	 * @param introCursor
+	 *            The current XmlCursor
+	 * @param subHeading
+	 *            The subheading text
+	 */
+	public static void insertSubHeading(XmlCursor introCursor,
+			String subHeading) {
+		introCursor.insertElementWithText("h2", subHeading);
+	}
+
+	/**
+	 * Method to insert a URL into the node description, showing the URL as the
+	 * text
+	 * 
+	 * @param introCursor
+	 *            The current XML cursor. This should be within a 'p' element
+	 * @param url
+	 *            The URL and text
+	 */
+	public static void insertURL(XmlCursor introCursor, String url) {
+		insertURL(introCursor, url, url);
+	}
+
+	/**
+	 * Method to insert a URL into the node description
+	 * 
+	 * @param introCursor
+	 *            The current XML cursor. This should be within a 'p' element
+	 * @param url
+	 *            The URL
+	 * @param displayText
+	 *            The text to display for the link
+	 */
+	public static void insertURL(XmlCursor introCursor, String url,
+			String displayText) {
+		if (displayText == null || displayText.isEmpty()) {
+			insertURL(introCursor, url, url);
+		}
+		introCursor.beginElement("a");
+		introCursor.insertAttributeWithValue("href", url);
+		introCursor.insertChars(displayText);
+		introCursor.toEndToken();
+		introCursor.toNextToken();
+	}
+
+	/**
 	 * Method to add the guidelines about the rSMARTS specification
 	 * 
 	 * @param introCursor

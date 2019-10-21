@@ -1,3 +1,9 @@
+v1.24.0 21-Oct-2019
+-------------------
+
+* Added #includeColumn(DataType) method to RdkitCompatibleColumnFormats class
+
+
 v1.23.0 20-Sept-2019
 --------------------
 

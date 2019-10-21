@@ -103,6 +103,15 @@ public enum RdkitCompatibleColumnFormats implements ColumnFilter {
 	@Override
 	public boolean includeColumn(DataColumnSpec colSpec) {
 		DataType colType = colSpec.getType();
+		return includeColumn(colType);
+	}
+
+	/**
+	 * @param colType
+	 *            The column type
+	 * @return true of a column of the given type should be included
+	 */
+	public boolean includeColumn(DataType colType) {
 		for (Class<? extends DataValue> valClass : m_colFormats) {
 			if (colType.isCompatible(valClass)
 					|| colType.isAdaptable(valClass)) {

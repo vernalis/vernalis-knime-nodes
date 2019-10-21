@@ -1,3 +1,11 @@
+v1.24.0 21-Oct-2019
+-------------------
+
+* Added DialogComponentMultilineStringFlowVar
+* Added DialogComponentEmpty
+* Added #insertSubheading(XmlCursor, String), #insertURL(XmlCursor, String) and #insertURL(XmlCursor, String, String) methods to NodeDescriptionUtils
+
+
 v1.23.0 20-Sept-2019
 --------------------
 

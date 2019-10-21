@@ -157,7 +157,7 @@ public class Sdfile implements MultilineTextObject {
 				: string.trim().isEmpty() ? null : string.trim();
 	}
 
-	private Date parseDate(String dateString) {
+	private synchronized Date parseDate(String dateString) {
 		if (dateString == null || dateString.isEmpty()) {
 			return null;
 		}
