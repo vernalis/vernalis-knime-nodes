@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) 2019, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode
+	icon="./missing2empty.png"
+	type="Manipulator">
+	<name>Empty Collection to Missing</name>
+
+	<shortDescription>
+		Converts empty collections (i.e. a collection
+		containing no members) to missing cells
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>The node converts empty collections (i.e. a collection containing
+				no members) to missing cells
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+		</intro>
+
+		<option name="Collection Columns">The List or Set column(s)
+</option>
+	<option name="Replace input columns?">Should the input columns be replaced in situ? If
+		not, new columns will be appended to the table, with the
+		suffix '
+		(Empty -> Missing)' added to their name(s)
+	</option>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="Collection column(s)">Table containing one or more collection (Set or List) columns
+		</inPort>
+		<outPort
+			index="0"
+			name="Collection column(s)">Table containing the input table with empty collections converted to missing cells
+		</outPort>
+	</ports>
+
+</knimeNode>

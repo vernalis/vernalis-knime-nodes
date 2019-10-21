@@ -98,16 +98,16 @@
      		category-path="/community/vernalis/misc/"
             factory-class="com.vernalis.nodes.urlencode.UrlDecodeNodeFactory" />
      <node
-     		category-path="/community/vernalis/misc/"
-            factory-class="com.vernalis.nodes.list2set.List2SetNodeFactory" />
+     		category-path="/community/vernalis/collections/"
+            factory-class="com.vernalis.nodes.collection.list2set.List2SetNodeFactory" />
     <!-- v 1.20.0 -->
      <node
-           category-path="/community/vernalis/misc/"
-           factory-class="com.vernalis.nodes.set2list.Set2ListNodeFactory">
+           category-path="/community/vernalis/collections/"
+           factory-class="com.vernalis.nodes.collection.set2list.Set2ListNodeFactory">
      </node>
      <node
-           category-path="/community/vernalis/misc/"
-           factory-class="com.vernalis.nodes.collection2string.ColToStringNodeFactory">
+           category-path="/community/vernalis/collections/"
+           factory-class="com.vernalis.nodes.collection.collection2string.ColToStringNodeFactory">
      </node>
 
       <!-- Deprecated Nodes -->
@@ -149,6 +149,21 @@
             category-path="/community/vernalis/misc/"
             deprecated="false"
             factory-class="com.vernalis.nodes.misc.trimtable.TrimTableNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/collections/"
+            deprecated="false"
+            factory-class="com.vernalis.nodes.collection.missing.EmptyToMissingCollectionNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/collections/"
+            deprecated="false"
+            factory-class="com.vernalis.nodes.collection.missing.MissingToEmptyCollectionNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/collections/"
+            deprecated="false"
+            factory-class="com.vernalis.nodes.collection.size.CollectionSizeNodeFactory">
       </node>
    </extension>
    <extension
@@ -215,6 +230,13 @@
             locked="false"
             name="Plate Tools"
             path="/community/vernalis/misc">
+      </category>
+      <category
+            icon="icons/collections.png"
+            level-id="collections"
+            locked="true"
+            name="Collections"
+            path="/community/vernalis">
       </category>
    </extension>
 </plugin>

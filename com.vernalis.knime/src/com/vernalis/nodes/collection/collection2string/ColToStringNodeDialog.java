@@ -12,7 +12,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
-package com.vernalis.nodes.collection2string;
+package com.vernalis.nodes.collection.collection2string;
 
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;

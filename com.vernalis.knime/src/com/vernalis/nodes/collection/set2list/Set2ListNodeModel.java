@@ -12,7 +12,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
-package com.vernalis.nodes.set2list;
+package com.vernalis.nodes.collection.set2list;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,8 +38,8 @@ import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import com.vernalis.knime.misc.ArrayUtils;
 import com.vernalis.knime.nodes.AbstractSimpleStreamableFunctionNodeModel;
 
-import static com.vernalis.nodes.set2list.Set2ListNodeDialog.createColumnFilterModel;
-import static com.vernalis.nodes.set2list.Set2ListNodeDialog.createSortedModel;
+import static com.vernalis.nodes.collection.set2list.Set2ListNodeDialog.createColumnFilterModel;
+import static com.vernalis.nodes.collection.set2list.Set2ListNodeDialog.createSortedModel;
 
 public class Set2ListNodeModel
 		extends AbstractSimpleStreamableFunctionNodeModel {

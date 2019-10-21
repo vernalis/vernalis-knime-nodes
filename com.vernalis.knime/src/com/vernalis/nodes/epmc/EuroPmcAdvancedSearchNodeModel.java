@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016,2018 Vernalis (R&D) Ltd
+ * Copyright (c) 2016,2019 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -66,6 +66,7 @@ import static com.vernalis.nodes.epmc.EuroPmcAdvancedSearchNodeDialog.createPage
  * @author SDR
  */
 public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
+
 	// the logger instance
 	private static final NodeLogger logger =
 			NodeLogger.getLogger(EuroPmcAdvancedSearchNodeModel.class);
@@ -82,38 +83,49 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	static final String CFG_QUERY_TYPE = "Query_Type";
 	static final String CFG_SORT_ORDER = "Sort_Order";
 
-	private final SettingsModelString m_Title = new SettingsModelString(CFG_TITLE, null);
-	private final SettingsModelString m_Authors = new SettingsModelString(CFG_AUTHORS, null);
+	private final SettingsModelString m_Title =
+			new SettingsModelString(CFG_TITLE, null);
+	private final SettingsModelString m_Authors =
+			new SettingsModelString(CFG_AUTHORS, null);
 	private final SettingsModelString m_Affiliation =
 			new SettingsModelString(CFG_AFFILIATION, null);
-	private final SettingsModelString m_From = new SettingsModelString(CFG_YEAR_FROM, null);
-	private final SettingsModelString m_To = new SettingsModelString(CFG_YEAR_TO, null);
-	private final SettingsModelString m_Journals = new SettingsModelString(CFG_JOURNALS, null);
-	private final SettingsModelString m_MeSH = new SettingsModelString(CFG_MESH, null);
-	private final SettingsModelString m_Gnl = new SettingsModelString(CFG_GNL_QUERY, null);
-	private final SettingsModelString m_QueryType = new SettingsModelString(CFG_QUERY_TYPE, "Core");
-	private final SettingsModelString m_SortOrder = new SettingsModelString(CFG_SORT_ORDER, "Date");
-	private final SettingsModelIntegerBounded m_pageSize = createPageSizeModel();
+	private final SettingsModelString m_From =
+			new SettingsModelString(CFG_YEAR_FROM, null);
+	private final SettingsModelString m_To =
+			new SettingsModelString(CFG_YEAR_TO, null);
+	private final SettingsModelString m_Journals =
+			new SettingsModelString(CFG_JOURNALS, null);
+	private final SettingsModelString m_MeSH =
+			new SettingsModelString(CFG_MESH, null);
+	private final SettingsModelString m_Gnl =
+			new SettingsModelString(CFG_GNL_QUERY, null);
+	private final SettingsModelString m_QueryType =
+			new SettingsModelString(CFG_QUERY_TYPE, "Core");
+	private final SettingsModelString m_SortOrder =
+			new SettingsModelString(CFG_SORT_ORDER, "Date");
+	private final SettingsModelIntegerBounded m_pageSize =
+			createPageSizeModel();
 	private final SettingsModelString m_email = createEmailModel();
 	private final SettingsModelBoolean m_openAccess = createOAOnlyModel();
 
 	// Data table Spec
-	private static final DataTableSpec spec = new DataTableSpec(createDataColumnSpec());
+	private static final DataTableSpec spec =
+			new DataTableSpec(createDataColumnSpec());
 
 	/**
 	 * Constructor for the node model.
 	 */
 	protected EuroPmcAdvancedSearchNodeModel() {
-		super(new PortType[] {},
-				new PortType[] { BufferedDataTable.TYPE, FlowVariablePortObject.TYPE });
+		super(new PortType[] {}, new PortType[] { BufferedDataTable.TYPE,
+				FlowVariablePortObject.TYPE });
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
-			throws Exception {
+	protected PortObject[] execute(final PortObject[] inData,
+			final ExecutionContext exec) throws Exception {
 
 		// // Now create a data container for the new output table
 		BufferedDataTableRowOutput output =
@@ -122,7 +134,8 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 		fvOutput.setPortObject(FlowVariablePortObject.INSTANCE);
 		createStreamableOperator(null, null).runFinal(new PortInput[0],
 				new PortOutput[] { output, fvOutput }, exec);
-		return new PortObject[] { output.getDataTable(), fvOutput.getPortObject() };
+		return new PortObject[] { output.getDataTable(),
+				fvOutput.getPortObject() };
 	}
 
 	/*
@@ -133,15 +146,17 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	 * node.streamable.PartitionInfo, org.knime.core.node.port.PortObjectSpec[])
 	 */
 	@Override
-	public StreamableOperator createStreamableOperator(PartitionInfo partitionInfo,
-			PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+	public StreamableOperator createStreamableOperator(
+			PartitionInfo partitionInfo, PortObjectSpec[] inSpecs)
+			throws InvalidSettingsException {
 		return new StreamableOperator() {
+
 			ServiceResultStreamableOperatorInternals internals =
 					new ServiceResultStreamableOperatorInternals();
 
 			@Override
-			public void runFinal(PortInput[] inputs, PortOutput[] outputs, ExecutionContext exec)
-					throws Exception {
+			public void runFinal(PortInput[] inputs, PortOutput[] outputs,
+					ExecutionContext exec) throws Exception {
 				RowOutput out = (RowOutput) outputs[0];
 				long currentRowID = 0;
 				long pageCount = 1;
@@ -149,33 +164,40 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 
 				// Build the query string
 				boolean sortDate = m_SortOrder.getStringValue().equals("Date");
-				String queryText = EpmcHelpers.buildQueryString(m_Title.getStringValue(),
-						m_Authors.getStringValue(), m_Affiliation.getStringValue(),
-						m_From.getStringValue(), m_To.getStringValue(), m_Journals.getStringValue(),
-						m_MeSH.getStringValue(), m_Gnl.getStringValue(), sortDate,
-						m_openAccess.getBooleanValue());
+				String queryText = EpmcHelpers.buildQueryString(
+						m_Title.getStringValue(), m_Authors.getStringValue(),
+						m_Affiliation.getStringValue(), m_From.getStringValue(),
+						m_To.getStringValue(), m_Journals.getStringValue(),
+						m_MeSH.getStringValue(), m_Gnl.getStringValue(),
+						sortDate, m_openAccess.getBooleanValue());
 
 				// Inform the user of progress...
 				logger.info("Query string used: " + queryText);
 				// Now we need to run the initial query and add the results from
 				// this to the output
 				exec.setMessage("Fetching first result page...");
-				URL queryURL = EpmcHelpers.buildQueryURL(queryText, m_QueryType.getStringValue(),
-						nextCursor, m_pageSize.getIntValue(), null, m_email.getStringValue());
+				URL queryURL = EpmcHelpers.buildQueryURL(queryText,
+						m_QueryType.getStringValue(), nextCursor,
+						m_pageSize.getIntValue(), null,
+						m_email.getStringValue());
 				String xmlResult = EpmcHelpers.askEpmc(queryURL, exec);
-				long hitCount =
-						Long.parseLong(EpmcHelpers.getStringFromXmlField(xmlResult, "hitCount"));
-				String serviceVersion = EpmcHelpers.getStringFromXmlField(xmlResult, "version");
+				long hitCount = Long.parseLong(EpmcHelpers
+						.getStringFromXmlField(xmlResult, "hitCount"));
+				String serviceVersion =
+						EpmcHelpers.getStringFromXmlField(xmlResult, "version");
 
 				if (hitCount > 0) {
 					List<DataCell> results = new ArrayList<>();
-					results = EpmcHelpers.getRecordsFromXml(xmlResult, "result", "result");
+					results = EpmcHelpers.getRecordsFromXml(xmlResult, "result",
+							"result");
 
 					// And now add the results
 					for (DataCell result : results) {
-						out.push(new DefaultRow("Row " + currentRowID++, result));
-						exec.setProgress(pageCount + " page(s) fetched..." + currentRowID
-								+ " hits of " + hitCount + " added to output");
+						out.push(new DefaultRow("Row " + currentRowID++,
+								result));
+						exec.setProgress(pageCount + " page(s) fetched..."
+								+ currentRowID + " hits of " + hitCount
+								+ " added to output");
 						exec.checkCanceled();
 					}
 
@@ -184,19 +206,24 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 
 					// Now we need to loop through the remaining pages
 					while (currentRowID < hitCount) {
-						nextCursor = EpmcHelpers.getStringFromXmlField(xmlResult, "nextCursorMark");
+						nextCursor = EpmcHelpers.getStringFromXmlField(
+								xmlResult, "nextCursorMark");
 						queryURL = EpmcHelpers.buildQueryURL(queryText,
-								m_QueryType.getStringValue(), nextCursor, m_pageSize.getIntValue(),
-								null, m_email.getStringValue());
+								m_QueryType.getStringValue(), nextCursor,
+								m_pageSize.getIntValue(), null,
+								m_email.getStringValue());
 						xmlResult = EpmcHelpers.askEpmc(queryURL, exec);
-						results = EpmcHelpers.getRecordsFromXml(xmlResult, "result", "result");
+						results = EpmcHelpers.getRecordsFromXml(xmlResult,
+								"result", "result");
 
 						// And now add the results
 						for (DataCell result : results) {
-							out.push(new DefaultRow("Row " + currentRowID++, result));
+							out.push(new DefaultRow("Row " + currentRowID++,
+									result));
 							// Update the status text
-							exec.setProgress(pageCount + " page(s) fetched..." + currentRowID
-									+ " hits of " + hitCount + " added to output");
+							exec.setProgress(pageCount + " page(s) fetched..."
+									+ currentRowID + " hits of " + hitCount
+									+ " added to output");
 							exec.checkCanceled();
 						}
 
@@ -211,18 +238,24 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 				internals.setPageCount(pageCount);
 				pushFlowVariableString("queryString", queryText);
 				internals.setQueryString(queryText);
-				String url = EpmcHelpers.buildQueryURL(queryText, m_QueryType.getStringValue(), "*")
-						.toString();
+				String url =
+						EpmcHelpers
+								.buildQueryURL(queryText,
+										m_QueryType.getStringValue(), "*")
+								.toString();
 				pushFlowVariableString("queryURL", url);
 				internals.setQueryURL(url);
-				pushFlowVariableString("resultType", m_QueryType.getStringValue());
+				pushFlowVariableString("resultType",
+						m_QueryType.getStringValue());
 				internals.setResultType(m_QueryType.getStringValue());
-				String queryFromXml = EpmcHelpers.getStringFromXmlField(xmlResult, "query");
+				String queryFromXml = EpmcHelpers
+						.getStringFromXmlField(xmlResult, "queryString");
 				pushFlowVariableString("queryFromEPMCXml", queryFromXml);
 				internals.setQueryFromXML(queryFromXml);
 				pushFlowVariableString("Service Version", serviceVersion);
 				internals.setVersion(serviceVersion);
-				((PortObjectOutput) outputs[1]).setPortObject(FlowVariablePortObject.INSTANCE);
+				((PortObjectOutput) outputs[1])
+						.setPortObject(FlowVariablePortObject.INSTANCE);
 			}
 
 			/*
@@ -246,7 +279,8 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	 */
 	@Override
 	public OutputPortRole[] getOutputPortRoles() {
-		return new OutputPortRole[] { OutputPortRole.DISTRIBUTED, OutputPortRole.NONDISTRIBUTED };
+		return new OutputPortRole[] { OutputPortRole.DISTRIBUTED,
+				OutputPortRole.NONDISTRIBUTED };
 	}
 
 	/*
@@ -259,7 +293,8 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 		return new MergeOperator() {
 
 			@Override
-			public StreamableOperatorInternals mergeFinal(StreamableOperatorInternals[] operators) {
+			public StreamableOperatorInternals mergeFinal(
+					StreamableOperatorInternals[] operators) {
 				// Should only ever be 1
 				if (operators.length != 1) {
 					logger.warn(
@@ -316,7 +351,8 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 		pushFlowVariableString("resultType", "");
 		pushFlowVariableString("queryFromEPMCXml", "");
 		pushFlowVariableString("Service Version", "");
-		return new PortObjectSpec[] { spec, FlowVariablePortObjectSpec.INSTANCE };
+		return new PortObjectSpec[] { spec,
+				FlowVariablePortObjectSpec.INSTANCE };
 	}
 
 	/**
@@ -377,7 +413,8 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		m_Affiliation.validateSettings(settings);
 		m_Authors.validateSettings(settings);
 		m_From.validateSettings(settings);
@@ -395,7 +432,8 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 	}
 
@@ -403,14 +441,16 @@ public class EuroPmcAdvancedSearchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 	}
 
 	private static DataColumnSpec[] createDataColumnSpec() {
 		// Only have a single XML Column to hold the results at the moment
 		DataColumnSpec[] dcs = new DataColumnSpec[1];
-		dcs[0] = new DataColumnSpecCreator("Results", XMLCell.TYPE).createSpec();
+		dcs[0] = new DataColumnSpecCreator("Results", XMLCell.TYPE)
+				.createSpec();
 		return dcs;
 	}
 }

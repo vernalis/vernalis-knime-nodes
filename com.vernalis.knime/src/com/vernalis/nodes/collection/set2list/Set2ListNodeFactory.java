@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, Vernalis (R&D) Ltd
+ * Copyright (c) 2019, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -12,17 +12,17 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
-package com.vernalis.nodes.list2set;
+package com.vernalis.nodes.collection.set2list;
 
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
-public class List2SetNodeFactory extends NodeFactory<List2SetNodeModel> {
+public class Set2ListNodeFactory extends NodeFactory<Set2ListNodeModel> {
 
 	@Override
-	public List2SetNodeModel createNodeModel() {
-		return new List2SetNodeModel();
+	public Set2ListNodeModel createNodeModel() {
+		return new Set2ListNodeModel();
 	}
 
 	@Override
@@ -31,8 +31,8 @@ public class List2SetNodeFactory extends NodeFactory<List2SetNodeModel> {
 	}
 
 	@Override
-	public NodeView<List2SetNodeModel> createNodeView(int viewIndex,
-			List2SetNodeModel nodeModel) {
+	public NodeView<Set2ListNodeModel> createNodeView(int viewIndex,
+			Set2ListNodeModel nodeModel) {
 		return null;
 	}
 
@@ -43,7 +43,7 @@ public class List2SetNodeFactory extends NodeFactory<List2SetNodeModel> {
 
 	@Override
 	protected NodeDialogPane createNodeDialogPane() {
-		return new List2SetNodeDialog();
+		return new Set2ListNodeDialog();
 	}
 
 }

@@ -12,7 +12,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
-package com.vernalis.nodes.collection2string;
+package com.vernalis.nodes.collection.collection2string;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -36,15 +36,15 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import com.vernalis.knime.misc.ArrayUtils;
 import com.vernalis.knime.nodes.AbstractSimpleStreamableFunctionNodeModel;
 
-import static com.vernalis.nodes.collection2string.ColToStringNodeDialog.COLLECTION_FILTER;
-import static com.vernalis.nodes.collection2string.ColToStringNodeDialog.createCellPrefixModel;
-import static com.vernalis.nodes.collection2string.ColToStringNodeDialog.createCellSuffixModel;
-import static com.vernalis.nodes.collection2string.ColToStringNodeDialog.createColumnsModel;
-import static com.vernalis.nodes.collection2string.ColToStringNodeDialog.createJoinerModel;
-import static com.vernalis.nodes.collection2string.ColToStringNodeDialog.createPrefixModel;
-import static com.vernalis.nodes.collection2string.ColToStringNodeDialog.createReplaceInputColumnsModel;
-import static com.vernalis.nodes.collection2string.ColToStringNodeDialog.createSkipMissingValuesModel;
-import static com.vernalis.nodes.collection2string.ColToStringNodeDialog.createSuffixModel;
+import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.COLLECTION_FILTER;
+import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createCellPrefixModel;
+import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createCellSuffixModel;
+import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createColumnsModel;
+import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createJoinerModel;
+import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createPrefixModel;
+import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createReplaceInputColumnsModel;
+import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createSkipMissingValuesModel;
+import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createSuffixModel;
 
 public class ColToStringNodeModel
 		extends AbstractSimpleStreamableFunctionNodeModel {
