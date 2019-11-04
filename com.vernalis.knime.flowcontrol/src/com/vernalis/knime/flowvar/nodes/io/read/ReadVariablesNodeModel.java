@@ -17,14 +17,11 @@ package com.vernalis.knime.flowvar.nodes.io.read;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.knime.core.node.CanceledExecutionException;
@@ -44,6 +41,10 @@ import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.FlowVariable.Type;
+import org.knime.core.util.pathresolve.ResolverUtil;
+
+import com.vernalis.io.FileEncodingWithGuess;
+import com.vernalis.io.FileHelpers;
 
 import static com.vernalis.knime.flowvar.nodes.io.read.ReadVariablesNodeDialog.createDuplicateModel;
 import static com.vernalis.knime.flowvar.nodes.io.read.ReadVariablesNodeDialog.createFilenameModel;
@@ -57,10 +58,12 @@ import static com.vernalis.knime.flowvar.nodes.io.read.ReadVariablesNodeDialog.c
 public class ReadVariablesNodeModel extends NodeModel {
 
 	/** The NodeLogger Instance. */
-	private static final NodeLogger logger = NodeLogger.getLogger(ReadVariablesNodeModel.class);
+	private static final NodeLogger logger =
+			NodeLogger.getLogger(ReadVariablesNodeModel.class);
 
 	/** The Create duplicates policy model. */
-	private final SettingsModelString m_duplicatePolicy = createDuplicateModel();
+	private final SettingsModelString m_duplicatePolicy =
+			createDuplicateModel();
 
 	/** The filename model */
 	private final SettingsModelString m_filename = createFilenameModel();
@@ -97,7 +100,8 @@ public class ReadVariablesNodeModel extends NodeModel {
 	protected ReadVariablesNodeModel(final NodeCreationContext droppedFile) {
 		this();
 		try {
-			m_filename.setStringValue((new File(droppedFile.getUrl().toURI()).getPath()));
+			m_filename.setStringValue(
+					(new File(droppedFile.getUrl().toURI()).getPath()));
 		} catch (URISyntaxException e) {
 			logger.error("Variables File reader: " + e.getMessage());
 			logger.error("Variables File reader: Location not set");
@@ -108,8 +112,8 @@ public class ReadVariablesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
-			throws Exception {
+	protected PortObject[] execute(final PortObject[] inData,
+			final ExecutionContext exec) throws Exception {
 		// Get the existing variable names
 		// We have to do this in 2 steps (instantiate, addall) as
 		// getAvailableInputFlowVariables() returns an unmodifiable Map
@@ -117,25 +121,28 @@ public class ReadVariablesNodeModel extends NodeModel {
 		inputVars.addAll(getAvailableInputFlowVariables().keySet());
 
 		// Get the Duplicate policy
-		DuplicateVariablePolicy varPol =
-				DuplicateVariablePolicy.valueOf(m_duplicatePolicy.getStringValue());
+		DuplicateVariablePolicy varPol = DuplicateVariablePolicy
+				.valueOf(m_duplicatePolicy.getStringValue());
 
 		// Read the file
-		ArrayList<String> fvXML = readFile(m_filename.getStringValue());
+		List<String> fvXML = readFile(m_filename.getStringValue());
 
 		// Now parse each one by turn
 		for (String fvar : fvXML) {
 			// (?s) at start of regex means DOTALL mode (Pattern.DOTALL) - which
 			// means .* includes newlines
-			String fvName = fvar.replaceAll("(?s).*?name=\\\"(.*?)\\\".*", "$1");
+			String fvName =
+					fvar.replaceAll("(?s).*?name=\\\"(.*?)\\\".*", "$1");
 
-			if (!fvName.startsWith(FlowVariable.Scope.Global.getPrefix() + ".")) {
+			if (!fvName
+					.startsWith(FlowVariable.Scope.Global.getPrefix() + ".")) {
 				// Skip global and reserved variables
 
-				FlowVariable.Type fvType = FlowVariable.Type
-						.valueOf(fvar.replaceAll("(?s).*?type=\\\"(.*?)\\\".*", "$1"));
+				FlowVariable.Type fvType = FlowVariable.Type.valueOf(
+						fvar.replaceAll("(?s).*?type=\\\"(.*?)\\\".*", "$1"));
 				String fvVal = fvar.replaceAll(
-						"(?s).*?<flowvar(.*?(name|type)=\\\".*?\\\"){2}>(.*?)</flowvar>.*", "$3");
+						"(?s).*?<flowvar(.*?(name|type)=\\\".*?\\\"){2}>(.*?)</flowvar>.*",
+						"$3");
 
 				switch (varPol) {
 				case OVERWRITE:
@@ -149,7 +156,8 @@ public class ReadVariablesNodeModel extends NodeModel {
 					}
 					break;
 				case RENAME:
-					writeVariable(getUniqueVarName(fvName, inputVars), fvType, fvVal);
+					writeVariable(getUniqueVarName(fvName, inputVars), fvType,
+							fvVal);
 					break;
 				case RENAME_DIFFERENT:
 					if (inputVars.add(fvName)) {
@@ -159,12 +167,15 @@ public class ReadVariablesNodeModel extends NodeModel {
 						// Name exists - uniquify only if
 						// * Different value
 						// * Different type
-						FlowVariable oldVar = getAvailableInputFlowVariables().get(fvName);
+						FlowVariable oldVar =
+								getAvailableInputFlowVariables().get(fvName);
 						String oldVal = oldVar.getValueAsString();
 						FlowVariable.Type oldType = oldVar.getType();
-						if (!oldVal.replace("\r", "").equals(fvVal.replace("\r", ""))
+						if (!oldVal.replace("\r", "")
+								.equals(fvVal.replace("\r", ""))
 								|| oldType != fvType) {
-							writeVariable(getUniqueVarName(fvName, inputVars), fvType, fvVal);
+							writeVariable(getUniqueVarName(fvName, inputVars),
+									fvType, fvVal);
 						}
 					}
 					break;
@@ -202,7 +213,6 @@ public class ReadVariablesNodeModel extends NodeModel {
 	 * @param fvVal
 	 *            the fv val
 	 */
-	@SuppressWarnings("incomplete-switch")
 	private void writeVariable(String fvName, Type fvType, String fvVal) {
 		assert fvType != Type.CREDENTIALS : "Flow variable type should noy be Credentials";
 
@@ -211,21 +221,24 @@ public class ReadVariablesNodeModel extends NodeModel {
 			try {
 				pushFlowVariableInt(fvName, Integer.parseInt(fvVal));
 			} catch (Exception e) {
-				logger.warn("Unable to parse value (" + fvVal + ") of variable " + fvName
-						+ " as Integer");
+				logger.warn("Unable to parse value (" + fvVal + ") of variable "
+						+ fvName + " as Integer");
 			}
 			break;
 		case DOUBLE:
 			try {
 				pushFlowVariableDouble(fvName, Double.parseDouble(fvVal));
 			} catch (Exception e) {
-				logger.warn("Unable to parse value (" + fvVal + ") of variable " + fvName
-						+ " as Double");
+				logger.warn("Unable to parse value (" + fvVal + ") of variable "
+						+ fvName + " as Double");
 			}
 			break;
 		case STRING:
 			pushFlowVariableString(fvName, fvVal);
 			break;
+		default:
+			setWarningMessage("Flow variable of type " + fvType.toString()
+					+ " found in file - unable to restore to stack");
 		}
 
 	}
@@ -237,39 +250,16 @@ public class ReadVariablesNodeModel extends NodeModel {
 	 *            the fname
 	 * @return the array list
 	 */
-	private ArrayList<String> readFile(String fname) {
+	private List<String> readFile(String fname) {
 
 		ArrayList<String> retVal = new ArrayList<>();
 
 		try {
 			// Form a URL connection
-			URL url;
-			if (fname.startsWith("file:")) {
-				url = new URL(fname);
-			} else {
-				url = (new File(fname)).toURI().toURL();
-			}
-			URLConnection uc = url.openConnection();
-			InputStream is = uc.getInputStream();
-
-			// Now detect encoding associated with the URL
-			String contentType = uc.getContentType();
-
-			// Default type is UTF-8
-			String encoding = "UTF-8";
-			if (contentType != null) {
-				int chsIndex = contentType.indexOf("charset=");
-				if (chsIndex != -1) {
-					encoding = contentType.split("charset=")[1];
-					if (encoding.indexOf(';') != -1) {
-						encoding = encoding.split(";")[0];
-					}
-					encoding = encoding.trim();
-				}
-			}
 
 			// Now set up a buffered reader to read it
-			BufferedReader in = new BufferedReader(new InputStreamReader(is, encoding));
+			BufferedReader in = FileHelpers.getReaderFromUrl(
+					FileHelpers.forceURL(fname), FileEncodingWithGuess.GUESS);
 			StringBuilder output = new StringBuilder();
 			String str;
 			// Read the first line - which should be "<flowvariables>"
@@ -344,16 +334,27 @@ public class ReadVariablesNodeModel extends NodeModel {
 		// Correct extension?
 		if (!fname.endsWith(".variables")) {
 			setWarningMessage("Filename must have 'variables' extension");
-			throw new InvalidSettingsException("Filename must have 'variables' extension");
+			throw new InvalidSettingsException(
+					"Filename must have 'variables' extension");
 		}
 		File f;
 		if (fname.startsWith("file:")) {
 			try {
 				f = new File(new URI(fname));
 			} catch (URISyntaxException e) {
-				setWarningMessage("File path looks like URL but unable to create URI");
+				setWarningMessage(
+						"File path looks like URL but unable to create URI");
 				throw new InvalidSettingsException(
 						"File path looks like URL but unable to create URI");
+			}
+		} else if (fname.startsWith("knime:")) {
+			try {
+				f = ResolverUtil.resolveURItoLocalFile(new URI(fname));
+			} catch (Exception e) {
+				setWarningMessage(
+						"Unable to resolve knime: protocol URI: " + fname);
+				throw new InvalidSettingsException(
+						"Unable to resolve knime: protocol URI: " + fname);
 			}
 		} else {
 			f = new File(fname);
@@ -398,7 +399,8 @@ public class ReadVariablesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		m_filename.validateSettings(settings);
 		m_duplicatePolicy.validateSettings(settings);
 	}
@@ -407,7 +409,8 @@ public class ReadVariablesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 
 	}
@@ -416,7 +419,8 @@ public class ReadVariablesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 
 	}

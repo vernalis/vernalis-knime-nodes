@@ -44,8 +44,8 @@ public class ReadVariablesNodeDialog extends DefaultNodeSettingsPane {
 		SettingsModelString fname = createFilenameModel();
 		addDialogComponent(new DialogComponentFileChooser(fname,
 				WriteVariablesNodeDialog.class.getName(),
-				JFileChooser.SAVE_DIALOG, false,
-				createFlowVariableModel(fname), ".variables"));
+				JFileChooser.OPEN_DIALOG, false, createFlowVariableModel(fname),
+				".variables"));
 		addDialogComponent(new DialogComponentButtonGroup(
 				createDuplicateModel(), "Duplicate Variable Behaviour", true,
 				DuplicateVariablePolicy.values()));

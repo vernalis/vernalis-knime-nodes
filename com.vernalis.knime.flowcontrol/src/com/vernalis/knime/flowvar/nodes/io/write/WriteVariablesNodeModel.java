@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -40,6 +41,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.FlowVariable;
 import org.knime.core.node.workflow.FlowVariable.Type;
+import org.knime.core.util.pathresolve.ResolverUtil;
 
 import static com.vernalis.knime.flowvar.nodes.io.write.WriteVariablesNodeDialog.createFilenameModel;
 import static com.vernalis.knime.flowvar.nodes.io.write.WriteVariablesNodeDialog.createOverwriteModel;
@@ -53,7 +55,8 @@ import static com.vernalis.knime.flowvar.nodes.io.write.WriteVariablesNodeDialog
 public class WriteVariablesNodeModel extends NodeModel {
 
 	/** The logger instance */
-	private static final NodeLogger logger = NodeLogger.getLogger(WriteVariablesNodeModel.class);
+	private static final NodeLogger logger =
+			NodeLogger.getLogger(WriteVariablesNodeModel.class);
 
 	/** The overwrite file model */
 	private final SettingsModelBoolean m_overwrite = createOverwriteModel();
@@ -66,22 +69,24 @@ public class WriteVariablesNodeModel extends NodeModel {
 	 */
 	public WriteVariablesNodeModel() {
 
-		super(new PortType[] { FlowVariablePortObject.TYPE_OPTIONAL }, new PortType[] {});
+		super(new PortType[] { FlowVariablePortObject.TYPE_OPTIONAL },
+				new PortType[] {});
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
-			throws Exception {
+	protected PortObject[] execute(final PortObject[] inData,
+			final ExecutionContext exec) throws Exception {
 
 		// First list the flow variables
 		Map<String, FlowVariable> flowVars = getAvailableFlowVariables();
-		ArrayList<String> fvXML = new ArrayList<>();
+		List<String> fvXML = new ArrayList<>();
 		for (Entry<String, FlowVariable> ent : flowVars.entrySet()) {
 			String fvName = ent.getKey();
-			if (fvName.startsWith(FlowVariable.Scope.Global.getPrefix() + ".")) {
+			if (fvName
+					.startsWith(FlowVariable.Scope.Global.getPrefix() + ".")) {
 				// Protected system variable - skip
 				continue;
 			}
@@ -91,8 +96,8 @@ public class WriteVariablesNodeModel extends NodeModel {
 				continue;
 			}
 			String fvType = ent.getValue().getType().name();
-			fvXML.add("<flowvar name=\"" + fvName + "\" type=\"" + fvType + "\">" + fvVal
-					+ "</flowvar>");
+			fvXML.add("<flowvar name=\"" + fvName + "\" type=\"" + fvType
+					+ "\">" + fvVal + "</flowvar>");
 		}
 		// Now we need to write them to a file
 		if (!writeToFile(fvXML)) {
@@ -110,7 +115,7 @@ public class WriteVariablesNodeModel extends NodeModel {
 	 * @return true, if successful
 	 * @throws Exception
 	 */
-	private boolean writeToFile(ArrayList<String> fvXML) throws Exception {
+	private boolean writeToFile(List<String> fvXML) throws Exception {
 		String fname = m_filename.getStringValue();
 		canWriteToFile(fname);
 		StringBuilder sb = new StringBuilder("<flowvariables>\n");
@@ -118,7 +123,8 @@ public class WriteVariablesNodeModel extends NodeModel {
 			sb.append(xml).append("\n");
 		}
 		sb.append("</flowvariables>");
-		return saveStringToPath(sb.toString(), fname, m_overwrite.getBooleanValue());
+		return saveStringToPath(sb.toString(), fname,
+				m_overwrite.getBooleanValue());
 	}
 
 	/**
@@ -152,14 +158,16 @@ public class WriteVariablesNodeModel extends NodeModel {
 		// Correct extension?
 		if (!fname.endsWith(".variables")) {
 			setWarningMessage("Filename must have 'variables' extension");
-			throw new InvalidSettingsException("Filename must have 'variables' extension");
+			throw new InvalidSettingsException(
+					"Filename must have 'variables' extension");
 		}
 		File f;
 		if (fname.startsWith("file:")) {
 			try {
 				f = new File(new URI(fname));
 			} catch (URISyntaxException e) {
-				setWarningMessage("File path looks like URL but unable to create URI");
+				setWarningMessage(
+						"File path looks like URL but unable to create URI");
 				throw new InvalidSettingsException(
 						"File path looks like URL but unable to create URI");
 			}
@@ -171,7 +179,8 @@ public class WriteVariablesNodeModel extends NodeModel {
 			if (!m_overwrite.getBooleanValue() || !f.canWrite()) {
 				// File exists, and we may not overwrite it
 				setWarningMessage("File exists, cannot overwrite");
-				throw new InvalidSettingsException("File exists, cannot overwrite");
+				throw new InvalidSettingsException(
+						"File exists, cannot overwrite");
 			} else {
 				setWarningMessage("File exists and will be over-written");
 			}
@@ -190,7 +199,8 @@ public class WriteVariablesNodeModel extends NodeModel {
 			// Try to create it if not
 			if (!fParent.mkdirs()) {
 				setWarningMessage("Tried to create parent directory - FAILED!");
-				throw new InvalidSettingsException("Tried to create parent directory - FAILED!");
+				throw new InvalidSettingsException(
+						"Tried to create parent directory - FAILED!");
 			}
 		}
 
@@ -209,8 +219,8 @@ public class WriteVariablesNodeModel extends NodeModel {
 	 * @return true, if successful
 	 * @throws Exception
 	 */
-	private static boolean saveStringToPath(String text, String PathToFile, Boolean Overwrite)
-			throws Exception {
+	private static boolean saveStringToPath(String text, String PathToFile,
+			Boolean Overwrite) throws Exception {
 		/*
 		 * Helper function to attempt to save out a string to a file identified
 		 * by a second string. Returns true or false depending on whether the
@@ -218,11 +228,19 @@ public class WriteVariablesNodeModel extends NodeModel {
 		 * exists. If overwrite is false the file will not be overwritten
 		 */
 		File f;
-		if (PathToFile.startsWith("file:")) {
+		if (PathToFile.toLowerCase().startsWith("file:")) {
 			try {
 				f = new File(new URI(PathToFile));
 			} catch (URISyntaxException e) {
-				throw new Exception("File path looks like URL but unable to create URI");
+				throw new Exception(
+						"File path looks like URL but unable to create URI");
+			}
+		} else if (PathToFile.toLowerCase().startsWith("knime:")) {
+			try {
+				f = ResolverUtil.resolveURItoLocalFile(new URI(PathToFile));
+			} catch (IOException e) {
+				throw new Exception(
+						"Unable to resolve knime: protocol URL: " + PathToFile);
 			}
 		} else {
 			f = new File(PathToFile);
@@ -268,7 +286,8 @@ public class WriteVariablesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 
 		m_filename.validateSettings(settings);
 		m_overwrite.validateSettings(settings);
@@ -279,7 +298,8 @@ public class WriteVariablesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 
 	}
@@ -288,7 +308,8 @@ public class WriteVariablesNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 
 	}

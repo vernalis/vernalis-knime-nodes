@@ -43,8 +43,8 @@ public class WriteVariablesNodeDialog extends DefaultNodeSettingsPane {
 		SettingsModelString fname = createFilenameModel();
 		addDialogComponent(new DialogComponentFileChooser(fname,
 				WriteVariablesNodeDialog.class.getName(),
-				JFileChooser.SAVE_DIALOG, false,
-				createFlowVariableModel(fname), ".variables"));
+				JFileChooser.SAVE_DIALOG, false, createFlowVariableModel(fname),
+				".variables"));
 		addDialogComponent(new DialogComponentBoolean(createOverwriteModel(),
 				"Overwrite existing file?"));
 
