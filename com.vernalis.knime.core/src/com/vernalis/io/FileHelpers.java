@@ -225,13 +225,17 @@ public class FileHelpers {
 						getReaderFromUrl(urlToRetrieve, fileEncoding);
 
 				StringBuilder output = new StringBuilder();
-				String str;
-				boolean first = true;
-				while ((str = in.readLine()) != null) {
-					if (!first)
-						output.append("\n");
-					first = false;
-					output.append(str);
+				// String str;
+				// boolean first = true;
+				// while ((str = in.readLine()) != null) {
+				// if (!first)
+				// output.append("\n");
+				// first = false;
+				// output.append(str);
+				// }
+				int c = 0;
+				while ((c = in.read()) != -1) {
+					output.append((char) c);
 				}
 				in.close();
 

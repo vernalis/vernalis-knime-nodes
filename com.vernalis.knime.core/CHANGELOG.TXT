@@ -1,3 +1,10 @@
+v1.24.2 13-Nov-2019
+-------------------
+
+* Fixed bug in file reader nodes resulting in loss of final newline combination if no characters follow it
+* Fixed bug in file reader nodes resulting in conversion of all newlines to unix-style '\n'
+
+
 v1.24.0 21-Oct-2019
 -------------------
 

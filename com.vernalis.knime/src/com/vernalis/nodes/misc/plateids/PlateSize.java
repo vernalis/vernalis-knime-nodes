@@ -135,11 +135,11 @@ public enum PlateSize implements ButtonGroupEnumInterface {
 		case COLUMN_WISE:
 			retVal = (c - 1) * getRows();// full columns
 			retVal += r;
-			return r;
+			return retVal;
 		case ROW_WISE:
 			retVal = (r - 1) * getCols();// full columns
 			retVal += c;
-			return r;
+			return retVal;
 		default:
 			return retVal;
 		}
