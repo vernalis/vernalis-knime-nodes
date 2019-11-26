@@ -1,0 +1,13 @@
+v1.24.0 21-Oct-2019
+-------------------
+
+* Added #includeColumn(DataType) method to RdkitCompatibleColumnFormats class
+
+
+v1.23.0 20-Sept-2019
+--------------------
+
+* Added default implementation of #getCoordinate(int) to Point interface
+* Added new #setCoordinate(int,double) method to Point interface with default implementation (throws new UnsupportedOperationException)
+* Added null and number of dimensions check to default implementation of getDistance(T) method in Point interface
+* Added new PointSummariser class to com.vernlais.knime.chem.util.points package

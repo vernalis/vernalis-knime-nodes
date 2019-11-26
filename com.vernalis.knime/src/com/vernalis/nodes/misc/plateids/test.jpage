@@ -1,0 +1,43 @@
+for (int i=0; i<55; i++){
+System.out.println(i+"\t"+com.vernalis.nodes.misc.plateids.PlateSize.rowIDFromRowIndex(i));
+}
+
+com.vernalis.nodes.misc.plateids.PlateSize.rowIndexFromRowID("AA")//27
+com.vernalis.nodes.misc.plateids.PlateSize.rowIndexFromRowID("A")//1
+com.vernalis.nodes.misc.plateids.PlateSize.rowIndexFromRowID("H")//8
+com.vernalis.nodes.misc.plateids.PlateSize.rowIndexFromRowID("BC")//55
+
+PlateSize.TWELVE.getCols()//4
+PlateSize.TWELVE.getRows()//3
+PlateSize.TWELVE.getColFromWellIndex(2,PlateDirection.COLUMN_WISE)//1
+PlateSize.TWELVE.getColFromWellIndex(9,PlateDirection.COLUMN_WISE)//4
+
+
+PlateSize size=PlateSize.TWELVE;
+System.out.println("Rows:\t"+size.getRows());
+System.out.println("Cols:\t"+size.getCols());
+System.out.println("===================");
+System.out.println("Well\tCol\tRow");
+System.out.println("-------------------");
+for(int i=1; i<=size.getWells();i++){
+	System.out.println(i + ":\t" + 
+			size.getColFromWellIndex(i,PlateDirection.COLUMN_WISE) + "\t"+
+			size.TWELVE.getRowFromWellIndex(i,PlateDirection.COLUMN_WISE));
+}
+
+
+PlateSize size=PlateSize.NINETY_SIX;
+System.out.println("Rows:\t"+size.getRows());
+System.out.println("Cols:\t"+size.getCols());
+System.out.println("===================");
+System.out.println("Well\tCol\tRow");
+System.out.println("-------------------");
+for(int i=1; i<=size.getWells();i++){
+	System.out.println(i + ":\t" + 
+			size.getColFromWellIndex(i,PlateDirection.ROW_WISE) + "\t"+
+			size.getRowFromWellIndex(i,PlateDirection.ROW_WISE));
+}
+
+
+
+System.out.println(com.vernalis.nodes.misc.plateids.PlateSize.SIX.getUpwardExpansions());

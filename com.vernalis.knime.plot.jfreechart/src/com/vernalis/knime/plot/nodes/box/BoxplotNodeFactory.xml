@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) 2019, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode
+	icon="boxplot.png"
+	type="Visualizer">
+	<name>Notched Boxplot (JFreechart)</name>
+
+	<shortDescription>
+		Node to generate notched boxplots.
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			This node generates notched boxplots of categorical data.
+			<p>
+				The boxplot shows the following:
+				<ul>
+					<li>The box shows the interquartile range (IQR; Q1 to Q3)</li>
+					<li>The whiskers show the extent of the 'regular' values - i.e the
+						range of the actual values within 1.5 * IQR of the IQR
+					</li>
+					<li>The mean is shown as an open circle with a cross in, which may
+						or may not be
+						within the box
+					</li>
+					<li>The median is shown as a line crossing the box</li>
+					<li>
+						The notch shows the 95% confidence interval of the median,
+						defined
+						as +/- 1.57 * IQR / sqrt(N), where N is the number of
+						values. The notch is centred on the median,
+						and may extend beyond
+						the ends of the boxes
+					</li>
+					<li>Outliers are shown as 'o' beyond the whiskers. Outliers are in
+						the range 1.5 * IQR to 2 * IQR beyond the IQR
+					</li>
+					<li>Extreme outliers are shown as 'x' beyond the whiskers. Outliers
+						are beyond 2* IQR beyond the IQR
+					</li>
+				</ul>
+				See
+				<a
+					href="https://sites.google.com/site/davidsstatistics/home/notched-box-plots">this page</a>
+				for details and references
+			</p>
+
+
+			The chart is coloured as follows:
+			<p>
+				If the 2nd Port is null, then the colour is as follows.
+				<ul>
+					<li>The outline and whisker are the specified default outline
+						colour
+					</li>
+					<li>If there is a ColorModel on the 1st port for the category
+						column,
+						then the fill is from the colour model
+					</li>
+					<li>If no colormodel, or it is not on the category column, then the
+						fill colour is the specified default fill colour
+					</li>
+				</ul>
+
+			</p>
+			<p>
+				If the 2nd port is connected, then it must contain a single string
+				column
+				with a colour model associated to it. The column must contain
+				the names
+				of the series columns (Using an Extract Column Header ->
+				Transpose -> Color Manager sequence of nodes achieves this). Now,
+				the colouring is as follows:
+			</p>
+
+			<p>
+				<i>Outline &amp; Whisker</i>
+				<ul>
+					<li>If there is a ColorModel on the 1st port for the category
+						column,
+						then the outline is from the colour model
+					</li>
+					<li>If no colormodel, or it is not on the category column, then the
+						outline is the default outline colour specified
+					</li>
+				</ul>
+			</p>
+			<p>
+				<i>Fill</i>
+				<ul>
+					<li>If there is a single StringCell column in the second table,
+						then the
+						series fill colours come from the color model
+					</li>
+					<li>If not, or for series names not represented, the fill colour is
+						the default fill colour specified.
+					</li>
+				</ul>
+			</p>
+
+			For general settings of the generated image, see the "General Plot
+			Options" Tab.
+		</intro>
+
+		<tab name="Options">
+
+			<option name="Categorical column">A categorical column (String, Integer, Boolean)
+				which forms the x-axis categories
+			</option>
+			<option name="Keep categories in order of input">If checked, then the categories appear on the
+				x-axis in the order they are first encountered in the input table.
+				Otherwise, they are sorted into their natural ordering
+			</option>
+			<option name="Data (Y-Axis) Values">The column(s) containing the series datapoints
+			</option>
+			<option name="Show mean">Should the mean be included on the plot (as an
+				open circle)?
+			</option>
+			<option name="Mean size">The size that the mean should be shown at
+			</option>
+			<option name="Show median">Should the median be included on the plot?
+			</option>
+			<option name="Show notch">Should the notch be shown on the plot?</option>
+			<option name="Notch size">The proportion of the width of the box by which
+				each notch is indented
+			</option>
+			<option name="Horizontal boxes">Plot is rotated so boxes are horizontal</option>
+			<option name="Show legend">Should a legend be included. Legend will show
+				series colours and category colours as appropriate
+			</option>
+
+			<option name="Ensure outliers on plot">Without this setting, extreme outliers may be
+				missed off the extremes of the plot. Checking this setting ensures
+				the axes are scaled to ensure that all outliers appear
+			</option>
+			<option name="Line Width">The width (thickness) of the whisker lines and
+				box outlines
+			</option>
+			<option name="Whisker Width">The width of the tails of the whiskers, relative
+				to the width of the box
+			</option>
+			<option name="Outlier size">The size of the outliers</option>
+			<option name="Extreme Outlier size">The size of the extreme outliers</option>
+			<option name="Default outline colour">The colour used for lines when no other colour is
+				specified by table colour models
+			</option>
+			<option name="Default fill colour">The colour used for the box fills when no other
+				colou is specified by table colour models
+			</option>
+		</tab>
+		<tab name="General Plot Options">
+			<option name="Type of Image"> The type of the created image can either be png
+				or svg. PNGs are mostly smaller, SVGs provide details about plot and
+				the possibility to be changed individually.
+			</option>
+			<option name="Title of Graph"> The title of the graph shown above the generated
+				image. If the title is not activated, no title will be shown.
+			</option>
+			<option name="Width of Image (in pixel)"> The width of the generated image, not the plot
+				width.
+			</option>
+			<option name="Height of Image (in pixel)"> The height of the generated image, not the plot
+				height.
+			</option>
+			<option name="Background Color">The color of the background of the image. Hence
+				this color is used for the area behind and around the plot as well
+				as behind potential axis and legends.
+			</option>
+			<option name="Plot Background Color">The color of the background of the plot. Hence
+				this color is used for the empty space in a plot.
+			</option>
+			<option name="Plot Background Alpha">The transparency of the plot background can be
+				modified using an additional alpha value. An alpha value of 1 does
+				not change the background transparency. Decreasing the alpha value
+				will increase the plot background transparency.
+			</option>
+			<option name="Scale Font Size">Factor changes the font sizes within the
+				JFreeChart view. A value greater the 1 increases all view fonts, a
+				value between 0 and 1 decrease them.
+			</option>
+		</tab>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="Data table">Data table with at least one categorical
+			column and one numerical
+			column
+		</inPort>
+		<inPort
+			index="1"
+			name="Series Colours">Optional table with series colours - see
+			above for further
+			details
+		</inPort>
+		<outPort
+			index="0"
+			name="Image">The image of the plot (SVG or PNG)
+		</outPort>
+
+	</ports>
+	<views>
+		<view
+			index="0"
+			name="Boxplot">
+			Boxplot views of the input data
+		</view>
+	</views>
+
+</knimeNode>
