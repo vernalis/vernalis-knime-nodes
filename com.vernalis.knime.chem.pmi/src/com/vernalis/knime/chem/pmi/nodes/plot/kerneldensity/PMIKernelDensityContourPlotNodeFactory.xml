@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2019, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<!DOCTYPE knimeNode [<!ENTITY transpose "<sup>&#8890;</sup>">]>
+<knimeNode
+	icon="kernel_contour_pmi.png"
+	type="Visualizer"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd" >
+
+	<name>PMI Kernel Contour Plot</name>
+
+	<shortDescription>
+		Node to generate PMI Kernel Density plots of the nPMI
+		triangle
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			This node generates a 2D Kernel Density plot of the nPMI triangle
+			using a selected
+			kernel
+			estimator function. The node can automatically
+			calculate the
+			bandwidths (H
+			<sub>x</sub>
+			, H
+			<sub>y</sub>
+			) used, according to Scott's estimate H
+			<sub>i</sub>
+			=&#963;
+			<sub>i</sub>
+			&#0215;
+			<i>N</i>
+			<sup>1/6</sup>
+			(see e.g. http://www.stat.rice.edu/~scottdw/ss.nh.pdf) or use a
+			user-supplied value.
+			The axes can be autoscaled, in which case they
+			will extend for 5% beyond the range of values in each direction.
+			<p>
+				The Kernel Estimators are as follows:
+				<ul>
+					<li>UNIFORM
+						- K(u) = 0.5 (|u| &#x2264;
+						1), 0 (|u| &gt; 1)
+					</li>
+					<li>TRIANGLE - K(u) = 1-|u| (|u| &#x2264;
+						1), 0 (|u| &gt; 1)</li>
+					<li>
+						EPANECHNIKOW - K(u) = 3•(1-u
+						&#178;
+						)/4 (|u| &#x2264;
+						1), 0 (|u| &gt; 1)
+					</li>
+					<li>
+						QUARTIC - K(u) = 15•(1-u
+						&#178;
+						)
+						&#178;
+						/16 (|u| &#x2264;
+						1), 0 (|u| &gt; 1)
+					</li>
+					<li>
+						TRIWEIGHT - K(u) = 35•(1-u&#178;)&#179;/32 (|u| &#x2264; 1), 0 (|u| &gt; 1)
+					</li>
+					<li>
+						GAUSSIAN - K(u) = e ^ (-u&#178;/2) / &#x221a;(2&#x03c0;)
+					</li>
+					<li>COSINUS - K(u) = &#x03c0;•cos(&#x03c0;u/2)/4 (|u| &#x2264;
+						1), 0
+						(|u| &gt; 1)</li>
+				</ul>
+			</p>
+
+			Two Kernel Symmetry options are supplied:
+			<ul>
+				<li>
+					RADIAL (Aka 'Multiplicative') - K(u)=k(u[x])•k(u[y])
+				</li>
+				<li>
+					SPHERICAL - K(u)=K(&#8730;u&#x1D40;u)
+				</li>
+			</ul>
+
+			Contour intervals can be generated according to a number of schemes
+			as follows:
+			<ul>
+				<li>
+					LINEAR - the range of intensities is divided into
+					<i>n</i>
+					equal bands
+				</li>
+				<li>
+					LOGARITHMIC - the range of the natural logarithm of the intensities
+					is divided into
+					<i>n</i>
+					equal bands
+				</li>
+				<li>
+					SQUARE - the range of the &#x221a; of the intensities
+					is divided
+					into
+					<i>n</i>
+					equal bands
+				</li>
+				<li>
+					CUBIC - the range of the cube-root of the intensities
+					is divided
+					into
+					<i>n</i>
+					equal bands
+				</li>
+				<li>
+					QUARTIC - the range of the 4th-root of the intensities
+					is divided
+					into
+					<i>n</i>
+					equal bands
+				</li>
+				<li>
+					QUANTILE - The data set is divided into
+					<i>n</i>
+					bands containing equal numbers of points
+				</li>
+			</ul>
+			<p>Outliers can be plotted. Outliers are defined by as the first 'n'
+				(the number of outliers) rows of the input table when probability
+				densities at for the point according to the Kernel Density are
+				calculated, and the table sorted in ascending order of probability
+			</p>
+			<p>The plot will either show contour lines, or block colour bands
+				depending on the settings. Colours are interpolated between the
+				upper bound and lower bound colours. If a continuous colour gradient
+				is
+				required, use the 'PMI Kernel Density Plot' node
+			</p>
+		</intro>
+
+		<tab name="Options">
+
+			<option name="Select nPMI1 (I1/I3, X) column">Select the column of nPMI1 (aka npr1)
+			</option>
+			<option name="Select nPMI2 (I2/I3, Y) column">Select the column of nPMI2 (aka npr2)
+			</option>
+			<option name="Vertex label colour">Colour of the Rod/Disc/Sphere label text at the
+				apices of the PMI triangle
+			</option>
+			<option name="Triangle bounds line colour">The colout of the PMI triangle bounding line
+			</option>
+			<option name="iso-S Bounds">Iso-Sphericality (iso-S) boundaries. Boundaries
+				are marked with a alternating dot-dash line, and the area with
+				higher S shaded. Either individual values can be specified,
+				separated by ';', e.g. '0.67;0.5;1.0', or a range with increments
+				can be specified in the form '{start}-{end};{stepsize}', e.g.
+				'0.2-0.8;0.2' will give lines at S=0.2, 0.4, 0.6 and 0.8.
+			</option>
+			<option name="Iso-S Colour">The colour to be used for the iso-S lines and
+				fill</option>
+			<option name="Iso-S fill transparency">The transparency to be applied to the fill colour
+				(0 - 255). For no visible fill, use 0</option>
+		</tab>
+		<tab name="Kernel Options">
+			<option name="Select Kernel Estimator">See details of the Kernel Estimators provided
+				above. If it is required to loop through multiple Kernel estimators,
+				use the 'Kernel Loop Start' node
+			</option>
+			<option name="Select Kernel Symmetry">See details of Kernel Symmetry above. If it is
+				required to loop through multiple Kernel symmetries,
+				use the 'Kernel
+				Loop Start' node
+			</option>
+			<option name="Use Automatic bandwidths">Use the automatic bandwidths as described above.
+				The bandwidths used are available as a flow variable output
+			</option>
+			<option name="x-Bandwidth (hX)">A manually entered bandwidth for the first series
+				(x-axis). Higher values give
+				smoother curves, but potentially lose
+				data structure
+			</option>
+			<option name="y-Bandwidth (hY)">A manually entered bandwidth for the second
+				series (y-axis). Higher values give
+				smoother curves, but potentially
+				lose data structure
+			</option>
+			<option name="Number of outliers (% of dataset)">The %age of the input table to be included as
+				outliers on the plot. Outliers are defined by as the first 'n'
+				(the
+				absolute number of outliers) rows of the input table when
+				probability
+				densities for the row according to the Kernel Density are
+				calculated, and the table sorted in ascending order of probability
+			</option>
+			<option name="Outlier size">The size of the '+' symbol used to plot the
+				outlier
+			</option>
+			<option name="Outlier colour">The colour of the outlier symbols</option>
+			<option name="Number of contours">The number of contour lines or bands to use
+			</option>
+			<option name="Fill contours">If selected, solid colour bands will be created
+				instead of contour lines
+			</option>
+			<option name="Contour interval Scheme">The system used to define the countour intervals
+				(see above)
+			</option>
+			<option name="Show bandwidths (H) on axis labels">If selected, the bandwidths are appended to the
+				axis labels
+			</option>
+			<option name="Number of grid points along the axis">The number of points at which the kernel density
+				function value is calculated in each dimension e.g. 250 gives a 250
+				x 250 array of points
+			</option>
+			<option name="Upper bound">The colour to be used for the highest density
+				area
+			</option>
+			<option name="Lower bound">The colour to be used for the lowest density area
+			</option>
+			<option name="Show colour-scale legend">Include a scale showing the values of the colour
+				legend (intensity is in arbitrary units)
+			</option>
+		</tab>
+		<tab name="General Plot Options">
+			<option name="Type of Image"> The type of the created image can either be png
+				or svg. PNGs are mostly smaller, SVGs provide details about plot and
+				the possibility to be changed individually.
+			</option>
+			<option name="Title of Graph"> The title of the graph shown above the generated
+				image. If the title is not activated, no title will be shown.
+			</option>
+			<option name="Width of Image (in pixel)"> The width of the generated image, not the plot
+				width.
+			</option>
+			<option name="Height of Image (in pixel)"> The height of the generated image, not the plot
+				height.
+			</option>
+			<option name="Background Color">The color of the background of the image. Hence
+				this color is used for the area behind and around the plot as well
+				as behind potential axis and legends.
+			</option>
+			<option name="Plot Background Color">The color of the background of the plot. Hence
+				this color is used for the empty space in a plot.
+			</option>
+			<option name="Plot Background Alpha">The transparency of the plot background can be
+				modified using an additional alpha value. An alpha value of 1 does
+				not change the background transparency. Decreasing the alpha value
+				will increase the plot background transparency.
+			</option>
+			<option name="Scale Font Size">Factor changes the font sizes within the
+				JFreeChart view. A value greater the 1 increases all view fonts, a
+				value between 0 and 1 decrease them.
+			</option>
+		</tab>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="nPMI table">Data table with at least two numerical
+			columns
+		</inPort>
+		<outPort
+			index="0"
+			name="PMI Kernel Density Contour plot">The image of the plot (SVG or PNG)
+		</outPort>
+
+	</ports>
+	<views>
+		<view
+			index="0"
+			name="PMI Kernel Density Contour plot">
+			Displays a PMI Triangle kernel density plot
+			visualization of the
+			input data.
+		</view>
+	</views>
+
+</knimeNode>

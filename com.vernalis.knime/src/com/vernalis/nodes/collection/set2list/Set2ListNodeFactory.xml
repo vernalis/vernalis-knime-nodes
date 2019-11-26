@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode
+	icon="./set2list.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Set To List</name>
+
+	<shortDescription>
+		This node replaces any selected Set Collection cells with List Collection cells
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				This nodes converts any Set collection cells in selected columns
+				to List collection cells. Sets do not necessarily have a defined
+				order, and may not contain duplicates.  List collections have a defined order.
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+
+		</intro>
+
+
+		<option name="Select Set Columns">Select the incoming Set column(s) to convert to
+			lists
+		</option>
+		<option name="Sort List Members">If this option is checked, then the cells will be
+			sorted in ascending order of their comparator, otherwise they will be
+			in iteration order of the set
+		</option>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="Input Table">Incoming data table</inPort>
+		<outPort
+			index="0"
+			name="Output Table">The input table with collections converted from Sets to Lists
+		</outPort>
+	</ports>
+
+</knimeNode>

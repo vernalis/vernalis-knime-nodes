@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode
+	icon="./knime2disk.png"
+	type="Manipulator">
+	<name>Save File Locally</name>
+
+	<shortDescription>
+		Node to save a String column to a local file with path specified in a
+		second column
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			This node saves a copy of the text files held in a table column to
+			filepaths held in a second column.
+			<br />
+			A rudimentary attempt is made to validate the filepaths - which must
+			be complete paths, e.g. C:\Temp\myfile.txt
+			If the full folder path does not exist, an attempt is made to create
+			it.
+			<br />
+			The returned column will contain a missing value if either of the
+			input columns is a missing value, 'true' if the file
+			was successfully written, and 'false' if it was not written (i.e.
+			because overwrite was set to off, and the file existed, or
+			because the directory could not be created or was not a valid path)
+			<br />
+			This node can be used to create txt files, or save pdb, mol, mol2
+			files etc. by providing an appropriate
+			filepath and extension.
+		</intro>
+
+		<option name="Select a column name containing the file cells">The column containing the content to be written to
+			the file</option>
+		<option name="Enter name of column for file paths">The column containing the full path to the output
+			files</option>
+		<option name="Save all files in parent folder">If checked, then the file path folder is assumed
+			to contain sub-paths, or simply filenames, and will be relative to
+			the indicated parent folder
+		</option>
+		<option name="Parent Directory">The optional parent folder to save files in
+		</option>
+		<option name="Overwrite files">If checked, existing files are overwritten without
+			warning</option>
+		<option name="Enter name of column for save successful flag">The name of a column for the outcome to be put in
+		</option>
+
+
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="In-Port 0">The input table containing a column with text and a column with
+			filepaths</inPort>
+		<!-- possibly more input ports here -->
+		<outPort
+			index="0"
+			name="Out-Port 0">The input table with a boolean column indicating the outcome of
+			local save added</outPort>
+		<!-- possibly more output ports here -->
+	</ports>
+
+</knimeNode>
