@@ -34,30 +34,46 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
  */
 public class RandomNumbers2NodeDialog extends DefaultNodeSettingsPane {
 
+	private static final String RANDOM_SEED = "Random Seed";
+
 	/**
 	 * New pane for configuring the RandomNumbers node.
 	 */
 	protected RandomNumbers2NodeDialog() {
 		super();
 		addDialogComponent(new DialogComponentString(
-				new SettingsModelString(RandomNumbersNodeModel.CFG_COLUMN_NAME, "Random Values"),
+				new SettingsModelString(RandomNumbersNodeModel.CFG_COLUMN_NAME,
+						"Random Values"),
 				"Output Column Name"));
 
 		addDialogComponent(new DialogComponentButtonGroup(
-				new SettingsModelString(RandomNumbersNodeModel.CFG_TYPE, "Double"), false,
-				"Output Type", new String[] { "Double", "Integer" }));
+				new SettingsModelString(RandomNumbersNodeModel.CFG_TYPE,
+						"Double"),
+				false, "Output Type", new String[] { "Double", "Integer" }));
 
 		addDialogComponent(new DialogComponentDoubleRange(
-				new SettingsModelDoubleRange(RandomNumbersNodeModel.CFG_MIN_MAX, 0.0, 100000.0),
+				new SettingsModelDoubleRange(RandomNumbersNodeModel.CFG_MIN_MAX,
+						0.0, 100000.0),
 				-1000000000.0, 1000000000.0, 1, "Enter value range"));
 
 		addDialogComponent(new DialogComponentNumberEdit(
-				new SettingsModelLongBounded(RandomNumbersNodeModel.CFG_N, 100, 1, Long.MAX_VALUE),
+				new SettingsModelLongBounded(RandomNumbersNodeModel.CFG_N, 100,
+						1, Long.MAX_VALUE),
 				"Number of values"));
 
-		addDialogComponent(new DialogComponentBoolean(
-				new SettingsModelBoolean(RandomNumbersNodeModel.CFG_UNIQUE, true),
-				"Unique values?"));
+		addDialogComponent(
+				new DialogComponentBoolean(
+						new SettingsModelBoolean(
+								RandomNumbersNodeModel.CFG_UNIQUE, true),
+						"Unique values?"));
 
+		addDialogComponent(
+				new DialogComponentNumberEdit(createSeedModel(), RANDOM_SEED));
+
+	}
+
+	static SettingsModelLongBounded createSeedModel() {
+		return new SettingsModelLongBounded(RANDOM_SEED, -1, -1,
+				Long.MAX_VALUE);
 	}
 }

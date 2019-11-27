@@ -46,6 +46,10 @@ import org.knime.core.node.streamable.PortOutput;
 import org.knime.core.node.streamable.RowOutput;
 import org.knime.core.node.streamable.StreamableOperator;
 
+import com.vernalis.knime.misc.DoubleSummary;
+
+import static com.vernalis.nodes.misc.randomnos.RandomNumbers2NodeDialog.createSeedModel;
+
 /**
  * This is the model implementation of RandomNumbers. A node to generate a table
  * with a single column of random numbers
@@ -86,6 +90,8 @@ public class RandomNumbers2NodeModel extends NodeModel {
 
 	private final SettingsModelBoolean m_isUnique =
 			new SettingsModelBoolean(CFG_UNIQUE, true);
+
+	private final SettingsModelLongBounded seedMdl = createSeedModel();
 
 	private DataTableSpec spec;
 
@@ -129,36 +135,36 @@ public class RandomNumbers2NodeModel extends NodeModel {
 			public void runFinal(PortInput[] inputs, PortOutput[] outputs,
 					ExecutionContext exec) throws Exception {
 				RowOutput out = (RowOutput) outputs[0];
+				DoubleSummary summ;
 				if (m_Type.getStringValue().equals("Integer")) {
-					if (m_isUnique.getBooleanValue()) {
-						RandomNumbers.addUniqueInts(
-								(int) Math.floor(m_Range.getMinRange()),
-								(int) Math.floor(m_Range.getMaxRange()),
-								m_n.getLongValue(), out, exec);
-					} else {
-						RandomNumbers.addInts(
-								(int) Math.floor(m_Range.getMinRange()),
-								(int) Math.floor(m_Range.getMaxRange()),
-								m_n.getLongValue(), out, exec);
-					}
+					summ = RandomNumbers.addInts(
+							(int) Math.floor(m_Range.getMinRange()),
+							(int) Math.floor(m_Range.getMaxRange()),
+							m_n.getLongValue(), seedMdl.getLongValue(), out,
+							exec, m_isUnique.getBooleanValue());
 				} else {
-					// Actually get the values
-					if (m_isUnique.getBooleanValue()) {
-						RandomNumbers.addUniqueDoubles(m_Range.getMinRange(),
-								m_Range.getMaxRange(), m_n.getLongValue(), out,
-								exec);
-					} else {
-						RandomNumbers.addDoubles(m_Range.getMinRange(),
-								m_Range.getMaxRange(), m_n.getLongValue(), out,
-								exec);
-					}
-
+					summ = RandomNumbers.addDoubles(m_Range.getMinRange(),
+							m_Range.getMaxRange(), m_n.getLongValue(),
+							seedMdl.getLongValue(), out, exec,
+							m_isUnique.getBooleanValue());
 				}
-
+				writeFlowVars(summ);
 				out.close();
 
 			}
 		};
+	}
+
+	protected void writeFlowVars(DoubleSummary summ) {
+		pushFlowVariableDouble("Mean", summ.getAverage());
+		pushFlowVariableDouble("Std Dev", summ.getStandardDeviation());
+		if (m_Type.getStringValue().equals("Integer")) {
+			pushFlowVariableInt("Min", (int) summ.getMin());
+			pushFlowVariableInt("Max", (int) summ.getMax());
+		} else {
+			pushFlowVariableDouble("Min", summ.getMin());
+			pushFlowVariableDouble("Max", summ.getMax());
+		}
 	}
 
 	/**
@@ -193,6 +199,7 @@ public class RandomNumbers2NodeModel extends NodeModel {
 		// Create an output table spec
 		spec = new DataTableSpec(createDataColumnSpec(
 				m_ColumnName.getStringValue(), m_Type.getStringValue()));
+		writeFlowVars(new DoubleSummary());
 		return new DataTableSpec[] { spec };
 	}
 
@@ -207,6 +214,7 @@ public class RandomNumbers2NodeModel extends NodeModel {
 		m_n.saveSettingsTo(settings);
 		m_Range.saveSettingsTo(settings);
 		m_Type.saveSettingsTo(settings);
+		seedMdl.saveSettingsTo(settings);
 	}
 
 	/**
@@ -221,6 +229,11 @@ public class RandomNumbers2NodeModel extends NodeModel {
 		m_n.loadSettingsFrom(settings);
 		m_Range.loadSettingsFrom(settings);
 		m_Type.loadSettingsFrom(settings);
+		try {
+			seedMdl.loadSettingsFrom(settings);
+		} catch (InvalidSettingsException e) {
+			seedMdl.setLongValue(-1);
+		}
 	}
 
 	/**
@@ -235,6 +248,7 @@ public class RandomNumbers2NodeModel extends NodeModel {
 		m_n.validateSettings(settings);
 		m_Range.validateSettings(settings);
 		m_Type.validateSettings(settings);
+		// Dont validate seedMdl
 	}
 
 	/**
