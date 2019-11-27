@@ -1,0 +1,5 @@
+v1.24.1 04-Nov-2019
+===================
+
+* Read / Write variables nodes now support knime: URL protocol
+* Fixed bug in Read Variables node resulting in file chooser showing 'Save' chooser and errors rather than 'Open'
