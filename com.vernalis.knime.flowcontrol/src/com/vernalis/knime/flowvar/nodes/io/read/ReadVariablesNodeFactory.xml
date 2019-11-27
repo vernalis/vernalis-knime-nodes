@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="./Disk2flowvar.png" type="Source"
+	xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Read Variables</name>
+
+	<shortDescription>
+        Node to read saved flow variables into workflow
+    </shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				The
+				<i>Read Variables</i>
+				node reads flow variables saved by a
+				<i>Write Variables</i>
+				node back into a workflow.
+				'Special' variables (i.e. those whose name
+				starts 'knime.') are ignored, as
+				these have special meanings in
+				KNIME.
+			</p>
+			<p>
+				The node provides various options for handling duplicate variables:
+				<ul>
+					<li>'Overwrite existing variable with value from file' - Any
+						existing variables duplicated in the file will
+						have their values
+						overwritten with those from the file
+					</li>
+					<li>'Ignore the value from the file' - The existing value will be
+						retained, and the value in the file ignored
+					</li>
+					<li>'Rename variable from the file with uniquified name' - Any
+						variables with duplicate names will have a suffix applied to the
+						values read from the file, e.g. 'RowID(#0)' etc.
+					</li>
+					<li>'Rename variable from file if different' - Only variables with
+						duplicate names which have different values or types will
+						be
+						renamed on reading. String comparisons ignore the Windows '\r'
+						character.
+					</li>
+				</ul>
+			</p>
+			<p>The node can also be created by dragging-and-dropping a
+				*.variables file on to the workflow editor</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+
+		<option name="Selected file">Select a *.variables file. Other file extensions
+			will fail.
+		</option>
+		<option name="Duplicate variable behaviour">Select the appropriate option for duplicate
+			variable behaviour
+			(see above for details)
+		</option>
+
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Flow Variables (Optional)">An optional port for existing flow
+			variables
+		</inPort>
+		<outPort index="0" name="Read Variables">Flow variables with those read from
+			file
+		</outPort>
+	</ports>
+
+</knimeNode>

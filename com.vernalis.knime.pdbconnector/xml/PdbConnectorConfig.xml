@@ -1,0 +1,2159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pdbConnectorOptions SYSTEM "PdbConnectorConfig.dtd">
+<pdbConnectorOptions version="1.0">
+	<properties>
+		<property key="SEARCH_LOCATION"><![CDATA[http://www.rcsb.org/pdb/rest/search]]></property>
+		<property key="REPORT_LOCATION"><![CDATA[http://www.rcsb.org/pdb/rest/customReport]]></property>
+		<property key="LIGAND_IMG_LOCATION"><![CDATA[http://www.pdb.org/pdb/images/]]></property>
+		<property key="COMPOSITE_START"><![CDATA[<orgPdbCompositeQuery version="1.0">]]></property>
+		<property key="COMPOSITE_END"><![CDATA[</orgPdbCompositeQuery>]]></property>
+		<property key="REFINEMENT_START"><![CDATA[<queryRefinement>]]></property>
+		<property key="REFINEMENT_END"><![CDATA[</queryRefinement>]]></property>
+		<property key="LEVEL_START"><![CDATA[<queryRefinementLevel>]]></property>
+		<property key="LEVEL_END"><![CDATA[</queryRefinementLevel>]]></property>
+		<property key="CONJUNCTION_AND"><![CDATA[<conjunctionType>and</conjunctionType>]]></property>
+		<property key="CONJUNCTION_OR"><![CDATA[<conjunctionType>or</conjunctionType>]]></property>
+		<property key="YMD_FORMAT">yyyy-MM-dd</property>
+		<property key="YM_FORMAT">yyyy-MM</property>
+		<property key="YEAR_FORMAT">yyyy</property>
+		<property key="REPORT_PDBIDS_URL"><![CDATA[?pdbids=]]></property>
+		<property key="REPORT_COLUMNS_URL"><![CDATA[&customReportColumns=]]></property>
+		<property key="REPORT_CSV_URL"><![CDATA[&format=csv]]></property>
+		<property key="REPORT_CSV_LINE_DELIM"><![CDATA[<br />]]></property>
+		<property key="REPORT_CSV_RECORD_DELIM">,</property>
+		<property key="REPORT_CSV_OPEN_QUOTE">"</property>
+		<property key="REPORT_CSV_CLOSE_QUOTE">"</property>
+		<property key="REPORT_XML_URL"><![CDATA[&format=xml]]></property>
+		<property key="REPORT_XML_ROOT">dataset</property>
+		<property key="REPORT_XML_RECORD">record</property>
+		<property key="PDB_COLUMN_NAME">PDB ID</property>
+		<property key="CONJUNCTION_AND_LABEL">and</property>
+		<property key="CONJUNCTION_OR_LABEL">or</property>
+		<property key="REPORT_LAYOUT_COLUMNS">2</property>
+		<property key="REPORT_LAYOUT_COL_WIDTH">250</property>
+		<property key="QUERY_PRM_STRING_WIDTH">15</property>
+		<property key="QUERY_PRM_INTEGER_WIDTH">5</property>
+		<property key="QUERY_PRM_DOUBLE_WIDTH">5</property>
+		<property key="QUERY_PRM_BIGSTRING_WIDTH">40</property>
+		<property key="QUERY_PRM_BIGSTRING_ROWS">3</property>
+		<property key="QUERY_LAYOUT_COLUMNS">3</property>
+		<property key="QUERY_LAYOUT_COL_WIDTH">200</property>
+	</properties>
+	<ligandImage>
+		<value label="100">_100.gif</value>
+		<value
+			label="200"
+			default="true">_200.gif</value>
+		<value label="300">_300.gif</value>
+		<value label="400">_400.gif</value>
+		<value label="500">_500.gif</value>
+		<value label="600">_600.gif</value>
+	</ligandImage>
+	<similarity>
+		<queryOption
+			id="SIMILARITY"
+			label="Remove Similar Sequences">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.HomologueReductionQuery</queryType><identityCutoff>%ARG1%</identityCutoff></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="SIMILARITY.VALUE"
+				type="String_List"
+				label="Remove Similar Sequences at Identity">
+				<value label="100%">100</value>
+				<value label="95%">95</value>
+				<value
+					label="90%"
+					default="true">90</value>
+				<value label="70%">70</value>
+				<value label="50%">50</value>
+				<value label="40%">40</value>
+				<value label="30%">30</value>
+			</queryParam>
+		</queryOption>
+	</similarity>
+	<queryCategory
+		id="KEYWORD_CAT"
+		label="IDs and Keywords">
+		<queryOption
+			id="PDB_ID"
+			label="PDB ID(s)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.StructureIdQuery</queryType><structureIdList>%ARG1%</structureIdList></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="PDB_ID.VALUE"
+				type="String"
+				label="PDB ID(s)" />
+		</queryOption>
+		<queryOption
+			id="PUBMED_ID"
+			label="PubMed ID(s)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.PubmedIdQuery</queryType><pubMedIdList>%ARG1%</pubMedIdList></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="PUBMED_ID.VALUE"
+				type="String"
+				label="PubMed ID(s)" />
+		</queryOption>
+		<queryOption
+			id="UP_ACC_ID"
+			label="UniProtKB Accession Number(s)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.UpAccessionIdQuery</queryType><accessionIdList>%ARG1%</accessionIdList></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="UP_ACC_ID.VALUE"
+				type="String"
+				label="Accession ID(s)" />
+		</queryOption>
+		<queryOption
+			id="TEXT_SEARCH"
+			label="Text Search">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.AdvancedKeywordQuery</queryType><keywords>%ARG1%</keywords></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="TEXT_SEARCH.VALUE"
+				type="String"
+				label="Text" />
+		</queryOption>
+		<queryOption
+			id="PFAM_ID"
+			label="Pfam ID(s)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.PfamIdQuery</queryType><pfamID>%ARG1%</pfamID></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="PFAM_ID.VALUE"
+				type="String"
+				label="Pfam ID" />
+		</queryOption>
+	</queryCategory>
+	<queryCategory
+		id="STRUCT_ANN_CAT"
+		label="Structure Annotation">
+		<queryOption
+			id="STRUCT_TITLE"
+			label="Structure Title">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.StructTitleQuery</queryType><struct.title.comparator>%ARG1%</struct.title.comparator><struct.title.value>%ARG2%</struct.title.value></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="STRUCT_TITLE.COMPAR"
+				type="String_List"
+				label="Structure Title">
+				<value label="Contains:">contains</value>
+				<value label="Equals:">equals</value>
+				<value label="Starts With:">startswith</value>
+				<value label="Ends With:">endswith</value>
+				<value label="Does NOT Contain:">!contains</value>
+				<value label="Does NOT Start With:">!startswith</value>
+				<value label="Does NOT End With:">!endswith</value>
+			</queryParam>
+			<queryParam
+				id="STRUCT_TITLE.VALUE"
+				type="String"
+				label="" />
+		</queryOption>
+		<queryOption
+			id="STRUCT_DESCR"
+			label="Structure Description">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.StructDescQuery</queryType><entity.pdbx_description.comparator>%ARG1%</entity.pdbx_description.comparator><entity.pdbx_description.value>%ARG2%</entity.pdbx_description.value></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="STRUCT_DESCR.COMPAR"
+				type="String_List"
+				label="Structure Description">
+				<value label="Contains:">contains</value>
+				<value label="Equals:">equals</value>
+				<value label="Starts With:">startswith</value>
+				<value label="Ends With:">endswith</value>
+				<value label="Does NOT Contain:">!contains</value>
+				<value label="Does NOT Start With:">!startswith</value>
+				<value label="Does NOT End With:">!endswith</value>
+			</queryParam>
+			<queryParam
+				id="STRUCT_DESCR.VALUE"
+				type="String"
+				label="" />
+		</queryOption>
+		<queryOption
+			id="MM_NAME"
+			label="Macromolecule Name">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.MoleculeNameQuery</queryType><macromoleculeName>%ARG1%</macromoleculeName></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="MM_NAME.VALUE"
+				type="String"
+				label="Macromolecule Name" />
+		</queryOption>
+	</queryCategory>
+	<queryCategory
+		id="DEP_CAT"
+		label="Deposition">
+		<queryOption
+			id="AUTH_NAME"
+			label="Author Name">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.AdvancedAuthorQuery</queryType><searchType>%ARG1%</searchType><audit_author.name>%ARG2%</audit_author.name><exactMatch>%ARG3%</exactMatch></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="AUTH_NAME.TYPE"
+				type="String_List"
+				label="Search Type">
+				<value label="All Authors">0</value>
+				<value label="Structure Authors">1</value>
+				<value label="Citation Authors">2</value>
+			</queryParam>
+			<queryParam
+				id="AUTH_NAME.VALUE"
+				type="String"
+				label="Author" />
+			<queryParam
+				id="AUTH_NAME.EXACT"
+				type="String_List"
+				label="Exact Match">
+				<value>false</value>
+				<value>true</value>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="DEP_DATE"
+			label="Deposition Date">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.DepositDateQuery</queryType><database_PDB_rev.date_original.comparator>between</database_PDB_rev.date_original.comparator><database_PDB_rev.date_original.min>%ARG1%-%ARG2%-%ARG3%</database_PDB_rev.date_original.min><database_PDB_rev.date_original.max>%ARG4%-%ARG5%-%ARG6%</database_PDB_rev.date_original.max><database_PDB_rev.mod_type.value>1</database_PDB_rev.mod_type.value></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="DEP_DATE.FROM"
+				type="Date"
+				label="From"></queryParam>
+			<queryParam
+				id="DEP_DATE.TO"
+				type="Date"
+				label="To"></queryParam>
+		</queryOption>
+		<queryOption
+			id="REL_DATE"
+			label="Release Date">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ReleaseDateQuery</queryType><database_PDB_rev.date.comparator>between</database_PDB_rev.date.comparator><database_PDB_rev.date.min>%ARG1%-%ARG2%-%ARG3%</database_PDB_rev.date.min><database_PDB_rev.date.max>%ARG4%-%ARG5%-%ARG6%</database_PDB_rev.date.max><database_PDB_rev.mod_type.value>1</database_PDB_rev.mod_type.value></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="REL_DATE.FROM"
+				type="Date"
+				label="From"></queryParam>
+			<queryParam
+				id="REL_DATE.TO"
+				type="Date"
+				label="To"></queryParam>
+		</queryOption>
+		<queryOption
+			id="REV_DATE"
+			label="Revision Date">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ReviseDateQuery</queryType><database_PDB_rev.date.comparator>between</database_PDB_rev.date.comparator><database_PDB_rev.date.min>%ARG1%-%ARG2%-%ARG3%</database_PDB_rev.date.min><database_PDB_rev.date.max>%ARG4%-%ARG5%-%ARG6%</database_PDB_rev.date.max><database_PDB_rev.mod_type.value>1</database_PDB_rev.mod_type.value></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="REV_DATE.FROM"
+				type="Date"
+				label="From"></queryParam>
+			<queryParam
+				id="REV_DATE.TO"
+				type="Date"
+				label="To"></queryParam>
+		</queryOption>
+		<queryOption
+			id="LATEST_REL"
+			label="Latest Released Structures">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.LastLoadQuery</queryType></orgPdbQuery>]]></queryString>
+		</queryOption>
+		<queryOption
+			id="LATEST_MOD"
+			label="Latest Modified Structures">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ModifiedStructuresQuery</queryType></orgPdbQuery>]]></queryString>
+		</queryOption>
+	</queryCategory>
+	<queryCategory
+		id="STRUCT_FEAT_CAT"
+		label="Structural Features">
+		<queryOption
+			id="MM_TYPE"
+			label="Macromolecule Type">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ChainTypeQuery</queryType><containsProtein>%ARG1%</containsProtein><containsDna>%ARG2%</containsDna><containsRna>%ARG3%</containsRna><containsHybrid>%ARG4%</containsHybrid></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="MM_TYPE.PROT"
+				type="String_List"
+				label="Contains Protein">
+				<value label="Ignore">?</value>
+				<value label="Yes">Y</value>
+				<value label="No">N</value>
+			</queryParam>
+			<queryParam
+				id="MM_TYPE.DNA"
+				type="String_List"
+				label="Contains DNA">
+				<value label="Ignore">?</value>
+				<value label="Yes">Y</value>
+				<value label="No">N</value>
+			</queryParam>
+			<queryParam
+				id="MM_TYPE.RNA"
+				type="String_List"
+				label="Contains RNA">
+				<value label="Ignore">?</value>
+				<value label="Yes">Y</value>
+				<value label="No">N</value>
+			</queryParam>
+			<queryParam
+				id="MM_TYPE.HYB"
+				type="String_List"
+				label="Contains DNA/RNA Hybrid">
+				<value label="Ignore">?</value>
+				<value label="Yes">Y</value>
+				<value label="No">N</value>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="NUM_CHAINS_AU"
+			label="Number of Chains (Asymmetric Unit)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.NumberOfChainsQuery</queryType><struct_asym.numChains.min>%ARG1%</struct_asym.numChains.min><struct_asym.numChains.max>%ARG2%</struct_asym.numChains.max></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="NUM_CHAINS_AU.RANGE"
+				type="Integer_Range"
+				label="Number of chains" />
+		</queryOption>
+		<queryOption
+			id="NUM_CHAINS_BA"
+			label="Number of Chains (Biological Assembly)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.BiolUnitQuery</queryType><oligomeric_statemin>%ARG1%</oligomeric_statemin><oligomeric_statemax>%ARG2%</oligomeric_statemax></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="NUM_CHAINS_BA.RANGE"
+				type="Integer_Range"
+				label="Number of chains"></queryParam>
+		</queryOption>
+		<queryOption
+			id="NUM_ENTITIES"
+			label="Number of Entities">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.NumberOfEntitiesQuery</queryType>%ARG1%<struct_asym.numEntities.min>%ARG2%</struct_asym.numEntities.min><struct_asym.numEntities.max>%ARG3%</struct_asym.numEntities.max></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="NUM_ENTITIES.TYPE"
+				type="String_List"
+				label="Entity Type">
+				<value label="Any"></value>
+				<value label="Protein"><![CDATA[<entity.type.>p</entity.type.>]]></value>
+				<value label="RNA"><![CDATA[<entity.type.>r</entity.type.>]]></value>
+				<value label="DNA"><![CDATA[<entity.type.>d</entity.type.>]]></value>
+				<value label="Ligand"><![CDATA[<entity.type.>n</entity.type.>]]></value>
+				<value label="Other"><![CDATA[<entity.type.>?</entity.type.>]]></value>
+			</queryParam>
+			<queryParam
+				id="NUM_ENTITIES.RANGE"
+				type="Integer_Range"
+				label="Number of entities"></queryParam>
+		</queryOption>
+		<queryOption
+			id="NUM_MODELS"
+			label="Number of Models">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ModelCountQuery</queryType><mvStructure.modelCount.comparator>%ARG1%</mvStructure.modelCount.comparator><mvStructure.modelCount.value>%ARG2%</mvStructure.modelCount.value></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="NUM_MODELS.COMPAR"
+				type="String_List"
+				label="">
+				<value><![CDATA[=]]></value>
+				<value><![CDATA[>]]></value>
+				<value><![CDATA[<]]></value>
+				<value><![CDATA[!=]]></value>
+			</queryParam>
+			<queryParam
+				id="NUM_MODELS.VALUE"
+				type="Integer"
+				label=""></queryParam>
+		</queryOption>
+		<queryOption
+			id="NUM_DISULFIDE"
+			label="Number of Disulfide Bonds">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.CloseContactsQuery</queryType><derivedStructConn.count.comparator>between</derivedStructConn.count.comparator><derivedStructConn.count.min>%ARG1%</derivedStructConn.count.min><derivedStructConn.count.max>%ARG2%</derivedStructConn.count.max></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="NUM_DISULFIDE.RANGE"
+				type="Integer_Range"
+				label="Disulfide bond count"></queryParam>
+		</queryOption>
+		<queryOption
+			id="MW_STRUCT"
+			label="Molecular Weight (Structure)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.MolecularWeightQuery</queryType><mvStructure.structureMolecularWeight.min>%ARG1%</mvStructure.structureMolecularWeight.min><mvStructure.structureMolecularWeight.max>%ARG2%</mvStructure.structureMolecularWeight.max></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="MW_STRUCT.RANGE"
+				type="Double_Range"
+				min="0"
+				max="999999"
+				label="Molecular weight"></queryParam>
+		</queryOption>
+		<queryOption
+			id="SS_CONTENT"
+			label="Secondary Structure Content">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.SecondaryStructureQuery</queryType><polyStats.helixPercent.comparator>between</polyStats.helixPercent.comparator>%ARG1%%ARG2%<polyStats.sheetPercent.comparator>between</polyStats.sheetPercent.comparator>%ARG3%%ARG4%<polyStats.helixCount.comparator>between</polyStats.helixCount.comparator>%ARG5%%ARG6%<polyStats.sheetCount.comparator>between</polyStats.sheetCount.comparator>%ARG7%%ARG8%</orgPdbQuery>]]></queryString>
+			<queryParam
+				id="SS_CONTENT.HELIX_PC"
+				type="Double_Range_Cond"
+				min="0"
+				max="100"
+				label="Alpha helices %">
+				<queryString><![CDATA[<polyStats.helixPercent.min>%ARG%</polyStats.helixPercent.min>]]></queryString>
+				<queryString><![CDATA[<polyStats.helixPercent.max>%ARG%</polyStats.helixPercent.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="SS_CONTENT.SHEET_PC"
+				type="Double_Range_Cond"
+				min="0"
+				max="100"
+				label="Beta sheets %">
+				<queryString><![CDATA[<polyStats.sheetPercent.min>%ARG%</polyStats.sheetPercent.min>]]></queryString>
+				<queryString><![CDATA[<polyStats.sheetPercent.max>%ARG%</polyStats.sheetPercent.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="SS_CONTENT.HELIX_COUNT"
+				type="Integer_Range_Cond"
+				label="Alpha helices count">
+				<queryString><![CDATA[<polyStats.helixCount.min>%ARG%</polyStats.helixCount.min>]]></queryString>
+				<queryString><![CDATA[<polyStats.helixCount.max>%ARG%</polyStats.helixCount.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="SS_CONTENT.SHEET_COUNT"
+				type="Integer_Range_Cond"
+				label="Beta sheets count">
+				<queryString><![CDATA[<polyStats.sheetCount.min>%ARG%</polyStats.sheetCount.min>]]></queryString>
+				<queryString><![CDATA[<polyStats.sheetCount.max>%ARG%</polyStats.sheetCount.max>]]></queryString>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="SS_LENGTH"
+			label="Secondary Structure Length">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.SecondaryStructureLengthQuery</queryType><ss.method.value>%ARG1%</ss.method.value>%ARG2%<helix.length.comparator>between</helix.length.comparator>%ARG3%%ARG4%%ARG5%<beta_strand.length.comparator>between</beta_strand.length.comparator>%ARG6%%ARG7%</orgPdbQuery>]]></queryString>
+			<queryParam
+				id="SS_LENGTH.METHOD"
+				type="String_List"
+				label="Secondary structure method">
+				<value>DSSP</value>
+				<value>Stride</value>
+			</queryParam>
+			<queryParam
+				id="SS_LENGTH.HELIX_TYPE"
+				type="String_List"
+				label="Helix subtype">
+				<value label="Any"></value>
+				<value label="3-10 helix"><![CDATA[<helix.subtype.value>3-10 helix</helix.subtype.value>]]></value>
+				<value label="Alpha helix"><![CDATA[<helix.subtype.value>alpha helix</helix.subtype.value>]]></value>
+				<value label="Pi helix"><![CDATA[<helix.subtype.value>pi helix</helix.subtype.value>]]></value>
+			</queryParam>
+			<queryParam
+				id="SS_LENGTH.HELIX"
+				type="Integer_Range_Cond"
+				label="Helix length">
+				<queryString><![CDATA[<helix.length.min>%ARG%</helix.length.min>]]></queryString>
+				<queryString><![CDATA[<helix.length.max>%ARG%</helix.length.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="SS_LENGTH.STRAND_TYPE"
+				type="String_List"
+				label="Beta strand subtype">
+				<value label="Any"></value>
+				<value label="Beta Bridge"><![CDATA[<beta_strand.subtype.value>beta bridge</beta_strand.subtype.value>]]></value>
+				<value label="Beta Strand"><![CDATA[<beta_strand.subtype.value>beta strand</beta_strand.subtype.value>]]></value>
+			</queryParam>
+			<queryParam
+				id="SS_LENGTH.STRAND"
+				type="Integer_Range_Cond"
+				label="Beta strand length">
+				<queryString><![CDATA[<beta_strand.length.min>%ARG%</beta_strand.length.min>]]></queryString>
+				<queryString><![CDATA[<beta_strand.length.max>%ARG%</beta_strand.length.max>]]></queryString>
+			</queryParam>
+		</queryOption>
+	</queryCategory>
+	<queryCategory
+		id="SEQUENCE_CAT"
+		label="Sequence Features">
+		<queryOption
+			id="SEQ_SEARCH"
+			label="Sequence (BLAST/FASTA/PSI-BLAST)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.SequenceQuery</queryType><structureId>%ARG1%</structureId><chainId>%ARG2%</chainId><sequence>%ARG3%</sequence><searchTool>%ARG4%</searchTool><maskLowComplexity>%ARG5%</maskLowComplexity><eCutOff>%ARG6%</eCutOff></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="SEQ_SEARCH.STRUCT"
+				type="String"
+				label="Structure Id"></queryParam>
+			<queryParam
+				id="SEQ_SEARCH.CHAIN"
+				type="String"
+				label="Chain Id"></queryParam>
+			<queryParam
+				id="SEQ_SEARCH.SEQ"
+				type="Big_String"
+				label="Sequence"></queryParam>
+			<queryParam
+				id="SEQ_SEARCH.TOOL"
+				type="String_List"
+				label="Search tool">
+				<value label="BLAST">blast</value>
+				<value label="FASTA">fasta</value>
+				<value label="PSI-BLAST">psiblast</value>
+			</queryParam>
+			<queryParam
+				id="SEQ_SEARCH.MASK"
+				type="String_List"
+				label="Mask low complexity">
+				<value>yes</value>
+				<value>no</value>
+			</queryParam>
+			<queryParam
+				id="SEQ_SEARCH.CUTOFF"
+				type="Double"
+				label="E cut off"
+				default="10"></queryParam>
+		</queryOption>
+		<queryOption
+			id="BLASTX"
+			label="Translated Nucleotide Sequence (BLASTX)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.BlastXQuery</queryType><sequence>%ARG1%</sequence><eCutOff>%ARG2%</eCutOff></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="BLASTX.SEQ"
+				type="Big_String"
+				label="Sequence"></queryParam>
+			<queryParam
+				id="BLASTX.CUTOFF"
+				type="Double"
+				label="E cut off"
+				default="10"></queryParam>
+		</queryOption>
+		<queryOption
+			id="SEQ_MOTIF"
+			label="Sequence Motif">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.MotifQuery</queryType><motif>%ARG1%</motif></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="SEQ_MOTIF.VALUE"
+				type="Big_String"
+				label="Motif"></queryParam>
+		</queryOption>
+		<queryOption
+			id="CHAIN_LENGTH"
+			label="Chain Length">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.SequenceLengthQuery</queryType><v_sequence.chainLength.min>%ARG1%</v_sequence.chainLength.min><v_sequence.chainLength.max>%ARG2%</v_sequence.chainLength.max></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="CHAIN_LENGTH.RANGE"
+				type="Integer_Range"
+				label="Chain length"></queryParam>
+		</queryOption>
+	</queryCategory>
+	<queryCategory
+		id="CHEM_CAT"
+		label="Chemical Components">
+		<queryOption
+			id="CHEM_NAME"
+			label="Chemical Name">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ChemCompNameQuery</queryType><comparator>%ARG1%</comparator><name>%ARG2%</name><polymericType>%ARG3%</polymericType></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="CHEM_NAME.COMPAR"
+				type="String_List"
+				label="Name">
+				<value label="Contains">Contains</value>
+				<value label="Equals">Equals</value>
+				<value label="Sounds like">Sounds_like</value>
+			</queryParam>
+			<queryParam
+				id="CHEM_NAME.VALUE"
+				type="String"
+				label=""></queryParam>
+			<queryParam
+				id="CHEM_NAME.TYPE"
+				type="String_List"
+				label="Polymeric type">
+				<value>Any</value>
+				<value>Free</value>
+				<value>Polymeric</value>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="CHEM_ID"
+			label="Chemical ID">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ChemCompIdQuery</queryType><chemCompId>%ARG1%</chemCompId><polymericType>%ARG2%</polymericType></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="CHEM_ID.VALUE"
+				type="String"
+				label="Chemical ID"></queryParam>
+			<queryParam
+				id="CHEM_ID.TYPE"
+				type="String_List"
+				label="Polymeric type">
+				<value>Any</value>
+				<value>Free</value>
+				<value>Polymeric</value>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="INCHI"
+			label="InChI Descriptor">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ChemCompDescriptorQuery</queryType><descriptor>%ARG1%</descriptor><descriptorType>%ARG2%</descriptorType></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="INCHI.VALUE"
+				type="String"
+				label="Descriptor"></queryParam>
+			<queryParam
+				id="INCHI.TYPE"
+				type="String_List"
+				label="Descriptor type">
+				<value>InChI</value>
+				<value>InChI_key</value>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="SMILES"
+			label="SMILES / SMARTS">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ChemSmilesQuery</queryType><smiles>%ARG1%</smiles><searchType>%ARG2%</searchType><similarity>%ARG3%</similarity><polymericType>%ARG4%</polymericType></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="SMILES.VALUE"
+				type="Big_String"
+				label="SMILES / SMARTS"></queryParam>
+			<queryParam
+				id="SMILES.SEARCH"
+				type="String_List"
+				label="Search type">
+				<value>Substructure</value>
+				<value>Exact</value>
+				<value>Similar</value>
+				<value>Superstructure</value>
+			</queryParam>
+			<queryParam
+				id="SMILES.SIMILARITY"
+				type="String_List"
+				label="Similarity">
+				<value label="100%">1</value>
+				<value label="95%">0.95</value>
+				<value label="90%">0.9</value>
+				<value label="80%">0.8</value>
+				<value
+					label="70%"
+					default="true">0.7</value>
+				<value label="60%">0.6</value>
+				<value label="50%">0.5</value>
+				<value label="40%">0.4</value>
+				<value label="30%">0.3</value>
+				<value label="20%">0.2</value>
+				<value label="10%">0.1</value>
+			</queryParam>
+			<queryParam
+				id="SMILES.TYPE"
+				type="String_List"
+				label="Polymeric type">
+				<value>Any</value>
+				<value>Free</value>
+				<value>Polymeric</value>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="MW_CHEM"
+			label="Molecular Weight (Chemical component)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ChemFormulaWeightQuery</queryType><molecularWeightComparator>between</molecularWeightComparator><molecularWeightMin>%ARG1%</molecularWeightMin><molecularWeightMax>%ARG2%</molecularWeightMax></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="MW_CHEM.RANGE"
+				type="Double_Range"
+				label="Molecular weight"></queryParam>
+		</queryOption>
+		<queryOption
+			id="CHEM_FORMULA"
+			label="Chemical Formula">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ChemCompFormulaQuery</queryType><formula>%ARG1%</formula></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="CHEM_FORMULA.VALUE"
+				type="String"
+				label="Formula expression"></queryParam>
+		</queryOption>
+		<queryOption
+			id="CHEM_TYPE"
+			label="Chemical Component Type">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ChemCompTypeQuery</queryType><type>%ARG1%</type></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="CHEM_TYPE.VALUE"
+				type="String_List"
+				label="Chem Comp Type">
+				<value>D-beta-peptide, C-gamma linking</value>
+				<value>D-gamma-peptide, C-delta linking</value>
+				<value>D-peptide linking</value>
+				<value>D-peptide NH3 amino terminus</value>
+				<value>D-saccharide</value>
+				<value>D-saccharide 1, 4 and 1, 4 linking</value>
+				<value>DNA linking</value>
+				<value>DNA OH 3 prime terminus</value>
+				<value>L-beta-peptide, C-gamma linking</value>
+				<value>L-DNA linking</value>
+				<value>L-gamma-peptide, C-delta linking</value>
+				<value>L-peptide COOH carboxy terminus</value>
+				<value>L-peptide linking</value>
+				<value>L-peptide NH3 amino terminus</value>
+				<value>L-RNA linking</value>
+				<value>L-saccharide</value>
+				<value>L-saccharide 1, 4 and 1, 4 linking</value>
+				<value>non-polymer</value>
+				<value>peptide linking</value>
+				<value>peptide-like</value>
+				<value>RNA linking</value>
+				<value>RNA OH 3 prime terminus</value>
+				<value>saccharide</value>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="BINDING_AFFINITY"
+			label="Binding Affinity">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.BindingAffinityQuery</queryType><bindingAffinityComparator>between</bindingAffinityComparator><bindingAffinityMin>%ARG1%</bindingAffinityMin><bindingAffinityMax>%ARG2%</bindingAffinityMax><affinityType>%ARG3%</affinityType></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="BINDING_AFFINITY.RANGE"
+				type="Double_Range"
+				min="-999999"
+				max="999999"
+				label="Binding Affinity"></queryParam>
+			<queryParam
+				id="BINDING_AFFINITY.TYPE"
+				type="String_List"
+				label="Affinity Type">
+				<value>Ki</value>
+				<value>Kd</value>
+				<value>EC50</value>
+				<value>IC50</value>
+				<value label="deltaG"><![CDATA[&amp;delta;G]]></value>
+				<value label="deltaH"><![CDATA[&amp;delta;H]]></value>
+				<value label="-TdeltaS"><![CDATA[-T&amp;delta;S]]></value>
+				<value>Ka</value>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="HAS_LIGAND"
+			label="Has Ligand(s)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.NoLigandQuery</queryType><haveLigands>%ARG1%</haveLigands></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="HAS_LIGAND.VALUE"
+				type="String_List"
+				label="Has Ligands">
+				<value>Yes</value>
+				<value>No</value>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="HAS_MOD_RES"
+			label="Has Modified Residue(s)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.NoModResQuery</queryType><hasModifiedResidues>%ARG1%</hasModifiedResidues></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="HAS_MOD_RES.VALUE"
+				type="String_List"
+				label="Has Modified Residues">
+				<value>Yes</value>
+				<value>No</value>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="SUBCOMP"
+			label="Sub-components">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ChemCompSubCompQuery</queryType><sub-components>%ARG1%</sub-components></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="SUBCOMP.VALUE"
+				type="String"
+				label="Sub-components"></queryParam>
+		</queryOption>
+	</queryCategory>
+	<queryCategory
+		id="BIOLOGY_CAT"
+		label="Biology">
+		<queryOption
+			id="EXPR_ORG"
+			label="Expression Organism">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ExpressionOrganismQuery</queryType><entity_src_gen.pdbx_host_org_scientific_name.comparator>%ARG1%</entity_src_gen.pdbx_host_org_scientific_name.comparator><entity_src_gen.pdbx_host_org_scientific_name.value>%ARG2%</entity_src_gen.pdbx_host_org_scientific_name.value></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="EXPR_ORG.COMPAR"
+				type="String_List"
+				label="System in which expressed">
+				<value>equals</value>
+				<value>contains</value>
+				<value>startswith</value>
+				<value>endswith</value>
+				<value>!contains</value>
+				<value>!startswith</value>
+				<value>!endswith</value>
+			</queryParam>
+			<queryParam
+				id="EXPR_ORG.VALUE"
+				type="String"
+				label=""></queryParam>
+		</queryOption>
+		<queryOption
+			id="ENZYME_CLASS"
+			label="Enzyme Classification">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.EnzymeClassificationQuery</queryType><Enzyme_Classification>%ARG1%</Enzyme_Classification></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="ENZYME_CLASS.VALUE"
+				type="String"
+				label="Enzyme Classification"></queryParam>
+		</queryOption>
+	</queryCategory>
+	<queryCategory
+		id="METHODS_CAT"
+		label="Methods">
+		<queryOption
+			id="EXPT_METHOD"
+			label="Experimental Method">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ExpTypeQuery</queryType><mvStructure.expMethod.value>%ARG1%</mvStructure.expMethod.value>%ARG2%</orgPdbQuery>]]></queryString>
+			<queryParam
+				id="EXPT_METHOD.VALUE"
+				type="String_List"
+				label="Experimental Method">
+				<value>X-RAY</value>
+				<value>SOLUTION NMR</value>
+				<value>SOLID-STATE NMR</value>
+				<value>ELECTRON MICROSCOPY</value>
+				<value>ELECTRON CRYSTALLOGRAPHY</value>
+				<value>FIBER DIFFRACTION</value>
+				<value>NEUTRON DIFFRACTION</value>
+				<value>SOLUTION SCATTERING</value>
+				<value>OTHER</value>
+				<value>HYBRID</value>
+			</queryParam>
+			<queryParam
+				id="EXPT_METHOD.DATA"
+				type="String_List"
+				label="Has Experimental Data">
+				<value label="Ignore"></value>
+				<value label="Yes"><![CDATA[<mvStructure.hasExperimentalData.value>Y</mvStructure.hasExperimentalData.value>]]></value>
+				<value label="No"><![CDATA[<mvStructure.hasExperimentalData.value>N</mvStructure.hasExperimentalData.value>]]></value>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="XRAY_RES"
+			label="X-Ray Resolution">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ResolutionQuery</queryType><refine.ls_d_res_high.comparator>between</refine.ls_d_res_high.comparator><refine.ls_d_res_high.min>%ARG1%</refine.ls_d_res_high.min><refine.ls_d_res_high.max>%ARG2%</refine.ls_d_res_high.max></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="XRAY_RES.RANGE"
+				type="Double_Range"
+				label="X-Ray Resolution"></queryParam>
+		</queryOption>
+		<queryOption
+			id="R_FAC_OBS"
+			label="Refinement R Factors">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.XrayRefinementQuery</queryType><refine.ls_R_factor_obs.comparator>between</refine.ls_R_factor_obs.comparator>%ARG1%%ARG2%<refine.ls_R_factor_all.comparator>between</refine.ls_R_factor_all.comparator>%ARG3%%ARG4%<refine.ls_R_factor_R_work.comparator>between</refine.ls_R_factor_R_work.comparator>%ARG5%%ARG6%<refine.ls_R_factor_R_free.comparator>between</refine.ls_R_factor_R_free.comparator>%ARG7%%ARG8%</orgPdbQuery>]]></queryString>
+			<queryParam
+				id="R_FAC_OBS.RANGE"
+				type="Double_Range_Cond"
+				label="Observed"
+				min="0"
+				max="1">
+				<queryString><![CDATA[<refine.ls_R_factor_obs.min>%ARG%</refine.ls_R_factor_obs.min>]]></queryString>
+				<queryString><![CDATA[<refine.ls_R_factor_obs.max>%ARG%</refine.ls_R_factor_obs.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="R_FAC_ALL.RANGE"
+				type="Double_Range_Cond"
+				label="All"
+				min="0"
+				max="1">
+				<queryString><![CDATA[<refine.ls_R_factor_all.min>%ARG%</refine.ls_R_factor_all.min>]]></queryString>
+				<queryString><![CDATA[<refine.ls_R_factor_all.max>%ARG%</refine.ls_R_factor_all.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="R_FAC_R_WORK.RANGE"
+				type="Double_Range_Cond"
+				label="R Work"
+				min="0"
+				max="1">
+				<queryString><![CDATA[<refine.ls_R_factor_R_work.min>%ARG%</refine.ls_R_factor_R_work.min>]]></queryString>
+				<queryString><![CDATA[<refine.ls_R_factor_R_work.max>%ARG%</refine.ls_R_factor_R_work.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="R_FAC_R_FREE.RANGE"
+				type="Double_Range_Cond"
+				label="R Free"
+				min="0"
+				max="1">
+				<queryString><![CDATA[<refine.ls_R_factor_R_free.min>%ARG%</refine.ls_R_factor_R_free.min>]]></queryString>
+				<queryString><![CDATA[<refine.ls_R_factor_R_free.max>%ARG%</refine.ls_R_factor_R_free.max>]]></queryString>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="DIFFR_SRC"
+			label="Diffraction Source">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.XrayDiffrnSourceQuery</queryType><diffrn_source.source.comparator>like</diffrn_source.source.comparator><diffrn_source.pdbx_synchrotron_site.comparator>%ARG1%</diffrn_source.pdbx_synchrotron_site.comparator>%ARG2%<diffrn_source.pdbx_synchrotron_beamline.comparator>%ARG3%</diffrn_source.pdbx_synchrotron_beamline.comparator>%ARG4%%ARG5%%ARG6%</orgPdbQuery>]]></queryString>
+			<queryParam
+				id="DIFFR_SRC.SITE_COMPAR"
+				type="String_List"
+				label="Synchrotron Site">
+				<value
+					label="Contains:"
+					default="true">contains</value>
+				<value label="Starts With:">startswith</value>
+				<value label="Ends With:">endswith</value>
+			</queryParam>
+			<queryParam
+				id="DIFFR_SRC.SITE"
+				type="String_Cond"
+				label="">
+				<queryString><![CDATA[<diffrn_source.pdbx_synchrotron_site.value>%ARG%</diffrn_source.pdbx_synchrotron_site.value>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="DIFFR_SRC.BEAM_COMPAR"
+				type="String_List"
+				label="Synchrotron Beamline">
+				<value
+					label="Contains:"
+					default="true">contains</value>
+				<value label="Starts With:">startswith</value>
+				<value label="Ends With:">endswith</value>
+			</queryParam>
+			<queryParam
+				id="DIFFR_SRC.BEAM"
+				type="String_Cond"
+				label="">
+				<queryString><![CDATA[<diffrn_source.pdbx_synchrotron_beamline.value>%ARG%</diffrn_source.pdbx_synchrotron_beamline.value>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="DIFFR_SRC.TEMP"
+				type="Double_Range_Cond"
+				label="Temperature"
+				min="0"
+				max="999">
+				<queryString><![CDATA[<diffrn.ambient_temp.min>%ARG%</diffrn.ambient_temp.min>]]></queryString>
+				<queryString><![CDATA[<diffrn.ambient_temp.max>%ARG%</diffrn.ambient_temp.max>]]></queryString>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="REFLNS"
+			label="Reflections">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.XrayReflnsQuery</queryType><reflns.d_resolution_low.comparator>between</reflns.d_resolution_low.comparator><reflns.d_resolution_high.comparator>between</reflns.d_resolution_high.comparator>%ARG1%%ARG2%<reflns.B_iso_Wilson_estimate.comparator>between</reflns.B_iso_Wilson_estimate.comparator>%ARG3%%ARG4%<reflns.pdbx_redundancy.comparator>between</reflns.pdbx_redundancy.comparator>%ARG5%%ARG6%<reflns.percent_possible_obs.comparator>between</reflns.percent_possible_obs.comparator>%ARG7%%ARG8%<reflns.pdbx_Rmerge_I_obs.comparator>between</reflns.pdbx_Rmerge_I_obs.comparator>%ARG9%%ARG10%</orgPdbQuery>]]></queryString>
+			<queryParam
+				id="REFLNS.HIRES.RANGE"
+				type="Double_Range_Cond"
+				label="d_res_high (A)">
+				<queryString><![CDATA[<reflns.d_resolution_high.min>%ARG%</reflns.d_resolution_high.min>]]></queryString>
+				<queryString><![CDATA[<reflns.d_resolution_high.max>%ARG%</reflns.d_resolution_high.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="REFLNS.ISO.RANGE"
+				type="Double_Range_Cond"
+				label="B_iso_Wilson_est (A^2)">
+				<queryString><![CDATA[<reflns.B_iso_Wilson_estimate.min>%ARG%</reflns.B_iso_Wilson_estimate.min>]]></queryString>
+				<queryString><![CDATA[<reflns.B_iso_Wilson_estimate.max>%ARG%</reflns.B_iso_Wilson_estimate.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="REFLNS.PC_REDUN"
+				type="Double_Range_Cond"
+				min="0"
+				max="100"
+				label="Overall Redundancy (%)">
+				<queryString><![CDATA[<reflns.pdbx_redundancy.min>%ARG%</reflns.pdbx_redundancy.min>]]></queryString>
+				<queryString><![CDATA[<reflns.pdbx_redundancy.max>%ARG%</reflns.pdbx_redundancy.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="REFLNS.PC_POSS"
+				type="Double_Range_Cond"
+				min="0"
+				max="100"
+				label="% of Poss Reflections">
+				<queryString><![CDATA[<reflns.percent_possible_obs.min>%ARG%</reflns.percent_possible_obs.min>]]></queryString>
+				<queryString><![CDATA[<reflns.percent_possible_obs.max>%ARG%</reflns.percent_possible_obs.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="REFLNS.MERGE"
+				type="Double_Range_Cond"
+				label="Rmerge I (Obs)">
+				<queryString><![CDATA[<reflns.pdbx_Rmerge_I_obs.min>%ARG%</reflns.pdbx_Rmerge_I_obs.min>]]></queryString>
+				<queryString><![CDATA[<reflns.pdbx_Rmerge_I_obs.max>%ARG%</reflns.pdbx_Rmerge_I_obs.max>]]></queryString>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="CELL_DIM"
+			label="Cell Dimensions">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.XrayCellQuery</queryType><cell.length_a.comparator>between</cell.length_a.comparator>%ARG1%%ARG2%<cell.length_b.comparator>between</cell.length_b.comparator>%ARG3%%ARG4%<cell.length_c.comparator>between</cell.length_c.comparator>%ARG5%%ARG6%<cell.angle_alpha.comparator>between</cell.angle_alpha.comparator>%ARG7%%ARG8%<cell.angle_beta.comparator>between</cell.angle_beta.comparator>%ARG9%%ARG10%<cell.angle_gamma.comparator>between</cell.angle_gamma.comparator>%ARG11%%ARG12%</orgPdbQuery>]]>
+			</queryString>
+			<queryParam
+				id="CELL_DIM.A"
+				type="Double_Range_Cond"
+				label="a (Angstroms)">
+				<queryString><![CDATA[<cell.length_a.min>%ARG%</cell.length_a.min>]]></queryString>
+				<queryString><![CDATA[<cell.length_a.max>%ARG%</cell.length_a.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="CELL_DIM.B"
+				type="Double_Range_Cond"
+				label="b (Angstroms)">
+				<queryString><![CDATA[<cell.length_b.min>%ARG%</cell.length_b.min>]]></queryString>
+				<queryString><![CDATA[<cell.length_b.max>%ARG%</cell.length_b.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="CELL_DIM.C"
+				type="Double_Range_Cond"
+				label="c (Angstroms)">
+				<queryString><![CDATA[<cell.length_c.min>%ARG%</cell.length_c.min>]]></queryString>
+				<queryString><![CDATA[<cell.length_c.max>%ARG%</cell.length_c.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="CELL_DIM.ALPHA"
+				type="Double_Range_Cond"
+				label="alpha (degrees)"
+				min="0"
+				max="360">
+				<queryString><![CDATA[<cell.angle_alpha.min>%ARG%</cell.angle_alpha.min>]]></queryString>
+				<queryString><![CDATA[<cell.angle_alpha.max>%ARG%</cell.angle_alpha.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="CELL_DIM.BETA"
+				type="Double_Range_Cond"
+				label="beta (degrees)"
+				min="0"
+				max="360">
+				<queryString><![CDATA[<cell.angle_beta.min>%ARG%</cell.angle_beta.min>]]></queryString>
+				<queryString><![CDATA[<cell.angle_beta.max>%ARG%</cell.angle_beta.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="CELL_DIM.GAMMA"
+				type="Double_Range_Cond"
+				label="gamma (degrees)"
+				min="0"
+				max="360">
+				<queryString><![CDATA[<cell.angle_gamma.min>%ARG%</cell.angle_gamma.min>]]></queryString>
+				<queryString><![CDATA[<cell.angle_gamma.max>%ARG%</cell.angle_gamma.max>]]></queryString>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="SOFTWARE"
+			label="Software">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.SoftwareQuery</queryType><VSoftware.name.comparator>%ARG1%</VSoftware.name.comparator><VSoftware.name.value>%ARG2%</VSoftware.name.value></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="SOFTWARE.COMPAR"
+				type="String_List"
+				label="Name">
+				<value label="Equals:">equals</value>
+				<value
+					label="Contains:"
+					default="true">contains</value>
+				<value label="Starts With:">startswith</value>
+				<value label="Ends With:">endswith</value>
+				<value label="Does NOT Contain:">!contains</value>
+				<value label="Does NOT Start With:">!startswith</value>
+				<value label="Does NOT End With:">!endswith</value>
+			</queryParam>
+			<queryParam
+				id="SOFTWARE.VALUE"
+				type="String"
+				label=""></queryParam>
+		</queryOption>
+		<queryOption
+			id="SPACE_GROUP"
+			label="Space Group">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.SpaceGroupQuery</queryType><symmetry.space_group_name_H-M.value>%ARG1%</symmetry.space_group_name_H-M.value><symmetry.space_group_name_H-M.comparator>=</symmetry.space_group_name_H-M.comparator></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="SPACE_GROUP.VALUE"
+				type="String"
+				label="Space Group (Herman-Mauguin notation)"></queryParam>
+		</queryOption>
+		<queryOption
+			id="XTAL_PROPS"
+			label="Crystal Properties">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.CrystalQuery</queryType><exptl_crystal.density_Matthews.comparator>between</exptl_crystal.density_Matthews.comparator>%ARG1%%ARG2%<exptl_crystal.density_percent_sol.comparator>between</exptl_crystal.density_percent_sol.comparator>%ARG3%%ARG4%<exptl_crystal_grow.temp.comparator>between</exptl_crystal_grow.temp.comparator>%ARG5%%ARG6%<exptl_crystal_grow.pH.comparator>between</exptl_crystal_grow.pH.comparator>%ARG7%%ARG8%</orgPdbQuery>]]></queryString>
+			<queryParam
+				id="XTAL_PROPS.DENSITY.RANGE"
+				type="Double_Range_Cond"
+				label="Density (Matthews)">
+				<queryString><![CDATA[<exptl_crystal.density_Matthews.min>%ARG%</exptl_crystal.density_Matthews.min>]]></queryString>
+				<queryString><![CDATA[<exptl_crystal.density_Matthews.max>%ARG%</exptl_crystal.density_Matthews.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="XTAL_PROPS.DENSITY_SOLV"
+				type="Double_Range_Cond"
+				min="0"
+				max="100"
+				label="Density (% solvent)">
+				<queryString><![CDATA[<exptl_crystal.density_percent_sol.min>%ARG%</exptl_crystal.density_percent_sol.min>]]></queryString>
+				<queryString><![CDATA[<exptl_crystal.density_percent_sol.max>%ARG%</exptl_crystal.density_percent_sol.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="XTAL_PROPS.TEMP.RANGE"
+				type="Double_Range_Cond"
+				min="0"
+				max="999"
+				label="Temperature (K)">
+				<queryString><![CDATA[<exptl_crystal_grow.temp.min>%ARG%</exptl_crystal_grow.temp.min>]]></queryString>
+				<queryString><![CDATA[<exptl_crystal_grow.temp.max>%ARG%</exptl_crystal_grow.temp.max>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="XTAL_PROPS.PH.RANGE"
+				type="Double_Range_Cond"
+				min="0"
+				max="15"
+				label="pH">
+				<queryString><![CDATA[<exptl_crystal_grow.pH.min>%ARG%</exptl_crystal_grow.pH.min>]]></queryString>
+				<queryString><![CDATA[<exptl_crystal_grow.pH.max>%ARG%</exptl_crystal_grow.pH.max>]]></queryString>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="EM_ASSEMBLY"
+			label="EM Assembly">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.EmAssemblyQuery</queryType><em_assembly.aggregation_state.value>%ARG1%</em_assembly.aggregation_state.value></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="EM_ASSEMBLY.VALUE"
+				type="String_List"
+				label="Aggregation State">
+				<value>2D CRYSTAL</value>
+				<value>3D CRYSTAL</value>
+				<value>FILAMENT</value>
+				<value>ICOSAHEDRAL</value>
+				<value>PARTICLE</value>
+				<value>SINGLE PARTICLE</value>
+				<value>TISSUE</value>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="DETECTOR"
+			label="Detector">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.DetectorTypeQuery</queryType><diffrn_detector.type.value>%ARG1%</diffrn_detector.type.value></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="DETECTOR.VALUE"
+				type="String"
+				label="Detector"></queryParam>
+		</queryOption>
+	</queryCategory>
+	<queryCategory
+		id="PUB_CAT"
+		label="Publications">
+		<queryOption
+			id="CITATION"
+			label="Citation">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.CitationTwoQuery</queryType>%ARG1%<citation.title.comparator>%ARG2%</citation.title.comparator>%ARG3%%ARG4%<citation.journal_abbrev.comparator>like</citation.journal_abbrev.comparator><citation.journal_abbrev.value>%ARG5%</citation.journal_abbrev.value><citation.year.comparator>%ARG6%</citation.year.comparator>%ARG7%</orgPdbQuery>]]></queryString>
+			<queryParam
+				id="CITATION.AUTHOR.VALUE"
+				type="String_Cond"
+				width="40"
+				label="Author Name">
+				<queryString><![CDATA[<citation_author.name.value>%ARG%</citation_author.name.value>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="CITATION.TITLE.COMPAR"
+				type="String_List"
+				label="Title">
+				<value
+					label="Contains:"
+					default="true">contains</value>
+				<value label="Starts With:">startswith</value>
+				<value label="Ends With:">endswith</value>
+			</queryParam>
+			<queryParam
+				id="CITATION.TITLE.VALUE"
+				type="String_Cond"
+				width="30"
+				label="">
+				<queryString><![CDATA[<citation.title.value>%ARG%</citation.title.value>]]></queryString>
+			</queryParam>
+			<queryParam
+				id="CITATION.PRIMARY"
+				type="String_List"
+				label="Primary citation only">
+				<value
+					label="Yes"
+					default="true"><![CDATA[<citation.id.value>primary</citation.id.value><citation_author.citation_id.value>primary</citation_author.citation_id.value>]]></value>
+				<value label="No"></value>
+			</queryParam>
+			<queryParam
+				id="CITATION.JRNL.VALUE"
+				type="String_List"
+				label="Journal">
+				<value default="true">all</value>
+				<value>Acta Crystallogr.,Sect.D</value>
+				<value>Acta Crystallogr.,Sect.F</value>
+				<value>Biochem.Biophys.Res.Commun.</value>
+				<value>Biochem.J.</value>
+				<value>Biochemistry</value>
+				<value>Bioorg.Med.Chem.Lett.</value>
+				<value>Cell</value>
+				<value>Chem.Biol.</value>
+				<value>EMBO J.</value>
+				<value>Eur.J.Biochem.</value>
+				<value>FEBS J.</value>
+				<value>FEBS Lett.</value>
+				<value>J.Am.Chem.Soc.</value>
+				<value>J.Biol.Chem.</value>
+				<value>J.Med.Chem.</value>
+				<value>J.Mol.Biol.</value>
+				<value>J.Struct.Biol.</value>
+				<value>J.Virol.</value>
+				<value>Mol.Cell</value>
+				<value>Nat.Chem.Biol.</value>
+				<value>Nat.Struct.Mol.Biol.</value>
+				<value>Nature</value>
+				<value>Nucleic Acids Res.</value>
+				<value>Plos One</value>
+				<value>Proc.Natl.Acad.Sci.USA</value>
+				<value>Protein Sci.</value>
+				<value>Proteins</value>
+				<value>Science</value>
+				<value>Structure</value>
+				<value>Structure Fold.Des.</value>
+				<value>other</value>
+			</queryParam>
+			<queryParam
+				id="CITATION.YEAR.COMPAR"
+				type="String_List"
+				label="Year">
+				<value
+					label="="
+					default="true">=</value>
+				<value label="&gt;">&lt;![CDATA[&gt;]]&gt;</value>
+				<value label="&lt;">&lt;![CDATA[&lt;]]&gt;</value>
+				<value label="!=">&lt;![CDATA[!=]]&gt;</value>
+			</queryParam>
+			<queryParam
+				id="CITATION.YEAR.VALUE"
+				type="String_Cond"
+				width="5"
+				label="">
+				<queryString><![CDATA[<citation.year.value>%ARG%</citation.year.value>]]></queryString>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="PM_ABSTRACT"
+			label="PubMed Abstract">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.PubMedQuery</queryType><inputPubMed_Value>%ARG1%</inputPubMed_Value></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="PM_ABSTRACT.VALUE"
+				type="String"
+				label="PubMed Abstract"></queryParam>
+		</queryOption>
+	</queryCategory>
+	<queryCategory
+		id="MISC_CAT"
+		label="Miscellaneous">
+		<queryOption
+			id="EXT_LINKS"
+			label="Has External Links">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ExternalLinkQuery</queryType><externalLink>%ARG1%</externalLink></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="EXT_LINKS.VALUE"
+				type="String_List"
+				label="External Link">
+				<value>EDS_IDS</value>
+				<value>RECOORD_PDB_ID</value>
+				<value>OLDERADO_PDB_ID</value>
+				<value>HIVTOOLBOX_PDB_ID</value>
+			</queryParam>
+		</queryOption>
+		<queryOption
+			id="TREE_QUERY"
+			label="Tree Query (SCOP,CATH,Transporter,Medical)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.TreeQuery</queryType><t>%ARG1%</t><n>%ARG2%</n></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="TREE_QUERY.T"
+				type="Integer"
+				label="t"></queryParam>
+			<queryParam
+				id="TREE_QUERY.N"
+				type="Integer"
+				label="n"></queryParam>
+		</queryOption>
+		<queryOption
+			id="TREE_QUERY_EXPR"
+			label="Tree Query Expression (Taxonomy)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.TreeQueryExpression</queryType><t>%ARG1%</t><n>%ARG2%</n></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="TREE_QUERY_EXPR.T"
+				type="Integer"
+				label="t"></queryParam>
+			<queryParam
+				id="TREE_QUERY_EXPR.N"
+				type="Integer"
+				label="n"></queryParam>
+		</queryOption>
+		<queryOption
+			id="TREE_ENTITY_QUERY"
+			label="Tree Entity Query (Genome,NCBI,Enzyme,Biological Process,Cell Component,Molecular Function)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.TreeEntityQuery</queryType><t>%ARG1%</t><n>%ARG2%</n></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="TREE_ENTITY_QUERY.T"
+				type="Integer"
+				label="t"></queryParam>
+			<queryParam
+				id="TREE_ENTITY_QUERY.N"
+				type="Integer"
+				label="n"></queryParam>
+		</queryOption>
+	</queryCategory>
+	<reportCategory
+		id="HIDDEN"
+		label="Hidden Fields">
+		<reportField
+			id="STRUCT_ID_FIELD"
+			type="String"
+			label="Structure ID"
+			default="true">structureId</reportField>
+		<reportField
+			id="CHAIN_ID_FIELD"
+			type="String"
+			label="Chain ID"
+			trigger="LIGAND_REPORT SEQUENCE_REPORT BINDING_AFFINITY_REPORT BIOLOGICAL_REPORT DOMAIN_REPORT">chainId</reportField>
+		<reportField
+			id="PRIMARY_CITATION_SUFFIX"
+			type="Integer"
+			label="Primary citations only"
+			trigger="PRIMARY_CITATION_REPORT">&amp;primaryOnly=1</reportField>
+	</reportCategory>
+	<reportCategory
+		id="STRUCT_REPORT"
+		label="Structure Summary">
+		<reportField
+			id="STRUCT_TITLE_FIELD"
+			type="String"
+			label="Structure Title"
+			trigger="STRUCT_STD_REPORT"
+			default="true">structureTitle</reportField>
+		<reportField
+			id="EXPT_TECH_FIELD"
+			type="String"
+			label="Experimental Technique"
+			colName="Exp. Method"
+			trigger="STRUCT_STD_REPORT EM_STRUCT_STD_REPORT"
+			default="true">experimentalTechnique</reportField>
+		<reportField
+			id="DEP_DATE_FIELD"
+			type="Date"
+			label="Deposition Date"
+			colName="Dep. Date"
+			trigger="STRUCT_STD_REPORT EM_STRUCT_STD_REPORT"
+			default="true">depositionDate</reportField>
+		<reportField
+			id="REL_DATE_FIELD"
+			type="Date"
+			label="Release Date"
+			colName="Rel. Date"
+			trigger="STRUCT_STD_REPORT EM_STRUCT_STD_REPORT"
+			default="true">releaseDate</reportField>
+		<reportField
+			id="REV_DATE_FIELD"
+			type="Date"
+			label="Revision Date"
+			colName="Rev. Date">revisionDate</reportField>
+		<reportField
+			id="NDBID_FIELD"
+			type="String"
+			label="NDB ID"
+			trigger="STRUCT_STD_REPORT"
+			default="true">ndbId</reportField>
+		<reportField
+			id="RES_FIELD"
+			type="Double"
+			label="Resolution [Å]"
+			colName="Resolution (A)"
+			trigger="STRUCT_STD_REPORT"
+			default="true">resolution</reportField>
+		<reportField
+			id="CLASS_FIELD"
+			type="String"
+			label="Classification"
+			trigger="STRUCT_STD_REPORT"
+			default="true">classification</reportField>
+		<reportField
+			id="STRUCT_MW_FIELD"
+			type="Double"
+			label="Structure Molecular Weight"
+			colName="Structure MW"
+			trigger="STRUCT_STD_REPORT"
+			default="true">structureMolecularWeight</reportField>
+		<reportField
+			id="MM_TYPE_FIELD"
+			type="String"
+			label="Macromolecule Type"
+			colName="Macromol. Type"
+			trigger="STRUCT_STD_REPORT"
+			default="true"
+			deliminator="#">macromoleculeType</reportField>
+		<reportField
+			id="STRUCT_AUTH_FIELD"
+			type="String"
+			label="Structure Author"
+			trigger="STRUCT_STD_REPORT EM_STRUCT_STD_REPORT"
+			default="true"
+			deliminator="#">structureAuthor</reportField>
+	</reportCategory>
+	<reportCategory
+		id="SEQUENCE_REPORT"
+		label="Sequence">
+		<reportField
+			id="ENTITY_ID_FIELD"
+			type="Integer"
+			label="Entity ID"
+			trigger="SEQ_STD_REPORT">entityId</reportField>
+		<reportField
+			id="SEQUENCE_FIELD"
+			type="String"
+			label="Sequence"
+			trigger="SEQ_STD_REPORT">sequence</reportField>
+		<reportField
+			id="CHAIN_LENGTH_FIELD"
+			type="Integer"
+			label="Chain Length"
+			trigger="SEQ_STD_REPORT">chainLength</reportField>
+		<reportField
+			id="DB_ID_FIELD"
+			type="String"
+			label="External Database Reference ID"
+			colName="DB ID"
+			trigger="SEQ_STD_REPORT">db_id</reportField>
+		<reportField
+			id="DB_NAME_FIELD"
+			type="String"
+			label="External Database"
+			colName="DB Name"
+			trigger="SEQ_STD_REPORT">db_name</reportField>
+		<reportField
+			id="MW_FIELD"
+			type="Double"
+			label="Molecular Weight"
+			trigger="SEQ_STD_REPORT">molecularWeight</reportField>
+		<reportField
+			id="SS_FIELD"
+			type="String"
+			label="Sequence and Secondary Structure"
+			trigger="SEQ_STD_REPORT">secondaryStructure</reportField>
+		<reportField
+			id="ENT_MM_TYPE_FIELD"
+			type="String"
+			label="Entity Macromolecule Type"
+			colName="Entity Macromol. Type"
+			trigger="SEQ_STD_REPORT">entityMacromoleculeType</reportField>
+	</reportCategory>
+	<reportCategory
+		id="LIGAND_REPORT"
+		label="Ligands">
+		<reportField
+			id="LIGAND_ID_FIELD"
+			type="String"
+			label="Ligand ID"
+			trigger="LIG_STD_REPORT">ligandId</reportField>
+		<reportField
+			id="LIGAND_IMAGE_FIELD"
+			type="PNG_URL"
+			label="Ligand Image"
+			trigger="LIG_STD_REPORT">ligandIdImage</reportField>
+		<reportField
+			id="LIGAND_MW_FIELD"
+			type="Double"
+			label="Ligand Molecular Weight"
+			colName="Ligand MW"
+			trigger="LIG_STD_REPORT">ligandMolecularWeight</reportField>
+		<reportField
+			id="LIGAND_FORMULA_FIELD"
+			type="String"
+			label="Ligand Formula"
+			trigger="LIG_STD_REPORT">ligandFormula</reportField>
+		<reportField
+			id="LIGAND_NAME_FIELD"
+			type="String"
+			label="Ligand Name"
+			trigger="LIG_STD_REPORT">ligandName</reportField>
+		<reportField
+			id="LIGAND_SMILES_FIELD"
+			type="Smiles"
+			label="Ligand Smiles"
+			trigger="LIG_STD_REPORT">ligandSmiles</reportField>
+		<reportField
+			id="INCHI_FIELD"
+			type="String"
+			label="InChI">InChI</reportField>
+		<reportField
+			id="INCHI_KEY_FIELD"
+			type="String"
+			label="InChI Key">InChIKey</reportField>
+	</reportCategory>
+	<reportCategory
+		id="BINDING_AFFINITY_REPORT"
+		label="Binding Affinity">
+		<reportField
+			id="HET_ID_FIELD"
+			type="String"
+			label="HET ID">hetId</reportField>
+		<reportField
+			id="KI_FIELD"
+			type="String"
+			label="Ki"
+			colName="Ki (nM)">Ki</reportField>
+		<reportField
+			id="KD_FIELD"
+			type="String"
+			label="Kd"
+			colName="Kd (nM)">Kd</reportField>
+		<reportField
+			id="EC50_FIELD"
+			type="String"
+			label="EC50"
+			colName="EC50 (nM)">EC50</reportField>
+		<reportField
+			id="IC50_FIELD"
+			type="String"
+			label="IC50"
+			colName="IC50 (nM)">IC50</reportField>
+		<reportField
+			id="DG_FIELD"
+			type="String"
+			label="ΔG"
+			colName="dG (kJ/mol)">deltaG</reportField>
+		<reportField
+			id="DH_FIELD"
+			type="String"
+			label="ΔH"
+			colName="dH (kJ/mol)">deltaH</reportField>
+		<reportField
+			id="TDS_FIELD"
+			type="String"
+			label="-TΔS"
+			colName="-TdS (kJ/mol)">deltaS</reportField>
+		<reportField
+			id="KA_FIELD"
+			type="String"
+			label="Ka"
+			colName="Ka (1/M)">Ka</reportField>
+	</reportCategory>
+	<reportCategory
+		id="BIOLOGICAL_REPORT"
+		label="Biological Details">
+		<reportField
+			id="COMPOUND_FIELD"
+			type="String"
+			label="Macromolecule Name"
+			trigger="BIOL_STD_REPORT">compound</reportField>
+		<reportField
+			id="PLASMID_FIELD"
+			type="String"
+			label="Plasmid Name"
+			colName="Plasmid"
+			trigger="BIOL_STD_REPORT">plasmid</reportField>
+		<reportField
+			id="SOURCE_FIELD"
+			type="String"
+			label="Source"
+			trigger="BIOL_STD_REPORT">source</reportField>
+		<reportField
+			id="TAX_ID_FIELD"
+			type="Integer"
+			label="Taxonomy ID"
+			deliminator=",">taxonomyId</reportField>
+		<reportField
+			id="BIO_PROC_FIELD"
+			type="Integer"
+			label="Biological Process"
+			trigger="BIOL_STD_REPORT"
+			deliminator="#">biologicalProcess</reportField>
+		<reportField
+			id="CELL_COMP_FIELD"
+			type="Integer"
+			label="Cellular Component"
+			trigger="BIOL_STD_REPORT"
+			deliminator="#">cellularComponent</reportField>
+		<reportField
+			id="MOL_FUNC_FIELD"
+			type="Integer"
+			label="Molecular Function"
+			trigger="BIOL_STD_REPORT"
+			deliminator="#">molecularFunction</reportField>
+		<reportField
+			id="EC_NUM_FIELD"
+			type="String"
+			label="EC Number"
+			colName="EC No"
+			trigger="BIOL_STD_REPORT">ecNo</reportField>
+		<reportField
+			id="EXPR_HOST_FIELD"
+			type="String"
+			label="Expression Host"
+			trigger="BIOL_STD_REPORT">expressionHost</reportField>
+	</reportCategory>
+	<reportCategory
+		id="DOMAIN_REPORT"
+		label="Domain Details">
+		<reportField
+			id="CATH_ID_FIELD"
+			type="String"
+			label="CATH ID"
+			colName="CATH ID [Res Range]">cathId</reportField>
+		<reportField
+			id="CATH_DESC_FIELD"
+			type="String"
+			label="CATH Description"
+			colName="Cath Description">cathDescription</reportField>
+		<reportField
+			id="SCOP_ID_FIELD"
+			type="String"
+			label="SCOP ID"
+			colName="SCOP ID [Res Range]">scopId</reportField>
+		<reportField
+			id="SCOP_DOM_FIELD"
+			type="String"
+			label="SCOP Domain"
+			colName="Scop Domain">scopDomain</reportField>
+		<reportField
+			id="SCOP_FOLD_FIELD"
+			type="String"
+			label="SCOP Fold"
+			colName="Scop Fold">scopFold</reportField>
+		<reportField
+			id="PFAM_ACC_FIELD"
+			type="String"
+			label="PFAM Accession"
+			colName="PFAM ACC [Res Range]"
+			deliminator="#">pfamAccession</reportField>
+		<reportField
+			id="PFAM_ID_FIELD"
+			type="String"
+			label="PFAM ID"
+			colName="Pfam ID"
+			deliminator="#">pfamId</reportField>
+		<reportField
+			id="PFAM_DESC_FIELD"
+			type="String"
+			label="PFAM Description"
+			colName="Pfam Description"
+			deliminator="#">pfamDescription</reportField>
+	</reportCategory>
+	<reportCategory
+		id="XTAL_REPORT"
+		label="Crystallization">
+		<reportField
+			id="XTAL_METHOD_FIELD"
+			type="String"
+			label="Crystallization Method"
+			trigger="XTAL_STD_REPORT">crystallizationMethod</reportField>
+		<reportField
+			id="XTAL_TEMP_FIELD"
+			type="Double"
+			label="Crystallization Temperature [K]"
+			colName="Temp (K)"
+			trigger="XTAL_STD_REPORT">crystallizationTempK</reportField>
+		<reportField
+			id="PH_VAL_FIELD"
+			type="Double"
+			label="pH Value"
+			trigger="XTAL_STD_REPORT">phValue</reportField>
+		<reportField
+			id="DENSITY_FIELD"
+			type="Double"
+			label="Matthews Density"
+			trigger="XTAL_STD_REPORT">densityMatthews</reportField>
+		<reportField
+			id="SOLV_CONTENT_FIELD"
+			type="Double"
+			label="Percent Solvent Content"
+			trigger="XTAL_STD_REPORT">densityPercentSol</reportField>
+		<reportField
+			id="GROWTH_FIELD"
+			type="String"
+			label="Crystal Growth Details"
+			colName="Crystal Growth Procedure"
+			trigger="XTAL_STD_REPORT">pdbxDetails</reportField>
+	</reportCategory>
+	<reportCategory
+		id="CELL_DIM_REPORT"
+		label="Unit Cell Dimensions">
+		<reportField
+			id="ALPHA_FIELD"
+			type="Double"
+			label="Unit Cell Angle alpha"
+			colName="Angle Alpha (deg.)"
+			trigger="UNIT_STD_REPORT">unitCellAngleAlpha</reportField>
+		<reportField
+			id="BETA_FIELD"
+			type="Double"
+			label="Unit Cell Angle beta"
+			colName="Angle Beta (deg.)"
+			trigger="UNIT_STD_REPORT">unitCellAngleBeta</reportField>
+		<reportField
+			id="GAMMA_FIELD"
+			type="Double"
+			label="Unit Cell Angle gamma"
+			colName="Angle Gamma (deg.)"
+			trigger="UNIT_STD_REPORT">unitCellAngleGamma</reportField>
+		<reportField
+			id="SPACE_GROUP_FIELD"
+			type="String"
+			label="Space Group"
+			trigger="UNIT_STD_REPORT">spaceGroup</reportField>
+		<reportField
+			id="A_FIELD"
+			type="Double"
+			label="Length of Unit Cell Lattice a"
+			colName="Length A (A)"
+			trigger="UNIT_STD_REPORT">lengthOfUnitCellLatticeA</reportField>
+		<reportField
+			id="B_FIELD"
+			type="Double"
+			label="Length of Unit Cell Lattice b"
+			colName="Length B (A)"
+			trigger="UNIT_STD_REPORT">lengthOfUnitCellLatticeB</reportField>
+		<reportField
+			id="C_FIELD"
+			type="Double"
+			label="Length of Unit Cell Lattice c"
+			colName="Length C (A)"
+			trigger="UNIT_STD_REPORT">lengthOfUnitCellLatticeC</reportField>
+		<reportField
+			id="Z_NUM_FIELD"
+			type="Integer"
+			label="Z-number"
+			trigger="UNIT_STD_REPORT">Z_PDB</reportField>
+	</reportCategory>
+	<reportCategory
+		id="COLLECTION_REPORT"
+		label="Data Collection Details">
+		<reportField
+			id="DEVICE_FIELD"
+			type="String"
+			label="Device"
+			colName="Detector"
+			trigger="DATA_STD_REPORT">device</reportField>
+		<reportField
+			id="DIFFR_SRC_FIELD"
+			type="String"
+			label="Diffraction Source"
+			trigger="DATA_STD_REPORT">diffractionSource</reportField>
+		<reportField
+			id="COLL_DATE_FIELD"
+			type="Date"
+			label="Collection Date"
+			trigger="DATA_STD_REPORT">collectionDate</reportField>
+		<reportField
+			id="COLL_TEMP_FIELD"
+			type="Double"
+			label="Collection Temperature"
+			trigger="DATA_STD_REPORT">collectionTemperature</reportField>
+	</reportCategory>
+	<reportCategory
+		id="REFINE_DETAILS_REPORT"
+		label="Refinement Details">
+		<reportField
+			id="R_OBS_FIELD"
+			type="Double"
+			label="R Observed"
+			trigger="REF_STD_REPORT">rObserved</reportField>
+		<reportField
+			id="R_ALL_FIELD"
+			type="Double"
+			label="R All"
+			trigger="REF_STD_REPORT">rAll</reportField>
+		<reportField
+			id="R_WORK_FIELD"
+			type="Double"
+			label="R Work"
+			trigger="REF_STD_REPORT">rWork</reportField>
+		<reportField
+			id="R_FREE_FIELD"
+			type="Double"
+			label="R Free"
+			trigger="REF_STD_REPORT">rFree</reportField>
+		<reportField
+			id="RESOL_FIELD"
+			type="Double"
+			label="Resolution [Å]"
+			colName="Refinement Resolution (A)"
+			trigger="REF_STD_REPORT">refinementResolution</reportField>
+	</reportCategory>
+	<reportCategory
+		id="REFINE_PARAMS_REPORT"
+		label="Refinement Parameters">
+		<reportField
+			id="HI_RES_LIMIT_FIELD"
+			type="Double"
+			label="High Resolution Limit"
+			trigger="REF_PRM_STD_REPORT">highResolutionLimit</reportField>
+		<reportField
+			id="REFLEC_FIELD"
+			type="Integer"
+			label="Reflections used for Refinement"
+			colName="Reflections For Refinement"
+			trigger="REF_PRM_STD_REPORT">reflectionsForRefinement</reportField>
+		<reportField
+			id="STRUCT_DETERM_FIELD"
+			type="String"
+			label="Structure Determination Method"
+			trigger="REF_PRM_STD_REPORT">structureDeterminationMethod</reportField>
+	</reportCategory>
+	<reportCategory
+		id="MODEL_CHOICE_REPORT"
+		label="Representative Model Choice Rationale">
+		<reportField
+			id="CONF_ID_FIELD"
+			type="Integer"
+			label="Conformer ID"
+			colName="Representative Conformer ID"
+			trigger="MODEL_STD_REPORT">conformerId</reportField>
+		<reportField
+			id="CRITERIA_FIELD"
+			type="String"
+			label="Selection Criteria"
+			trigger="MODEL_STD_REPORT">selectionCriteria</reportField>
+	</reportCategory>
+	<reportCategory
+		id="SPECTROM_REPORT"
+		label="Spectrometer Info">
+		<reportField
+			id="FIELD_STRENGTH_FIELD"
+			type="Double"
+			label="Field Strength"
+			trigger="SPEC_STD_REPORT">fieldStrength</reportField>
+		<reportField
+			id="MANUF_FIELD"
+			type="String"
+			label="Manufacturer"
+			trigger="SPEC_STD_REPORT">manufacturer</reportField>
+		<reportField
+			id="MODEL_FIELD"
+			type="String"
+			label="Model"
+			trigger="SPEC_STD_REPORT">model</reportField>
+	</reportCategory>
+	<reportCategory
+		id="SAMPLE_REPORT"
+		label="Sample Conditions">
+		<reportField
+			id="CONTENTS_FIELD"
+			type="String"
+			label="Sample Contents"
+			colName="Contents"
+			trigger="SAMP_STD_REPORT">contents</reportField>
+		<reportField
+			id="SOLVENT_SYS_FIELD"
+			type="String"
+			label="Solvent System"
+			trigger="SAMP_STD_REPORT">solventSystem</reportField>
+		<reportField
+			id="ION_STR_FIELD"
+			type="String"
+			label="Ionic Strength"
+			trigger="SAMP_STD_REPORT">ionicStrength</reportField>
+		<reportField
+			id="PH_FIELD"
+			type="Double"
+			label="pH"
+			colName="Sample pH Value"
+			trigger="SAMP_STD_REPORT">ph</reportField>
+		<!-- reportField id="PH_FIELD_TXT" type="String" label="pH (Text)" colName="Sample 
+			pH Text" trigger="SAMP_STD_REPORT">ph</reportField -->
+		<reportField
+			id="PRESSURE_FIELD"
+			type="String"
+			label="Pressure"
+			trigger="SAMP_STD_REPORT">pressure</reportField>
+		<reportField
+			id="PRESS_UNITS_FIELD"
+			type="String"
+			label="Pressure Units"
+			trigger="SAMP_STD_REPORT">pressureUnits</reportField>
+		<reportField
+			id="TEMP_FIELD"
+			type="Double"
+			label="Temperature"
+			colName="Sample Temperature"
+			trigger="SAMP_STD_REPORT">temperature</reportField>
+		<!-- reportField id="TEMP_FIELD_TXT" type="String" label="Temperature (Text)" 
+			colName="Sample Temperature Text" trigger="SAMP_STD_REPORT">temperature</reportField -->
+	</reportCategory>
+	<reportCategory
+		id="SOFTWARE_REPORT"
+		label="Software Used in Experiment">
+		<reportField
+			id="SOFT_AUTH_FIELD"
+			type="String"
+			label="Software Author"
+			trigger="SOFT_STD_REPORT"
+			deliminator="#">softwareAuthor</reportField>
+		<reportField
+			id="SOFT_CLASS_FIELD"
+			type="String"
+			label="Software Classification"
+			trigger="SOFT_STD_REPORT"
+			deliminator="#">softwareClassification</reportField>
+		<reportField
+			id="SOFT_NAME_FIELD"
+			type="String"
+			label="Software Name"
+			trigger="SOFT_STD_REPORT"
+			deliminator="#">softwareName</reportField>
+		<reportField
+			id="SOFT_VERS_FIELD"
+			type="String"
+			label="Version"
+			trigger="SOFT_STD_REPORT"
+			deliminator="#">version</reportField>
+	</reportCategory>
+	<reportCategory
+		id="NMR_REFINE_REPORT"
+		label="NMR Refinement Information">
+		<reportField
+			id="METHOD_FIELD"
+			type="String"
+			label="Method"
+			trigger="NMR_REF_STD_REPORT">method</reportField>
+		<reportField
+			id="DETAILS_FIELD"
+			type="String"
+			label="Details"
+			trigger="NMR_REF_STD_REPORT">details</reportField>
+	</reportCategory>
+	<reportCategory
+		id="NMR_ENSEMBLE_REPORT"
+		label="NMR Ensemble Information">
+		<reportField
+			id="CONF_SEL_FIELD"
+			type="String"
+			label="Conformer Selection Criteria"
+			trigger="NMR_ENS_STD_REPORT">conformerSelectionCriteria</reportField>
+		<reportField
+			id="CONF_CALC_FIELD"
+			type="Integer"
+			label="Conformers Calculated Total Number"
+			colName="Total Conformers Calculated"
+			trigger="NMR_ENS_STD_REPORT">totalConformersCalculated</reportField>
+		<reportField
+			id="CONF_SUBMIT_FIELD"
+			type="Integer"
+			label="Conformers Submitted Total Number"
+			colName="Total Conformers Submitted"
+			trigger="NMR_ENS_STD_REPORT">totalConformersSubmitted</reportField>
+	</reportCategory>
+	<reportCategory
+		id="EM_STRUCT_REPORT"
+		label="EM Structure Report">
+		<reportField
+			id="EMDB_ID_FIELD"
+			type="String"
+			label="EMDB ID"
+			trigger="EM_STRUCT_STD_REPORT">emdbMap</reportField>
+		<reportField
+			id="EM_RES_FIELD"
+			type="Double"
+			label="EM Resolution [Å]"
+			colName="EM Resolution (A)"
+			trigger="EM_STRUCT_STD_REPORT">emResolution</reportField>
+		<reportField
+			id="EM_DIFF_RES_FIELD"
+			type="Double"
+			label="EM Diffraction Resolution [Å]"
+			colName="EM Diffraction Resolution (A)"
+			trigger="EM_STRUCT_STD_REPORT"
+			new="true">emDiffractionResolution</reportField>
+		<reportField
+			id="AGGR_STATE_FIELD"
+			type="String"
+			label="Aggregation State"
+			trigger="EM_STRUCT_STD_REPORT">aggregationState</reportField>
+		<reportField
+			id="SYM_TYPE_FIELD"
+			type="String"
+			label="Symmetry Type"
+			trigger="EM_STRUCT_STD_REPORT">symmetryType</reportField>
+		<reportField
+			id="RECON_METHOD_FIELD"
+			type="String"
+			label="Reconstruction Method"
+			trigger="EM_STRUCT_STD_REPORT">reconstructionMethod</reportField>
+		<reportField
+			label="EM Point Symmetry"
+			type="String"
+			id="EM_POINT_SYMMETRY"
+			trigger="EM_STRUCT_STD_REPORT"
+			new="true">pointSymmetry</reportField>
+		<reportField
+			label="EM Embedding"
+			type="String"
+			id="EM_EMBEDDING"
+			trigger="EM_STRUCT_STD_REPORT"
+			new="true">embedding</reportField>
+		<reportField
+			label="EM Staining"
+			type="String"
+			id="EM_STAINING"
+			trigger="EM_STRUCT_STD_REPORT"
+			new="true">staining</reportField>
+		<reportField
+			label="EM Vitrification"
+			type="String"
+			id="EM_VITRIFICATION"
+			trigger="EM_STRUCT_STD_REPORT"
+			new="true">vitrification</reportField>
+		<reportField
+			label="EM Additional Map"
+			type="String"
+			id="EM_ADDITIONAL_MAP"
+			trigger="EM_STRUCT_STD_REPORT"
+			new="true">additionalMap</reportField>
+		<!-- FIELD REMOVED BY RCSB - REMOVED HERE 02-MAR-2018 SDR reportField id="SPECIMEN_FIELD" 
+			type="String" label="Specimen Type" trigger="EM_STRUCT_STD_REPORT">specimenType</reportField -->
+	</reportCategory>
+	<reportCategory
+		id="PRIMARY_CITATION_REPORT"
+		label="Primary Citation">
+		<reportField
+			id="CIT_AUTH_FIELD"
+			type="String"
+			label="Primary Citation Author"
+			trigger="CIT_STD_REPORT">citationAuthor</reportField>
+		<reportField
+			id="PUBL_YEAR_FIELD"
+			type="Integer"
+			label="Publication Year"
+			colName="Pub. Year"
+			trigger="CIT_STD_REPORT">publicationYear</reportField>
+		<reportField
+			id="TITLE_FIELD"
+			type="String"
+			label="Title"
+			trigger="CIT_STD_REPORT">title</reportField>
+		<reportField
+			id="JNRL_NAME_FIELD"
+			type="String"
+			label="Journal Name"
+			trigger="CIT_STD_REPORT">journalName</reportField>
+		<reportField
+			id="VOLUME_ID_FIELD"
+			type="String"
+			label="Volume No"
+			colName="Volume"
+			trigger="CIT_STD_REPORT">volumeId</reportField>
+		<reportField
+			id="FIRST_PAGE_FIELD"
+			type="String"
+			label="First Page"
+			trigger="CIT_STD_REPORT">firstPage</reportField>
+		<reportField
+			id="LAST_PAGE_FIELD"
+			type="String"
+			label="Last Page"
+			trigger="CIT_STD_REPORT">lastPage</reportField>
+		<reportField
+			id="DOI_FIELD"
+			type="String"
+			label="DOI">doi</reportField>
+		<reportField
+			id="PUBMED_ID_FIELD"
+			type="String"
+			label="Pubmed ID"
+			colName="PubMed ID"
+			trigger="CIT_STD_REPORT">pubmedId</reportField>
+		<reportField
+			id="MESH_FIELD"
+			type="String"
+			label="MeSH Terms"
+			colName="Mesh Terms">meshTerms</reportField>
+		<reportField
+			id="ABSTRACT_FIELD"
+			type="String"
+			label="Abstract Text Short"
+			colName="Abstract Text">abstractTextShort</reportField>
+	</reportCategory>
+	<reportCategory
+		id="ALL_CITATION_REPORT"
+		label="All Citations">
+		<reportField
+			id="ALL_CIT_AUTH_FIELD"
+			type="String"
+			label="Citation Author">citationAuthor</reportField>
+		<reportField
+			id="ALL_FIRST_PAGE_FIELD"
+			type="String"
+			label="First Page">firstPage</reportField>
+		<reportField
+			id="ALL_JNRL_NAME_FIELD"
+			type="String"
+			label="Journal Name">journalName</reportField>
+		<reportField
+			id="ALL_TITLE_FIELD"
+			type="String"
+			label="Title">title</reportField>
+		<reportField
+			id="ALL_VOLUME_ID_FIELD"
+			type="String"
+			label="Volume No"
+			colName="Volume">volumeId</reportField>
+		<reportField
+			id="ALL_PUBL_YEAR_FIELD"
+			type="Integer"
+			label="Publication Year"
+			colName="Pub. Year">publicationYear</reportField>
+		<reportField
+			id="ALL_PUBMED_ID_FIELD"
+			type="String"
+			label="Pubmed ID"
+			colName="PubMed ID">pubmedId</reportField>
+	</reportCategory>
+	<reportCategory
+		id="SGC_REPORT"
+		label="Structural Genomics Centers">
+		<reportField
+			id="CENTER_INIT_FIELD"
+			type="String"
+			label="Center Initial"
+			trigger="SGC_STD_REPORT">centerInitial</reportField>
+		<reportField
+			id="CENTER_NAME_FIELD"
+			type="String"
+			label="Center Name"
+			trigger="SGC_STD_REPORT">centerName</reportField>
+		<reportField
+			id="PROJ_NAME_FIELD"
+			type="String"
+			label="Project Name"
+			trigger="SGC_STD_REPORT">projectName</reportField>
+	</reportCategory>
+	<standardCategory
+		id="CUSTOM_STD_REPORTS"
+		label="Custom Reports">
+		<standardReport
+			id="CUSTOM"
+			label="Customizable Table" />
+	</standardCategory>
+	<standardCategory
+		id="SUMMARY_STD_REPORTS"
+		label="Summary Reports">
+		<standardReport
+			id="STRUCT_STD_REPORT"
+			label="Structure"
+			default="true" />
+		<standardReport
+			id="SEQ_STD_REPORT"
+			label="Sequence" />
+		<standardReport
+			id="LIG_STD_REPORT"
+			label="Ligands" />
+		<standardReport
+			id="SGC_STD_REPORT"
+			label="Structural Genomics Center" />
+		<standardReport
+			id="CIT_STD_REPORT"
+			label="Primary Citation" />
+		<standardReport
+			id="BIOL_STD_REPORT"
+			label="Biological Details" />
+	</standardCategory>
+	<standardCategory
+		id="XRAY_STD_REPORTS"
+		label="X-ray">
+		<standardReport
+			id="XTAL_STD_REPORT"
+			label="Crystallization" />
+		<standardReport
+			id="DATA_STD_REPORT"
+			label="Data Collection" />
+		<standardReport
+			id="REF_STD_REPORT"
+			label="Refinement" />
+		<standardReport
+			id="REF_PRM_STD_REPORT"
+			label="Refinement Parameters" />
+		<standardReport
+			id="UNIT_STD_REPORT"
+			label="Unit Cell" />
+	</standardCategory>
+	<standardCategory
+		id="NMR_STD_REPORTS"
+		label="NMR">
+		<standardReport
+			id="MODEL_STD_REPORT"
+			label="Representative Model" />
+		<standardReport
+			id="SPEC_STD_REPORT"
+			label="Spectrometer" />
+		<standardReport
+			id="SAMP_STD_REPORT"
+			label="Sample Conditions" />
+		<standardReport
+			id="SOFT_STD_REPORT"
+			label="Software" />
+		<standardReport
+			id="NMR_REF_STD_REPORT"
+			label="NMR Refinement" />
+		<standardReport
+			id="NMR_ENS_STD_REPORT"
+			label="NMR Ensemble" />
+	</standardCategory>
+	<standardCategory
+		id="EM_STD_REPORTS"
+		label="EM">
+		<standardReport
+			id="EM_STRUCT_STD_REPORT"
+			label="EM Structure" />
+	</standardCategory>
+</pdbConnectorOptions>
