@@ -156,14 +156,23 @@ public class RandomNumbers2NodeModel extends NodeModel {
 	}
 
 	protected void writeFlowVars(DoubleSummary summ) {
-		pushFlowVariableDouble("Mean", summ.getAverage());
-		pushFlowVariableDouble("Std Dev", summ.getStandardDeviation());
+		pushFlowVariableDouble("Mean (" + m_ColumnName.getStringValue() + ")",
+				summ.getAverage());
+		pushFlowVariableDouble(
+				"Std Dev (" + m_ColumnName.getStringValue() + ")",
+				summ.getStandardDeviation());
 		if (m_Type.getStringValue().equals("Integer")) {
-			pushFlowVariableInt("Min", (int) summ.getMin());
-			pushFlowVariableInt("Max", (int) summ.getMax());
+			pushFlowVariableInt("Min (" + m_ColumnName.getStringValue() + ")",
+					(int) summ.getMin());
+			pushFlowVariableInt("Max (" + m_ColumnName.getStringValue() + ")",
+					(int) summ.getMax());
 		} else {
-			pushFlowVariableDouble("Min", summ.getMin());
-			pushFlowVariableDouble("Max", summ.getMax());
+			pushFlowVariableDouble(
+					"Min (" + m_ColumnName.getStringValue() + ")",
+					summ.getMin());
+			pushFlowVariableDouble(
+					"Max (" + m_ColumnName.getStringValue() + ")",
+					summ.getMax());
 		}
 	}
 
