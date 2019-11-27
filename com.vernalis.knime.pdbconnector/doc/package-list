@@ -1,8 +1,0 @@
-com.vernalis.pdbconnector
-com.vernalis.pdbconnector.config
-com.vernalis.pdbconnector.containers
-com.vernalis.pdbconnector.nodes.combinequery
-com.vernalis.pdbconnector.nodes.describehet
-com.vernalis.pdbconnector.nodes.pdbconnector
-com.vernalis.pdbconnector.nodes.smilesquery
-com.vernalis.rest
