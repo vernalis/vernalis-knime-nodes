@@ -63,7 +63,8 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Long>>
 	 * @param initialCapacity
 	 * @param loadFactor
 	 */
-	public SWIGObjectGarbageCollector2(final int initialCapacity, final float loadFactor) {
+	public SWIGObjectGarbageCollector2(final int initialCapacity,
+			final float loadFactor) {
 		super(initialCapacity, loadFactor);
 	}
 
@@ -82,7 +83,8 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Long>>
 	 * @param existing
 	 *            The existing object. Must not be null.
 	 */
-	private SWIGObjectGarbageCollector2(final SWIGObjectGarbageCollector2 existing) {
+	private SWIGObjectGarbageCollector2(
+			final SWIGObjectGarbageCollector2 existing) {
 		super(existing);
 		waveLookup = new HashMap<>(existing.waveLookup);
 	}
@@ -98,20 +100,15 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Long>>
 	 * markForCleanup (T, int)
 	 */
 	@Override
-	public synchronized <T extends Object> T markForCleanup(final T object, final Long wave) {
+	public synchronized <T extends Object> T markForCleanup(final T object,
+			final Long wave) {
 		if (object != null) {
-			if (!containsKey(object)) {
-				// New object
-				put(object, new HashSet<>());
-			}
 			// Add the wave to the object
-			get(object).add(wave);
+			computeIfAbsent(object, k -> new HashSet<>()).add(wave);
 
 			// Now add to the lookup
-			if (!waveLookup.containsKey(wave)) {
-				waveLookup.put(wave, new HashSet<>());
-			}
-			waveLookup.get(wave).add(object);
+			waveLookup.computeIfAbsent(wave, k -> new HashSet<>()).add(object);
+
 		}
 		return object;
 	}
@@ -152,22 +149,11 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Long>>
 	 */
 	@Override
 	public synchronized void cleanupMarkedObjects(final Long wave) {
-		// Iterator<Entry<Object, Set<Integer>>> iter =
-		// this.entrySet().iterator();
-		// while (iter.hasNext()) {
-		// Entry<Object, Set<Integer>> ent = iter.next();
-		// if (ent.getValue().contains(wave)) {
-		// ent.getValue().remove(wave);
-		// if (ent.getValue().size() == 0) {
-		// cleanUpObject(ent.getKey());
-		// iter.remove();
-		// }
-		// }
-		// }
 
 		// Loop through all the objects in the wave
 		if (!waveLookup.containsKey(wave)) {
-			LOGGER.debug("Wave ID " + wave + " not found during native object cleanup");
+			LOGGER.debug("Wave ID " + wave
+					+ " not found during native object cleanup");
 			return;
 		}
 		for (Object obj : waveLookup.get(wave)) {
@@ -200,18 +186,24 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Long>>
 			LOGGER.error(
 					"An object had been registered for cleanup (delete() call), "
 							+ "which does not provide a delete() method."
-							+ (clazz == null ? "" : " It's of class " + clazz.getName() + "."),
+							+ (clazz == null ? ""
+									: " It's of class " + clazz.getName()
+											+ "."),
 					excNoSuchMethod.getCause());
 		} catch (final SecurityException excSecurity) {
 			LOGGER.error(
 					"An object had been registered for cleanup (delete() call), "
 							+ "which is not accessible for security reasons."
-							+ (clazz == null ? "" : " It's of class " + clazz.getName() + "."),
+							+ (clazz == null ? ""
+									: " It's of class " + clazz.getName()
+											+ "."),
 					excSecurity.getCause());
 		} catch (final Exception exc) {
 			LOGGER.error(
 					"Cleaning up a registered object (via delete() call) failed."
-							+ (clazz == null ? "" : " It's of class " + clazz.getName() + "."),
+							+ (clazz == null ? ""
+									: " It's of class " + clazz.getName()
+											+ "."),
 					exc.getCause());
 		}
 	}
@@ -223,29 +215,34 @@ public class SWIGObjectGarbageCollector2 extends HashMap<Object, Set<Long>>
 	 * quarantineAndCleanupMarkedObjects(long)
 	 */
 	@Override
-	public synchronized void quarantineAndCleanupMarkedObjects(long delayMilliSec) {
-		final SWIGObjectGarbageCollector2 quarantineObjects = new SWIGObjectGarbageCollector2(this);
+	public synchronized void quarantineAndCleanupMarkedObjects(
+			long delayMilliSec) {
+
+		if (this.isEmpty()) {
+			return;
+		}
+		final SWIGObjectGarbageCollector2 quarantineObjects =
+				new SWIGObjectGarbageCollector2(this);
 		clear();
 		waveLookup.clear();
 
-		if (!quarantineObjects.isEmpty()) {
-			// Create the future cleanup task
-			final TimerTask futureCleanupTask = new TimerTask() {
+		// Create the future cleanup task
+		final TimerTask futureCleanupTask = new TimerTask() {
 
-				/**
-				 * Cleans up all marked objects, which are put into quarantine
-				 * for now.
-				 */
-				@Override
-				public void run() {
-					quarantineObjects.cleanupMarkedObjects();
-				}
-			};
+			/**
+			 * Cleans up all marked objects, which are put into quarantine for
+			 * now.
+			 */
+			@Override
+			public void run() {
+				quarantineObjects.cleanupMarkedObjects();
+			}
+		};
 
-			// Schedule the cleanup task for later
-			final Timer timer = new Timer("Quarantine SWIG-based Object Cleanup", false);
-			timer.schedule(futureCleanupTask, delayMilliSec);
-		}
+		// Schedule the cleanup task for later
+		final Timer timer =
+				new Timer("Quarantine SWIG-based Object Cleanup", false);
+		timer.schedule(futureCleanupTask, delayMilliSec);
 	}
 
 	/*

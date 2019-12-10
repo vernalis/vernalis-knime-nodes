@@ -29,6 +29,21 @@
        deprecated="false"
        factory-class="com.vernalis.knime.chem.pmi.nodes.plot.kerneldensity.PMIKernelDensityPlotNodeFactory">
  </node>
+ <node
+       category-path="/community/vernalis/chem/confs"
+       deprecated="false"
+       factory-class="com.vernalis.knime.chem.pmi.nodes.confs.rmsd.rdkitfilter.RdkitRMSDFilterNodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/chem/confs"
+       deprecated="false"
+       factory-class="com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeFactory">
+ </node>
+ <node
+       category-path="/community/vernalis/chem/confs"
+       deprecated="false"
+       factory-class="com.vernalis.knime.chem.pmi.nodes.props.confenergy.ConformerEnergiesNodeFactory">
+ </node>
 </extension>
 <extension point="org.knime.workbench.repository.categories">
 	<category description="Nodes relating to PMI plotting"
@@ -40,9 +55,16 @@
  <category
        icon="icons/PMI_icon2.png"
        level-id="plot"
-       locked="true"
+       locked="false"
        name="PMI Plotting"
        path="/community/vernalis/chem/pmi/">
+ </category>
+ <category
+       icon="icons/confs.png"
+       level-id="confs"
+       locked="true"
+       name="Conformations"
+       path="/community/vernalis/chem/">
  </category>
 </extension>   
 </plugin>

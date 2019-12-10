@@ -1,3 +1,10 @@
+v1.25.0 10-Dec-2019
+-------------------
+
+* Added DialogComponentMultilineStringFlowvar class
+* Added SettingsModelMultilineString class
+
+
 v1.24.2 13-Nov-2019
 -------------------
 

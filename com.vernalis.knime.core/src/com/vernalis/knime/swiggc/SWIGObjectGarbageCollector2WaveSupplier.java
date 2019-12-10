@@ -24,8 +24,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * 
  */
 @SuppressWarnings("serial")
-public class SWIGObjectGarbageCollector2WaveSupplier extends SWIGObjectGarbageCollector2
-		implements UniqueWaveIdSupplier {
+public class SWIGObjectGarbageCollector2WaveSupplier
+		extends SWIGObjectGarbageCollector2 implements UniqueWaveIdSupplier {
+
 	protected AtomicLong waveIndex = new AtomicLong(1);
 
 	/**
@@ -39,7 +40,8 @@ public class SWIGObjectGarbageCollector2WaveSupplier extends SWIGObjectGarbageCo
 	 * @param initialCapacity
 	 * @param loadFactor
 	 */
-	public SWIGObjectGarbageCollector2WaveSupplier(int initialCapacity, float loadFactor) {
+	public SWIGObjectGarbageCollector2WaveSupplier(int initialCapacity,
+			float loadFactor) {
 		super(initialCapacity, loadFactor);
 	}
 
@@ -58,7 +60,7 @@ public class SWIGObjectGarbageCollector2WaveSupplier extends SWIGObjectGarbageCo
 	 * ()
 	 */
 	@Override
-	public long getNextWaveIndex() {
+	public synchronized long getNextWaveIndex() {
 		while (this.containsKey(waveIndex.incrementAndGet())) {
 			// Ensure we supply an unused idx;
 		}
@@ -96,7 +98,8 @@ public class SWIGObjectGarbageCollector2WaveSupplier extends SWIGObjectGarbageCo
 	 * quarantineAndCleanupMarkedObjects(long)
 	 */
 	@Override
-	public synchronized void quarantineAndCleanupMarkedObjects(long delayMilliSec) {
+	public synchronized void quarantineAndCleanupMarkedObjects(
+			long delayMilliSec) {
 		super.quarantineAndCleanupMarkedObjects(delayMilliSec);
 		waveIndex.set(1);
 	}

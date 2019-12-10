@@ -1,3 +1,12 @@
+v1.25.0 10-Dec-2019
+-------------------
+
+* Added classes for 'Conformer Generation' node
+* Added classes for 'RMSD Conformer List Filter' node
+* Added classes for 'Force Field Conformer Energies' node
+* Added 'Conformers' folder in node repository
+
+
 v1.23.0 20-Sept-2019
 --------------------
 * Changed visibility of some static constants and methods in AbstractPMIDrawableSeriesNodeDialogPane to public from package
