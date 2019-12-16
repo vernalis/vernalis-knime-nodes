@@ -118,12 +118,14 @@ import com.vernalis.pdbconnector.config.XmlDataParsingException;
  * </ul>
  * 
  */
-public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeModel {
+public class AbstractPdbConnectorNodeModel
+		extends AbstractXMLQueryProviderNodeModel {
 
 	protected final NodeLogger logger = NodeLogger.getLogger(this.getClass());
 
 	// Settings model keys
-	protected static final String[] PDB_COLUMNS = { Properties.PDB_COLUMN_NAME };
+	protected static final String[] PDB_COLUMNS =
+			{ Properties.PDB_COLUMN_NAME };
 	public static final String STD_REPORT_KEY = "STANDARD_REPORT";
 	protected static final String LIGAND_IMG_SIZE_KEY = "LIGAND_IMAGE_SIZE";
 	protected static final String CONJUNCTION_KEY = "CONJUNCTION";
@@ -135,7 +137,8 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 
 	protected final List<QueryOptionModel> m_queryModels = new ArrayList<>();
 	protected final List<ReportFieldModel2> m_reportModels = new ArrayList<>();
-	protected final List<ReportFieldModel2> m_hiddenReportModels = new ArrayList<>();
+	protected final List<ReportFieldModel2> m_hiddenReportModels =
+			new ArrayList<>();
 	protected final List<ReportField2> m_selectedFields = new ArrayList<>();
 	protected ReportField2 m_primaryCitationSuffix = null;
 	protected QueryOptionModel m_simModel = null;
@@ -168,8 +171,9 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 	 * @throws IllegalArgumentException
 	 *             If a nonsense combination of boolean parameters is supplied
 	 */
-	protected AbstractPdbConnectorNodeModel(PdbConnectorConfig2 config, boolean hasQueryBuilder,
-			boolean runQuery, boolean runReport) throws IllegalArgumentException {
+	protected AbstractPdbConnectorNodeModel(PdbConnectorConfig2 config,
+			boolean hasQueryBuilder, boolean runQuery, boolean runReport)
+			throws IllegalArgumentException {
 
 		super(getInputPorts(hasQueryBuilder, runQuery, runReport),
 				getOutputPorts(hasQueryBuilder, runQuery, runReport));
@@ -186,14 +190,15 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 			if (hasQueryBuilder) {
 				m_simModel = new QueryOptionModel(config.getSimilarity());
 				createQueryModels(config);
-				m_conjunction =
-						new SettingsModelString(CONJUNCTION_KEY, Properties.CONJUNCTION_AND_LABEL);
+				m_conjunction = new SettingsModelString(CONJUNCTION_KEY,
+						Properties.CONJUNCTION_AND_LABEL);
 
 			} else if (runQuery) {
 				m_xmlQuery = new SettingsModelString(XML_QUERY_KEY, "");
 			}
 			if (hasQueryBuilder || runQuery) {
-				m_xmlVarName = new SettingsModelString(XML_VARNAME_KEY, "xmlQuery");
+				m_xmlVarName =
+						new SettingsModelString(XML_VARNAME_KEY, "xmlQuery");
 			}
 			if (runReport) {
 				createReportModels(config);
@@ -204,10 +209,11 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 				m_stdCategories = config.getStandardCategories();
 				m_stdReport = config.getDefaultStandardReport();
 				m_usePOST = new SettingsModelBoolean(USE_POST_KEY, true);
-				m_maxQueryLength =
-						new SettingsModelIntegerBounded(MAX_QUERY_LENGTH_KEY, 2000, 1000, 100000);
+				m_maxQueryLength = new SettingsModelIntegerBounded(
+						MAX_QUERY_LENGTH_KEY, 2000, 1000, 100000);
 				if (!runQuery) {
-					m_idColumnName = new SettingsModelString(ID_COL_NAME_KEY, null);
+					m_idColumnName =
+							new SettingsModelString(ID_COL_NAME_KEY, null);
 				}
 			}
 		}
@@ -233,8 +239,9 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 	 *             If all three parameters are false
 	 * @return The port type array required for the node
 	 */
-	protected static PortType[] getInputPorts(boolean hasQueryBuilder, boolean runQuery,
-			boolean runReport) throws IllegalArgumentException {
+	protected static PortType[] getInputPorts(boolean hasQueryBuilder,
+			boolean runQuery, boolean runReport)
+			throws IllegalArgumentException {
 		if (!hasQueryBuilder && !runQuery && !runReport) {
 			throw new IllegalArgumentException(
 					"No node possible for false/false/false combination");
@@ -273,11 +280,13 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 	 *             if the nonsense hasQueryBuilder/doesnt run query/runs report
 	 *             combination is supplied
 	 */
-	protected static PortType[] getOutputPorts(boolean hasQueryBuilder, boolean runQuery,
-			boolean runReport) throws IllegalArgumentException {
+	protected static PortType[] getOutputPorts(boolean hasQueryBuilder,
+			boolean runQuery, boolean runReport)
+			throws IllegalArgumentException {
 		if (hasQueryBuilder && !runQuery && runReport) {
 			// false/false/false already discarded by getInputPorts
-			throw new IllegalArgumentException("No node possible for true/false/true combination");
+			throw new IllegalArgumentException(
+					"No node possible for true/false/true combination");
 		}
 		int numBDT = 0;
 		if (runQuery) {
@@ -306,8 +315,8 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 	 * BufferedDataTable [], org.knime.core.node.ExecutionContext)
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
-			throws Exception {
+	protected PortObject[] execute(final PortObject[] inData,
+			final ExecutionContext exec) throws Exception {
 		logger.debug("PdbConnectorNode executing...");
 
 		// Firstly, we sort out what the query string looks like
@@ -336,12 +345,16 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 		int idColIdx;
 		if (m_runQuery) {
 
-			ExecutionMonitor exec0 = exec.createSubProgress(m_runReport ? 0.1 : 1.0);
+			ExecutionMonitor exec0 =
+					exec.createSubProgress(m_runReport ? 0.1 : 1.0);
 			DataTableSpec querySpec = createQueryOutputTableSpec();
-			BufferedDataContainer queryContainer = exec.createDataContainer(querySpec);
+			BufferedDataContainer queryContainer =
+					exec.createDataContainer(querySpec);
 
-			exec0.setProgress(0.0, "Posting xmlQuery to " + Properties.SEARCH_LOCATION);
-			long hitCount = ModelHelperFunctions2.postQueryToTable(xmlQuery, queryContainer, exec0);
+			exec0.setProgress(0.0,
+					"Posting xmlQuery to " + Properties.SEARCH_LOCATION);
+			long hitCount = ModelHelperFunctions2.postQueryToTable(xmlQuery,
+					queryContainer, exec0);
 			exec0.setProgress(1.0, "xmlQuery returned " + hitCount + " rows");
 			logger.info("xmlQuery returned " + hitCount + " rows");
 			exec0.checkCanceled();
@@ -352,15 +365,19 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 		} else {
 			// The IDs are going to come from the incoming table at inPort 0
 			pdbIDTable = (BufferedDataTable) inData[0];
-			idColIdx = pdbIDTable.getSpec().findColumnIndex(m_idColumnName.getStringValue());
+			idColIdx = pdbIDTable.getSpec()
+					.findColumnIndex(m_idColumnName.getStringValue());
 		}
 
 		BufferedDataTable reportTable = null;
 		if (m_runReport) {
 			// OUTPORT 1 (report columns) (nominal 70% of total progress)
-			ExecutionMonitor exec1 = exec.createSubProgress(m_runQuery ? 0.9 : 1.0);
-			DataTableSpec reportSpec = createReportTableSpec(pdbIDTable.getSpec());
-			BufferedDataContainer reportContainer = exec.createDataContainer(reportSpec);
+			ExecutionMonitor exec1 =
+					exec.createSubProgress(m_runQuery ? 0.9 : 1.0);
+			DataTableSpec reportSpec =
+					createReportTableSpec(pdbIDTable.getSpec());
+			BufferedDataContainer reportContainer =
+					exec.createDataContainer(reportSpec);
 			// generate the report
 			if (pdbIDTable.size() > 0) {
 				runReport(exec1, pdbIDTable, idColIdx, reportContainer);
@@ -371,11 +388,12 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 			exec.setProgress(1.0, "Done");
 		}
 
-		pushFlowVariableString("xmlQuery", xmlQuery);
-		if (m_runReport && m_runQuery && pdbIDTable.size() > reportTable.size()) {
+		if (m_runReport && m_runQuery
+				&& pdbIDTable.size() > reportTable.size()) {
 			// NB There can be more report rows than IDs, but not less
 			throw new Exception("Error generating report - " + pdbIDTable.size()
-					+ " PDB IDs found, " + reportTable.size() + " report rows generated");
+					+ " PDB IDs found, " + reportTable.size()
+					+ " report rows generated");
 		}
 		if (reportTable == null) {
 			// Only ran a query
@@ -396,11 +414,13 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 			// We have a query builder, and so that is where the query comes
 			// from
 			// select the appropriate conjunction string (either AND or OR)
-			String conjunction =
-					m_conjunction.getStringValue().equals(Properties.CONJUNCTION_AND_LABEL)
-							? Properties.CONJUNCTION_AND : Properties.CONJUNCTION_OR;
+			String conjunction = m_conjunction.getStringValue()
+					.equals(Properties.CONJUNCTION_AND_LABEL)
+							? Properties.CONJUNCTION_AND
+							: Properties.CONJUNCTION_OR;
 			// build query
-			xmlQuery = ModelHelperFunctions2.getXmlQuery(m_queryModels, m_simModel, conjunction);
+			xmlQuery = ModelHelperFunctions2.getXmlQuery(m_queryModels,
+					m_simModel, conjunction);
 		} else if (m_runQuery) {
 			// We have no query builder, but we still run a query, so get from
 			// settings model
@@ -423,15 +443,20 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 	 *            The data container to add the new table rows to
 	 * @throws Exception
 	 */
-	protected void runReport(ExecutionMonitor exec, BufferedDataTable pdbIDTable, int idColIdx,
+	protected void runReport(ExecutionMonitor exec,
+			BufferedDataTable pdbIDTable, int idColIdx,
 			BufferedDataContainer container) throws Exception {
 
 		// determine how many PDB IDs we can process at once without exceeding
 		// MAX_URL_LENGTH
 		// Each PDB ID requires 5 characters, but have to allow for length of
 		// selected column field strings.
-		final int CHUNK_SIZE = (m_maxQueryLength.getIntValue() - Properties.REPORT_LOCATION.length()
-				- ModelHelperFunctions2.getReportColumnsUrl(m_selectedFields).length()) / 5;
+		final int CHUNK_SIZE =
+				(m_maxQueryLength.getIntValue()
+						- Properties.REPORT_LOCATION.length()
+						- ModelHelperFunctions2
+								.getReportColumnsUrl(m_selectedFields).length())
+						/ 5;
 		logger.debug("CHUNK_SIZE=" + CHUNK_SIZE);
 
 		// retrieve the url suffix for the currently selected ligand image size
@@ -444,8 +469,9 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 		CloseableRowIterator iter = pdbIDTable.iterator();
 		while (iter.hasNext() && (CHUNK_SIZE > 0)) {
 			double progress = (double) row / (double) pdbIDTable.size();
-			exec.setProgress(progress, "Getting custom report (" + (pdbIDTable.size() - row) + "/"
-					+ pdbIDTable.size() + " PDB IDs remaining)");
+			exec.setProgress(progress,
+					"Getting custom report (" + (pdbIDTable.size() - row) + "/"
+							+ pdbIDTable.size() + " PDB IDs remaining)");
 			List<String> nextChunk = new ArrayList<>();
 			List<DataRow> currentBlockRows = new ArrayList<>();
 			while (iter.hasNext() && (nextChunk.size() < CHUNK_SIZE)) {
@@ -468,12 +494,15 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 				try {
 					long start = System.nanoTime();
 					report = m_usePOST.getBooleanValue()
-							? ModelHelperFunctions2.postCustomReportXml3(nextChunk,
-									m_selectedFields, m_primaryCitationSuffix, exec)
-							: ModelHelperFunctions2.getCustomReportXml3(nextChunk, m_selectedFields,
+							? ModelHelperFunctions2.postCustomReportXml3(
+									nextChunk, m_selectedFields,
+									m_primaryCitationSuffix, exec)
+							: ModelHelperFunctions2.getCustomReportXml3(
+									nextChunk, m_selectedFields,
 									m_primaryCitationSuffix, exec);
 					logger.info("Chunk " + block + " fetched in "
-							+ (System.nanoTime() - start) / 1000000000 + " seconds");
+							+ (System.nanoTime() - start) / 1000000000
+							+ " seconds");
 					break;
 				} catch (ReportOverflowException e) {
 					logger.error(
@@ -482,21 +511,24 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 							"Unable to process request - please select smaller maximum query size");
 				} catch (IOException e) {
 					// Wait for an increasing period before retrying
-					logger.warn("POST request failed for data block " + block + " - Waiting "
-							+ delay + " seconds before re-trying...");
+					logger.warn("POST request failed for data block " + block
+							+ " - Waiting " + delay
+							+ " seconds before re-trying...");
 					exec.checkCanceled();
 					pause(delay, exec);
 				}
 			}
 			if (report == null) {
 				// In this case, we never managed to contact the server...
-				String errMsg = "Unable to contact the remote server - please try again later!";
+				String errMsg =
+						"Unable to contact the remote server - please try again later!";
 				logger.error(errMsg);
 				throw new IOException(errMsg);
 			}
 
 			// Now add the rows to the report
-			addRowsToReport(currentBlockRows, idColIdx, report, exec, urlSuffix, container);
+			addRowsToReport(currentBlockRows, idColIdx, report, exec, urlSuffix,
+					container);
 		}
 
 	}
@@ -524,13 +556,15 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 	 * @throws IOException
 	 */
 	protected void addRowsToReport(List<DataRow> currentBlockRows, int idColIdx,
-			Map<String, List<List<String>>> report, ExecutionMonitor exec, String urlSuffix,
-			BufferedDataContainer container) throws CanceledExecutionException, IOException {
+			Map<String, List<List<String>>> report, ExecutionMonitor exec,
+			String urlSuffix, BufferedDataContainer container)
+			throws CanceledExecutionException, IOException {
 
 		for (DataRow row : currentBlockRows) {
 			int subRowIdx = 0;
 			DataCell[] newCells =
-					new DataCell[container.getTableSpec().getNumColumns() - row.getNumCells()];
+					new DataCell[container.getTableSpec().getNumColumns()
+							- row.getNumCells()];
 			Arrays.fill(newCells, DataType.getMissingCell());
 
 			DataCell idCell = row.getCell(idColIdx);
@@ -544,17 +578,20 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 					boolean isMultiRow = idReport.size() > 1;
 					for (List<String> subRow : idReport) {
 						exec.checkCanceled();
-						RowKey key = isMultiRow
-								? new RowKey(row.getKey().getString() + "_" + (subRowIdx++))
-								: row.getKey();
+						RowKey key =
+								isMultiRow
+										? new RowKey(row.getKey().getString()
+												+ "_" + (subRowIdx++))
+										: row.getKey();
 						List<DataCell> problems = new ArrayList<>();
 						for (int i = 1; i < m_selectedFields.size(); ++i) {
 							// Skip the ID cell in column 0 of the report!
 							ReportField2 field = m_selectedFields.get(i);
 							String fieldValue = subRow.get(i);
 							try {
-								newCells[i - 1] = ModelHelperFunctions2.getDataCell(field,
-										fieldValue, urlSuffix);
+								newCells[i - 1] =
+										ModelHelperFunctions2.getDataCell(field,
+												fieldValue, urlSuffix);
 							} catch (XmlDataParsingException e) {
 								// Handle any processing/parsing errors
 								// We add the cell as it was return within the
@@ -564,12 +601,16 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 								// Finally, we also add any INFOs or WARNings to
 								// the console
 								for (DataCell err : e.getWarnings()) {
-									logger.warn("Cell parsing issue - " + ((StringValue) err)
-											.getStringValue().replace("WARN: ", ""));
+									logger.warn("Cell parsing issue - "
+											+ ((StringValue) err)
+													.getStringValue()
+													.replace("WARN: ", ""));
 								}
 								for (DataCell err : e.getInfos()) {
-									logger.info("Cell parsing issue - " + ((StringValue) err)
-											.getStringValue().replace("INFO: ", ""));
+									logger.info("Cell parsing issue - "
+											+ ((StringValue) err)
+													.getStringValue()
+													.replace("INFO: ", ""));
 								}
 							}
 
@@ -577,7 +618,8 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 						// Add any errors to the last column in the report table
 						if (problems.size() > 0) {
 							newCells[newCells.length - 1] =
-									CollectionCellFactory.createListCell(problems);
+									CollectionCellFactory
+											.createListCell(problems);
 						}
 
 						DataRow outRow = new AppendedColumnRow(row, newCells);
@@ -641,11 +683,13 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 
 		String xmlQuery = getXMLQuery();
 		if (xmlQuery != null) {
-			if (getAvailableInputFlowVariables().containsKey(m_xmlVarName.getStringValue())) {
+			if (getAvailableInputFlowVariables()
+					.containsKey(m_xmlVarName.getStringValue())) {
 				logger.warn("Flow variable '" + m_xmlVarName.getStringValue()
 						+ "' will be overwritten with XML Query");
-				setWarningMessage("Flow variable '" + m_xmlVarName.getStringValue()
-						+ "' will be overwritten with XML Query");
+				setWarningMessage(
+						"Flow variable '" + m_xmlVarName.getStringValue()
+								+ "' will be overwritten with XML Query");
 			}
 			pushFlowVariableString(m_xmlVarName.getStringValue(), xmlQuery);
 		}
@@ -655,9 +699,11 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 			return new PortObjectSpec[] { FlowVariablePortObjectSpec.INSTANCE };
 		}
 
-		DataTableSpec querySpec = m_runQuery ? createQueryOutputTableSpec() : null;
+		DataTableSpec querySpec =
+				m_runQuery ? createQueryOutputTableSpec() : null;
 		DataTableSpec reportSpec = m_runReport
-				? createReportTableSpec((DataTableSpec) (m_runQuery ? querySpec : inSpecs[0]))
+				? createReportTableSpec(
+						(DataTableSpec) (m_runQuery ? querySpec : inSpecs[0]))
 				: null;
 
 		if (m_runReport) {
@@ -673,15 +719,17 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 			// selected column field strings.
 			// Only relevant if using GET query
 
-			final int CHUNK_SIZE =
-					(m_maxQueryLength.getIntValue() - Properties.REPORT_LOCATION.length()
-							- ModelHelperFunctions2.getReportColumnsUrl(m_selectedFields).length())
-							/ 5;
+			final int CHUNK_SIZE = (m_maxQueryLength.getIntValue()
+					- Properties.REPORT_LOCATION.length()
+					- ModelHelperFunctions2
+							.getReportColumnsUrl(m_selectedFields).length())
+					/ 5;
 			if (CHUNK_SIZE < 1) {
 				throw new InvalidSettingsException(
 						"Too many report fields selected: MAX_QUERY_LENGTH exceeded");
 			}
-			if (!m_usePOST.getBooleanValue() && m_maxQueryLength.getIntValue() > 8000) {
+			if (!m_usePOST.getBooleanValue()
+					&& m_maxQueryLength.getIntValue() > 8000) {
 				throw new InvalidSettingsException(
 						"Max query length must be <= 8000 when using GET method");
 			}
@@ -693,11 +741,13 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 			if (m_idColumnName.getStringValue() == null
 					|| m_idColumnName.getStringValue().isEmpty()) {
 				boolean typeFound = false;
-				for (int i = ((DataTableSpec) inSpecs[0]).getNumColumns() - 1; i >= 0; i--) {
+				for (int i = ((DataTableSpec) inSpecs[0]).getNumColumns()
+						- 1; i >= 0; i--) {
 					if (((DataTableSpec) inSpecs[0]).getColumnSpec(i).getType()
 							.isCompatible(StringValue.class)) {
-						m_idColumnName.setStringValue(
-								((DataTableSpec) inSpecs[0]).getColumnSpec(i).getName());
+						m_idColumnName
+								.setStringValue(((DataTableSpec) inSpecs[0])
+										.getColumnSpec(i).getName());
 						typeFound = true;
 						logger.warn("No column selected, auto-guessing "
 								+ m_idColumnName.getStringValue());
@@ -707,16 +757,17 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 					}
 				}
 				if (!typeFound) {
-					throw new InvalidSettingsException("No String column found for IDs");
+					throw new InvalidSettingsException(
+							"No String column found for IDs");
 				}
 			}
-			int idColIdx =
-					((DataTableSpec) inSpecs[0]).findColumnIndex(m_idColumnName.getStringValue());
+			int idColIdx = ((DataTableSpec) inSpecs[0])
+					.findColumnIndex(m_idColumnName.getStringValue());
 			if (idColIdx < 0) {
 				// Specified column not found
-				throw new InvalidSettingsException(
-						"The selected column (" + m_idColumnName.getStringValue()
-								+ ") was not found in the incoming table");
+				throw new InvalidSettingsException("The selected column ("
+						+ m_idColumnName.getStringValue()
+						+ ") was not found in the incoming table");
 			}
 		}
 
@@ -808,8 +859,10 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 					if (!reportModel.getField().isNew()) {
 						throw e;
 					} else {
-						logger.info("Using default settings for new report field '"
-								+ reportModel.getField().getColName() + "'...");
+						logger.info(
+								"Using default settings for new report field '"
+										+ reportModel.getField().getColName()
+										+ "'...");
 					}
 				}
 			}
@@ -821,8 +874,9 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 			String stdReportId = settings.getString(STD_REPORT_KEY);
 			m_stdReport = getStandardReport(stdReportId);
 			if (m_stdReport == null) {
-				throw new InvalidSettingsException("Invalid string \"" + stdReportId + "\" for "
-						+ STD_REPORT_KEY + " setting");
+				throw new InvalidSettingsException(
+						"Invalid string \"" + stdReportId + "\" for "
+								+ STD_REPORT_KEY + " setting");
 			}
 			if (!m_runQuery) {
 				m_idColumnName.loadSettingsFrom(settings);
@@ -838,7 +892,8 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 	 * NodeSettingsRO)
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		if (!m_lastError.isEmpty()) {
 			throw new InvalidSettingsException(
 					"Error loading query and report definitions from PdbConnectorConfig.xml/.dtd"
@@ -867,7 +922,8 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 						throw e;
 					} else {
 						// New field - just log a warning
-						logger.info("New field '" + reportModel.getField().getColName()
+						logger.info("New field '"
+								+ reportModel.getField().getColName()
 								+ "' detected - will use default inclusion settings");
 					}
 				}
@@ -879,8 +935,9 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 			// Check if standard report id is valid
 			String stdReportId = settings.getString(STD_REPORT_KEY);
 			if (getStandardReport(stdReportId) == null) {
-				throw new InvalidSettingsException("Invalid string \"" + stdReportId + "\" for "
-						+ STD_REPORT_KEY + " setting");
+				throw new InvalidSettingsException(
+						"Invalid string \"" + stdReportId + "\" for "
+								+ STD_REPORT_KEY + " setting");
 			}
 			if (!m_runQuery) {
 				m_idColumnName.validateSettings(settings);
@@ -895,7 +952,8 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 	 * org.knime.core.node.ExecutionMonitor)
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 
 	}
@@ -907,7 +965,8 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 	 * org.knime.core.node.ExecutionMonitor)
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 
 	}
@@ -923,7 +982,8 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 		DataColumnSpec[] allColSpecs = new DataColumnSpec[nCols];
 		for (int i = 0; i < nCols; ++i) {
 			allColSpecs[i] =
-					new DataColumnSpecCreator(PDB_COLUMNS[i], StringCell.TYPE).createSpec();
+					new DataColumnSpecCreator(PDB_COLUMNS[i], StringCell.TYPE)
+							.createSpec();
 		}
 		DataTableSpec retVal = new DataTableSpec(allColSpecs);
 		return retVal;
@@ -987,11 +1047,13 @@ public class AbstractPdbConnectorNodeModel extends AbstractXMLQueryProviderNodeM
 		for (int i = 1; i < nCols; i++) {
 			final ReportField2 field = m_selectedFields.get(i);
 			allColSpecs[i - 1] = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(querySpec, field.getColName()),
+					DataTableSpec.getUniqueColumnName(querySpec,
+							field.getColName()),
 					ModelHelperFunctions2.getDataType(field)).createSpec();
 		}
 		allColSpecs[nCols - 1] = new DataColumnSpecCreator(
-				DataTableSpec.getUniqueColumnName(querySpec, "Data Parsing errors"),
+				DataTableSpec.getUniqueColumnName(querySpec,
+						"Data Parsing errors"),
 				ListCell.getCollectionType(StringCell.TYPE)).createSpec();
 		DataTableSpecCreator specFact = new DataTableSpecCreator(querySpec);
 		specFact.addColumns(allColSpecs);

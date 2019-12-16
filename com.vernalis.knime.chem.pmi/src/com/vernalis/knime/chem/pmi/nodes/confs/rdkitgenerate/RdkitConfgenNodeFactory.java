@@ -355,7 +355,7 @@ public class RdkitConfgenNodeFactory
 
 			@Override
 			public String getNodeName() {
-				return "Conformer Generation";
+				return "Templated Conformer Generation (RDKit)";
 			}
 
 			@Override

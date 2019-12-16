@@ -1,3 +1,7 @@
+v1.25.0 16-Dec-2019
+===================
+* Fixed bug in inject column properties node causing IndexOutOfBoundsException to be thrown if < 3 input columns present in the 2nd table
+
 v1.24.4 27-Nov-2019
 ===================
 * Fixed bug in Random Numbers Generator node in range of doubles returned

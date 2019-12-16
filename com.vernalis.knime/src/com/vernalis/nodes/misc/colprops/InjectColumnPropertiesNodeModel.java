@@ -108,6 +108,10 @@ public class InjectColumnPropertiesNodeModel extends NodeModel {
 	protected DataTableSpec[] configure(DataTableSpec[] inSpecs)
 			throws InvalidSettingsException {
 		DataTableSpec inSpec = inSpecs[1];
+		if (inSpec.getNumColumns() < 3) {
+			throw new InvalidSettingsException(
+					"At least three columns are required in the second input table");
+		}
 		final DataColumnSpec colNameColSpec = inSpec.getColumnSpec(0);
 		if (!colNameColSpec.getName().equals(COLUMN_NAME)
 				|| !colNameColSpec.getType().isCompatible(StringValue.class)) {

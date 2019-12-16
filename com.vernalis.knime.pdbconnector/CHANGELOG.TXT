@@ -1,0 +1,5 @@
+v1.25.0 16-Dec-2019
+-------------------
+
+* Fixed bug in which PDB Connector Custom Report node overwrites xmlQuery flow variable.
+      This bug causes crashes in KNIME 4.1 due to changes in flow variable handling

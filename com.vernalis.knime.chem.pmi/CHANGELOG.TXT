@@ -1,4 +1,4 @@
-v1.25.0 10-Dec-2019
+v1.25.0 16-Dec-2019
 -------------------
 
 * Added classes for 'Conformer Generation' node
