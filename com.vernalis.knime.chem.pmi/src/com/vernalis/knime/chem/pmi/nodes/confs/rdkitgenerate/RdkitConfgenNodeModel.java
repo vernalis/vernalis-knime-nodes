@@ -547,6 +547,9 @@ public class RdkitConfgenNodeModel
 				RWMol mcsResultMatch = gc.markForCleanup(
 						RWMol.MolFromSmarts(mcsResult.getSmartsString()),
 						waveID);
+
+				getLogger().debugWithFormat("Template MCS for row '%s':\t%s",
+						row.getKey(), mcsResult.getSmartsString());
 				// This is crude but best we can do for NRot on a query
 				// molecule...
 				mcsResultMatch.setProp(NROT, String.format("%d",
