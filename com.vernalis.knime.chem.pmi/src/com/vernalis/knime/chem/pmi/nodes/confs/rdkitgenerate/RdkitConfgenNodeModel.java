@@ -71,10 +71,12 @@ import com.vernalis.knime.nodes.AbstractSimpleStreamableFunctionNodeModel;
 import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector2WaveSupplier;
 
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createAddHsModel;
+import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createAllowBondOrderMismatchesModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createAllowHeavyAtomMismatchesModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createBasicKnowledgeModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createCleanUpModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createColumnNameModel;
+import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createCompleteRingsOnlyModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createEnergyFilterModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createExpTorsionModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createFilterByRMSDModel;
@@ -82,6 +84,8 @@ import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgen
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createForceFieldModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createIgnoreHsRMSDModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createIterationsModel;
+import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createMatchChiralTagsModel;
+import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createMatchValencesModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createMaxEnergyModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createMaxTemplateRMSDModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createMinRMSDModel;
@@ -91,6 +95,7 @@ import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgen
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createOutputFormatModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createRandomSeedMdl;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createRemoveHsModel;
+import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createRingMatchesRingOnlyModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createTemplateColNameModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createTemplateMolBlockModel;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.createUseNRotModel;
@@ -163,11 +168,22 @@ public class RdkitConfgenNodeModel
 
 	private final SettingsModelBoolean allowHeavyAtomMismatchesMdl =
 			registerSettingsModel(createAllowHeavyAtomMismatchesModel());
+	private final SettingsModelBoolean allowBondOrderMismatchesMdl =
+			registerSettingsModel(createAllowBondOrderMismatchesModel());
+	private final SettingsModelBoolean matchValencesMdl =
+			registerSettingsModel(createMatchValencesModel());
+	private final SettingsModelBoolean matchChiralTagsMdl =
+			registerSettingsModel(createMatchChiralTagsModel());
+	private final SettingsModelBoolean ringMatchesRingOnlyMdl =
+			registerSettingsModel(createRingMatchesRingOnlyModel());
+	private final SettingsModelBoolean completeRingsOnlyMdl =
+			registerSettingsModel(createCompleteRingsOnlyModel());
 
 	private final SWIGObjectGarbageCollector2WaveSupplier gc =
 			new SWIGObjectGarbageCollector2WaveSupplier();
 
 	private AtomComparator templateAtomComparator = null;
+	private BondComparator templateBondComparator = null;
 
 	/**
 	 * Node Model constructor
@@ -243,6 +259,11 @@ public class RdkitConfgenNodeModel
 				hasTemplate && filterByTemplateRMDSMdl.getBooleanValue());
 		useTethersMdl.setEnabled(hasTemplate);
 		allowHeavyAtomMismatchesMdl.setEnabled(hasTemplate);
+		allowBondOrderMismatchesMdl.setEnabled(hasTemplate);
+		completeRingsOnlyMdl.setEnabled(hasTemplate);
+		ringMatchesRingOnlyMdl.setEnabled(hasTemplate);
+		matchChiralTagsMdl.setEnabled(hasTemplate);
+		matchValencesMdl.setEnabled(hasTemplate);
 	}
 
 	/**
@@ -339,9 +360,14 @@ public class RdkitConfgenNodeModel
 			templateAtomComparator = allowHeavyAtomMismatchesMdl.isEnabled()
 					&& allowHeavyAtomMismatchesMdl.getBooleanValue()
 							? AtomComparator.AtomCompareAnyHeavyAtom
-							: AtomComparator.AtomCompareIsotopes;
+							: AtomComparator.AtomCompareElements;
+			templateBondComparator = allowBondOrderMismatchesMdl.isEnabled()
+					&& allowBondOrderMismatchesMdl.getBooleanValue()
+							? BondComparator.BondCompareAny
+							: BondComparator.BondCompareOrder;
 		} else {
 			templateAtomComparator = null;
+			templateBondComparator = null;
 		}
 		final int nConfs = useNRotForNConfMdl.getBooleanValue() ? -1
 				: numConfsMdl.getIntValue();
@@ -435,7 +461,6 @@ public class RdkitConfgenNodeModel
 							iterationsMdl.getIntValue(), waveID,
 							maxTemplateRMSD);
 					if (confs.isEmpty()) {
-						gc.cleanupMarkedObjects(waveID);
 						return ArrayUtils.fill(new DataCell[newColSpecs.size()],
 								DataType.getMissingCell());
 					}
@@ -539,11 +564,15 @@ public class RdkitConfgenNodeModel
 							 * threshold - we want it to cover both template and
 							 * molecule
 							 */, 3600/* Timeout */, false/* verbose */,
-						false /* match valences */,
-						false/* Ring matches ring only */,
-						true/* complete rings only */,
-						false/* match chiral tag */, templateAtomComparator,
-						BondComparator.BondCompareAny), waveID);
+						matchValencesMdl.getBooleanValue() /* match valences */,
+						ringMatchesRingOnlyMdl
+								.getBooleanValue()/* Ring matches ring only */,
+						completeRingsOnlyMdl
+								.getBooleanValue()/* complete rings only */,
+						matchChiralTagsMdl
+								.getBooleanValue()/* match chiral tag */,
+						templateAtomComparator, templateBondComparator),
+						waveID);
 				RWMol mcsResultMatch = gc.markForCleanup(
 						RWMol.MolFromSmarts(mcsResult.getSmartsString()),
 						waveID);

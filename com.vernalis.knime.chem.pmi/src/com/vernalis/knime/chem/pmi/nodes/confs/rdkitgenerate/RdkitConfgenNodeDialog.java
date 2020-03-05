@@ -44,6 +44,14 @@ import com.vernalis.knime.dialog.components.SettingsModelMultilineString;
  */
 public class RdkitConfgenNodeDialog extends DefaultNodeSettingsPane {
 
+	private static final String MATCH_COMPLETE_RINGS_ONLY =
+			"Match Complete Rings Only";
+	private static final String RING_MATCHES_RING_ONLY =
+			"Ring matches Ring Only";
+	private static final String MATCH_CHIRAL_TAGS = "Match chiral tags";
+	private static final String MATCH_VALENCES = "Match Valences";
+	private static final String ALLOW_BOND_ORDER_MISMATCHES =
+			"Allow bond order mismatches";
 	static final String ALLOW_HEAVY_ATOM_MISMATCHES =
 			"Allow heavy atom mismatches";
 	static final String RANDOM_SEED = "Random Seed";
@@ -88,9 +96,19 @@ public class RdkitConfgenNodeDialog extends DefaultNodeSettingsPane {
 			createFilterByTemplateRMSDModel();
 	private final SettingsModelDoubleBounded maxTemplateRMSDMdl =
 			createMaxTemplateRMSDModel();
-	private SettingsModelBoolean useTethersMdl = createUseTethersModel();
+	private final SettingsModelBoolean useTethersMdl = createUseTethersModel();
+	private final SettingsModelBoolean allowBondOrderMismatchesMdl =
+			createAllowBondOrderMismatchesModel();
 	private final SettingsModelBoolean allowHeavyAtomMismatchesMdl =
 			createAllowHeavyAtomMismatchesModel();
+	private final SettingsModelBoolean matchValencesMdl =
+			createMatchValencesModel();
+	private final SettingsModelBoolean matchChiralTagsMdl =
+			createMatchChiralTagsModel();
+	private final SettingsModelBoolean ringMatchesRingOnlyMdl =
+			createRingMatchesRingOnlyModel();
+	private final SettingsModelBoolean completeRingsOnlyMdl =
+			createCompleteRingsOnlyModel();
 
 	private final FlowVariableModel templateMolBlockFvm;
 
@@ -225,17 +243,38 @@ public class RdkitConfgenNodeDialog extends DefaultNodeSettingsPane {
 
 		addDialogComponent(new DialogComponentBoolean(outputActualTemplateMdl,
 				OUTPUT_ACTUAL_TEMPLATE_FOR_ROW));
+		createNewGroup("Template RMSD Filtering");
 		setHorizontalPlacement(true);
 		addDialogComponent(new DialogComponentBoolean(filterByTemplateRMDSMdl,
 				FILTER_BY_TEMPLATE_RMSD));
 		addDialogComponent(new DialogComponentNumber(maxTemplateRMSDMdl,
 				MAX_TEMPLATE_RMSD, 0.05, 7));
 		setHorizontalPlacement(false);
+
+		createNewGroup("Template matching");
 		setHorizontalPlacement(true);
-		addDialogComponent(
-				new DialogComponentBoolean(useTethersMdl, USE_TETHERS));
 		addDialogComponent(new DialogComponentBoolean(
 				allowHeavyAtomMismatchesMdl, ALLOW_HEAVY_ATOM_MISMATCHES));
+		addDialogComponent(new DialogComponentBoolean(
+				allowBondOrderMismatchesMdl, ALLOW_BOND_ORDER_MISMATCHES));
+		setHorizontalPlacement(false);
+		setHorizontalPlacement(true);
+		addDialogComponent(
+				new DialogComponentBoolean(matchValencesMdl, MATCH_VALENCES));
+		addDialogComponent(new DialogComponentBoolean(matchChiralTagsMdl,
+				MATCH_CHIRAL_TAGS));
+		setHorizontalPlacement(false);
+		setHorizontalPlacement(true);
+		addDialogComponent(new DialogComponentBoolean(ringMatchesRingOnlyMdl,
+				RING_MATCHES_RING_ONLY));
+		addDialogComponent(new DialogComponentBoolean(completeRingsOnlyMdl,
+				MATCH_COMPLETE_RINGS_ONLY));
+		setHorizontalPlacement(false);
+		setHorizontalPlacement(true);
+		closeCurrentGroup();
+		addDialogComponent(
+				new DialogComponentBoolean(useTethersMdl, USE_TETHERS));
+
 		setHorizontalPlacement(false);
 		createNewGroup("Template");
 		addDialogComponent(new DialogComponentColumnNameSelection(
@@ -302,6 +341,49 @@ public class RdkitConfgenNodeDialog extends DefaultNodeSettingsPane {
 				hasTemplate && filterByTemplateRMDSMdl.getBooleanValue());
 		useTethersMdl.setEnabled(hasTemplate);
 		allowHeavyAtomMismatchesMdl.setEnabled(hasTemplate);
+		allowBondOrderMismatchesMdl.setEnabled(hasTemplate);
+		completeRingsOnlyMdl.setEnabled(hasTemplate);
+		ringMatchesRingOnlyMdl.setEnabled(hasTemplate);
+		matchChiralTagsMdl.setEnabled(hasTemplate);
+		matchValencesMdl.setEnabled(hasTemplate);
+	}
+
+	/**
+	 * @return the settings model for the {@value #MATCH_COMPLETE_RINGS_ONLY}
+	 *         option
+	 */
+	static SettingsModelBoolean createCompleteRingsOnlyModel() {
+		return new SettingsModelBoolean(MATCH_COMPLETE_RINGS_ONLY, true);
+	}
+
+	/**
+	 * @return the settings model for the {@value #RING_MATCHES_RING_ONLY}
+	 *         option
+	 */
+	static SettingsModelBoolean createRingMatchesRingOnlyModel() {
+		return new SettingsModelBoolean(RING_MATCHES_RING_ONLY, false);
+	}
+
+	/**
+	 * @return the settings model for the {@value #MATCH_CHIRAL_TAGS} option
+	 */
+	static SettingsModelBoolean createMatchChiralTagsModel() {
+		return new SettingsModelBoolean(MATCH_CHIRAL_TAGS, false);
+	}
+
+	/**
+	 * @return the settings model for the {@value #MATCH_VALENCES} option
+	 */
+	static SettingsModelBoolean createMatchValencesModel() {
+		return new SettingsModelBoolean(MATCH_VALENCES, false);
+	}
+
+	/**
+	 * @return the settings model for the {@value #ALLOW_BOND_ORDER_MISMATCHES}
+	 *         option
+	 */
+	static SettingsModelBoolean createAllowBondOrderMismatchesModel() {
+		return new SettingsModelBoolean(ALLOW_BOND_ORDER_MISMATCHES, false);
 	}
 
 	/**
@@ -428,7 +510,7 @@ public class RdkitConfgenNodeDialog extends DefaultNodeSettingsPane {
 	 * @return The settings model for the {@value #ITERATIONS} option
 	 */
 	static SettingsModelIntegerBounded createIterationsModel() {
-		return new SettingsModelIntegerBounded(ITERATIONS, 1000, 50, 100000);
+		return new SettingsModelIntegerBounded(ITERATIONS, 1000, 0, 100000);
 	}
 
 	/**
