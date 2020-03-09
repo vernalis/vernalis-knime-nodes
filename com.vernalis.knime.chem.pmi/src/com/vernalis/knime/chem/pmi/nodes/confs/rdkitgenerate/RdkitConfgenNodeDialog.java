@@ -44,13 +44,11 @@ import com.vernalis.knime.dialog.components.SettingsModelMultilineString;
  */
 public class RdkitConfgenNodeDialog extends DefaultNodeSettingsPane {
 
-	private static final String MATCH_COMPLETE_RINGS_ONLY =
-			"Match Complete Rings Only";
-	private static final String RING_MATCHES_RING_ONLY =
-			"Ring matches Ring Only";
-	private static final String MATCH_CHIRAL_TAGS = "Match chiral tags";
-	private static final String MATCH_VALENCES = "Match Valences";
-	private static final String ALLOW_BOND_ORDER_MISMATCHES =
+	static final String MATCH_COMPLETE_RINGS_ONLY = "Match Complete Rings Only";
+	static final String RING_MATCHES_RING_ONLY = "Ring matches Ring Only";
+	static final String MATCH_CHIRAL_TAGS = "Match chiral tags";
+	static final String MATCH_VALENCES = "Match Valences";
+	static final String ALLOW_BOND_ORDER_MISMATCHES =
 			"Allow bond order mismatches";
 	static final String ALLOW_HEAVY_ATOM_MISMATCHES =
 			"Allow heavy atom mismatches";

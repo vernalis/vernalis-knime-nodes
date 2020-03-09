@@ -35,6 +35,7 @@ import org.xml.sax.SAXException;
 
 import com.vernalis.knime.nodes.NodeDescriptionUtils.TableFactory;
 
+import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.ALLOW_BOND_ORDER_MISMATCHES;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.ALLOW_HEAVY_ATOM_MISMATCHES;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.CONFORMER_OUTPUT_FORMAT;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.ENSURE_H_S_ADDED;
@@ -45,6 +46,9 @@ import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgen
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.GEOMETRY_OPTIMISATION;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.IGNORE_H_S;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.ITERATIONS;
+import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.MATCH_CHIRAL_TAGS;
+import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.MATCH_COMPLETE_RINGS_ONLY;
+import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.MATCH_VALENCES;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.MAX_NUMBER_OF_TRIES_TO_GENERATE_CONFORMER;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.MAX_RELATIVE_ENERGY;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.MAX_TEMPLATE_RMSD;
@@ -54,6 +58,7 @@ import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgen
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.OUTPUT_ACTUAL_TEMPLATE_FOR_ROW;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.RANDOM_SEED;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.REMOVE_H_S;
+import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.RING_MATCHES_RING_ONLY;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.TEMPLATE_COLUMN;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.TEMPLATE_MOL_BLOCK;
 import static com.vernalis.knime.chem.pmi.nodes.confs.rdkitgenerate.RdkitConfgenNodeDialog.TEMPLATE_OPTIONS;
@@ -262,12 +267,23 @@ public class RdkitConfgenNodeFactory
 								+ "deviation from the template");
 				addOptionToTab(templateTab, MAX_TEMPLATE_RMSD,
 						"The maximum permitted RMSD deviation from the template");
-				addOptionToTab(templateTab, USE_TETHERS,
-						"Should tethers be used when aligning the conformer to "
-								+ "the template? See above for details");
 				addOptionToTab(templateTab, ALLOW_HEAVY_ATOM_MISMATCHES,
 						"Allow template heavy atoms to match different heavy atoms "
 								+ "in the molecule, e.g. morpholine / piperazine");
+				addOptionToTab(templateTab, ALLOW_BOND_ORDER_MISMATCHES,
+						"Allow template bond orders to match different bond orders in the molecule.  "
+								+ "Warning - this may prevent conformers from minimising");
+				addOptionToTab(templateTab, MATCH_VALENCES,
+						"Require template atom valences to match");
+				addOptionToTab(templateTab, MATCH_CHIRAL_TAGS,
+						"Require template atom chirality to match");
+				addOptionToTab(templateTab, RING_MATCHES_RING_ONLY,
+						"Require template atoms in rings to only match molecule atoms in rings");
+				addOptionToTab(templateTab, MATCH_COMPLETE_RINGS_ONLY,
+						"Require matching of complete rings between template and molecule");
+				addOptionToTab(templateTab, USE_TETHERS,
+						"Should tethers be used when aligning the conformer to "
+								+ "the template? See above for details");
 				addOptionToTab(templateTab, TEMPLATE_COLUMN,
 						"A column containing the templates");
 				addOptionToTab(templateTab, TEMPLATE_MOL_BLOCK,
