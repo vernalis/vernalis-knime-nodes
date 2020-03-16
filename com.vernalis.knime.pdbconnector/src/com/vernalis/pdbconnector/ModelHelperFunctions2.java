@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd, based on earlier PDB Connector work.
+ * Copyright (c) 2016, 2020 Vernalis (R&D) Ltd, based on earlier PDB Connector work.
  * 
  * Copyright (c) 2012, 2014 Vernalis (R&D) Ltd and Enspiral Discovery Limited
  * 
@@ -86,14 +86,18 @@ import com.vernalis.rest.RestClient;
  * @see PdbConnectorNodeModel2
  */
 public class ModelHelperFunctions2 {
+
 	/** DateFormat for yyyy-MM-dd. */
-	private static final DateFormat ymdFormat = new SimpleDateFormat(Properties.YMD_FORMAT);
+	private static final DateFormat ymdFormat =
+			new SimpleDateFormat(Properties.YMD_FORMAT);
 
 	/** DateFormat for yyyy-MM. */
-	private static final DateFormat ymFormat = new SimpleDateFormat(Properties.YM_FORMAT);
+	private static final DateFormat ymFormat =
+			new SimpleDateFormat(Properties.YM_FORMAT);
 
 	/** DateFormat for yyyy. */
-	private static final DateFormat yearFormat = new SimpleDateFormat(Properties.YEAR_FORMAT);
+	private static final DateFormat yearFormat =
+			new SimpleDateFormat(Properties.YEAR_FORMAT);
 
 	/** UTC Calendar. */
 	private static final Calendar cal = DateAndTimeCell.getUTCCalendar();
@@ -122,8 +126,8 @@ public class ModelHelperFunctions2 {
 		// outer query string is combined with similarity query (conjunction is
 		// always AND).
 		return ModelHelperFunctions2.getXmlQuery(
-				ModelHelperFunctions2.getXmlQuery("", queryModels, conjunction), simModels,
-				Properties.CONJUNCTION_AND);
+				ModelHelperFunctions2.getXmlQuery("", queryModels, conjunction),
+				simModels, Properties.CONJUNCTION_AND);
 	}
 
 	/**
@@ -142,7 +146,8 @@ public class ModelHelperFunctions2 {
 	 * @return the xml query string
 	 */
 	public static String getXmlQuery(final String initialQuery,
-			final List<QueryOptionModel> queryModels, final String conjunction) {
+			final List<QueryOptionModel> queryModels,
+			final String conjunction) {
 		StringBuffer retVal = new StringBuffer();
 		List<String> queries = new ArrayList<>();
 		// Pre-seed with initial query string (if defined)
@@ -198,7 +203,8 @@ public class ModelHelperFunctions2 {
 	 *            {@link Properties#CONJUNCTION_OR} form)
 	 * @return The combined query
 	 */
-	public static String combineQueries(String query0, String query1, String conjunction) {
+	public static String combineQueries(String query0, String query1,
+			String conjunction) {
 		StringBuffer retVal = new StringBuffer();
 		retVal.append(Properties.COMPOSITE_START);
 		retVal.append(Properties.REFINEMENT_START);
@@ -283,8 +289,9 @@ public class ModelHelperFunctions2 {
 	 * @throws Exception
 	 *             if field value is invalid
 	 */
-	public static DataCell getDataCell(final ReportField2 field, final String fieldValue,
-			final String urlSuffix) throws IOException, XmlDataParsingException {
+	public static DataCell getDataCell(final ReportField2 field,
+			final String fieldValue, final String urlSuffix)
+			throws IOException, XmlDataParsingException {
 
 		XmlDataParsingException exception = new XmlDataParsingException();
 
@@ -294,8 +301,7 @@ public class ModelHelperFunctions2 {
 			return DataType.getMissingCell();
 		} else if (field.isList()) {
 			// Handle collection cells
-			String[] fieldValues = fieldValue.indexOf(field.getListDeliminator()) >= 0
-					? fieldValue.split(field.getListDeliminator()) : new String[] { fieldValue };
+			String[] fieldValues = fieldValue.split(field.getListDeliminator());
 			DataCell[] cells = new DataCell[fieldValues.length];
 			for (int i = 0; i < fieldValues.length; i++) {
 				if (fieldValues[i] == null || fieldValues[i].isEmpty()) {
@@ -307,50 +313,64 @@ public class ModelHelperFunctions2 {
 						break;
 					case INTEGER:
 						try {
-							cells[i] = new IntCell(Integer.parseInt(fieldValues[i]));
+							cells[i] = new IntCell(
+									Integer.parseInt(fieldValues[i]));
 						} catch (NumberFormatException e) {
-							exception.addWarning("Invalid integer value (" + fieldValues[i]
-									+ ") in field: " + field.getColName());
+							exception.addWarning("Invalid integer value ("
+									+ fieldValues[i] + ") in field: "
+									+ field.getColName());
 							cells[i] = DataType.getMissingCell();
 						}
 						break;
 					case DOUBLE:
 						try {
-							cells[i] = new DoubleCell(Double.parseDouble(fieldValues[i]));
+							cells[i] = new DoubleCell(
+									Double.parseDouble(fieldValues[i]));
 						} catch (NumberFormatException e) {
-							exception.addWarning("Invalid double value (" + fieldValues[i]
-									+ ") in field: " + field.getColName());
+							exception.addWarning("Invalid double value ("
+									+ fieldValues[i] + ") in field: "
+									+ field.getColName());
 							cells[i] = DataType.getMissingCell();
 						}
 						break;
 					case DATE:
 						try {
 							cal.setTime(ymdFormat.parse(fieldValues[i]));
-							cells[i] = new DateAndTimeCell(cal.get(Calendar.YEAR),
-									cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+							cells[i] =
+									new DateAndTimeCell(cal.get(Calendar.YEAR),
+											cal.get(Calendar.MONTH),
+											cal.get(Calendar.DAY_OF_MONTH));
 						} catch (ParseException e) {
-							exception.addInfo("Trying simpler " + Properties.YM_FORMAT
-									+ " format in field: " + field.getColName());
+							exception.addInfo(
+									"Trying simpler " + Properties.YM_FORMAT
+											+ " format in field: "
+											+ field.getColName());
 							try {// try year-month format
 								cal.setTime(ymFormat.parse(fieldValues[i]));
-								cells[i] = new DateAndTimeCell(cal.get(Calendar.YEAR),
+								cells[i] = new DateAndTimeCell(
+										cal.get(Calendar.YEAR),
 										cal.get(Calendar.MONTH), 1);// force to
 																	// first
 																	// day of
 																	// month
 							} catch (ParseException e2) {
-								exception.addInfo("Trying simpler " + Properties.YEAR_FORMAT
-										+ " format in field: " + field.getColName());
+								exception.addInfo("Trying simpler "
+										+ Properties.YEAR_FORMAT
+										+ " format in field: "
+										+ field.getColName());
 								try {// try year-only format
-									cal.setTime(yearFormat.parse(fieldValues[i]));
-									cells[i] = new DateAndTimeCell(cal.get(Calendar.YEAR), 1, 1);// force
-																									// to
-																									// first
-																									// of
-																									// January
+									cal.setTime(
+											yearFormat.parse(fieldValues[i]));
+									cells[i] = new DateAndTimeCell(
+											cal.get(Calendar.YEAR), 1, 1);// force
+																			// to
+																			// first
+																			// of
+																			// January
 								} catch (ParseException e3) {
-									exception.addWarning("Invalid date value (" + fieldValues[i]
-											+ ") in field: " + field.getColName());
+									exception.addWarning("Invalid date value ("
+											+ fieldValues[i] + ") in field: "
+											+ field.getColName());
 									cells[i] = DataType.getMissingCell();
 								}
 							}
@@ -364,17 +384,19 @@ public class ModelHelperFunctions2 {
 						// suffix to
 						// generate
 						// the full image URL
-						cells[i] = new StringCell(
-								Properties.LIGAND_IMG_LOCATION + fieldValues[i] + urlSuffix);
+						cells[i] = new StringCell(Properties.LIGAND_IMG_LOCATION
+								+ fieldValues[i] + urlSuffix);
 						break;
 					default:
-						throw new IOException("Invalid data type at field=" + field.getColName()
-								+ ": value=" + fieldValues[i]);
+						throw new IOException("Invalid data type at field="
+								+ field.getColName() + ": value="
+								+ fieldValues[i]);
 					}
 				}
 			}
 			if (exception.hasMessages()) {
-				exception.setCell(CollectionCellFactory.createListCell(Arrays.asList(cells)));
+				exception.setCell(CollectionCellFactory
+						.createListCell(Arrays.asList(cells)));
 				throw exception;
 			}
 			return CollectionCellFactory.createListCell(Arrays.asList(cells));
@@ -388,8 +410,8 @@ public class ModelHelperFunctions2 {
 				try {
 					retVal = new IntCell(Integer.parseInt(fieldValue));
 				} catch (NumberFormatException e) {
-					exception.addWarning("Invalid integer value (" + fieldValue + ") in field: "
-							+ field.getColName());
+					exception.addWarning("Invalid integer value (" + fieldValue
+							+ ") in field: " + field.getColName());
 					retVal = DataType.getMissingCell();
 				}
 				break;
@@ -397,15 +419,16 @@ public class ModelHelperFunctions2 {
 				try {
 					retVal = new DoubleCell(Double.parseDouble(fieldValue));
 				} catch (NumberFormatException e) {
-					exception.addWarning("Invalid double value (" + fieldValue + ") in field: "
-							+ field.getColName());
+					exception.addWarning("Invalid double value (" + fieldValue
+							+ ") in field: " + field.getColName());
 					retVal = DataType.getMissingCell();
 				}
 				break;
 			case DATE:
 				try {
 					cal.setTime(ymdFormat.parse(fieldValue));
-					retVal = new DateAndTimeCell(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH),
+					retVal = new DateAndTimeCell(cal.get(Calendar.YEAR),
+							cal.get(Calendar.MONTH),
 							cal.get(Calendar.DAY_OF_MONTH));
 				} catch (ParseException e) {
 					exception.addInfo("Trying simpler " + Properties.YM_FORMAT
@@ -416,18 +439,21 @@ public class ModelHelperFunctions2 {
 								cal.get(Calendar.MONTH), 1);// force to first
 															// day of month
 					} catch (ParseException e2) {
-						exception.addInfo("Trying simpler " + Properties.YEAR_FORMAT
-								+ " format in field: " + field.getColName());
+						exception.addInfo("Trying simpler "
+								+ Properties.YEAR_FORMAT + " format in field: "
+								+ field.getColName());
 						try {// try year-only format
 							cal.setTime(yearFormat.parse(fieldValue));
-							retVal = new DateAndTimeCell(cal.get(Calendar.YEAR), 1, 1);// force
-																						// to
-																						// first
-																						// of
-																						// January
+							retVal = new DateAndTimeCell(cal.get(Calendar.YEAR),
+									1, 1);// force
+											// to
+											// first
+											// of
+											// January
 						} catch (ParseException e3) {
-							exception.addWarning("Invalid date value (" + fieldValue
-									+ ") in field: " + field.getColName());
+							exception.addWarning("Invalid date value ("
+									+ fieldValue + ") in field: "
+									+ field.getColName());
 							retVal = DataType.getMissingCell();
 						}
 					}
@@ -440,11 +466,12 @@ public class ModelHelperFunctions2 {
 				// Concatenate the field value between url prefix and suffix to
 				// generate
 				// the full image URL
-				retVal = new StringCell(Properties.LIGAND_IMG_LOCATION + fieldValue + urlSuffix);
+				retVal = new StringCell(Properties.LIGAND_IMG_LOCATION
+						+ fieldValue + urlSuffix);
 				break;
 			default:
-				throw new IOException("Invalid data type at field=" + field.getColName()
-						+ ": value=" + fieldValue);
+				throw new IOException("Invalid data type at field="
+						+ field.getColName() + ": value=" + fieldValue);
 			}
 			if (exception.hasMessages()) {
 				exception.setCell(retVal);
@@ -514,13 +541,15 @@ public class ModelHelperFunctions2 {
 	 * @throws InterruptedException
 	 */
 	public static long postQueryToTable(String xml, BufferedDataContainer bdc,
-			ExecutionMonitor exec) throws IOException, CanceledExecutionException,
+			ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException,
 			InterruptedException, ExecutionException {
 		URL url = new URL(Properties.SEARCH_LOCATION);
 		String encodedXML = URLEncoder.encode(xml, "UTF-8");
 		// Now send the request in a separate thread, waiting for it to complete
 		ExecutorService pool = Executors.newSingleThreadExecutor();
-		Future<InputStream> future = pool.submit(new PostRunner(url, encodedXML));
+		Future<InputStream> future =
+				pool.submit(new PostRunner(url, encodedXML));
 		while (!future.isDone()) {
 			// wait a 0.1 seconds
 			long time = System.nanoTime();
@@ -538,7 +567,8 @@ public class ModelHelperFunctions2 {
 			}
 		}
 
-		BufferedReader rd = new BufferedReader(new InputStreamReader(future.get()));
+		BufferedReader rd =
+				new BufferedReader(new InputStreamReader(future.get()));
 		String line;
 		long hitCount = 0;
 		while ((line = rd.readLine()) != null) {
@@ -549,7 +579,8 @@ public class ModelHelperFunctions2 {
 			}
 			if (line.matches("[A-Za-z0-9]{4}:[\\d]*")) {
 				RowKey key = RowKey.createRowKey(hitCount++);
-				bdc.addRowToTable(new DefaultRow(key, new StringCell(line.split(":")[0])));
+				bdc.addRowToTable(new DefaultRow(key,
+						new StringCell(line.split(":")[0])));
 				exec.setProgress("Added " + hitCount + " results to table");
 			} else if (line.matches("[A-Za-z0-9]{4}")) {
 				RowKey key = RowKey.createRowKey(hitCount++);
@@ -602,12 +633,13 @@ public class ModelHelperFunctions2 {
 	 *             the exception
 	 * @see {@link #getCustomReportXml2}
 	 */
-	public static Map<String, List<List<String>>> postCustomReportXml3(List<String> pdbIds,
-			List<ReportField2> selected, ReportField2 primaryOnly, ExecutionMonitor exec)
-			throws Exception {
+	public static Map<String, List<List<String>>> postCustomReportXml3(
+			List<String> pdbIds, List<ReportField2> selected,
+			ReportField2 primaryOnly, ExecutionMonitor exec) throws Exception {
 
 		// Sort out the data to POST to the service
-		StringBuffer buf = new StringBuffer(ModelHelperFunctions2.getPdbIdUrl(pdbIds));
+		StringBuffer buf =
+				new StringBuffer(ModelHelperFunctions2.getPdbIdUrl(pdbIds));
 		buf.append(ModelHelperFunctions2.getReportColumnsUrl(selected));
 		buf.append(Properties.REPORT_XML_URL);
 		if (primaryOnly != null) {
@@ -623,7 +655,8 @@ public class ModelHelperFunctions2 {
 
 		// Now send the request in a separate thread, waiting for it to complete
 		ExecutorService pool = Executors.newSingleThreadExecutor();
-		Future<InputStream> future = pool.submit(new PostRunner(url, postRequestData));
+		Future<InputStream> future =
+				pool.submit(new PostRunner(url, postRequestData));
 		while (!future.isDone()) {
 			// wait a 0.1 seconds
 			long time = System.nanoTime();
@@ -641,7 +674,8 @@ public class ModelHelperFunctions2 {
 			}
 		}
 
-		BufferedReader rd = new BufferedReader(new InputStreamReader(future.get()));
+		BufferedReader rd =
+				new BufferedReader(new InputStreamReader(future.get()));
 		String line;
 		while ((line = rd.readLine()) != null) {
 			if (line.equals(
@@ -693,9 +727,10 @@ public class ModelHelperFunctions2 {
 	 *             the exception
 	 * @see {@link #postCustomReportXml2}
 	 */
-	public static Map<String, List<List<String>>> getCustomReportXml3(final List<String> pdbIds,
-			final List<ReportField2> selected, final ReportField2 primaryOnly,
-			ExecutionMonitor exec) throws Exception {
+	public static Map<String, List<List<String>>> getCustomReportXml3(
+			final List<String> pdbIds, final List<ReportField2> selected,
+			final ReportField2 primaryOnly, ExecutionMonitor exec)
+			throws Exception {
 		StringBuffer buf = new StringBuffer(Properties.REPORT_LOCATION);
 		buf.append(ModelHelperFunctions2.getPdbIdUrl(pdbIds));
 		buf.append(ModelHelperFunctions2.getReportColumnsUrl(selected));
@@ -738,8 +773,9 @@ public class ModelHelperFunctions2 {
 	 * @throws IOException
 	 * @throws CanceledExecutionException
 	 */
-	private static Map<String, List<List<String>>> manuallyParseXMLToMap(List<String> report,
-			ExecutionMonitor exec) throws IOException, CanceledExecutionException {
+	private static Map<String, List<List<String>>> manuallyParseXMLToMap(
+			List<String> report, ExecutionMonitor exec)
+			throws IOException, CanceledExecutionException {
 		Map<String, List<List<String>>> retVal = new HashMap<>();
 		// Manual parsing of xml (we assume one element per line)
 		final String DATASET_START = "<" + Properties.REPORT_XML_ROOT + ">";
@@ -783,10 +819,12 @@ public class ModelHelperFunctions2 {
 					String value = line.substring(i2 + 1, i3);
 					currentRecord.add(value);
 				} else {
-					throw new IOException("getCustomReportXml2: Unexpected line " + line);
+					throw new IOException(
+							"getCustomReportXml2: Unexpected line " + line);
 				}
 			} else {
-				throw new IOException("getCustomReportXml2: Unexpected line " + line);
+				throw new IOException(
+						"getCustomReportXml2: Unexpected line " + line);
 			}
 		}
 		return retVal;

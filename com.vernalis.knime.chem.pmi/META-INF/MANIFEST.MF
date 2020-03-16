@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.chem.pmi;singleton:=true
-Bundle-Version: 1.25.0.qualifier
+Bundle-Version: 1.26.0.qualifier
 Bundle-ClassPath: pmi.jar
 Bundle-Activator: com.vernalis.knime.chem.pmi.PmiNodePlugin
 Bundle-Vendor: %Bundle-Vendor

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd, based on earlier PDB Connector work.
+ * Copyright (c) 2016, 2020 Vernalis (R&D) Ltd, based on earlier PDB Connector work.
  * 
  * Copyright (c) 2012, 2014 Vernalis (R&D) Ltd and Enspiral Discovery Limited
  * 
@@ -76,6 +76,8 @@ import com.vernalis.pdbconnector.config.QueryOption;
  * 
  */
 public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
+
+	private static final int SCROLL_SPEED = 16;
 	private static final NodeLogger logger =
 			NodeLogger.getLogger(AbstractPdbConnectorNodeDialog.class);
 	private final List<QueryOptionDialog> m_queryDlgs = new ArrayList<>();
@@ -116,8 +118,9 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 	 * @throws IllegalArgumentException
 	 *             if an invalid combination of boolean parameters is supplied
 	 */
-	public AbstractPdbConnectorNodeDialog(final PdbConnectorConfig2 config, boolean hasQueryBuilder,
-			boolean runQuery, boolean runReport) throws IllegalArgumentException {
+	public AbstractPdbConnectorNodeDialog(final PdbConnectorConfig2 config,
+			boolean hasQueryBuilder, boolean runQuery, boolean runReport)
+			throws IllegalArgumentException {
 		super();
 		m_hasQueryBuilder = hasQueryBuilder;
 		m_runQuery = runQuery;
@@ -134,7 +137,8 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 				// create the flow variable model associated with the query
 				// string box
 				fvm = createFlowVariableModel(
-						(SettingsModelFlowVariableCompatible) m_xmlQuery.getModel());
+						(SettingsModelFlowVariableCompatible) m_xmlQuery
+								.getModel());
 			}
 			if (m_runReport) {
 				createReportPanels(config);
@@ -153,8 +157,8 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 	 * .NodeSettingsRO, org.knime.core.node.port.PortObjectSpec[])
 	 */
 	@Override
-	public final void loadSettingsFrom(final NodeSettingsRO settings, final PortObjectSpec[] specs)
-			throws NotConfigurableException {
+	public final void loadSettingsFrom(final NodeSettingsRO settings,
+			final PortObjectSpec[] specs) throws NotConfigurableException {
 		assert settings != null;
 		assert specs != null;
 		if (!m_lastError.isEmpty()) {
@@ -271,11 +275,14 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 			int oldGridWidth = cons.gridwidth;
 			cons.gridwidth = 2;
 			m_conjunctionDlg = new DialogComponentStringSelection(
-					new SettingsModelString(AbstractPdbConnectorNodeModel.CONJUNCTION_KEY,
+					new SettingsModelString(
+							AbstractPdbConnectorNodeModel.CONJUNCTION_KEY,
 							Properties.CONJUNCTION_AND_LABEL),
-					"Match multiple query terms using", Properties.CONJUNCTION_AND_LABEL,
+					"Match multiple query terms using",
+					Properties.CONJUNCTION_AND_LABEL,
 					Properties.CONJUNCTION_OR_LABEL);
-			m_conjunctionDlg.getComponentPanel().setLayout(new FlowLayout(FlowLayout.LEFT));
+			m_conjunctionDlg.getComponentPanel()
+					.setLayout(new FlowLayout(FlowLayout.LEFT));
 			tab.add(m_conjunctionDlg.getComponentPanel(), cons);
 			cons.gridwidth = oldGridWidth;
 			++(cons.gridx);
@@ -287,11 +294,16 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 			// new line
 			cons.gridx = 0;
 			++(cons.gridy);
-			m_ligandImgSizeDlg = new DialogComponentStringSelection(
-					new SettingsModelString(AbstractPdbConnectorNodeModel.LIGAND_IMG_SIZE_KEY,
-							config.getLigandImgOptions().getDefaultLabel()),
-					"Ligand Image Size", config.getLigandImgOptions().getLabels());
-			m_ligandImgSizeDlg.getComponentPanel().setLayout(new FlowLayout(FlowLayout.LEFT));
+			m_ligandImgSizeDlg =
+					new DialogComponentStringSelection(
+							new SettingsModelString(
+									AbstractPdbConnectorNodeModel.LIGAND_IMG_SIZE_KEY,
+									config.getLigandImgOptions()
+											.getDefaultLabel()),
+							"Ligand Image Size",
+							config.getLigandImgOptions().getLabels());
+			m_ligandImgSizeDlg.getComponentPanel()
+					.setLayout(new FlowLayout(FlowLayout.LEFT));
 			tab.add(m_ligandImgSizeDlg.getComponentPanel(), cons);
 
 			// new line
@@ -301,7 +313,8 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 
 			// Add the use POST service checkbox
 			m_usePOST = new DialogComponentBoolean(
-					new SettingsModelBoolean(AbstractPdbConnectorNodeModel.USE_POST_KEY, true),
+					new SettingsModelBoolean(
+							AbstractPdbConnectorNodeModel.USE_POST_KEY, true),
 					"Use POST method (Faster)");
 			tab.add(m_usePOST.getComponentPanel(), cons);
 
@@ -312,9 +325,11 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 			// ++(cons.gridy);
 			m_maxUrlLength = new DialogComponentNumber(
 					new SettingsModelIntegerBounded(
-							AbstractPdbConnectorNodeModel.MAX_QUERY_LENGTH_KEY, 2000, 1000, 100000),
+							AbstractPdbConnectorNodeModel.MAX_QUERY_LENGTH_KEY,
+							2000, 1000, 100000),
 					"Max. Report request size", 100, 5);
-			m_maxUrlLength.getComponentPanel().setLayout(new FlowLayout(FlowLayout.LEFT));
+			m_maxUrlLength.getComponentPanel()
+					.setLayout(new FlowLayout(FlowLayout.LEFT));
 			tab.add(m_maxUrlLength.getComponentPanel(), cons);
 		}
 
@@ -327,6 +342,7 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 			cons.gridwidth = 1;
 			m_clearButton = new JButton("Clear Query");
 			m_clearButton.addActionListener(new ActionListener() {
+
 				@Override
 				public void actionPerformed(final ActionEvent arg0) {
 					doClearQueries();
@@ -345,28 +361,35 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 						// We populate the dialog with the XML from the query
 						// builder first
 						try {
-							NodeSettings tmpSettings = new NodeSettings("DO_TEST_QUERY");
-							List<QueryOptionModel> queryModels = new ArrayList<>();
+							NodeSettings tmpSettings =
+									new NodeSettings("DO_TEST_QUERY");
+							List<QueryOptionModel> queryModels =
+									new ArrayList<>();
 							QueryOptionModel simModel = null;
 							for (QueryOptionDialog dlg : m_queryDlgs) {
 								dlg.saveSettingsTo(tmpSettings);
-								QueryOptionModel model = new QueryOptionModel(dlg.getQueryOption());
+								QueryOptionModel model = new QueryOptionModel(
+										dlg.getQueryOption());
 								model.loadValidatedSettingsFrom(tmpSettings);
 								queryModels.add(model);
 							}
 							m_simDlg.saveSettingsTo(tmpSettings);
-							simModel = new QueryOptionModel(m_simDlg.getQueryOption());
+							simModel = new QueryOptionModel(
+									m_simDlg.getQueryOption());
 							simModel.loadValidatedSettingsFrom(tmpSettings);
 							// select the appropriate conjunction string (either
 							// AND or
 							// OR)
-							String conjunction = ((SettingsModelString) m_conjunctionDlg.getModel())
-									.getStringValue().equals(Properties.CONJUNCTION_AND_LABEL)
-											? Properties.CONJUNCTION_AND
-											: Properties.CONJUNCTION_OR;
-							String xmlQuery = ModelHelperFunctions2.getXmlQuery(queryModels,
-									simModel, conjunction);
-							m_queryString.setText(XMLFormatter.indentXML(xmlQuery));
+							String conjunction =
+									((SettingsModelString) m_conjunctionDlg
+											.getModel()).getStringValue()
+													.equals(Properties.CONJUNCTION_AND_LABEL)
+															? Properties.CONJUNCTION_AND
+															: Properties.CONJUNCTION_OR;
+							String xmlQuery = ModelHelperFunctions2.getXmlQuery(
+									queryModels, simModel, conjunction);
+							m_queryString
+									.setText(XMLFormatter.indentXML(xmlQuery));
 						} catch (Exception e1) {
 							// do nothing - the dialog will simply not be
 							// populated
@@ -375,16 +398,18 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 						// Get the xml query string and display it.
 						ss = new StringSelection(m_queryString.getText());
 					} else if (m_xmlQuery != null) {
-						for (Component comp : m_xmlQuery.getComponentPanel().getComponents()) {
+						for (Component comp : m_xmlQuery.getComponentPanel()
+								.getComponents()) {
 							if (comp instanceof JTextArea) {
-								ss = new StringSelection(
-										XMLFormatter.indentXML(((JTextArea) comp).getText()));
+								ss = new StringSelection(XMLFormatter.indentXML(
+										((JTextArea) comp).getText()));
 								break;
 							}
 						}
 					}
 					if (ss != null) {
-						Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
+						Toolkit.getDefaultToolkit().getSystemClipboard()
+								.setContents(ss, null);
 					}
 
 				}
@@ -394,6 +419,7 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 			++(cons.gridx);
 			m_testButton = new JButton("Test Query");
 			m_testButton.addActionListener(new ActionListener() {
+
 				@Override
 				public void actionPerformed(final ActionEvent arg0) {
 					doTestQuery();
@@ -410,8 +436,8 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 			m_feedbackString.setWrapStyleWord(true);
 			m_feedbackString.setRows(2);
 			m_feedbackString.setColumns(30);
-			m_feedbackString.setBorder(BorderFactory
-					.createTitledBorder(BorderFactory.createEtchedBorder(), "Messages"));
+			m_feedbackString.setBorder(BorderFactory.createTitledBorder(
+					BorderFactory.createEtchedBorder(), "Messages"));
 			tab.add(m_feedbackString, cons);
 
 			// New line
@@ -419,9 +445,8 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 			++(cons.gridy);
 			cons.anchor = GridBagConstraints.CENTER;
 			cons.gridwidth = 3;
-			m_xmlVarName = new DialogComponentString(
-					new SettingsModelString(AbstractPdbConnectorNodeModel.XML_VARNAME_KEY,
-							"xmlQuery"),
+			m_xmlVarName = new DialogComponentString(new SettingsModelString(
+					AbstractPdbConnectorNodeModel.XML_VARNAME_KEY, "xmlQuery"),
 					"XML Query Variable Name", true, 20);
 			tab.add(m_xmlVarName.getComponentPanel(), cons);
 
@@ -443,17 +468,21 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 			m_queryString.setEditable(false);
 			// m_queryString.setLineWrap(true);
 			// m_queryString.setWrapStyleWord(true);
-			m_queryString.setBorder(BorderFactory
-					.createTitledBorder(BorderFactory.createEtchedBorder(), "XML Query string"));
+			m_queryString.setBorder(BorderFactory.createTitledBorder(
+					BorderFactory.createEtchedBorder(), "XML Query string"));
 			tab.add(m_queryString, cons);
 		} else if (m_runQuery) {
 			// Add an editable XML Query Sting dialog
 			m_xmlQuery = new DialogComponentMultiLineString(
-					new SettingsModelString(AbstractPdbConnectorNodeModel.XML_QUERY_KEY, ""), "",
-					false, 80, 35);
-			m_xmlQuery.getComponentPanel().setLayout(new FlowLayout(FlowLayout.LEFT));
-			m_xmlQuery.getComponentPanel().setBorder(BorderFactory
-					.createTitledBorder(BorderFactory.createEtchedBorder(), "XML Query string"));
+					new SettingsModelString(
+							AbstractPdbConnectorNodeModel.XML_QUERY_KEY, ""),
+					"", false, 80, 35);
+			m_xmlQuery.getComponentPanel()
+					.setLayout(new FlowLayout(FlowLayout.LEFT));
+			m_xmlQuery.getComponentPanel()
+					.setBorder(BorderFactory.createTitledBorder(
+							BorderFactory.createEtchedBorder(),
+							"XML Query string"));
 			cons.gridx = 0;
 			++(cons.gridy);
 			cons.fill = GridBagConstraints.VERTICAL;
@@ -465,10 +494,14 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 		}
 		if (!m_hasQueryBuilder && !m_runQuery && m_runReport) {
 			// Need a column selector
-			m_idCol = new DialogComponentColumnNameSelection(
-					new SettingsModelString(AbstractPdbConnectorNodeModel.ID_COL_NAME_KEY, null),
-					"PDB ID Columns", 0, StringValue.class);
-			m_idCol.getComponentPanel().setLayout(new FlowLayout(FlowLayout.LEFT));
+			m_idCol =
+					new DialogComponentColumnNameSelection(
+							new SettingsModelString(
+									AbstractPdbConnectorNodeModel.ID_COL_NAME_KEY,
+									null),
+							"PDB ID Columns", 0, StringValue.class);
+			m_idCol.getComponentPanel()
+					.setLayout(new FlowLayout(FlowLayout.LEFT));
 			cons.gridx = 0;
 			++(cons.gridy);
 			cons.fill = GridBagConstraints.BOTH;
@@ -494,7 +527,12 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 			if (!queries.isEmpty()) {
 				JPanel tab = new JPanel();
 				tab.setLayout(new BoxLayout(tab, BoxLayout.Y_AXIS));
-				super.addTab(category.getLabel(), new JScrollPane(tab));
+				final JScrollPane scrollPane = new JScrollPane(tab);
+				// Make mousewheel scrolling a bit faster...
+				System.out.println(scrollPane.getVerticalScrollBar().getUnitIncrement());
+				scrollPane.getVerticalScrollBar()
+						.setUnitIncrement(SCROLL_SPEED);
+				super.addTab(category.getLabel(), scrollPane);
 				for (QueryOption query : queries) {
 					QueryOptionDialog queryDlg = new QueryOptionDialog(query);
 					tab.add(queryDlg);
@@ -512,7 +550,9 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 	 */
 	private void createReportPanels(final PdbConnectorConfig2 config) {
 		m_reportDlg = new ReportOptionsDialog2(config);
-		super.addTab("Report Options", new JScrollPane(m_reportDlg));
+		final JScrollPane scrollPane = new JScrollPane(m_reportDlg);
+		scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLL_SPEED);
+		super.addTab("Report Options", scrollPane);
 	}
 
 	/**
@@ -574,20 +614,25 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 		public void run() {
 			try {
 				// Disable button to prevent further tests being launched.
-				EventQueue.invokeLater(new EnableComponent(m_testButton, false));
-				EventQueue.invokeLater(new UpdateTextField(m_feedbackString, "Processing..."));
+				EventQueue
+						.invokeLater(new EnableComponent(m_testButton, false));
+				EventQueue.invokeLater(
+						new UpdateTextField(m_feedbackString, "Processing..."));
 
 				if (m_hasQueryBuilder) {
-					EventQueue.invokeLater(new UpdateTextField(m_queryString, ""));
+					EventQueue.invokeLater(
+							new UpdateTextField(m_queryString, ""));
 					// Copy current dialog settings to temporary
 					// QueryOptionModels
 
-					NodeSettings tmpSettings = new NodeSettings("DO_TEST_QUERY");
+					NodeSettings tmpSettings =
+							new NodeSettings("DO_TEST_QUERY");
 					List<QueryOptionModel> queryModels = new ArrayList<>();
 					QueryOptionModel simModel = null;
 					for (QueryOptionDialog dlg : m_queryDlgs) {
 						dlg.saveSettingsTo(tmpSettings);
-						QueryOptionModel model = new QueryOptionModel(dlg.getQueryOption());
+						QueryOptionModel model =
+								new QueryOptionModel(dlg.getQueryOption());
 						model.loadValidatedSettingsFrom(tmpSettings);
 						queryModels.add(model);
 					}
@@ -596,33 +641,43 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 					simModel.loadValidatedSettingsFrom(tmpSettings);
 					// select the appropriate conjunction string (either AND or
 					// OR)
-					String conjunction = ((SettingsModelString) m_conjunctionDlg.getModel())
-							.getStringValue().equals(Properties.CONJUNCTION_AND_LABEL)
-									? Properties.CONJUNCTION_AND : Properties.CONJUNCTION_OR;
+					String conjunction =
+							((SettingsModelString) m_conjunctionDlg.getModel())
+									.getStringValue()
+									.equals(Properties.CONJUNCTION_AND_LABEL)
+											? Properties.CONJUNCTION_AND
+											: Properties.CONJUNCTION_OR;
 					// Get the xml query string and display it.
-					String xmlQuery =
-							ModelHelperFunctions2.getXmlQuery(queryModels, simModel, conjunction);
-					EventQueue.invokeLater(
-							new UpdateTextField(m_queryString, XMLFormatter.indentXML(xmlQuery)));
+					String xmlQuery = ModelHelperFunctions2
+							.getXmlQuery(queryModels, simModel, conjunction);
+					EventQueue.invokeLater(new UpdateTextField(m_queryString,
+							XMLFormatter.indentXML(xmlQuery)));
 					// Execute the query!
-					List<String> pdbIds = ModelHelperFunctions2.postQuery(xmlQuery);
+					List<String> pdbIds =
+							ModelHelperFunctions2.postQuery(xmlQuery);
 					// Display the result count
 					EventQueue.invokeLater(new UpdateTextField(m_feedbackString,
-							"Query retrieved " + Integer.toString(pdbIds.size()) + " hits."));
+							"Query retrieved " + Integer.toString(pdbIds.size())
+									+ " hits."));
 				} else {
 					// Get the xml query string
 					String xmlQuery;
 					if (fvm.isVariableReplacementEnabled()) {
-						xmlQuery = getAvailableFlowVariables().get(fvm.getInputVariableName())
+						xmlQuery = getAvailableFlowVariables()
+								.get(fvm.getInputVariableName())
 								.getStringValue();
-						EventQueue.invokeLater(new UpdateTextField(m_feedbackString,
-								"Trying flow var value from" + fvm.getInputVariableName()
-										+ "for query...\n" + xmlQuery));
+						EventQueue.invokeLater(
+								new UpdateTextField(m_feedbackString,
+										"Trying flow var value from"
+												+ fvm.getInputVariableName()
+												+ "for query...\n" + xmlQuery));
 					} else {
-						xmlQuery = ((SettingsModelString) m_xmlQuery.getModel()).getStringValue();
+						xmlQuery = ((SettingsModelString) m_xmlQuery.getModel())
+								.getStringValue();
 						// Tidy up the xml!
 						xmlQuery = XMLFormatter.indentXML(xmlQuery);
-						((SettingsModelString) m_xmlQuery.getModel()).setStringValue(xmlQuery);
+						((SettingsModelString) m_xmlQuery.getModel())
+								.setStringValue(xmlQuery);
 					}
 					if (xmlQuery == null) {
 						// NB WE dont worry about an empty string here in case
@@ -630,7 +685,8 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 						// user is using a flow variable - the NodeModel will
 						// take
 						// care of that.
-						throw new InvalidSettingsException("No Query string entered");
+						throw new InvalidSettingsException(
+								"No Query string entered");
 					}
 					if ("".equals(xmlQuery)) {
 						// But we will warn the user!
@@ -638,24 +694,31 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 						if (fvm.isVariableReplacementEnabled()) {
 							warning += "\nFlow variable currently empty";
 						}
-						EventQueue.invokeLater(new UpdateTextField(m_feedbackString, warning));
+						EventQueue.invokeLater(
+								new UpdateTextField(m_feedbackString, warning));
 					}
 
 					// Execute the query!
-					List<String> pdbIds = ModelHelperFunctions2.postQuery(xmlQuery);
+					List<String> pdbIds =
+							ModelHelperFunctions2.postQuery(xmlQuery);
 
 					// Display the result count
 					EventQueue.invokeLater(new UpdateTextField(m_feedbackString,
-							"Query retrieved " + Integer.toString(pdbIds.size()) + " hits."));
+							"Query retrieved " + Integer.toString(pdbIds.size())
+									+ " hits."));
 				}
 			} catch (InvalidSettingsException e) {
 				logger.warn(e.getLocalizedMessage());
-				EventQueue.invokeLater(new UpdateTextField(m_feedbackString, "Error"));
-				EventQueue.invokeLater(new UpdateTextField(m_queryString, e.getLocalizedMessage()));
+				EventQueue.invokeLater(
+						new UpdateTextField(m_feedbackString, "Error"));
+				EventQueue.invokeLater(new UpdateTextField(m_queryString,
+						e.getLocalizedMessage()));
 			} catch (IOException e) {
 				logger.warn(e.getLocalizedMessage());
-				EventQueue.invokeLater(new UpdateTextField(m_feedbackString, "Error"));
-				EventQueue.invokeLater(new UpdateTextField(m_queryString, e.getLocalizedMessage()));
+				EventQueue.invokeLater(
+						new UpdateTextField(m_feedbackString, "Error"));
+				EventQueue.invokeLater(new UpdateTextField(m_queryString,
+						e.getLocalizedMessage()));
 			} finally {
 				EventQueue.invokeLater(new EnableComponent(m_testButton, true));
 			}
@@ -692,6 +755,7 @@ public class AbstractPdbConnectorNodeDialog extends NodeDialogPane {
 	 * Worker class to update the enabled state of a Swing component.
 	 */
 	private final class EnableComponent implements Runnable {
+
 		private final JComponent m_comp;
 		private final boolean m_isEnabled;
 

@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pdbConnectorOptions SYSTEM "PdbConnectorConfig.dtd">
+<!--
+    Copyright (c) 2016, 2020 Vernalis (R&D) Ltd
+     This program is free software; you can redistribute it and/or modify it 
+     under the terms of the GNU General Public License, Version 3, as 
+     published by the Free Software Foundation.
+     
+     This program is distributed in the hope that it will be useful, but 
+     WITHOUT ANY WARRANTY; without even the implied warranty of 
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+     See the GNU General Public License for more details.
+     
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, see <http://www.gnu.org/licenses>
+ -->
+
 <pdbConnectorOptions version="1.0">
 	<properties>
 		<property key="SEARCH_LOCATION"><![CDATA[http://www.rcsb.org/pdb/rest/search]]></property>
@@ -83,6 +98,24 @@
 				label="PDB ID(s)" />
 		</queryOption>
 		<queryOption
+			id="ENTITY_ID"
+			label="Entity ID(s)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.EntityIdQuery</queryType><entityIdList>%ARG1%</entityIdList></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="ENTITY_ID.VALUE"
+				type="String"
+				label="Entity ID(s) e.g. 4AAH:1" />
+		</queryOption>
+		<queryOption
+			id="CHAIN_ID"
+			label="Chain ID(s)">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ChainIdQuery</queryType><chainIdList>%ARG1%</chainIdList></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="CHAIN_ID.VALUE"
+				type="String"
+				label="Chain ID(s), e.g. 4AAH.E (Case sensitive)" />
+		</queryOption>
+		<queryOption
 			id="PUBMED_ID"
 			label="PubMed ID(s)">
 			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.PubmedIdQuery</queryType><pubMedIdList>%ARG1%</pubMedIdList></orgPdbQuery>]]></queryString>
@@ -117,6 +150,15 @@
 				id="PFAM_ID.VALUE"
 				type="String"
 				label="Pfam ID" />
+		</queryOption>
+		<queryOption
+			id="UNIPROT_GENE_NAME"
+			label="Uniprot Gene Name">
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.UniprotGeneNameQuery</queryType><query>%ARG1%</query></orgPdbQuery>]]></queryString>
+			<queryParam
+				id="UNIPROT_GENE_NAME.VALUE"
+				type="String"
+				label="Gene Name" />
 		</queryOption>
 	</queryCategory>
 	<queryCategory
@@ -204,7 +246,7 @@
 		<queryOption
 			id="DEP_DATE"
 			label="Deposition Date">
-			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.DepositDateQuery</queryType><database_PDB_rev.date_original.comparator>between</database_PDB_rev.date_original.comparator><database_PDB_rev.date_original.min>%ARG1%-%ARG2%-%ARG3%</database_PDB_rev.date_original.min><database_PDB_rev.date_original.max>%ARG4%-%ARG5%-%ARG6%</database_PDB_rev.date_original.max><database_PDB_rev.mod_type.value>1</database_PDB_rev.mod_type.value></orgPdbQuery>]]></queryString>
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.DepositDateQuery</queryType><pdbx_database_status.recvd_initial_deposition_date.comparator>between</pdbx_database_status.recvd_initial_deposition_date.comparator><pdbx_database_status.recvd_initial_deposition_date.min>%ARG1%-%ARG2%-%ARG3%</pdbx_database_status.recvd_initial_deposition_date.min><pdbx_database_status.recvd_initial_deposition_date.max>%ARG4%-%ARG5%-%ARG6%</pdbx_database_status.recvd_initial_deposition_date.max></orgPdbQuery>]]></queryString>
 			<queryParam
 				id="DEP_DATE.FROM"
 				type="Date"
@@ -217,7 +259,7 @@
 		<queryOption
 			id="REL_DATE"
 			label="Release Date">
-			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ReleaseDateQuery</queryType><database_PDB_rev.date.comparator>between</database_PDB_rev.date.comparator><database_PDB_rev.date.min>%ARG1%-%ARG2%-%ARG3%</database_PDB_rev.date.min><database_PDB_rev.date.max>%ARG4%-%ARG5%-%ARG6%</database_PDB_rev.date.max><database_PDB_rev.mod_type.value>1</database_PDB_rev.mod_type.value></orgPdbQuery>]]></queryString>
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ReleaseDateQuery</queryType><pdbx_audit_revision_history.revision_date.comparator>between</pdbx_audit_revision_history.revision_date.comparator><pdbx_audit_revision_history.revision_date.min>%ARG1%-%ARG2%-%ARG3%</pdbx_audit_revision_history.revision_date.min><pdbx_audit_revision_history.revision_date.max>%ARG4%-%ARG5%-%ARG6%</pdbx_audit_revision_history.revision_date.max><pdbx_audit_revision_history.ordinal.comparator>=</pdbx_audit_revision_history.ordinal.comparator><pdbx_audit_revision_history.revision_date.ordinal.value>1</pdbx_audit_revision_history.revision_date.ordinal.value></orgPdbQuery>]]></queryString>
 			<queryParam
 				id="REL_DATE.FROM"
 				type="Date"
@@ -230,7 +272,7 @@
 		<queryOption
 			id="REV_DATE"
 			label="Revision Date">
-			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ReviseDateQuery</queryType><database_PDB_rev.date.comparator>between</database_PDB_rev.date.comparator><database_PDB_rev.date.min>%ARG1%-%ARG2%-%ARG3%</database_PDB_rev.date.min><database_PDB_rev.date.max>%ARG4%-%ARG5%-%ARG6%</database_PDB_rev.date.max><database_PDB_rev.mod_type.value>1</database_PDB_rev.mod_type.value></orgPdbQuery>]]></queryString>
+			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ReviseDateQuery</queryType><pdbx_audit_revision_history.revision_date.comparator>between</pdbx_audit_revision_history.revision_date.comparator><pdbx_audit_revision_history.revision_date.min>%ARG1%-%ARG2%-%ARG3%</pdbx_audit_revision_history.revision_date.min><pdbx_audit_revision_history.revision_date.max>%ARG4%-%ARG5%-%ARG6%</pdbx_audit_revision_history.revision_date.max></orgPdbQuery>]]></queryString>
 			<queryParam
 				id="REV_DATE.FROM"
 				type="Date"
@@ -1810,7 +1852,7 @@
 			label="pH"
 			colName="Sample pH Value"
 			trigger="SAMP_STD_REPORT">ph</reportField>
-		<!-- reportField id="PH_FIELD_TXT" type="String" label="pH (Text)" colName="Sample 
+		<!-- reportField id="PH_FIELD_TXT" type="String" label="pH (Text)" colName="Sample
 			pH Text" trigger="SAMP_STD_REPORT">ph</reportField -->
 		<reportField
 			id="PRESSURE_FIELD"
@@ -1828,7 +1870,7 @@
 			label="Temperature"
 			colName="Sample Temperature"
 			trigger="SAMP_STD_REPORT">temperature</reportField>
-		<!-- reportField id="TEMP_FIELD_TXT" type="String" label="Temperature (Text)" 
+		<!-- reportField id="TEMP_FIELD_TXT" type="String" label="Temperature (Text)"
 			colName="Sample Temperature Text" trigger="SAMP_STD_REPORT">temperature</reportField -->
 	</reportCategory>
 	<reportCategory
@@ -1960,7 +2002,7 @@
 			id="EM_ADDITIONAL_MAP"
 			trigger="EM_STRUCT_STD_REPORT"
 			new="true">additionalMap</reportField>
-		<!-- FIELD REMOVED BY RCSB - REMOVED HERE 02-MAR-2018 SDR reportField id="SPECIMEN_FIELD" 
+		<!-- FIELD REMOVED BY RCSB - REMOVED HERE 02-MAR-2018 SDR reportField id="SPECIMEN_FIELD"
 			type="String" label="Specimen Type" trigger="EM_STRUCT_STD_REPORT">specimenType</reportField -->
 	</reportCategory>
 	<reportCategory
@@ -1970,7 +2012,8 @@
 			id="CIT_AUTH_FIELD"
 			type="String"
 			label="Primary Citation Author"
-			trigger="CIT_STD_REPORT">citationAuthor</reportField>
+			trigger="CIT_STD_REPORT"
+			deliminator="(?&lt;=\.),\s*">citationAuthor</reportField>
 		<reportField
 			id="PUBL_YEAR_FIELD"
 			type="Integer"
