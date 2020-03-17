@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode deprecated="true" icon="./FlowControlfvEndIf.png" type="Manipulator" xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+    <name>Flow Variable End IF</name>
+    
+    <shortDescription>
+        Flow Variable End IF node to collect inactive and active branches and return an active port
+    </shortDescription>
+    
+    <fullDescription>
+        <intro><p>This node provides a flow variable equivalent of the End IF node.</p>
+			<p>NOTE - Due to the way in which flow variables are handled within KNIME, no matter which 
+			the active branch, the flow variable values for any existing flow variables beyond the corresponding
+			"end" node will be those at the top-most port of the "end" node.  New variables created in any active branch will
+			retain their correct values.  If you need to change the value of existing variables, please either use
+			a new flow variable, or use a variable to tablerow node before the "end" node.</p>
+			<p>This node was developed by <a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>. 
+			For feedback and more information, please contact <a href="mailto:knime@vernalis.com">
+			knime@vernalis.com</a></p>
+			</intro>
+        
+      
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="First flow variable input port">First flow variable input port</inPort>
+        <inPort index="1" name="Second flow variable input port">Second flow variable input port</inPort>
+        <outPort index="0" name="Flow variable output">Flow Variable output</outPort>
+
+    </ports>    
+
+</knimeNode>

@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-SymbolicName: com.vernalis.knime.misc.gc;singleton:=true
+Bundle-Version: 1.26.0.qualifier
+Bundle-ClassPath: rungarbagecollector.jar
+Bundle-Activator: com.vernalis.knime.misc.gc.RunGarbageCollectorNodePlugin
+Bundle-Vendor: %Bundle-Vendor
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core;bundle-version="[3.0.0,5.0.0)",
+ org.knime.workbench.repository;bundle-version="[3.0.0,5.0.0)",
+ org.knime.base;bundle-version="[3.0.0,5.0.0)",
+ com.vernalis.knime.core;bundle-version="[1.19.0,2.0.0)",
+ com.vernalis.knime;bundle-version="[1.19.0,2.0.0)"
+Bundle-ActivationPolicy: lazy
+Export-Package: com.vernalis.knime.misc.gc
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+
