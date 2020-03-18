@@ -1,0 +1,34 @@
+v1.25.0 16-Dec-2019
+-------------------
+
+* Added DialogComponentMultilineStringFlowvar class
+* Added SettingsModelMultilineString class
+
+
+v1.24.2 13-Nov-2019
+-------------------
+
+* Fixed bug in file reader nodes resulting in loss of final newline combination if no characters follow it
+* Fixed bug in file reader nodes resulting in conversion of all newlines to unix-style '\n'
+
+
+v1.24.0 21-Oct-2019
+-------------------
+
+* Added DialogComponentMultilineStringFlowVar
+* Added DialogComponentEmpty
+* Added #insertSubheading(XmlCursor, String), #insertURL(XmlCursor, String) and #insertURL(XmlCursor, String, String) methods to NodeDescriptionUtils
+
+
+v1.23.0 20-Sept-2019
+--------------------
+
+* Added fill(boolean[], boolean) method to ArrayUtils
+* Added of(boolean, int) method to ArrayUtils
+* Added set of copy(T[]) methods to ArrayUtils (including primitives int, short, byte, char, boolean, long, float, double versions)
+* Added DoubleSummary class
+* Removed blocks of commented out code from AbstractSimpleStreamableFunctionNodeModel
+* Added static helper class TableFactory to NodeDescriptionUtils class
+* Added NestedCounterIterator class
+* Added DialogComponentGroup class
+* Added LimitedTreeSet class

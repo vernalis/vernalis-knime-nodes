@@ -1,0 +1,8 @@
+v1.23.0 20-Sept-2019
+--------------------
+
+* SimpleShapeDrawableDataObject now restores incoming Paint after #draw()
+* ColourLegendItemSource - added constructor to take a Map<String,Color> as argument
+* Added dependency to com.vernalis.knime.core
+* Added abstract plot node classes in com.vernalis.knime.jfcplot.core.nodes package
+* Added com.vernalis.knime.jfcplot.core.nodes to exported packages
