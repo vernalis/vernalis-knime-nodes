@@ -40,7 +40,7 @@ public class CredentialVariableNodeFactory extends NodeFactory<CredentialVariabl
 	 */
 	@Override
 	public int getNrNodeViews() {
-		return 1;
+		return 0;
 	}
 
 	/**
