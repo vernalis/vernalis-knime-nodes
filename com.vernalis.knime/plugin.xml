@@ -119,7 +119,10 @@
            category-path="/community/vernalis/collections/"
            factory-class="com.vernalis.nodes.collection.append.InsertListNodeFactory">
      </node>
-
+	 <node 
+	       category-path="/communit/vernalis/misc/"
+	       factory-class="com.vernalis.nodes.credvar.CredentialVariableNodeFactory" />
+	      
       <!-- Deprecated Nodes -->
       <node
             category-path="/community/vernalis/fps"
