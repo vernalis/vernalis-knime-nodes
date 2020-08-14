@@ -120,7 +120,7 @@
            factory-class="com.vernalis.nodes.collection.append.InsertListNodeFactory">
      </node>
 	 <node 
-	       category-path="/communit/vernalis/misc/"
+	       category-path="/community/vernalis/misc/"
 	       factory-class="com.vernalis.nodes.credvar.CredentialVariableNodeFactory" />
 	      
       <!-- Deprecated Nodes -->
