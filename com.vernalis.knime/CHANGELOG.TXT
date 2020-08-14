@@ -24,3 +24,9 @@ v1.24.0 21-Oct-2019
 * Moved 'Collection' nodes to a new repository folder
 * Added Collection Size, Missing to Empty collection and Empty Collection to Missing nodes
 * Updated EPMC Query Node to use v6.2 of api - query is now queryString in response XML
+
+v1.27.0 14-Aug-2020
+===================
+* Added Append to Collection and Insert into List nodes
+* Added Credential Variable Extractor node
+* Fixed NullPointerException in List Folders node

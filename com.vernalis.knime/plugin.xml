@@ -109,6 +109,16 @@
            category-path="/community/vernalis/collections/"
            factory-class="com.vernalis.nodes.collection.collection2string.ColToStringNodeFactory">
      </node>
+     
+     <!-- v 1.27.0 -->
+     <node
+           category-path="/community/vernalis/collections/"
+           factory-class="com.vernalis.nodes.collection.append.AppendCollectionNodeFactory">
+     </node>
+     <node
+           category-path="/community/vernalis/collections/"
+           factory-class="com.vernalis.nodes.collection.append.InsertListNodeFactory">
+     </node>
 
       <!-- Deprecated Nodes -->
       <node

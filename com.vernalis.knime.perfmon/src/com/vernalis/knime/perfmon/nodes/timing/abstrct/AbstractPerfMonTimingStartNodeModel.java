@@ -1,18 +1,24 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2019 Vernalis (R&D) Ltd
- *  This program is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU General Public License, Version 3, as 
+ * Copyright (c) 2016,2020 Vernalis (R&D) Ltd
+ *  This program is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License, Version 3, as
  *  published by the Free Software Foundation.
- *  
- *   This program is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of 
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *
+ *   This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *  See the GNU General Public License for more details.
- *   
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
 package com.vernalis.knime.perfmon.nodes.timing.abstrct;
+
+import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createIterationsModel;
+import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createLoopBodyNodesModel;
+import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createMaxTimeModel;
+import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createProbeSubnodesModel;
+import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createTimeCutoutModel;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,53 +43,38 @@ import org.knime.core.node.port.inactive.InactiveBranchPortObject;
 
 import com.vernalis.knime.perfmon.PerformanceMonitoringLoopStart;
 
-import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createIterationsModel;
-import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createLoopBodyNodesModel;
-import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createMaxTimeModel;
-import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createProbeSubnodesModel;
-import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingStartNodeDialog.createTimeCutoutModel;
-
 /**
  * This is the model implementation of Performance TimingStart. Loop start for
  * execution timing
- * 
+ *
  * @author S. Roughley <s.roughley@vernalis.com>
  */
-public class AbstractPerfMonTimingStartNodeModel extends NodeModel
-		implements PerformanceMonitoringLoopStart {
+public class AbstractPerfMonTimingStartNodeModel extends NodeModel implements PerformanceMonitoringLoopStart {
 
-	private Date m_StartTime;
-	protected Integer m_iteration;
-	protected static NodeLogger m_logger =
-			NodeLogger.getLogger(AbstractPerfMonTimingStartNodeModel.class);
+	// These two fields are volatile to ensure that the memory monitoring thread
+	// always sees the correct value
+	private volatile Date m_StartTime;
+	protected volatile Integer m_iteration;
+	protected static NodeLogger m_logger = NodeLogger.getLogger(AbstractPerfMonTimingStartNodeModel.class);
 
 	// Settings Models
-	protected final SettingsModelIntegerBounded m_maxIterations =
-			createIterationsModel();
+	protected final SettingsModelIntegerBounded m_maxIterations = createIterationsModel();
 	protected final SettingsModelBoolean m_useTimeout = createTimeCutoutModel();
-	protected final SettingsModelIntegerBounded m_timeOut =
-			createMaxTimeModel();
+	protected final SettingsModelIntegerBounded m_timeOut = createMaxTimeModel();
 	// since 1.19.0
-	protected final SettingsModelBoolean reportLoopNodesMdl =
-			createLoopBodyNodesModel();
-	protected final SettingsModelBoolean probeSubnodesMdl =
-			createProbeSubnodesModel();
+	protected final SettingsModelBoolean reportLoopNodesMdl = createLoopBodyNodesModel();
+	protected final SettingsModelBoolean probeSubnodesMdl = createProbeSubnodesModel();
 	protected final PortType portType;
 
 	/**
 	 * Constructor for the node model.
-	 * 
-	 * @param portType
-	 *            The type of port
-	 * @param numPorts
-	 *            The number of ports
+	 *
+	 * @param portType The type of port
+	 * @param numPorts The number of ports
 	 */
-	public AbstractPerfMonTimingStartNodeModel(PortType portType,
-			int numPorts) {
+	public AbstractPerfMonTimingStartNodeModel(PortType portType, int numPorts) {
 		// Flow variable loop start ports are optional inputs
-		super(createPorts(
-				portType == FlowVariablePortObject.TYPE
-						? FlowVariablePortObject.TYPE_OPTIONAL : portType,
+		super(createPorts(portType == FlowVariablePortObject.TYPE ? FlowVariablePortObject.TYPE_OPTIONAL : portType,
 				numPorts), createPorts(portType, numPorts));
 		m_timeOut.setEnabled(m_useTimeout.getBooleanValue());
 		probeSubnodesMdl.setEnabled(reportLoopNodesMdl.getBooleanValue());
@@ -91,21 +82,19 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel
 	}
 
 	/**
-	 * @param portType
-	 *            The type of port
-	 * @param numPorts
-	 *            The number of ports
+	 * @param portType The type of port
+	 * @param numPorts The number of ports
 	 * @return An array with the correct type and number of ports
 	 */
 	private static PortType[] createPorts(PortType portType, int numPorts) {
-		PortType[] retVal = new PortType[numPorts];
+		final PortType[] retVal = new PortType[numPorts];
 		Arrays.fill(retVal, portType);
 		return retVal;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.knime.core.node.workflow.LoopStartNodeTerminator#terminateLoop()
 	 */
 	@Override
@@ -117,13 +106,6 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel
 			return true;
 		}
 
-		// if (m_timeOut.isEnabled()
-		// && m_timeOut.getIntValue() > m_loopEndNodeModel
-		// .getRunningTotalTime()) {
-		// m_logger.info("Loop terminated after " + m_iteration
-		// + " iterations due to timeout being exceeded");
-		// return true;
-		// }
 		return false;
 	}
 
@@ -134,7 +116,7 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.vernalis.knime.internal.perfmon.PerformanceMonitoringLoopStart#
 	 * hasTimeoutEnabled()
 	 */
@@ -145,7 +127,7 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.vernalis.knime.internal.perfmon.PerformanceMonitoringLoopStart#
 	 * getTimeoutDuration()
 	 */
@@ -160,7 +142,7 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.knime.core.node.NodeModel#loadInternals(java.io.File,
 	 * org.knime.core.node.ExecutionMonitor)
 	 */
@@ -172,7 +154,7 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.knime.core.node.NodeModel#saveInternals(java.io.File,
 	 * org.knime.core.node.ExecutionMonitor)
 	 */
@@ -184,7 +166,7 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.knime.core.node.NodeModel#saveSettingsTo(org.knime.core.node.
 	 * NodeSettingsWO)
 	 */
@@ -199,13 +181,12 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.knime.core.node.NodeModel#validateSettings(org.knime.core.node.
 	 * NodeSettingsRO)
 	 */
 	@Override
-	protected void validateSettings(NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
 		m_maxIterations.validateSettings(settings);
 		m_useTimeout.validateSettings(settings);
 		m_timeOut.validateSettings(settings);
@@ -214,27 +195,25 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.knime.core.node.NodeModel#loadValidatedSettingsFrom(org.knime.core
+	 *
+	 * @see org.knime.core.node.NodeModel#loadValidatedSettingsFrom(org.knime.core
 	 * .node.NodeSettingsRO)
 	 */
 	@Override
-	protected void loadValidatedSettingsFrom(NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void loadValidatedSettingsFrom(NodeSettingsRO settings) throws InvalidSettingsException {
 		m_maxIterations.loadSettingsFrom(settings);
 		m_useTimeout.loadSettingsFrom(settings);
 		m_timeOut.loadSettingsFrom(settings);
 		try {
 			reportLoopNodesMdl.loadSettingsFrom(settings);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// Do nothing - these will assume default settings matching legacy
 			// behaviour
 		}
 
 		try {
 			probeSubnodesMdl.loadSettingsFrom(settings);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// Do nothing - these will assume default settings matching legacy
 			// behaviour
 		}
@@ -242,7 +221,7 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.knime.core.node.NodeModel#reset()
 	 */
 	@Override
@@ -253,44 +232,26 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
-	 * org.knime.core.node.NodeModel#execute(org.knime.core.node.port.PortObject
-	 * [], org.knime.core.node.ExecutionContext)
+	 * org.knime.core.node.NodeModel#execute(org.knime.core.node.port.PortObject [],
+	 * org.knime.core.node.ExecutionContext)
 	 */
 	@Override
-	protected PortObject[] execute(PortObject[] inObjects,
-			ExecutionContext exec) throws Exception {
-		// if (m_loopEndNodeModel == null) {
-		// NodeModel lEnd = (NodeModel) this.getLoopEndNode();
-		// if (lEnd != null && lEnd instanceof PerformanceMonitoringLoopEnd) {
-		// m_loopEndNodeModel = (PerformanceMonitoringLoopEnd) lEnd;
-		// } else {
-		// m_logger.error("Loop must end with Performance monitoring loop end
-		// node");
-		// throw new Exception(
-		// "Loop must end with Performance monitoring loop end node");
-		// }
-		// }
+	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec) throws Exception {
+
 		// Set the start time
 		m_StartTime = new Date();
 		pushFlowVariableInt("currentIteration", m_iteration++);
 		pushFlowVariableInt("maxIterations", m_maxIterations.getIntValue());
 
 		// Just pass through, handling optional inputs
-		// For some reason, this bombs on Jenkins server, so we need to do it
-		// the pre-Streams way...
-		// return Arrays.stream(inObjects)
-		// .map(p -> p == null ? portType == FlowVariablePortObject.TYPE
-		// ? FlowVariablePortObject.INSTANCE
-		// : InactiveBranchPortObject.INSTANCE : p)
-		// .toArray(PortObject[]::new);
-		PortObject[] retVal = new PortObject[inObjects.length];
+
+		final PortObject[] retVal = new PortObject[inObjects.length];
 		for (int pIdx = 0; pIdx < retVal.length; pIdx++) {
 			if (inObjects[pIdx] == null) {
 				// Nothing connected to optional input
-				if (portType == FlowVariablePortObject.TYPE
-						|| portType == FlowVariablePortObject.TYPE_OPTIONAL) {
+				if (portType == FlowVariablePortObject.TYPE || portType == FlowVariablePortObject.TYPE_OPTIONAL) {
 					retVal[pIdx] = FlowVariablePortObject.INSTANCE;
 				} else {
 					retVal[pIdx] = InactiveBranchPortObject.INSTANCE;
@@ -305,18 +266,16 @@ public class AbstractPerfMonTimingStartNodeModel extends NodeModel
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.knime.core.node.NodeModel#configure(org.knime.core.node.port.
 	 * PortObjectSpec[])
 	 */
 	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
-			throws InvalidSettingsException {
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException {
 		m_iteration = 0;
 		pushFlowVariableInt("currentIteration", m_iteration);
 		pushFlowVariableInt("maxIterations", m_maxIterations.getIntValue());
-		pushFlowVariableInt("timeout (s)",
-				(m_timeOut.isEnabled()) ? m_timeOut.getIntValue() : -1);
+		pushFlowVariableInt("timeout (s)", m_timeOut.isEnabled() ? m_timeOut.getIntValue() : -1);
 		// Just pass through
 		return inSpecs;
 	}

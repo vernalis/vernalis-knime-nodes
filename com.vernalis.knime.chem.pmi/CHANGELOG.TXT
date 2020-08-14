@@ -13,3 +13,6 @@ v1.23.0 20-Sept-2019
 * Changed visibility of constructors of PMITriangleDrawableDataObjectFastPlot to pulbic from package
 * Added package com.vernalis.knime.pmi.nodes.plot.kerneldensity.pmi with node implementation classes for PMI Kernel Density Plot 
 
+v1.27.0 14-Aug-2020
+===================
+* PMI class made more robust to errors during calculation not throwing entire node

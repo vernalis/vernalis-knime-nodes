@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2019, Vernalis (R&D) Ltd
- *  This program is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU General Public License, Version 3, as 
+ *  This program is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License, Version 3, as
  *  published by the Free Software Foundation.
- *  
- *  This program is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of 
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *  See the GNU General Public License for more details.
- *   
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
@@ -25,16 +25,17 @@ import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
 import org.knime.core.node.util.ColumnFilter;
 
+import com.vernalis.exceptions.RowExecutionException;
 import com.vernalis.knime.chem.util.points.AbstractPoint;
 import com.vernalis.knime.chem.util.points.PointFactory;
 import com.vernalis.knime.nodes.propcalc.CalculatedPropertyInterface;
 
 /**
- * 
+ *
  * Abstract class where an List of Points is the basis for the object used for
  * calculation. Implementing subclasses need only implement
  * {@link #getObjFromPointList(List)}. Z-coordinate checking is always active
- * 
+ *
  * @author S.Roughley
  *
  * @param <T>
@@ -43,7 +44,7 @@ import com.vernalis.knime.nodes.propcalc.CalculatedPropertyInterface;
  *            The Type parameter for the additional point data parameter
  */
 public abstract class AbstractPointListMoleculePropertyCalcNodeModel<T, U>
-		extends AbstractMoleculePropertyCalcNodeModel<T> {
+extends AbstractMoleculePropertyCalcNodeModel<T> {
 
 	protected Function<String, U> pdbPropertyFunction;
 	protected Function<String, U> molPropertyFunction;
@@ -51,7 +52,7 @@ public abstract class AbstractPointListMoleculePropertyCalcNodeModel<T, U>
 	/**
 	 * Overloaded constructor with {@code null} for the PDB and Mol property
 	 * functions
-	 * 
+	 *
 	 * @param propertyLabel
 	 *            The name properties label to be used as the settings model key
 	 * @param possibleProps
@@ -68,7 +69,7 @@ public abstract class AbstractPointListMoleculePropertyCalcNodeModel<T, U>
 
 	/**
 	 * Full constructor
-	 * 
+	 *
 	 * @param propertyLabel
 	 *            The name properties label to be used as the settings model key
 	 * @param possibleProps
@@ -96,7 +97,7 @@ public abstract class AbstractPointListMoleculePropertyCalcNodeModel<T, U>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.vernalis.knime.core.nodes.props.abstrct.
 	 * AbstractMoleculePropertyCalcNodeModel#checkMolZCoord(java.lang.Object)
 	 */
@@ -107,31 +108,31 @@ public abstract class AbstractPointListMoleculePropertyCalcNodeModel<T, U>
 	}
 
 	/**
-	 * This method should be used to obtain the calculation object of type T
-	 * from the intermediate point list
-	 * 
-	 * @param points
-	 *            The list of points from the incoming molecule
+	 * This method should be used to obtain the calculation object of type T from
+	 * the intermediate point list
+	 *
+	 * @param points The list of points from the incoming molecule
 	 * @return The calculation object
+	 * @throws RowExecutionException
 	 */
-	protected abstract T getObjFromPointList(List<AbstractPoint<U>> points);
+	protected abstract T getObjFromPointList(List<AbstractPoint<U>> points) throws RowExecutionException;
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.vernalis.knime.core.nodes.props.abstrct.
 	 * AbstractMoleculePropertyCalcNodeModel#getMolFromCell(org.knime.core.data.
 	 * DataCell)
 	 */
 	@Override
-	protected T getMolContainerFromCell(DataCell molCell) {
+	protected T getMolContainerFromCell(DataCell molCell) throws RowExecutionException {
 		return getObjFromPointList(getPointListFromCell(molCell));
 	}
 
 	private final List<AbstractPoint<U>> getPointListFromCell(
 			DataCell molCell) {
 		// Dont handle Mol2 or SMILES
-		DataType type = molCell.getType();
+		final DataType type = molCell.getType();
 		List<AbstractPoint<U>> retVal = null;
 		if (type.isCompatible(PdbValue.class)) {
 			retVal = PointFactory.getPointsFromPDBString((PdbValue) molCell,
@@ -150,7 +151,7 @@ public abstract class AbstractPointListMoleculePropertyCalcNodeModel<T, U>
 		if (retVal != null && checkZCoordsfor3D && !hasNonZeroZ) {
 			hasNonZeroZ |=
 					retVal.stream().mapToDouble(pt -> Math.abs(pt.getZ()))
-							.anyMatch(z -> z > MAX_ZERO_Z);
+					.anyMatch(z -> z > MAX_ZERO_Z);
 		}
 
 		return retVal;

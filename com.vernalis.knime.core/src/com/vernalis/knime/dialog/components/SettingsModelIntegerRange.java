@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
- *  This program is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU General Public License, Version 3, as 
+ * Copyright (c) 2017,2020 Vernalis (R&D) Ltd
+ *  This program is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License, Version 3, as
  *  published by the Free Software Foundation.
- *  
- *  This program is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of 
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *  See the GNU General Public License for more details.
- *   
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
@@ -21,13 +21,12 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
-import org.knime.core.node.defaultnodesettings.SettingsModelDoubleRange;
 import org.knime.core.node.port.PortObjectSpec;
 
 /**
  * Settings model for a int range [min, max]. It stores two integer numbers. It
  * ensures that the minimum is smaller than the maximum at any time.
- * 
+ *
  * @author s.roughley
  */
 public class SettingsModelIntegerRange extends SettingsModel {
@@ -50,7 +49,7 @@ public class SettingsModelIntegerRange extends SettingsModel {
 	 */
 	public SettingsModelIntegerRange(final String configName, final int minRange,
 			final int maxRange) throws IllegalArgumentException {
-		if ((configName == null) || "".equals(configName)) {
+		if (configName == null || "".equals(configName)) {
 			throw new IllegalArgumentException("The configName must be a " + "non-empty string");
 		}
 		this.configName = configName;
@@ -85,7 +84,7 @@ public class SettingsModelIntegerRange extends SettingsModel {
 	 *             if the min is larger than the max or those numbers are not
 	 *             really numbers (NaN).
 	 */
-	void setRange(final int newMin, final int newMax) throws IllegalArgumentException {
+	public void setRange(final int newMin, final int newMax) throws IllegalArgumentException {
 
 		if (newMin > newMax) {
 			throw new IllegalArgumentException(configName + ": The specified minimum (" + newMin
@@ -104,7 +103,7 @@ public class SettingsModelIntegerRange extends SettingsModel {
 	 *             if the new min is larger than the current max
 	 * @see #setRange(double, double)
 	 */
-	void setMinRange(final int minRange) throws IllegalArgumentException {
+	public void setMinRange(final int minRange) throws IllegalArgumentException {
 		setRange(minRange, max);
 	}
 
@@ -117,7 +116,7 @@ public class SettingsModelIntegerRange extends SettingsModel {
 	 *             if the current min is larger than the new max
 	 * @see #setRange(double, double)
 	 */
-	void setMaxRange(final int maxRange) throws IllegalArgumentException {
+	public void setMaxRange(final int maxRange) throws IllegalArgumentException {
 		setRange(min, maxRange);
 	}
 
@@ -126,9 +125,9 @@ public class SettingsModelIntegerRange extends SettingsModel {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	protected SettingsModelDoubleRange createClone() {
+	protected SettingsModelIntegerRange createClone() {
 		try {
-			return new SettingsModelDoubleRange(configName, min, max);
+			return new SettingsModelIntegerRange(configName, min, max);
 		} catch (IllegalArgumentException ise) {
 			// can't happen.
 			return null;

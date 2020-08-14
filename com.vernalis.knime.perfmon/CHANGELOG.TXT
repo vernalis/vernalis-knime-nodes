@@ -1,0 +1,4 @@
+v1.27.0 14-Aug-2020
+===================
+* Memory monitoring loops reworked to ensure loop end has ownership of tables (test case failure in KNIME 4.2.0)
+* Benchmarking loop ends now can return new Date-Time types

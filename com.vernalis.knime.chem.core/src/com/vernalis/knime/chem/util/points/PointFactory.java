@@ -1,18 +1,20 @@
 /*******************************************************************************
  * Copyright (c) 2019, Vernalis (R&D) Ltd
- *  This program is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU General Public License, Version 3, as 
+ *  This program is free software; you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License, Version 3, as
  *  published by the Free Software Foundation.
- *  
- *  This program is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of 
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *  See the GNU General Public License for more details.
- *   
+ *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
 package com.vernalis.knime.chem.util.points;
+
+import static com.vernalis.knime.misc.StringParseUtils.trimRight;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,12 +36,10 @@ import org.knime.chem.types.SdfValue;
 import com.vernalis.knime.chem.util.elements.Elements;
 import com.vernalis.knime.iterators.LinewiseStringIterator;
 
-import static com.vernalis.knime.misc.StringParseUtils.trimRight;
-
 /**
  * This is a utility class containing methods for creating points from various
  * molecule formats, and lists of points from whole molecules
- * 
+ *
  * @author s.roughley
  *
  */
@@ -51,7 +51,7 @@ public class PointFactory {
 	/**
 	 * Method to create a {@link SimplePoint} from an RDKit {@link Point3D}
 	 * object
-	 * 
+	 *
 	 * @param point
 	 *            The RDKit point
 	 * @return the point
@@ -63,7 +63,7 @@ public class PointFactory {
 	/**
 	 * Method to create a {@link SimplePoint} from an RDKit {@link ROMol} and
 	 * atom index
-	 * 
+	 *
 	 * @param mol
 	 *            The molecule
 	 * @param atomIdx
@@ -72,8 +72,8 @@ public class PointFactory {
 	 */
 	public static SimplePoint fromROMol(ROMol mol, int atomIdx) {
 		final Conformer conformer = mol.getConformer();
-		Point3D pt = conformer.getAtomPos(atomIdx);
-		SimplePoint retVal = fromROMol(pt);
+		final Point3D pt = conformer.getAtomPos(atomIdx);
+		final SimplePoint retVal = fromROMol(pt);
 		pt.delete();
 		conformer.delete();
 		return retVal;
@@ -82,7 +82,7 @@ public class PointFactory {
 	/**
 	 * Method to create an {@link AbstractPoint} from an RDKit {@link ROMol} and
 	 * atom index
-	 * 
+	 *
 	 * @param mol
 	 *            The molecule
 	 * @param atomIdx
@@ -95,7 +95,7 @@ public class PointFactory {
 	public static <T> AbstractPoint<T> fromROMol(ROMol mol, int atomIdx,
 			BiFunction<ROMol, Integer, T> propertyFunction) {
 		final Conformer conformer = mol.getConformer();
-		Point3D pt = conformer.getAtomPos(atomIdx);
+		final Point3D pt = conformer.getAtomPos(atomIdx);
 		final AbstractPoint<T> retVal = new AbstractPoint<>(pt.getX(),
 				pt.getY(), pt.getZ(), propertyFunction.apply(mol, atomIdx));
 		conformer.delete();
@@ -106,7 +106,7 @@ public class PointFactory {
 	public static <T> AbstractPoint<T> fromROMol(ROMol mol, int atomIdx,
 			Function<Atom, T> propertyFunction) {
 		final Conformer conformer = mol.getConformer();
-		Point3D pt = conformer.getAtomPos(atomIdx);
+		final Point3D pt = conformer.getAtomPos(atomIdx);
 		final AbstractPoint<T> retVal =
 				new AbstractPoint<>(pt.getX(), pt.getY(), pt.getZ(),
 						propertyFunction.apply(mol.getAtomWithIdx(atomIdx)));
@@ -179,7 +179,7 @@ public class PointFactory {
 	 * @return The point
 	 */
 	public static SimplePoint fromCtab3000Line(String ctab3000Line) {
-		Matcher m = CTAB3000_LINE_PATTERN.matcher(ctab3000Line);
+		final Matcher m = CTAB3000_LINE_PATTERN.matcher(ctab3000Line);
 		m.find();
 		return new SimplePoint(Double.valueOf(m.group(1)),
 				Double.valueOf(m.group(2)), Double.valueOf(m.group(3)));
@@ -194,7 +194,7 @@ public class PointFactory {
 	 */
 	public static <T> AbstractPoint<T> fromCtab3000Line(String ctab3000Line,
 			Function<String, T> propertyFunction) {
-		Matcher m = CTAB3000_LINE_PATTERN.matcher(ctab3000Line);
+		final Matcher m = CTAB3000_LINE_PATTERN.matcher(ctab3000Line);
 		m.find();
 		return new AbstractPoint<>(Double.valueOf(m.group(1)),
 				Double.valueOf(m.group(2)), Double.valueOf(m.group(3)),
@@ -207,7 +207,7 @@ public class PointFactory {
 	 * @return A list of points from the mol
 	 */
 	public static List<SimplePoint> getPointsFromROMol(ROMol mol) {
-		List<SimplePoint> retVal = new ArrayList<>();
+		final List<SimplePoint> retVal = new ArrayList<>();
 		for (int i = 0; i < mol.getNumAtoms(); i++) {
 			retVal.add(fromROMol(mol, i));
 		}
@@ -223,7 +223,7 @@ public class PointFactory {
 	 */
 	public static <T> List<AbstractPoint<T>> getPointsFromROMol(ROMol mol,
 			Function<Atom, T> propertyFunction) {
-		List<AbstractPoint<T>> retVal = new ArrayList<>();
+		final List<AbstractPoint<T>> retVal = new ArrayList<>();
 		for (int i = 0; i < mol.getNumAtoms(); i++) {
 			retVal.add(fromROMol(mol, i, propertyFunction));
 		}
@@ -240,7 +240,7 @@ public class PointFactory {
 	 */
 	public static <T> List<AbstractPoint<T>> getPointsFromROMol(ROMol mol,
 			BiFunction<ROMol, Integer, T> propertyFunction) {
-		List<AbstractPoint<T>> retVal = new ArrayList<>();
+		final List<AbstractPoint<T>> retVal = new ArrayList<>();
 		for (int i = 0; i < mol.getNumAtoms(); i++) {
 			retVal.add(fromROMol(mol, i, propertyFunction));
 		}
@@ -344,12 +344,12 @@ public class PointFactory {
 	 * @return List of atom points
 	 */
 	public static List<SimplePoint> getPointsFromMolString(String mol) {
-		List<SimplePoint> retVal = new ArrayList<>();
-		String[] lines = mol.split("\n");
+		final List<SimplePoint> retVal = new ArrayList<>();
+		final String[] lines = mol.split("\n");
 		if (lines[3].contains("V3000")) {
 			int lineIdx = 3;
 			boolean inAtoms = false;
-			while ((lineIdx++) < lines.length) {
+			while (lineIdx++ < lines.length) {
 				String line = lines[lineIdx].trim().toUpperCase();
 				if (line.equals("M V30 END ATOM")) {
 					break;
@@ -370,7 +370,7 @@ public class PointFactory {
 			}
 		} else {
 			// Assume old V2000 format
-			int atomCount = Integer.valueOf(lines[3].substring(0, 3).trim());
+			final int atomCount = Integer.valueOf(lines[3].substring(0, 3).trim());
 			for (int i = 4; i < 4 + atomCount; i++) {
 				retVal.add(fromCtabLine(lines[i]));
 			}
@@ -387,14 +387,14 @@ public class PointFactory {
 	 */
 	public static <T> List<AbstractPoint<T>> getPointsFromMolString(String mol,
 			Function<String, T> propertyFunction) {
-		List<AbstractPoint<T>> retVal = new ArrayList<>();
-		String[] lines = mol.split("\n");
+		final List<AbstractPoint<T>> retVal = new ArrayList<>();
+		final String[] lines = mol.split("\n");
 		if (lines[3].contains("V3000")) {
 			int lineIdx = 3;
 			boolean inAtoms = false;
-			while ((lineIdx++) < lines.length) {
-				String line = lines[lineIdx].trim().toUpperCase();
-				if (line.equals("M  V30 END ATOM")) {
+			while (lineIdx++ < lines.length) {
+				String line = lines[lineIdx].trim();
+				if (line.equalsIgnoreCase("M  V30 END ATOM")) {
 					break;
 				}
 				if (line.equalsIgnoreCase("M  V30 BEGIN ATOM")) {
@@ -413,7 +413,7 @@ public class PointFactory {
 			}
 		} else {
 			// Assume old V2000 format
-			int atomCount = Integer.valueOf(lines[3].substring(0, 3).trim());
+			final int atomCount = Integer.valueOf(lines[3].substring(0, 3).trim());
 			for (int i = 4; i < 4 + atomCount; i++) {
 				retVal.add(fromCtabLine(lines[i], propertyFunction));
 			}
@@ -448,9 +448,9 @@ public class PointFactory {
 	 * @return List of Atom points
 	 */
 	public static <T> List<SimplePoint> getPointsFromCTabString(String ctab) {
-		String[] lines = ctab.split("\n");
-		int atomCount = Integer.valueOf(lines[0].substring(0, 3).trim());
-		List<SimplePoint> retVal = new ArrayList<>();
+		final String[] lines = ctab.split("\n");
+		final int atomCount = Integer.valueOf(lines[0].substring(0, 3).trim());
+		final List<SimplePoint> retVal = new ArrayList<>();
 		for (int i = 1; i < 1 + atomCount; i++) {
 			retVal.add(fromCtabLine(lines[i]));
 		}
@@ -466,9 +466,9 @@ public class PointFactory {
 	 */
 	public static <T> List<AbstractPoint<T>> getPointsFromCTabString(
 			String cTab, Function<String, T> propertyFunction) {
-		String[] lines = cTab.split("\n");
-		int atomCount = Integer.valueOf(lines[0].substring(0, 3).trim());
-		List<AbstractPoint<T>> retVal = new ArrayList<>();
+		final String[] lines = cTab.split("\n");
+		final int atomCount = Integer.valueOf(lines[0].substring(0, 3).trim());
+		final List<AbstractPoint<T>> retVal = new ArrayList<>();
 		for (int i = 1; i < 1 + atomCount; i++) {
 			retVal.add(fromCtabLine(lines[i], propertyFunction));
 		}
@@ -482,15 +482,15 @@ public class PointFactory {
 	public static Function<String, String> elementSymbolFromMolAtom =
 			new Function<String, String>() {
 
-				@Override
-				public String apply(String t) {
-					if (t.startsWith("M  V30 ")) {
-						return t.split("\\s+")[3];
-					} else {
-						return t.substring(30, 33).trim();
-					}
-				}
-			};
+		@Override
+		public String apply(String t) {
+			if (t.startsWith("M  V30 ")) {
+				return t.split("\\s+")[3];
+			} else {
+				return t.substring(30, 33).trim();
+			}
+		}
+	};
 
 	/**
 	 * Function to get the element symbol from a PDB atom line
@@ -498,17 +498,17 @@ public class PointFactory {
 	public static Function<String, String> elementSymbolFromPdbAtom =
 			new Function<String, String>() {
 
-				@Override
-				public String apply(String t) {
-					String r = t.substring(76, 78).trim();
-					if (r.length() == 2) {
-						r = new String(new char[] { r.charAt(0),
-								r.charAt(1) < 'a' ? (char) (r.charAt(1) + ' ')
-										: r.charAt(1) });
-					}
-					return r;
-				}
-			};
+		@Override
+		public String apply(String t) {
+			String r = t.substring(76, 78).trim();
+			if (r.length() == 2) {
+				r = new String(new char[] { r.charAt(0),
+						r.charAt(1) < 'a' ? (char) (r.charAt(1) + ' ')
+								: r.charAt(1) });
+			}
+			return r;
+		}
+	};
 
 	/**
 	 * Function to get element atomic weight from element symbol
@@ -516,11 +516,11 @@ public class PointFactory {
 	public static Function<String, Double> elementWeightFromSymbol =
 			new Function<String, Double>() {
 
-				@Override
-				public Double apply(String t) {
-					return Elements.getInstance().getMWt(t);
-				}
-			};
+		@Override
+		public Double apply(String t) {
+			return Elements.getInstance().getMWt(t);
+		}
+	};
 
 	/**
 	 * Function to get element van der waals radius from symbol
@@ -528,9 +528,9 @@ public class PointFactory {
 	public static Function<String, Double> elementVdWFromSymbol =
 			new Function<String, Double>() {
 
-				@Override
-				public Double apply(String t) {
-					return Elements.getInstance().getVdwRadius(t);
-				}
-			};
+		@Override
+		public Double apply(String t) {
+			return Elements.getInstance().getVdwRadius(t);
+		}
+	};
 }

@@ -56,9 +56,9 @@ public class ListDirs2NodeModel extends NodeModel {
 	private static final NodeLogger logger = NodeLogger.getLogger(ListDirs2NodeModel.class);
 
 	/**
-	 * the settings key which is used to retrieve and store the settings (from
-	 * the dialog or from a settings file) (package visibility to be usable from
-	 * the dialog).
+	 * the settings key which is used to retrieve and store the settings (from the
+	 * dialog or from a settings file) (package visibility to be usable from the
+	 * dialog).
 	 */
 
 	static final String CFG_PATH = "Path_name";
@@ -72,16 +72,13 @@ public class ListDirs2NodeModel extends NodeModel {
 
 	private final SettingsModelBoolean m_subDirs = new SettingsModelBoolean(CFG_SUB_DIRS, false);
 
-	private final SettingsModelBoolean m_ctgDirPath =
-			new SettingsModelBoolean(CFG_INCL_CTG_PATH, true);
+	private final SettingsModelBoolean m_ctgDirPath = new SettingsModelBoolean(CFG_INCL_CTG_PATH, true);
 
-	private final SettingsModelBoolean m_folderName =
-			new SettingsModelBoolean(CFG_FOLDER_NAME, true);
+	private final SettingsModelBoolean m_folderName = new SettingsModelBoolean(CFG_FOLDER_NAME, true);
 
 	private final SettingsModelBoolean m_isVisible = new SettingsModelBoolean(CFG_IS_VIS, true);
 
-	private final SettingsModelBoolean m_lastModified =
-			new SettingsModelBoolean(CFG_LAST_MOD, true);
+	private final SettingsModelBoolean m_lastModified = new SettingsModelBoolean(CFG_LAST_MOD, true);
 
 	private BufferedDataContainer m_dc;
 
@@ -103,11 +100,11 @@ public class ListDirs2NodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
-			final ExecutionContext exec) throws Exception {
+	protected BufferedDataTable[] execute(final BufferedDataTable[] inData, final ExecutionContext exec)
+			throws Exception {
 
 		// List the folders from the dialogue
-		String[] folders = m_Path.getStringValue().split(";");
+		final String[] folders = m_Path.getStringValue().split(";");
 
 		// Now create a data container for the new output table
 
@@ -124,19 +121,21 @@ public class ListDirs2NodeModel extends NodeModel {
 				try {
 					if (folder.startsWith("file:")) {
 						folder = folder.substring(5);
-						location = new File((new URI(folder)).getPath());
+						location = new File(new URI(folder).getPath());
 					} else if (folder.startsWith("knime:")) {
-						URI uri = new URI(folder);
+						final URI uri = new URI(folder);
 						location = ResolverUtil.resolveURItoLocalFile(uri);
 					}
-				} catch (Exception e) {
-					throw new InvalidSettingsException(
-							"\"" + folder + "\" does not exist or is not a directory");
+				} catch (final Exception e) {
+					throw new InvalidSettingsException("\"" + folder + "\" does not exist or is not a directory");
+				}
+				// Fixes possible NPE - see
+				// https://forum.knime.com/t/id-like-to-download-files-from-s3-to-knime-server/23289/5?u=s.roughley
+				if (location == null) {
+					throw new InvalidSettingsException("Unable to resolve path \"" + folder + "\" to a directory");
 				}
 				if (!location.isDirectory()) {
-					System.out.println(location.getAbsolutePath());
-					throw new InvalidSettingsException(
-							"\"" + folder + "\" does not exist or is not a directory");
+					throw new InvalidSettingsException("\"" + folder + "\" does not exist or is not a directory");
 				}
 			}
 			addLocation(location, exec);
@@ -148,35 +147,32 @@ public class ListDirs2NodeModel extends NodeModel {
 
 	}
 
-	private void addLocation(final File location, final ExecutionContext exec)
-			throws CanceledExecutionException {
+	private void addLocation(final File location, final ExecutionContext exec) throws CanceledExecutionException {
 
 		// List the folders - recursively if we are doing subfolders too
 		m_analysed_files++;
-		exec.setProgress(m_analysed_files + " file(s) and folder(s) analysed..." + m_currentRowID
-				+ " added to output");
+		exec.setProgress(m_analysed_files + " file(s) and folder(s) analysed..." + m_currentRowID + " added to output");
 		exec.checkCanceled();
 
 		if (location.isDirectory()) {
-			File[] listFiles = location.listFiles();
+			final File[] listFiles = location.listFiles();
 			if (listFiles != null) {
-				for (File loc : listFiles) {
+				for (final File loc : listFiles) {
 					if (loc.isDirectory()) {
 						// We need to add a directory whenever it is found
 						try {
-							DataCell[] row = new DataCell[spec.getNumColumns()];
+							final DataCell[] row = new DataCell[spec.getNumColumns()];
 							Arrays.fill(row, DataType.getMissingCell());
 							int colIndex = 0;
 							row[colIndex++] = new StringCell(loc.getAbsolutePath());
-							row[colIndex++] = new StringCell(
-									loc.getAbsoluteFile().toURI().toURL().toString());
+							row[colIndex++] = new StringCell(loc.getAbsoluteFile().toURI().toURL().toString());
 
 							if (m_folderName.getBooleanValue()) {
 								row[colIndex++] = new StringCell(loc.getName());
 							}
 
 							if (m_ctgDirPath.getBooleanValue()) {
-								File parent = loc.getParentFile();
+								final File parent = loc.getParentFile();
 								if (parent != null) {
 									row[colIndex++] = new StringCell(parent.getAbsolutePath());
 									row[colIndex++] = new StringCell(
@@ -187,8 +183,7 @@ public class ListDirs2NodeModel extends NodeModel {
 							if (m_isVisible.getBooleanValue()) {
 								// NB we return opposite result of "isHidden" as
 								// we are asking "isVisible"
-								row[colIndex++] =
-										(loc.isHidden()) ? BooleanCell.FALSE : BooleanCell.TRUE;
+								row[colIndex++] = loc.isHidden() ? BooleanCell.FALSE : BooleanCell.TRUE;
 							}
 
 							if (m_lastModified.getBooleanValue()) {
@@ -198,7 +193,7 @@ public class ListDirs2NodeModel extends NodeModel {
 							m_dc.addRowToTable(new DefaultRow("Row " + m_currentRowID, row));
 							m_currentRowID++;
 
-						} catch (MalformedURLException e) {
+						} catch (final MalformedURLException e) {
 							logger.error("Unable to create URL to folder", e);
 						}
 
@@ -222,9 +217,9 @@ public class ListDirs2NodeModel extends NodeModel {
 	}
 
 	/**
-	 * Return the DataColumnSpec for the output table, taking into account the
-	 * user settings
-	 * 
+	 * Return the DataColumnSpec for the output table, taking into account the user
+	 * settings
+	 *
 	 * @return {@link DataColumnSpec}[] of the output columns
 	 */
 	private DataColumnSpec[] createDataColumnSpec() {
@@ -232,7 +227,7 @@ public class ListDirs2NodeModel extends NodeModel {
 		// Use an array list as saves counting columns via if statements and
 		// then
 		// Counting through them all again
-		ArrayList<DataColumnSpec> dcs = new ArrayList<>();
+		final ArrayList<DataColumnSpec> dcs = new ArrayList<>();
 
 		dcs.add(new DataColumnSpecCreator("Location", StringCell.TYPE).createSpec());
 		dcs.add(new DataColumnSpecCreator("URL", StringCell.TYPE).createSpec());
@@ -251,8 +246,7 @@ public class ListDirs2NodeModel extends NodeModel {
 		}
 
 		if (m_lastModified.getBooleanValue()) {
-			dcs.add(new DataColumnSpecCreator("Last Modified Date", DateAndTimeCell.TYPE)
-					.createSpec());
+			dcs.add(new DataColumnSpecCreator("Last Modified Date", DateAndTimeCell.TYPE).createSpec());
 		}
 
 		return dcs.toArray(new DataColumnSpec[0]);
@@ -269,8 +263,7 @@ public class ListDirs2NodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
-			throws InvalidSettingsException {
+	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs) throws InvalidSettingsException {
 
 		// Check there is something in the path box
 		if (m_Path == null) {
@@ -299,30 +292,29 @@ public class ListDirs2NodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
-			throws InvalidSettingsException {
+	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings) throws InvalidSettingsException {
 
 		m_Path.loadSettingsFrom(settings);
 		m_subDirs.loadSettingsFrom(settings);
 		// Emulate old behaviour with new settings
 		try {
 			m_ctgDirPath.loadSettingsFrom(settings);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			m_ctgDirPath.setBooleanValue(false);
 		}
 		try {
 			m_folderName.loadSettingsFrom(settings);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			m_folderName.setBooleanValue(false);
 		}
 		try {
 			m_isVisible.loadSettingsFrom(settings);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			m_isVisible.setBooleanValue(false);
 		}
 		try {
 			m_lastModified.loadSettingsFrom(settings);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			m_lastModified.setBooleanValue(false);
 		}
 	}
