@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./colInsert.png" type="Manipulator">
+	<name>Insert into List</name>
+
+	<shortDescription>
+		Adds cells from one or more columns to a specified
+		position in a list column
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>This node adds the cells from one or more columns to a specified
+				position within a collection column. Optionally, the
+				selected columns
+				can be removed from the output tables, and missing
+				cells may be
+				skipped or added.
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+		</intro>
+
+		<option name="Collection Column">The List column to insert into
+		</option>
+		<option name="Columns to append">The additional column(s) to insert. Only columns
+			of the appropriate type for the selected collection will be shown
+		</option>
+		<option name="Remove appended columns">Should the columns selected to insert into the
+			list be removed from the output table?
+		</option>
+		<option name="Insertion Index">The position in the list to insert the cells. 0 is
+			before the first element. Negative indices are counted from the end
+			of the list, so -1 is the position before the last element
+		</option>
+		<option name="Fail execution if index is out of bounds">The node will fail execution if the index is out
+			of bounds, otherwise indices beyond the end of the list will add to
+			the end of the list, and indices before the start of the list will
+			add to the start</option>
+		<option
+			name="Treat missing collection cells as empty collections">A missing cell in the collection column will be left unchanged
+			unless this option is selected, in which case a new list will be created containing only the
+			inserted cells.
+		</option>
+		<option name="Don't add missing cells to collection">If this option is selected, missing cells in any
+			inserted columns will be skipped
+		</option>
+
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="List column">Table containing a List column and column(s) of cells to insert
+		</inPort>
+		<outPort index="0" name="Inserted Collection">Table containing the input table with
+			selected columns inserted into the selected list column
+		</outPort>
+	</ports>
+
+</knimeNode>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2019, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="confs.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>RMSD Conformer List Filter</name>
+
+	<shortDescription>
+        Node to filter conformers by RMSD. 
+    </shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				This node filters conformers according to an RMSD threshold. All
+				conformers of a molecule must be in a List cell in a single row.
+			</p>
+			<p>Filtering is performed by calculating the RMSD for each conformer
+				against all kept so far for the current molecule, and only keeping
+				those which have a minimum RMSD to a previously kept conformer
+				greater than the threshold value
+			</p>
+			<p>Other non-molecule format List columns can be selected and
+				filtered according to whether the corresponding conformer was kept
+				or removed. If a list cell has a different number of members than
+				the conformers cell, it will not be filtered (it will either be kept
+				unchanged, or replaced with a missing cell according to the node
+				configuration), and the row will be
+				added to the warning message at
+				the end of the node execution
+			</p>
+		</intro>
+
+
+		<option name="Conformers">The input molecule column containing the
+			conformers. Accepted formats are Lists of MOL, SDF and RDKit
+		</option>
+		<option name="Conformer Properties Columns">Lists of properties associated with the conformers
+			to be filtered
+		</option>
+		<option name="Replace unfilterable list cells with missing values">If this option is selected, list cells which
+			cannot be filtered by virtue of having a different number of members
+			to the incoming conformer column will be replaced with a missing
+			value cell rather than being passed through unchanged</option>
+		<option name="RMSD Filter Threshold (&#x212b;)">The cut-off threshold for keeping conformers
+		</option>
+		<option name="Ignore H's">Hydrogen atoms are ignored. Significant
+			performance increases can be obtained selecting this option.
+		</option>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="Molecules">Conformers for
+			processing
+		</inPort>
+		<outPort
+			index="0"
+			name="Filtered conformers">Filtered input table
+		</outPort>
+	</ports>
+</knimeNode>
