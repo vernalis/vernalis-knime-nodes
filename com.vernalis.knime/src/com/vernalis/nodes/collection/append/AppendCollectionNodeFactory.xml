@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./colAppend.png" type="Manipulator">
+	<name>Append to Collection</name>
+
+	<shortDescription>
+		Adds cells from one or more columns to the end of a
+		collection column
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>This node adds the cells from one or more columns to the end of
+				the cells contained within a collection column. Optionally, the
+				selected columns can be removed from the output tables, and missing
+				cells may be skipped or added. Lists maybe sorted after appending.
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+		</intro>
+
+		<option name="Collection Column">The List or Set column to append to
+		</option>
+		<option name="Sort List">Should the resulting list be sorted after
+			appending?
+		</option>
+		<option name="Columns to append">The additional column(s) to append. Only columns
+			of the appropriate type for the selected collection will be shown
+		</option>
+		<option name="Remove appended columns">Should the columns selected to append to the
+			collection be removed from the output table?
+		</option>
+		<option
+			name="Treat missing collection cells as empty collections">A missing cell in the collection column will be left unchanged
+			unless this option is selected, in which case a new collection of the
+			appropriate type (Set or List) will be created containing only the
+			appended cells.
+		</option>
+		<option name="Don't add missing cells to collection">If this option is selected, missing cells in any
+			appended columns will be skipped
+		</option>
+
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Collection column">Table containing a collection
+			(Set or List) column and column(s) of cells to append
+		</inPort>
+		<outPort index="0" name="Appended Collection">Table containing the input table with
+			selected columns appended to the selected collection column
+		</outPort>
+	</ports>
+
+</knimeNode>

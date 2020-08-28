@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2019, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="./gc.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Run Heavy Garbage Collector</name>
+
+	<shortDescription>
+		Runs a 'heavy' garbage collection
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>This node runs a 'heavy' garbage collection. A number of garbage
+				collection cycles are run. Between each collection, there is a
+				delay, during which System.runFinalization() is called.
+			</p>
+			<p>It reports the amount of used memory before and after to the
+				console log (at the INFO level), and also the total amount of memory
+				available to the JVM
+			</p>
+		</intro>
+		<option name="Number of Garbage Collections">The number of Garbage collection calls to make
+		</option>
+		<option name="Delay between collections (ms)">The delay (in milliseconds) between each GC call
+		</option>
+	</fullDescription>
+	<ports>
+		<inPort
+			index="0"
+			name="Input">Optional input port</inPort>
+		<outPort
+			index="0"
+			name="Output">Output port</outPort>
+	</ports>
+</knimeNode>
