@@ -1,4 +1,0 @@
-v1.23.0 20-Sept-2019
---------------------
-
-* Created plugin with Kernel and Boxplot nodes
