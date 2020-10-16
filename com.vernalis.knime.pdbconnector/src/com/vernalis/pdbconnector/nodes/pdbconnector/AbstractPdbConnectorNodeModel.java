@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016,2018 Vernalis (R&D) Ltd, based on earlier PDB Connector work.
+ * Copyright (c) 2016,2020 Vernalis (R&D) Ltd, based on earlier PDB Connector work.
  * 
  * Copyright (c) 2012, 2014 Vernalis (R&D) Ltd and Enspiral Discovery Limited
  * 
@@ -901,7 +901,17 @@ public class AbstractPdbConnectorNodeModel
 		}
 		if (m_hasQueryBuilder) {
 			for (QueryOptionModel queryModel : m_queryModels) {
-				queryModel.validateSettings(settings);
+				try {
+					queryModel.validateSettings(settings);
+				} catch (InvalidSettingsException e) {
+					if (!queryModel.getQueryOption().isNew()) {
+						throw e;
+					} else {
+						logger.info("New query option '"
+								+ queryModel.getQueryOption().getLabel()
+								+ "' detected - will use default settings");
+					}
+				}
 			}
 			m_simModel.validateSettings(settings);
 			m_conjunction.validateSettings(settings);

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.misc.gc;singleton:=true
-Bundle-Version: 1.27.0.qualifier
+Bundle-Version: 1.27.1.qualifier
 Bundle-ClassPath: rungarbagecollector.jar
 Bundle-Activator: com.vernalis.knime.misc.gc.RunGarbageCollectorNodePlugin
 Bundle-Vendor: %Bundle-Vendor
