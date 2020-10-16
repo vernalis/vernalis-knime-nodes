@@ -48,6 +48,7 @@
 <!ATTLIST queryOption id ID #REQUIRED>
 <!ATTLIST queryOption label CDATA #REQUIRED>
 <!ATTLIST queryOption default (true|false) "false">
+<!ATTLIST queryOption new (true|false) "false">
 
 <!ELEMENT queryString (#PCDATA)>
 

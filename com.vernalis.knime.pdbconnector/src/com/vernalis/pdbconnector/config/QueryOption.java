@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd, based on earlier PDB Connector work.
+ * Copyright (c) 2016, 2020 Vernalis (R&D) Ltd, based on earlier PDB Connector work.
  * 
  * Copyright (c) 2012, 2014 Vernalis (R&D) Ltd and Enspiral Discovery Limited
  * 
@@ -61,10 +61,14 @@ public class QueryOption {
 	/** XML attribute name for QueryOption default selection. */
 	static final String XML_ATTR_DEFAULT = "default";
 
+	/** XML attribute name for QueyrOption new attribute. */
+	static final String XML_ATTR_NEW = "new";
+
 	private String m_id;
 	private String m_label;
 	private String m_queryString;
 	private boolean m_default = false;
+	private boolean m_new = false;
 	private List<QueryParam> m_params = new ArrayList<>();
 
 	/**
@@ -125,6 +129,15 @@ public class QueryOption {
 	}
 
 	/**
+	 * @return whether the field is new field which should not be validated in
+	 *         settings
+	 * @since 1.27.1
+	 */
+	public final boolean isNew() {
+		return m_new;
+	}
+
+	/**
 	 * Initializes from XML node.
 	 *
 	 * @param node
@@ -136,26 +149,33 @@ public class QueryOption {
 		if (node == null) {
 			throw new ConfigException("Null " + XML_ELEMENT + " node");
 		} else if (XML_ELEMENT != node.getNodeName()) {
-			throw new ConfigException(
-					"Invalid " + XML_ELEMENT + " node (" + node.getNodeName() + ")");
+			throw new ConfigException("Invalid " + XML_ELEMENT + " node ("
+					+ node.getNodeName() + ")");
 		} else {
 			NamedNodeMap attr = node.getAttributes();
 			Node id = attr.getNamedItem(XML_ATTR_ID);
 			Node label = attr.getNamedItem(XML_ATTR_LABEL);
 			Node defaultAttr = attr.getNamedItem(XML_ATTR_DEFAULT);
+			Node newAttr = attr.getNamedItem(XML_ATTR_NEW);
 			if (id == null) {
-				throw new ConfigException(
-						"Missing " + XML_ATTR_ID + " attribute in " + XML_ELEMENT);
+				throw new ConfigException("Missing " + XML_ATTR_ID
+						+ " attribute in " + XML_ELEMENT);
 			} else if (label == null) {
-				throw new ConfigException(
-						"Missing " + XML_ATTR_LABEL + " attribute in " + XML_ELEMENT);
+				throw new ConfigException("Missing " + XML_ATTR_LABEL
+						+ " attribute in " + XML_ELEMENT);
 			} else if (defaultAttr == null) {
-				throw new ConfigException(
-						"Missing " + XML_ATTR_DEFAULT + " attribute in " + XML_ELEMENT);
+				throw new ConfigException("Missing " + XML_ATTR_DEFAULT
+						+ " attribute in " + XML_ELEMENT);
+			} else if (newAttr == null) {
+				throw new ConfigException("Missing " + XML_ATTR_NEW
+						+ " attribute in " + XML_ELEMENT);
 			} else {
 				m_id = id.getNodeValue();
 				m_label = label.getNodeValue();
-				m_default = defaultAttr.getNodeValue().equalsIgnoreCase(Boolean.toString(true));
+				m_default = defaultAttr.getNodeValue()
+						.equalsIgnoreCase(Boolean.toString(true));
+				m_new = newAttr.getNodeValue()
+						.equalsIgnoreCase(Boolean.toString(true));
 				NodeList children = node.getChildNodes();
 				int numChildren = children.getLength();
 				for (int i = 0; i < numChildren; ++i) {
@@ -170,8 +190,8 @@ public class QueryOption {
 			}
 			// Check we loaded query string ok
 			if ((m_queryString == null) || m_queryString.isEmpty()) {
-				throw new ConfigException(
-						"Missing " + XML_ELEMENT_QUERY_STRING + " element in " + XML_ELEMENT);
+				throw new ConfigException("Missing " + XML_ELEMENT_QUERY_STRING
+						+ " element in " + XML_ELEMENT);
 			}
 		}
 	}

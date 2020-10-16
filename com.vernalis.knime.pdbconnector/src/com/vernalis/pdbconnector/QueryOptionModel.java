@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd, based on earlier PDB Connector work.
+ * Copyright (c) 2016, 2020 Vernalis (R&D) Ltd, based on earlier PDB Connector work.
  * 
  * Copyright (c) 2012, 2014 Vernalis (R&D) Ltd and Enspiral Discovery Limited
  * 
@@ -48,6 +48,7 @@ import com.vernalis.pdbconnector.config.Values;
  * </UL>
  */
 public class QueryOptionModel {
+
 	private final QueryOption m_queryOption;
 	private final SettingsModelBoolean m_selected;
 	private final List<QueryParam> m_params;
@@ -68,11 +69,21 @@ public class QueryOptionModel {
 	public QueryOptionModel(QueryOption queryOption) {
 		m_queryOption = queryOption;
 		m_params = m_queryOption.getParams();
-		m_selected = ComponentFactory2.createSelectionSettingsModel(m_queryOption);
+		m_selected =
+				ComponentFactory2.createSelectionSettingsModel(m_queryOption);
 		boolean isSelected = m_selected.getBooleanValue();
 		for (final QueryParam param : m_params) {
-			m_models.add(ComponentFactory2.createSettingsModels(param, isSelected));
+			m_models.add(
+					ComponentFactory2.createSettingsModels(param, isSelected));
 		}
+	}
+
+	/**
+	 * @return The query option associated with this setting
+	 * @since 1.27.1
+	 */
+	public final QueryOption getQueryOption() {
+		return m_queryOption;
 	}
 
 	/**
@@ -111,64 +122,82 @@ public class QueryOptionModel {
 					assert models.size() == 1;
 					arg = "%ARG" + (argNum++) + "%";
 					retVal = retVal.replaceAll(arg,
-							((SettingsModelString) models.get(0)).getStringValue());
+							((SettingsModelString) models.get(0))
+									.getStringValue());
 					break;
 				case STRING_LIST:
 					assert models.size() == 1;
 					arg = "%ARG" + (argNum++) + "%";
 					// For String_Lists we need to retrieve the underlying value
 					// for this label from the QueryParam
-					String label = ((SettingsModelString) models.get(0)).getStringValue();
+					String label = ((SettingsModelString) models.get(0))
+							.getStringValue();
 					Values values = param.getValues();
 					if (values.isExists(label)) {
 						retVal = retVal.replaceAll(arg, values.getValue(label));
 					} else {
-						NodeLogger.getLogger("PDB Connector Query Option").warn(
-								"Value not found for label " + label + " for " + param.getLabel());
+						NodeLogger.getLogger("PDB Connector Query Option")
+								.warn("Value not found for label " + label
+										+ " for " + param.getLabel());
 					}
 					break;
 				case INTEGER:
 					assert models.size() == 1;
 					arg = "%ARG" + (argNum++) + "%";
 					retVal = retVal.replaceAll(arg,
-							Integer.toString(((SettingsModelInteger) models.get(0)).getIntValue()));
+							Integer.toString(
+									((SettingsModelInteger) models.get(0))
+											.getIntValue()));
 					break;
 				case DOUBLE:
 					assert models.size() == 1;
 					arg = "%ARG" + (argNum++) + "%";
-					retVal = retVal.replaceAll(arg, Double
-							.toString(((SettingsModelDouble) models.get(0)).getDoubleValue()));
+					retVal = retVal.replaceAll(arg,
+							Double.toString(
+									((SettingsModelDouble) models.get(0))
+											.getDoubleValue()));
 					break;
 				case INTEGER_RANGE:
 					assert models.size() == 2;
-					for (int i = 0, numModels = models.size(); i < numModels; ++i) {
+					for (int i = 0, numModels =
+							models.size(); i < numModels; ++i) {
 						arg = "%ARG" + (argNum++) + "%";
-						retVal = retVal.replaceAll(arg, Integer
-								.toString(((SettingsModelInteger) models.get(i)).getIntValue()));
+						retVal = retVal.replaceAll(arg,
+								Integer.toString(
+										((SettingsModelInteger) models.get(i))
+												.getIntValue()));
 					}
 					break;
 				case DOUBLE_RANGE:
 					assert models.size() == 2;
-					for (int i = 0, numModels = models.size(); i < numModels; ++i) {
+					for (int i = 0, numModels =
+							models.size(); i < numModels; ++i) {
 						arg = "%ARG" + (argNum++) + "%";
-						retVal = retVal.replaceAll(arg, Double
-								.toString(((SettingsModelDouble) models.get(i)).getDoubleValue()));
+						retVal = retVal.replaceAll(arg,
+								Double.toString(
+										((SettingsModelDouble) models.get(i))
+												.getDoubleValue()));
 					}
 					break;
 				case DATE:
 					assert models.size() == 3;
-					for (int i = 0, numModels = models.size(); i < numModels; ++i) {
+					for (int i = 0, numModels =
+							models.size(); i < numModels; ++i) {
 						arg = "%ARG" + (argNum++) + "%";
-						retVal = retVal.replaceAll(arg, Integer
-								.toString(((SettingsModelInteger) models.get(i)).getIntValue()));
+						retVal = retVal.replaceAll(arg,
+								Integer.toString(
+										((SettingsModelInteger) models.get(i))
+												.getIntValue()));
 					}
 					break;
 				case STRING_COND:
 					assert (models.size() == 1) && (subQueries.size() == 1); {
 					// Perform subQuery replacement on the string value entered
 					// Subquery is only active if a non-empty string is entered
-					String val = ((SettingsModelString) models.get(0)).getStringValue();
-					String query = !val.isEmpty() ? subQueries.get(0).replaceAll("%ARG%", val) : "";
+					String val = ((SettingsModelString) models.get(0))
+							.getStringValue();
+					String query = !val.isEmpty()
+							? subQueries.get(0).replaceAll("%ARG%", val) : "";
 					arg = "%ARG" + (argNum++) + "%";
 					retVal = retVal.replaceAll(arg, query);
 				}
@@ -179,12 +208,18 @@ public class QueryOptionModel {
 					// entered.
 					// Subqueries are only active if the value entered is gt min
 					// or lt max respectively.
-					int valMin = ((SettingsModelInteger) models.get(0)).getIntValue();
+					int valMin = ((SettingsModelInteger) models.get(0))
+							.getIntValue();
 					String queryMin = (valMin > param.getMin())
-							? subQueries.get(0).replaceAll("%ARG%", Integer.toString(valMin)) : "";
-					int valMax = ((SettingsModelInteger) models.get(1)).getIntValue();
+							? subQueries.get(0).replaceAll("%ARG%",
+									Integer.toString(valMin))
+							: "";
+					int valMax = ((SettingsModelInteger) models.get(1))
+							.getIntValue();
 					String queryMax = (valMax < param.getMax())
-							? subQueries.get(1).replaceAll("%ARG%", Integer.toString(valMax)) : "";
+							? subQueries.get(1).replaceAll("%ARG%",
+									Integer.toString(valMax))
+							: "";
 					// Now substitute the subqueries into the master query
 					// string
 					arg = "%ARG" + (argNum++) + "%";
@@ -199,12 +234,16 @@ public class QueryOptionModel {
 					// entered.
 					// Subqueries are only active if the value entered is gt min
 					// or lt max respectively.
-					double valMin = ((SettingsModelDouble) models.get(0)).getDoubleValue();
-					String queryMin = (valMin > param.getMin())
-							? subQueries.get(0).replaceAll("%ARG%", Double.toString(valMin)) : "";
-					double valMax = ((SettingsModelDouble) models.get(1)).getDoubleValue();
-					String queryMax = (valMax < param.getMax())
-							? subQueries.get(1).replaceAll("%ARG%", Double.toString(valMax)) : "";
+					double valMin = ((SettingsModelDouble) models.get(0))
+							.getDoubleValue();
+					String queryMin = (valMin > param.getMin()) ? subQueries
+							.get(0).replaceAll("%ARG%", Double.toString(valMin))
+							: "";
+					double valMax = ((SettingsModelDouble) models.get(1))
+							.getDoubleValue();
+					String queryMax = (valMax < param.getMax()) ? subQueries
+							.get(1).replaceAll("%ARG%", Double.toString(valMax))
+							: "";
 					// Now substitute the subqueries into the master query
 					// string
 					arg = "%ARG" + (argNum++) + "%";
@@ -269,7 +308,8 @@ public class QueryOptionModel {
 	 *            the settings
 	 * @throws InvalidSettingsException
 	 */
-	public void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	public void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		m_selected.validateSettings(settings);
 		for (List<SettingsModel> models : m_models) {
 			for (SettingsModel model : models) {

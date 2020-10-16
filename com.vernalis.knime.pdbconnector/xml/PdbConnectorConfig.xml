@@ -99,7 +99,8 @@
 		</queryOption>
 		<queryOption
 			id="ENTITY_ID"
-			label="Entity ID(s)">
+			label="Entity ID(s)"
+			new="true">
 			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.EntityIdQuery</queryType><entityIdList>%ARG1%</entityIdList></orgPdbQuery>]]></queryString>
 			<queryParam
 				id="ENTITY_ID.VALUE"
@@ -108,7 +109,8 @@
 		</queryOption>
 		<queryOption
 			id="CHAIN_ID"
-			label="Chain ID(s)">
+			label="Chain ID(s)"
+			new="true">
 			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.ChainIdQuery</queryType><chainIdList>%ARG1%</chainIdList></orgPdbQuery>]]></queryString>
 			<queryParam
 				id="CHAIN_ID.VALUE"
@@ -153,7 +155,8 @@
 		</queryOption>
 		<queryOption
 			id="UNIPROT_GENE_NAME"
-			label="Uniprot Gene Name">
+			label="Uniprot Gene Name"
+			new="true">
 			<queryString><![CDATA[<orgPdbQuery><queryType>org.pdb.query.simple.UniprotGeneNameQuery</queryType><query>%ARG1%</query></orgPdbQuery>]]></queryString>
 			<queryParam
 				id="UNIPROT_GENE_NAME.VALUE"
