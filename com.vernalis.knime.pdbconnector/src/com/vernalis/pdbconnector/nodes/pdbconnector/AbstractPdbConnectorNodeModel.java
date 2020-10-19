@@ -839,7 +839,17 @@ public class AbstractPdbConnectorNodeModel
 
 		if (m_hasQueryBuilder) {
 			for (QueryOptionModel queryModel : m_queryModels) {
-				queryModel.loadValidatedSettingsFrom(settings);
+				try {
+					queryModel.loadValidatedSettingsFrom(settings);
+				} catch (InvalidSettingsException e) {
+					if (!queryModel.getQueryOption().isNew()) {
+						throw e;
+					} else {
+						logger.info("New query option '"
+								+ queryModel.getQueryOption().getLabel()
+								+ "' detected - will use default settings");
+					}
+				}
 			}
 			m_simModel.loadValidatedSettingsFrom(settings);
 			m_conjunction.loadSettingsFrom(settings);
