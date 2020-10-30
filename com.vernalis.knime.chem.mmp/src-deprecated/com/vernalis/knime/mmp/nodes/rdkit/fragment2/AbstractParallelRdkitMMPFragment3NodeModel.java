@@ -478,10 +478,12 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel
 
 		// These two can both be null
 		final Integer maxNumVarAtm = (m_hasChangingAtoms.getBooleanValue())
-				? m_maxChangingAtoms.getIntValue() : null;
+				? m_maxChangingAtoms.getIntValue()
+				: null;
 		final Double minCnstToVarAtmRatio =
 				(m_hasHARatioFilter.getBooleanValue())
-						? m_minHARatioFilter.getDoubleValue() : null;
+						? m_minHARatioFilter.getDoubleValue()
+						: null;
 
 		final boolean stripHsAtEnd =
 				m_stripHsAtEnd.isEnabled() && m_stripHsAtEnd.getBooleanValue();
@@ -662,8 +664,7 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel
 		} catch (MolSanitizeException e) {
 			// MolSanitizeException returns null for #getMessage()
 			throw new RowExecutionException("Error in sanitizing molecule: "
-					+ ((StringValue) cell).getStringValue() + " : "
-					+ e.message());
+					+ ((StringValue) cell).getStringValue() + " : " + e.what());
 		} catch (Exception e) {
 			String msg = e.getMessage();
 			if (msg == null || "".equals(msg)) {
@@ -671,7 +672,7 @@ public abstract class AbstractParallelRdkitMMPFragment3NodeModel
 				// Exception - at least try to report the error type!
 				msg = e.getClass().getSimpleName();
 				try {
-					msg += " : " + ((GenericRDKitException) e).message();
+					msg += " : " + ((GenericRDKitException) e).what();
 				} catch (Exception e1) {
 					// Do nothing
 				}

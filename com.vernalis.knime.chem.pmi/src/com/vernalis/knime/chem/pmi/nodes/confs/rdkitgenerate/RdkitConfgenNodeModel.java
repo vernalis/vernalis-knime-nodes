@@ -443,7 +443,8 @@ public class RdkitConfgenNodeModel
 						getRowTemplate(row, waveID, mol, rowBaseTemplateMol);
 
 				int numRotBond = (int) (useNRotForNConfMdl.getBooleanValue()
-						? RDKFuncs.calcNumRotatableBonds(mol) : -1);
+						? RDKFuncs.calcNumRotatableBonds(mol)
+						: -1);
 				double maxTemplateRMSD = rowTemplateMol == null
 						|| !filterByTemplateRMDSMdl.getBooleanValue()
 								? Double.NaN
@@ -513,9 +514,9 @@ public class RdkitConfgenNodeModel
 					}
 					return newCells.toArray(new DataCell[newCells.size()]);
 				} catch (MolSanitizeException e) {
-					throw new RuntimeException(e.message(), e);
+					throw new RuntimeException(e.what(), e);
 				} catch (GenericRDKitException e) {
-					throw new RuntimeException(e.message(), e);
+					throw new RuntimeException(e.what(), e);
 				} finally {
 					gc.cleanupMarkedObjects(waveID);
 				}
@@ -732,20 +733,17 @@ public class RdkitConfgenNodeModel
 		// See
 		// http://www.rdkit.org/Python_Docs/rdkit.Chem.rdDistGeom-module.html
 		// for arguments descriptions
-		Int_Vect confIds = gc.markForCleanup(
-				DistanceGeom.EmbedMultipleConfs(molConfs, numConfs, nTries,
-						randomSeedMdl
-								.getIntValue() /* Random seed - for testing! */,
-						true /* clear conformers */,
-						false /* Use random coords */,
-						2.0/* box size multiplier */, true /* rand neg eigen */,
-						1 /* num zero fail */, -1.0 /* Prune RMS Threshold */,
-						atomConstraints /* Fixed coords map */,
-						0.001 /* Dist geom forcefield tolerance */ ,
-						false /* Ignore smoothing failures */ ,
-						true/* Preserve chirality */, useExperimentalTorsions,
-						useBasicKnowledge),
-				waveId);
+		Int_Vect confIds = gc.markForCleanup(DistanceGeom.EmbedMultipleConfs(
+				molConfs, numConfs, nTries,
+				randomSeedMdl.getIntValue() /* Random seed - for testing! */,
+				true /* clear conformers */, false /* Use random coords */,
+				2.0/* box size multiplier */, true /* rand neg eigen */,
+				1 /* num zero fail */, -1.0 /* Prune RMS Threshold */,
+				atomConstraints /* Fixed coords map */,
+				0.001 /* Dist geom forcefield tolerance */ ,
+				false /* Ignore smoothing failures */ ,
+				true/* Preserve chirality */, useExperimentalTorsions,
+				useBasicKnowledge), waveId);
 
 		// Now we have to create multiple copies, each with only one conformer,
 		// and optimize the conformer geometry
