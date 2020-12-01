@@ -21,7 +21,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.RDKit.GenericRDKitException;
 import org.RDKit.MolSanitizeException;
 import org.RDKit.RDKFuncs;
 import org.RDKit.ROMol;
@@ -55,6 +54,7 @@ import org.knime.core.util.MultiThreadWorker;
 import org.rdkit.knime.types.RDKitMolValue;
 
 import com.vernalis.exceptions.RowExecutionException;
+import com.vernalis.knime.chem.rdkit.RDKitRuntimeExceptionHandler;
 import com.vernalis.knime.mmp.FragmentationTypes;
 import com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin;
 import com.vernalis.knime.mmp.RDKitFragmentationUtils;
@@ -361,19 +361,11 @@ public class AbstractMatchedPairsFilterNodeModel extends NodeModel {
 		} catch (MolSanitizeException e) {
 			// MolSanitizeException returns null for #getMessage()
 			throw new RowExecutionException("Error in sanitizing molecule: "
-					+ ((StringValue) cell).getStringValue() + " : " + e.what());
+					+ ((StringValue) cell).getStringValue() + " : "
+					+ new RDKitRuntimeExceptionHandler(e).getMessage());
 		} catch (Exception e) {
 			String msg = e.getMessage();
-			if (msg == null || "".equals(msg)) {
-				// Try to do something useful if we have a different RDKit
-				// Exception - at least try to report the error type!
-				msg = e.getClass().getSimpleName();
-				try {
-					msg += " : " + ((GenericRDKitException) e).what();
-				} catch (Exception e1) {
-					// Do nothing
-				}
-			}
+
 			if (msg.equals("Cell is not a recognised molecule type")) {
 				throw new RowExecutionException(msg);
 			} else {

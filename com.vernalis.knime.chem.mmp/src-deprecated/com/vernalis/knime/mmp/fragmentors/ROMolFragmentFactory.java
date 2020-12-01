@@ -47,6 +47,7 @@ import org.RDKit.RingInfo;
 import org.RDKit.UInt_Vect;
 import org.knime.core.node.NodeLogger;
 
+import com.vernalis.knime.chem.rdkit.RDKitRuntimeExceptionHandler;
 import com.vernalis.knime.mmp.MulticomponentSmilesFragmentParser;
 import com.vernalis.knime.mmp.RDKitBondIdentifier;
 import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector;
@@ -1153,8 +1154,11 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 			RDKFuncs.assignStereochemistry(component, false, true, true);
 		} catch (MolSanitizeException e) {
 			if (verboseLogging) {
-				logger.info("Problem assigning double bond geometry"
-						+ e.what() == null ? "" : e.what());
+				String msg = new RDKitRuntimeExceptionHandler(e).getMessage();
+				logger.info(
+						"Problem assigning double bond geometry" + msg == null
+								? ""
+								: msg);
 			}
 			return;
 		} catch (Exception e) {
@@ -1237,10 +1241,10 @@ public class ROMolFragmentFactory implements MoleculeFragmentationFactory {
 			RDKFuncs.findPotentialStereoBonds(component, false);
 			System.out.println("Found potential stereobonds...");
 		} catch (MolSanitizeException e) {
-			if (verboseLogging) {
-				logger.info("Problem assigning double bond geometry"
-						+ e.what() == null ? "" : e.what());
-			}
+			String msg = new RDKitRuntimeExceptionHandler(e).getMessage();
+			logger.info(
+					"Problem assigning double bond geometry" + msg == null ? ""
+							: msg);
 			return;
 		} catch (Exception e) {
 			if (verboseLogging) {

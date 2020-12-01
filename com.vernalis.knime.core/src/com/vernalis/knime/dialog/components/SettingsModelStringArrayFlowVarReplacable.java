@@ -14,6 +14,8 @@
  ******************************************************************************/
 package com.vernalis.knime.dialog.components;
 
+import javax.swing.event.ChangeListener;
+
 import org.knime.core.node.defaultnodesettings.SettingsModelFlowVariableCompatible;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
@@ -40,6 +42,8 @@ public class SettingsModelStringArrayFlowVarReplacable extends
 
 	/** The default deliminator */
 	public static final String DELIMINATOR = ";";
+
+	private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
 	protected String m_deliminator;
 
@@ -94,8 +98,8 @@ public class SettingsModelStringArrayFlowVarReplacable extends
 		if (stringValue == null) {
 			return null;
 		}
-		if ("".equals(stringValue)) {
-			return new String[0];
+		if (stringValue.isEmpty()) {
+			return EMPTY_STRING_ARRAY;
 		}
 		String[] retVal;
 		if (stringValue.indexOf(m_deliminator) >= 0) {
@@ -109,6 +113,13 @@ public class SettingsModelStringArrayFlowVarReplacable extends
 			retVal[0] = stringValue.trim();
 		}
 		return retVal;
+	}
+
+	public String[] getStringArrayValueNeverNull() {
+		if (super.getStringValue() == null) {
+			return EMPTY_STRING_ARRAY;
+		}
+		return getStringArrayValue();
 	}
 
 	/**
@@ -134,12 +145,18 @@ public class SettingsModelStringArrayFlowVarReplacable extends
 		super.setStringValue(stringVal);
 	}
 
+	/**
+	 * Convenience method to set the value store to an empty string array
+	 */
+	public void setEmptyStringArray() {
+		setStringArrayValue(EMPTY_STRING_ARRAY);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.knime.core.node.defaultnodesettings.SettingsModelString#getModelTypeID
-	 * ()
+	 * @see org.knime.core.node.defaultnodesettings.SettingsModelString#
+	 * getModelTypeID ()
 	 */
 	@Override
 	protected String getModelTypeID() {
@@ -152,6 +169,18 @@ public class SettingsModelStringArrayFlowVarReplacable extends
 	 */
 	public String getDeliminator() {
 		return m_deliminator;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.knime.core.node.defaultnodesettings.SettingsModel#
+	 * prependChangeListener(javax.swing.event.ChangeListener)
+	 */
+	@Override
+	protected void prependChangeListener(ChangeListener l) {
+		// Make it visible to custom components
+		super.prependChangeListener(l);
 	}
 
 }
