@@ -64,6 +64,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 import com.vernalis.exceptions.RowExecutionException;
+import com.vernalis.knime.chem.rdkit.RDKitRuntimeExceptionHandler;
 import com.vernalis.knime.chem.rdkit.RdkitCompatibleColumnFormats;
 import com.vernalis.knime.dialog.components.SettingsModelMultilineString;
 import com.vernalis.knime.misc.ArrayUtils;
@@ -514,9 +515,9 @@ public class RdkitConfgenNodeModel
 					}
 					return newCells.toArray(new DataCell[newCells.size()]);
 				} catch (MolSanitizeException e) {
-					throw new RuntimeException(e.what(), e);
+					throw new RDKitRuntimeExceptionHandler(e);
 				} catch (GenericRDKitException e) {
-					throw new RuntimeException(e.what(), e);
+					throw new RDKitRuntimeExceptionHandler(e);
 				} finally {
 					gc.cleanupMarkedObjects(waveID);
 				}

@@ -53,6 +53,7 @@ import org.knime.core.node.ExecutionContext;
 import org.rdkit.knime.types.RDKitMolValue;
 
 import com.vernalis.exceptions.RowExecutionException;
+import com.vernalis.knime.chem.rdkit.RDKitRuntimeExceptionHandler;
 import com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin;
 import com.vernalis.knime.mmp.MolFormats;
 import com.vernalis.knime.mmp.ToolkitException;
@@ -160,21 +161,14 @@ public class RWMolFragmentationUtilsFactory
 			}
 		} catch (MolSanitizeException e) {
 			// MolSanitizeException returns null for #getMessage()
+			RDKitRuntimeExceptionHandler e0 =
+					new RDKitRuntimeExceptionHandler(e);
 			throw new ToolkitException("Error in sanitizing molecule: "
 					+ ((StringValue) molCell).getStringValue() + " : "
-					+ e.what(), e);
+					+ e0.getMessage(), e0);
 		} catch (Exception e) {
 			String msg = e.getMessage();
-			if (msg == null || "".equals(msg)) {
-				// Try to do something useful if we have a different RDKit
-				// Exception - at least try to report the error type!
-				msg = e.getClass().getSimpleName();
-				try {
-					msg += " : " + ((GenericRDKitException) e).what();
-				} catch (Exception e1) {
-					// Do nothing
-				}
-			}
+
 			if (msg.equals("Cell is not a recognised molecule type")) {
 				throw new ToolkitException(msg, e);
 			} else {
@@ -272,7 +266,8 @@ public class RWMolFragmentationUtilsFactory
 				matcher = getMatcher(SMARTS);
 			}
 		} catch (GenericRDKitException e) {
-			return "Unable to generate matcher from SMIRKS - " + e.what();
+			return "Unable to generate matcher from SMIRKS - "
+					+ new RDKitRuntimeExceptionHandler(e).getMessage();
 		} catch (Exception e) {
 			return "Unable to generate matcher from SMIRKS - " + e.getMessage();
 		}
@@ -307,11 +302,12 @@ public class RWMolFragmentationUtilsFactory
 	}
 
 	@Override
-	public MoleculeFragmentationFactory2<RWMol, ROMol> createFragmentationFactory(
-			RWMol mol, ROMol bondMatch, boolean stripHsAtEnd, boolean isHAdded,
-			boolean verboseLog, boolean prochiralAsChiral, Integer maxNumVarAtm,
-			Double minCnstToVarAtmRatio, int maxLeafCacheSize)
-			throws ClosedFactoryException, ToolkitException {
+	public MoleculeFragmentationFactory2<RWMol, ROMol>
+			createFragmentationFactory(RWMol mol, ROMol bondMatch,
+					boolean stripHsAtEnd, boolean isHAdded, boolean verboseLog,
+					boolean prochiralAsChiral, Integer maxNumVarAtm,
+					Double minCnstToVarAtmRatio, int maxLeafCacheSize)
+					throws ClosedFactoryException, ToolkitException {
 		return new RWMolFragmentationFactory(mol, bondMatch, stripHsAtEnd,
 				isHAdded, verboseLog, prochiralAsChiral, maxNumVarAtm,
 				minCnstToVarAtmRatio, maxLeafCacheSize);
@@ -372,11 +368,11 @@ public class RWMolFragmentationUtilsFactory
 				rxn = ChemicalReaction.ReactionFromSmarts(rSMARTS, false);
 			}
 		} catch (ChemicalReactionException e) {
-			throw new ToolkitException(e.what(), e);
+			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		} catch (ChemicalReactionParserException e) {
-			throw new ToolkitException(e.what(), e);
+			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		} catch (GenericRDKitException e) {
-			throw new ToolkitException(e.what(), e);
+			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		}
 		return m_SWIGGC.markForCleanup(rxn, rowIndex);
 
@@ -478,9 +474,9 @@ public class RWMolFragmentationUtilsFactory
 			ebv = RDKFuncs.getMorganFingerprintAsBitVect(mol, radius, fpLength,
 					null, apIdx, useChirality, useBondTypes);
 		} catch (MolSanitizeException e) {
-			throw new ToolkitException(e.what(), e);
+			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		} catch (GenericRDKitException e) {
-			throw new ToolkitException(e.what(), e);
+			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		} finally {
 			apIdx.delete();
 			if (pair != null) {
@@ -525,7 +521,8 @@ public class RWMolFragmentationUtilsFactory
 					prod.delete();
 					prods.delete();
 					reactant.delete();
-					throw new ToolkitException(e.what(), e);
+					throw new ToolkitException(
+							new RDKitRuntimeExceptionHandler(e));
 				}
 				RDKFuncs.assignStereochemistry(prodrw, true, true);
 				prodrw.Kekulize();

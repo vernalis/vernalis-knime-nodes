@@ -57,6 +57,7 @@ import org.knime.base.data.xml.SvgCellFactory;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
 
+import com.vernalis.knime.chem.rdkit.RDKitRuntimeExceptionHandler;
 import com.vernalis.knime.mmp.ToolkitException;
 import com.vernalis.knime.mmp.frags.abstrct.AbstractMulticomponentFragmentationParser;
 import com.vernalis.knime.mmp.frags.abstrct.BondIdentifier;
@@ -791,7 +792,7 @@ public class RWMolFragmentationFactory
 						"$1" + String.format(Locale.ROOT, "%.2f", alpha));
 			}
 		} catch (ConformerException e) {
-			throw new ToolkitException(e.what(), e);
+			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		} finally {
 			if (drawer != null) {
 				drawer.delete();
@@ -1012,7 +1013,7 @@ public class RWMolFragmentationFactory
 
 			}
 		} catch (ConformerException e) {
-			throw new ToolkitException(e.what(), e);
+			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		} finally {
 			getGc().cleanupMarkedObjects(localGcWave);
 		}
@@ -1063,8 +1064,9 @@ public class RWMolFragmentationFactory
 	}
 
 	@Override
-	protected AbstractMulticomponentFragmentationParser<RWMol> createFragmentationParserFromComponents(
-			Set<RWMol> leafs, RWMol valueComponent, long localGCWave) {
+	protected AbstractMulticomponentFragmentationParser<RWMol>
+			createFragmentationParserFromComponents(Set<RWMol> leafs,
+					RWMol valueComponent, long localGCWave) {
 		try {
 			return new RWMolMulticomponentFragmentationParser(valueComponent,
 					leafs);
@@ -1268,9 +1270,12 @@ public class RWMolFragmentationFactory
 			// bonds
 			RDKFuncs.findPotentialStereoBonds(component, false);
 		} catch (MolSanitizeException e) {
+			String msg = new RDKitRuntimeExceptionHandler(e).getMessage();
 			if (verboseLogging) {
-				logger.info("Problem assigning double bond geometry"
-						+ e.what() == null ? "" : e.what());
+				logger.info(
+						"Problem assigning double bond geometry" + msg == null
+								? ""
+								: msg);
 			}
 			return;
 		} catch (Exception e) {
@@ -1348,9 +1353,12 @@ public class RWMolFragmentationFactory
 			// Flag possible stereocentres
 			RDKFuncs.assignStereochemistry(component, false, true, true);
 		} catch (MolSanitizeException e) {
+			String msg = new RDKitRuntimeExceptionHandler(e).getMessage();
 			if (verboseLogging) {
-				logger.info("Problem assigning double bond geometry"
-						+ e.what() == null ? "" : e.what());
+				logger.info(
+						"Problem assigning double bond geometry" + msg == null
+								? ""
+								: msg);
 			}
 			return;
 		} catch (Exception e) {
