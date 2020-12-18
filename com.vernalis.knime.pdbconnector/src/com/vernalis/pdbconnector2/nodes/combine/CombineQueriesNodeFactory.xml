@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) 2020, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="../pdb.ico"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v4.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v4.1 http://knime.org/node/v4.1.xsd">
+	<name>PDB Connector Combine Queries</name>
+	<shortDescription>Combines two or more queries according to the
+		specified logic operator
+	</shortDescription>
+	<fullDescription>
+		<intro>
+			This node combines two or more queries using a logic operator
+		</intro>
+		<option name="Conjunction">The logic operator used to combine the individual
+			queries
+		</option>
+
+	</fullDescription>
+	<ports>
+		<inPort
+			index="0"
+			name="First PDB query">The first query to combine
+		</inPort>
+		<inPort
+			index="1"
+			name="Second PDB query">The second query to combine
+		</inPort>
+
+		<dynInPort
+			insert-before="2"
+			name="Additional PDB query to combine"
+			group-identifier="input">
+			Additional query to combine
+		</dynInPort>
+
+		<outPort
+			index="0"
+			name="Combined PDB query">Query combining all input queries</outPort>
+	</ports>
+</knimeNode>

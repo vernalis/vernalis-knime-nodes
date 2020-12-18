@@ -18,8 +18,8 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeFactoryClassMapper;
 import org.knime.core.node.NodeModel;
 
-import com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownloadNodeFactory;
-import com.vernalis.rcsb.io.nodes.source.RCSBsDownloadNodeFactory;
+import com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownload2NodeFactory;
+import com.vernalis.rcsb.io.nodes.source.RCSBsDownload2NodeFactory;
 
 public class RCSBIONodeFactoryClassMapper extends NodeFactoryClassMapper {
 
@@ -28,14 +28,17 @@ public class RCSBIONodeFactoryClassMapper extends NodeFactoryClassMapper {
 	}
 
 	@Override
-	public NodeFactory<? extends NodeModel> mapFactoryClassName(String factoryClassName) {
+	public NodeFactory<? extends NodeModel>
+			mapFactoryClassName(String factoryClassName) {
 		switch (factoryClassName) {
-		case "com.vernalis.nodes.io.rcsb.manip.RCSBmultiDownloadNodeFactory":
-			return new RCSBmultiDownloadNodeFactory();
-		case "com.vernalis.nodes.io.rcsb.source.RCSBsDownloadNodeFactory":
-			return new RCSBsDownloadNodeFactory();
-		default:
-			return null;
+			case "com.vernalis.nodes.io.rcsb.manip.RCSBmultiDownloadNodeFactory":
+			case "com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownloadNodeFactory":
+				return new RCSBmultiDownload2NodeFactory();
+			case "com.vernalis.nodes.io.rcsb.source.RCSBsDownloadNodeFactory":
+			case "com.vernalis.rcsb.io.nodes.source.RCSBsDownloadNodeFactory":
+				return new RCSBsDownload2NodeFactory();
+			default:
+				return null;
 		}
 	}
 

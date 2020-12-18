@@ -66,7 +66,8 @@ import com.vernalis.pdbconnector.config.Values;
 @Deprecated
 public class PdbConnectorNodeModel extends NodeModel {
 
-	static final NodeLogger logger = NodeLogger.getLogger(PdbConnectorNodeModel.class);
+	static final NodeLogger logger =
+			NodeLogger.getLogger(PdbConnectorNodeModel.class);
 
 	// Settings model keys
 	static final String[] PDB_COLUMNS = { Properties.PDB_COLUMN_NAME };
@@ -78,7 +79,8 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 	private final List<QueryOptionModel> m_queryModels = new ArrayList<>();
 	private final List<ReportFieldModel> m_reportModels = new ArrayList<>();
-	private final List<ReportFieldModel> m_hiddenReportModels = new ArrayList<>();
+	private final List<ReportFieldModel> m_hiddenReportModels =
+			new ArrayList<>();
 	private final List<ReportField> m_selectedFields = new ArrayList<>();
 	private ReportField m_primaryCitationSuffix = null;
 	private QueryOptionModel m_simModel = null;
@@ -112,12 +114,13 @@ public class PdbConnectorNodeModel extends NodeModel {
 			m_ligandImgOptions = config.getLigandImgOptions();
 			m_ligandImgSize = new SettingsModelString(LIGAND_IMG_SIZE_KEY,
 					m_ligandImgOptions.getDefaultLabel());
-			m_conjunction =
-					new SettingsModelString(CONJUNCTION_KEY, Properties.CONJUNCTION_AND_LABEL);
+			m_conjunction = new SettingsModelString(CONJUNCTION_KEY,
+					Properties.CONJUNCTION_AND_LABEL);
 			m_stdCategories = config.getStandardCategories();
 			m_stdReport = config.getDefaultStandardReport();
 			m_usePOST = new SettingsModelBoolean(USE_POST_KEY, true);
-			m_maxUrlLength = new SettingsModelIntegerBounded(MAX_URL_LENGTH_KEY, 2000, 1000, 8000);
+			m_maxUrlLength = new SettingsModelIntegerBounded(MAX_URL_LENGTH_KEY,
+					2000, 1000, 8000);
 		}
 	}
 
@@ -142,16 +145,20 @@ public class PdbConnectorNodeModel extends NodeModel {
 		// case a data container to which we will add rows sequentially
 		// Note, this container can also handle arbitrary big data tables, it
 		// will buffer to disc if necessary.
-		BufferedDataContainer container0 = exec.createDataContainer(outputSpec0);
+		BufferedDataContainer container0 =
+				exec.createDataContainer(outputSpec0);
 
 		// select the appropriate conjunction string (either AND or OR)
-		String conjunction = m_conjunction.getStringValue().equals(Properties.CONJUNCTION_AND_LABEL)
-				? Properties.CONJUNCTION_AND : Properties.CONJUNCTION_OR;
+		String conjunction = m_conjunction.getStringValue().equals(
+				Properties.CONJUNCTION_AND_LABEL) ? Properties.CONJUNCTION_AND
+						: Properties.CONJUNCTION_OR;
 		// run the query
-		String xmlQuery = ModelHelperFunctions.getXmlQuery(m_queryModels, m_simModel, conjunction);
+		String xmlQuery = ModelHelperFunctions.getXmlQuery(m_queryModels,
+				m_simModel, conjunction);
 		pushFlowVariableString("xmlQuery", xmlQuery);
 		logger.info("getXmlQuery=" + xmlQuery);
-		exec0.setProgress(0.0, "Posting xmlQuery to " + Properties.SEARCH_LOCATION);
+		exec0.setProgress(0.0,
+				"Posting xmlQuery to " + Properties.SEARCH_LOCATION);
 		List<String> pdbIds = ModelHelperFunctions.postQuery(xmlQuery);
 		exec0.setProgress(1.0, "xmlQuery returned " + pdbIds.size() + " rows");
 		logger.info("xmlQuery returned " + pdbIds.size() + " rows");
@@ -181,7 +188,8 @@ public class PdbConnectorNodeModel extends NodeModel {
 		// case a data container to which we will add rows sequentially
 		// Note, this container can also handle arbitrary big data tables, it
 		// will buffer to disc if necessary.
-		BufferedDataContainer container1 = exec.createDataContainer(outputSpec1);
+		BufferedDataContainer container1 =
+				exec.createDataContainer(outputSpec1);
 		// generate the report
 		if (pdbIds.size() > 0) {
 			if (m_usePOST.getBooleanValue()) {
@@ -214,12 +222,14 @@ public class PdbConnectorNodeModel extends NodeModel {
 	 *             Throws exceptions if user cancels or there are IO errors
 	 */
 	private void runReportWithPOST(ExecutionMonitor exec1, List<String> pdbIds,
-			DataTableSpec outputSpec1, BufferedDataContainer container1) throws Exception {
+			DataTableSpec outputSpec1, BufferedDataContainer container1)
+			throws Exception {
 		exec1.setProgress("Fetching custom report data");
 
 		final String imgSize = m_ligandImgSize.getStringValue();
 		final String urlSuffix = m_ligandImgOptions.isExists(imgSize)
-				? m_ligandImgOptions.getValue(imgSize) : imgSize;
+				? m_ligandImgOptions.getValue(imgSize)
+				: imgSize;
 		int row = 0;
 		// Increasing delays in seconds - we start with 0 in case the url
 		// timeout is a sufficient delay. Hopefully never relevant with POST
@@ -229,13 +239,13 @@ public class PdbConnectorNodeModel extends NodeModel {
 		List<List<String>> report = null;
 		for (int delay : retryDelays) {
 			try {
-				report = ModelHelperFunctions.postCustomReportXml2(pdbIds, m_selectedFields,
-						m_primaryCitationSuffix);
+				report = ModelHelperFunctions.postCustomReportXml2(pdbIds,
+						m_selectedFields, m_primaryCitationSuffix);
 				break;
 			} catch (IOException e) {
 				// Wait for an increasing period before retrying
-				logger.warn("POST request failed for report" + " - Waiting " + delay
-						+ " seconds before re-trying...");
+				logger.warn("POST request failed for report" + " - Waiting "
+						+ delay + " seconds before re-trying...");
 				exec1.checkCanceled();
 				pause(delay, exec1);
 			}
@@ -243,7 +253,8 @@ public class PdbConnectorNodeModel extends NodeModel {
 
 		if (report == null) {
 			// In this case, we never managed to contact the server...
-			String errMsg = "Unable to contact the remote server - please try again later!";
+			String errMsg =
+					"Unable to contact the remote server - please try again later!";
 			logger.error(errMsg);
 			throw new IOException(errMsg);
 		}
@@ -270,25 +281,33 @@ public class PdbConnectorNodeModel extends NodeModel {
 	 *             Throws exceptions if user cancels or there are IO errors
 	 */
 	private void runReportWithGET(ExecutionMonitor exec1, List<String> pdbIds,
-			DataTableSpec outputSpec1, DataContainer container1) throws Exception {
+			DataTableSpec outputSpec1, DataContainer container1)
+			throws Exception {
 		Queue<String> toProcess = new LinkedList<>(pdbIds);
 		// determine how many PDB IDs we can process at once without exceeding
 		// MAX_URL_LENGTH
 		// Each PDB ID requires 5 characters, but have to allow for length of
 		// selected column field strings.
-		final int CHUNK_SIZE = (m_maxUrlLength.getIntValue() - Properties.REPORT_LOCATION.length()
-				- ModelHelperFunctions.getReportColumnsUrl(m_selectedFields).length()) / 5;
+		final int CHUNK_SIZE =
+				(m_maxUrlLength.getIntValue()
+						- Properties.REPORT_LOCATION.length()
+						- ModelHelperFunctions
+								.getReportColumnsUrl(m_selectedFields).length())
+						/ 5;
 		logger.debug("CHUNK_SIZE=" + CHUNK_SIZE);
 		// retrieve the url suffix for the currently selected ligand image size
 		final String imgSize = m_ligandImgSize.getStringValue();
 		final String urlSuffix = m_ligandImgOptions.isExists(imgSize)
-				? m_ligandImgOptions.getValue(imgSize) : imgSize;
+				? m_ligandImgOptions.getValue(imgSize)
+				: imgSize;
 		long row = 0;
 		long block = 0;
 		while (!toProcess.isEmpty() && (CHUNK_SIZE > 0)) {
-			double progress = 1.0 - (double) toProcess.size() / (double) pdbIds.size();
-			exec1.setProgress(progress, "Getting custom report (" + toProcess.size() + "/"
-					+ pdbIds.size() + " PDB IDs remaining)");
+			double progress =
+					1.0 - (double) toProcess.size() / (double) pdbIds.size();
+			exec1.setProgress(progress,
+					"Getting custom report (" + toProcess.size() + "/"
+							+ pdbIds.size() + " PDB IDs remaining)");
 			List<String> nextChunk = new ArrayList<>();
 			while (!toProcess.isEmpty() && (nextChunk.size() < CHUNK_SIZE)) {
 				nextChunk.add(toProcess.remove());
@@ -301,12 +320,13 @@ public class PdbConnectorNodeModel extends NodeModel {
 			List<List<String>> report = null;
 			for (int delay : retryDelays) {
 				try {
-					report = ModelHelperFunctions.getCustomReportXml2(nextChunk, m_selectedFields,
-							m_primaryCitationSuffix);
+					report = ModelHelperFunctions.getCustomReportXml2(nextChunk,
+							m_selectedFields, m_primaryCitationSuffix);
 					break;
 				} catch (IOException e) {
 					// Wait for an increasing period before retrying
-					logger.warn("GET request failed for data block " + block + " - Waiting " + delay
+					logger.warn("GET request failed for data block " + block
+							+ " - Waiting " + delay
 							+ " seconds before re-trying...");
 					exec1.checkCanceled();
 					pause(delay, exec1);
@@ -314,13 +334,15 @@ public class PdbConnectorNodeModel extends NodeModel {
 			}
 			if (report == null) {
 				// In this case, we never managed to contact the server...
-				String errMsg = "Unable to contact the remote server - please try again later!";
+				String errMsg =
+						"Unable to contact the remote server - please try again later!";
 				logger.error(errMsg);
 				throw new IOException(errMsg);
 			}
 
 			// Now add the rows to the report
-			row = addRowsToReport(report, exec1, row, outputSpec1, urlSuffix, container1);
+			row = addRowsToReport(report, exec1, row, outputSpec1, urlSuffix,
+					container1);
 		}
 	}
 
@@ -344,15 +366,16 @@ public class PdbConnectorNodeModel extends NodeModel {
 	 * @throws Exception
 	 *             Throws exceptions if the user cancels
 	 */
-	private long addRowsToReport(List<List<String>> report, ExecutionMonitor exec1, long row,
-			DataTableSpec outputSpec1, String urlSuffix, DataContainer container1)
-			throws Exception {
+	private long addRowsToReport(List<List<String>> report,
+			ExecutionMonitor exec1, long row, DataTableSpec outputSpec1,
+			String urlSuffix, DataContainer container1) throws Exception {
 		for (List<String> recordVals : report) {
 			exec1.checkCanceled();
 			RowKey key = RowKey.createRowKey(row);
 			if (recordVals.size() != outputSpec1.getNumColumns()) {
 				logger.warn("Invalid record " + recordVals);
-				logger.warn("Number of fields expected=" + outputSpec1.getNumColumns() + "; actual="
+				logger.warn("Number of fields expected="
+						+ outputSpec1.getNumColumns() + "; actual="
 						+ recordVals.size());
 			} else {
 				// the cells of the current row, the types of the cells must
@@ -362,7 +385,8 @@ public class PdbConnectorNodeModel extends NodeModel {
 				for (int i = 0; i < outputSpec1.getNumColumns(); ++i) {
 					ReportField field = m_selectedFields.get(i);
 					String fieldValue = recordVals.get(i);
-					cells[i] = ModelHelperFunctions.getDataCell(field, fieldValue, urlSuffix);
+					cells[i] = ModelHelperFunctions.getDataCell(field,
+							fieldValue, urlSuffix);
 				}
 				exec1.setProgress("Added row " + row + " to report table");
 				container1.addRowToTable(new DefaultRow(key, cells));
@@ -372,7 +396,8 @@ public class PdbConnectorNodeModel extends NodeModel {
 		return row;
 	}
 
-	private static void pause(int seconds, ExecutionMonitor exec1) throws Exception {
+	private static void pause(int seconds, ExecutionMonitor exec1)
+			throws Exception {
 		// simple delay function without using threads
 		Date start = new Date();
 		Date end = new Date();
@@ -420,14 +445,20 @@ public class PdbConnectorNodeModel extends NodeModel {
 		// Each PDB ID requires 5 characters, but have to allow for length of
 		// selected column field strings.
 		// Only relevant if using GET query
-		final int CHUNK_SIZE = (m_maxUrlLength.getIntValue() - Properties.REPORT_LOCATION.length()
-				- ModelHelperFunctions.getReportColumnsUrl(m_selectedFields).length()) / 5;
+		final int CHUNK_SIZE =
+				(m_maxUrlLength.getIntValue()
+						- Properties.REPORT_LOCATION.length()
+						- ModelHelperFunctions
+								.getReportColumnsUrl(m_selectedFields).length())
+						/ 5;
 		if (CHUNK_SIZE < 1 && !m_usePOST.getBooleanValue()) {
 			throw new InvalidSettingsException(
 					"Too many report fields selected: MAX_URL_LENGTH exceeded");
 		}
 		pushFlowVariableString("xmlQuery", "");
-		return new DataTableSpec[] { outputSpec0, outputSpec1 };
+		throw new InvalidSettingsException(
+				"This node has been deprecated as the remote "
+						+ "webservices have been permanently shutdown");
 	}
 
 	/*
@@ -496,8 +527,8 @@ public class PdbConnectorNodeModel extends NodeModel {
 		String stdReportId = settings.getString(STD_REPORT_KEY);
 		m_stdReport = getStandardReport(stdReportId);
 		if (m_stdReport == null) {
-			throw new InvalidSettingsException(
-					"Invalid string \"" + stdReportId + "\" for " + STD_REPORT_KEY + " setting");
+			throw new InvalidSettingsException("Invalid string \"" + stdReportId
+					+ "\" for " + STD_REPORT_KEY + " setting");
 		}
 
 		// New settings models in this version, with backwards compatability
@@ -525,7 +556,8 @@ public class PdbConnectorNodeModel extends NodeModel {
 	 * NodeSettingsRO)
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		if (!m_lastError.isEmpty()) {
 			throw new InvalidSettingsException(
 					"Error loading query and report definitions from PdbConnectorConfig.xml/.dtd"
@@ -549,8 +581,8 @@ public class PdbConnectorNodeModel extends NodeModel {
 		// Check if standard report id is valid
 		String stdReportId = settings.getString(STD_REPORT_KEY);
 		if (getStandardReport(stdReportId) == null) {
-			throw new InvalidSettingsException(
-					"Invalid string \"" + stdReportId + "\" for " + STD_REPORT_KEY + " setting");
+			throw new InvalidSettingsException("Invalid string \"" + stdReportId
+					+ "\" for " + STD_REPORT_KEY + " setting");
 		}
 
 		// NB Dont validate the new settings - their possible absence is handled
@@ -564,7 +596,8 @@ public class PdbConnectorNodeModel extends NodeModel {
 	 * org.knime.core.node.ExecutionMonitor)
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 
 		// TODO load internal data.
@@ -583,7 +616,8 @@ public class PdbConnectorNodeModel extends NodeModel {
 	 * org.knime.core.node.ExecutionMonitor)
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 
 		// TODO save internal models.
@@ -605,7 +639,8 @@ public class PdbConnectorNodeModel extends NodeModel {
 		DataColumnSpec[] allColSpecs = new DataColumnSpec[nCols];
 		for (int i = 0; i < nCols; ++i) {
 			allColSpecs[i] =
-					new DataColumnSpecCreator(PDB_COLUMNS[i], StringCell.TYPE).createSpec();
+					new DataColumnSpecCreator(PDB_COLUMNS[i], StringCell.TYPE)
+							.createSpec();
 		}
 		DataTableSpec retVal = new DataTableSpec(allColSpecs);
 		return retVal;

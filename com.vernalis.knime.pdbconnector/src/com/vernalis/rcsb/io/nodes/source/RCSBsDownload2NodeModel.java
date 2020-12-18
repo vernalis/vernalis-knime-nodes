@@ -31,12 +31,11 @@
  */
 package com.vernalis.rcsb.io.nodes.source;
 
-import static com.vernalis.rcsb.io.nodes.source.RCSBsDownload2NodeDialog.createFiletypesModel;
-import static com.vernalis.rcsb.io.nodes.source.RCSBsDownload2NodeDialog.createPDBIDsModel;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -69,6 +68,9 @@ import com.vernalis.io.FileDownloadException;
 import com.vernalis.io.FileHelpers;
 import com.vernalis.rcsb.io.helpers.RCSBFileTypes;
 
+import static com.vernalis.rcsb.io.nodes.source.RCSBsDownload2NodeDialog.createFiletypesModel;
+import static com.vernalis.rcsb.io.nodes.source.RCSBsDownload2NodeDialog.createPDBIDsModel;
+
 /**
  * This is the model implementation of RCSBmultiDownload. Node to allow download
  * of multiple RCSB PDB filetypes from a column of RCSB Structure IDs
@@ -76,7 +78,15 @@ import com.vernalis.rcsb.io.helpers.RCSBFileTypes;
 public class RCSBsDownload2NodeModel extends NodeModel {
 
 	// the logger instance
-	private static final NodeLogger logger = NodeLogger.getLogger(RCSBsDownloadNodeModel.class);
+	private static final NodeLogger logger =
+			NodeLogger.getLogger(RCSBsDownloadNodeModel.class);
+
+	// Legacy settings keys
+	private static final String CFG_PDB = "PDB";
+	private static final String CFG_CIF = "mmCIF";
+	private static final String CFG_SF = "StructureFactor";
+	private static final String CFG_PDBML = "PDBML";
+	private static final String CFG_FASTA = "FASTA";
 
 	private final SettingsModelString m_PDBID = createPDBIDsModel();
 	private final SettingsModelStringArray m_fTypes = createFiletypesModel();
@@ -105,8 +115,8 @@ public class RCSBsDownload2NodeModel extends NodeModel {
 
 		BufferedDataTableRowOutput output =
 				new BufferedDataTableRowOutput(exec.createDataContainer(spec));
-		createStreamableOperator(null, null).runFinal(new PortInput[0], new PortOutput[] { output },
-				exec);
+		createStreamableOperator(null, null).runFinal(new PortInput[0],
+				new PortOutput[] { output }, exec);
 		return new BufferedDataTable[] { output.getDataTable() };
 	}
 
@@ -118,16 +128,20 @@ public class RCSBsDownload2NodeModel extends NodeModel {
 	 * node.streamable.PartitionInfo, org.knime.core.node.port.PortObjectSpec[])
 	 */
 	@Override
-	public StreamableOperator createStreamableOperator(PartitionInfo partitionInfo,
-			PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+	public StreamableOperator createStreamableOperator(
+			PartitionInfo partitionInfo, PortObjectSpec[] inSpecs)
+			throws InvalidSettingsException {
 		return new StreamableOperator() {
 
 			@Override
-			public void runFinal(PortInput[] inputs, PortOutput[] outputs, ExecutionContext exec)
-					throws Exception {
-				fTypes = Arrays.stream(m_fTypes.getStringArrayValue()).map(x -> x.replace(" ", "_"))
-						.map(x -> RCSBFileTypes.valueOf(x)).toArray(x -> new RCSBFileTypes[x]);
-				String[] pdb_ids = m_PDBID.getStringValue().toUpperCase().split(";");
+			public void runFinal(PortInput[] inputs, PortOutput[] outputs,
+					ExecutionContext exec) throws Exception {
+				fTypes = Arrays.stream(m_fTypes.getStringArrayValue())
+						.map(x -> x.replace(" ", "_"))
+						.map(x -> RCSBFileTypes.valueOf(x))
+						.toArray(x -> new RCSBFileTypes[x]);
+				String[] pdb_ids =
+						m_PDBID.getStringValue().toUpperCase().split(";");
 				RowOutput out = (RowOutput) outputs[0];
 				long currentRowID = 0;
 				for (String pdbid : pdb_ids) {
@@ -141,7 +155,8 @@ public class RCSBsDownload2NodeModel extends NodeModel {
 		};
 	}
 
-	private DataRow buildRow(final String pdbid, long currentRowID, final ExecutionContext exec)
+	private DataRow buildRow(final String pdbid, long currentRowID,
+			final ExecutionContext exec)
 			throws CanceledExecutionException, FileDownloadException {
 		/*
 		 * Utility function to add a row to the output table
@@ -197,13 +212,16 @@ public class RCSBsDownload2NodeModel extends NodeModel {
 	}
 
 	private DataColumnSpec[] createDataColumnSpec() {
-		fTypes = Arrays.stream(m_fTypes.getStringArrayValue()).map(x -> x.replace(" ", "_"))
-				.map(x -> RCSBFileTypes.valueOf(x)).toArray(x -> new RCSBFileTypes[x]);
+		fTypes = Arrays.stream(m_fTypes.getStringArrayValue())
+				.map(x -> x.replace(" ", "_"))
+				.map(x -> RCSBFileTypes.valueOf(x))
+				.toArray(x -> new RCSBFileTypes[x]);
 		DataColumnSpec[] dcs = new DataColumnSpec[fTypes.length + 1];
-		dcs[0] = new DataColumnSpecCreator("PDB ID", StringCell.TYPE).createSpec();
+		dcs[0] = new DataColumnSpecCreator("PDB ID", StringCell.TYPE)
+				.createSpec();
 		for (int i = 0; i < fTypes.length; i++) {
-			dcs[i + 1] = new DataColumnSpecCreator(fTypes[i].getName(), fTypes[i].getOutputType())
-					.createSpec();
+			dcs[i + 1] = new DataColumnSpecCreator(fTypes[i].getName(),
+					fTypes[i].getOutputType()).createSpec();
 		}
 		return dcs;
 	}
@@ -224,23 +242,54 @@ public class RCSBsDownload2NodeModel extends NodeModel {
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
 		m_PDBID.loadSettingsFrom(settings);
-		m_fTypes.loadSettingsFrom(settings);
+		try {
+			m_fTypes.loadSettingsFrom(settings);
+		} catch (InvalidSettingsException e) {
+			List<String> outputTypes = new ArrayList<>();
+			if (settings.getBoolean(CFG_PDB)) {
+				outputTypes.add(CFG_PDB);
+			}
+			if (settings.getBoolean(CFG_CIF)) {
+				outputTypes.add(CFG_CIF);
+			}
+			if (settings.getBoolean(CFG_SF)) {
+				outputTypes.add("Structure Factors");
+			}
+			if (settings.getBoolean(CFG_PDBML)) {
+				outputTypes.add(CFG_PDBML);
+			}
+			if (settings.getBoolean(CFG_FASTA)) {
+				outputTypes.add(CFG_FASTA);
+			}
+			m_fTypes.setStringArrayValue(outputTypes.toArray(new String[0]));
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		m_PDBID.validateSettings(settings);
-		m_fTypes.validateSettings(settings);
+		try {
+			m_fTypes.validateSettings(settings);
+		} catch (InvalidSettingsException e) {
+			// Maybe legacy settings from 1st gen node
+			settings.getBoolean(CFG_CIF);
+			settings.getBoolean(CFG_SF);
+			settings.getBoolean(CFG_PDB);
+			settings.getBoolean(CFG_FASTA);
+			settings.getBoolean(CFG_PDBML);
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 	}
 
@@ -248,7 +297,8 @@ public class RCSBsDownload2NodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 	}
 

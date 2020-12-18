@@ -31,10 +31,9 @@
  */
 package com.vernalis.rcsb.io.nodes.manip;
 
-import static com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownload2NodeDialog.createColumnNameModel;
-import static com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownload2NodeDialog.createFiletypesModel;
-
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -57,15 +56,26 @@ import com.vernalis.io.FileDownloadException;
 import com.vernalis.io.FileHelpers;
 import com.vernalis.rcsb.io.helpers.RCSBFileTypes;
 
+import static com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownload2NodeDialog.createColumnNameModel;
+import static com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownload2NodeDialog.createFiletypesModel;
+
 /**
  * This is the model implementation of RCSBmultiDownload. Node to allow download
  * of multiple RCSB PDB filetypes from a column of RCSB Structure IDs
  */
-public class RCSBmultiDownload2NodeModel extends SimpleStreamableFunctionNodeModel {
+public class RCSBmultiDownload2NodeModel
+		extends SimpleStreamableFunctionNodeModel {
 
 	// the logger instance
 	private static final NodeLogger logger =
 			NodeLogger.getLogger(RCSBmultiDownload2NodeModel.class);
+
+	// Legacy settings keys
+	private static final String CFG_PDB = "PDB";
+	private static final String CFG_CIF = "mmCIF";
+	private static final String CFG_SF = "StructureFactor";
+	private static final String CFG_PDBML = "PDBML";
+	private static final String CFG_FASTA = "FASTA";
 
 	private final SettingsModelString m_PDBcolumnName = createColumnNameModel();
 
@@ -83,11 +93,13 @@ public class RCSBmultiDownload2NodeModel extends SimpleStreamableFunctionNodeMod
 	protected ColumnRearranger createColumnRearranger(DataTableSpec in) {
 		// Actually download the files and build the output
 		// The column index of the selected column
-		final int colIndexPDBID = in.findColumnIndex(m_PDBcolumnName.getStringValue());
+		final int colIndexPDBID =
+				in.findColumnIndex(m_PDBcolumnName.getStringValue());
 
-		RCSBFileTypes[] fTypes =
-				Arrays.stream(m_fTypes.getStringArrayValue()).map(x -> x.replace(" ", "_"))
-						.map(x -> RCSBFileTypes.valueOf(x)).toArray(x -> new RCSBFileTypes[x]);
+		RCSBFileTypes[] fTypes = Arrays.stream(m_fTypes.getStringArrayValue())
+				.map(x -> x.replace(" ", "_"))
+				.map(x -> RCSBFileTypes.valueOf(x))
+				.toArray(x -> new RCSBFileTypes[x]);
 
 		// column spec of the appended columns
 		DataColumnSpec[] newColSpec = new DataColumnSpec[fTypes.length];
@@ -99,6 +111,7 @@ public class RCSBmultiDownload2NodeModel extends SimpleStreamableFunctionNodeMod
 
 		ColumnRearranger rearranger = new ColumnRearranger(in);
 		rearranger.append(new AbstractCellFactory(true, newColSpec) {
+
 			@Override
 			public DataCell[] getCells(final DataRow row) {
 				DataCell[] result = new DataCell[fTypes.length];
@@ -111,7 +124,8 @@ public class RCSBmultiDownload2NodeModel extends SimpleStreamableFunctionNodeMod
 
 				for (int i = 0; i < fTypes.length; i++) {
 					try {
-						String r = FileHelpers.readURLToString(fTypes[i].getURL(pdbid));
+						String r = FileHelpers
+								.readURLToString(fTypes[i].getURL(pdbid));
 						result[i] = fTypes[i].getCellFromContent(r);
 					} catch (FileDownloadException e) {
 						logger.info(e.getMessage());
@@ -139,7 +153,8 @@ public class RCSBmultiDownload2NodeModel extends SimpleStreamableFunctionNodeMod
 				if (cs.getType().isCompatible(StringValue.class)) {
 					if (colIndex != -1) {
 						setWarningMessage("No PDB ID column selected");
-						throw new InvalidSettingsException("No PDB ID column selected.");
+						throw new InvalidSettingsException(
+								"No PDB ID column selected.");
 					}
 					colIndex = i;
 				}
@@ -150,23 +165,27 @@ public class RCSBmultiDownload2NodeModel extends SimpleStreamableFunctionNodeMod
 				setWarningMessage("No PDB column selected");
 				throw new InvalidSettingsException("No PDB column selected.");
 			}
-			m_PDBcolumnName.setStringValue(inSpecs[0].getColumnSpec(colIndex).getName());
+			m_PDBcolumnName.setStringValue(
+					inSpecs[0].getColumnSpec(colIndex).getName());
 			setWarningMessage("Column '" + m_PDBcolumnName.getStringValue()
 					+ "' auto selected for PDB ID column");
 		} else {
-			colIndex = inSpecs[0].findColumnIndex(m_PDBcolumnName.getStringValue());
+			colIndex = inSpecs[0]
+					.findColumnIndex(m_PDBcolumnName.getStringValue());
 			if (colIndex < 0) {
-				setWarningMessage("No such column: " + m_PDBcolumnName.getStringValue());
+				setWarningMessage(
+						"No such column: " + m_PDBcolumnName.getStringValue());
 				throw new InvalidSettingsException(
 						"No such column: " + m_PDBcolumnName.getStringValue());
 			}
 
 			DataColumnSpec colSpec = inSpecs[0].getColumnSpec(colIndex);
 			if (!colSpec.getType().isCompatible(StringValue.class)) {
-				setWarningMessage(
-						"Column \"" + m_PDBcolumnName + "\" does not contain string values");
+				setWarningMessage("Column \"" + m_PDBcolumnName
+						+ "\" does not contain string values");
 				throw new InvalidSettingsException("Column \"" + m_PDBcolumnName
-						+ "\" does not contain string values: " + colSpec.getType().toString());
+						+ "\" does not contain string values: "
+						+ colSpec.getType().toString());
 			}
 		}
 
@@ -192,16 +211,46 @@ public class RCSBmultiDownload2NodeModel extends SimpleStreamableFunctionNodeMod
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
 		m_PDBcolumnName.loadSettingsFrom(settings);
-		m_fTypes.loadSettingsFrom(settings);
+		try {
+			m_fTypes.loadSettingsFrom(settings);
+		} catch (InvalidSettingsException e) {
+			List<String> outputTypes = new ArrayList<>();
+			if (settings.getBoolean(CFG_PDB)) {
+				outputTypes.add(CFG_PDB);
+			}
+			if (settings.getBoolean(CFG_CIF)) {
+				outputTypes.add(CFG_CIF);
+			}
+			if (settings.getBoolean(CFG_SF)) {
+				outputTypes.add("Structure Factors");
+			}
+			if (settings.getBoolean(CFG_PDBML)) {
+				outputTypes.add(CFG_PDBML);
+			}
+			if (settings.getBoolean(CFG_FASTA)) {
+				outputTypes.add(CFG_FASTA);
+			}
+			m_fTypes.setStringArrayValue(outputTypes.toArray(new String[0]));
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		m_PDBcolumnName.validateSettings(settings);
-		m_fTypes.validateSettings(settings);
+		try {
+			m_fTypes.validateSettings(settings);
+		} catch (InvalidSettingsException e) {
+			// Maybe legacy settings from 1st gen node
+			settings.getBoolean(CFG_CIF);
+			settings.getBoolean(CFG_SF);
+			settings.getBoolean(CFG_PDB);
+			settings.getBoolean(CFG_FASTA);
+			settings.getBoolean(CFG_PDBML);
+		}
 	}
 
 }

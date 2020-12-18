@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2020, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="../pdb.ico"
+	type="Source"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>PDB Connector Query Builder</name>
+
+	<shortDescription>
+        Node to generate an advanced RCSB query
+    </shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				This node provides access to the RCSB PDB advanced query
+				webservice,
+				in an interface which closely follows the web UI at
+				<a href="http://www.rcsb.org/search/advanced">http://www.rcsb.org/search/advanced</a>
+				Queries comprise nested fields and subgroups (which themselves can
+				contain fields / subgroups to an arbitrary depth). The items in each
+				field are combined using the indicated logic operator
+			</p>
+			<p>Fields can be removed by clicking on the 'X' button at the
+				left-hand side of the field, and added by clicking the 'Add Field'
+				button at the bottom of the relevant group.
+			</p>
+			<p>Subgroups can be added by clicking the 'Add SubGroup' button at
+				the bottom of the relevant parent group panel, and removed by
+				clicking the 'Remove Group' button at the bottom of the subgroup.
+				The top-most 'parent' group cannot be removed, although it can be
+				left empty.
+			</p>
+			<p>Individual fields can be reset by clicking the 'Clear' button at
+				the right-hand side of the field. Clicking on the 'Clear' button at
+				the bottom of a subgroup panel removes all fields and subgroups from
+				that panel
+			</p>
+			<p>Queries can be tested by pressing the 'Count' button, either at
+				the right-hand side of the field or the bottom of the group panel.
+				In either case, the button text is replaced with the count for the
+				relevant part of the query (field, subgroup or entire query). The
+				button remains unavailable for repeated counting until the query it
+				relates to is changed in some way.
+			</p>
+			<p>Many of the input boxes will provide live drop-downs of possible
+				options once text entry has started.
+			</p>
+			<p>The relationship between Text, Structure and Sequence queries is
+				always 'AND'
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+
+		</intro>
+
+
+
+		<tab name="Attribute Query">
+			<option name="Query Type">The type of query - clicking on the text box
+				produces a hierarchical menu to choose from. See above for
+				description of the button behaviours
+			</option>
+
+		</tab>
+		<tab name="Structure &amp; Sequence Query">
+			<option name="Sequence Motif">Search for small sequence motifs. Enter the
+				sequence motif query in either simple, PROSITE or regex format. To
+				see the motif matching information, select 'Polymer
+				Entities' from
+				the result type dropdown in the 'PDB Connector
+				Execute Query' node
+			</option>
+			<option name="Sequence">Search sequences using the mmseqs2 method. To see
+				E-value, Sequence Identity and region information, select 'Polymer
+				Entities' from the result type dropdown in the 'PDB Connector
+				Execute Query' node
+			</option>
+			<option name="Structure Similarity">Search protein structure shapes using the
+				BioZernike algorithm (Guzenko et al., 2020). To see the structure
+				match score, select 'Assemblies' from the result type dropdown in
+				the 'PDB Connector
+				Execute Query' node
+			</option>
+		</tab>
+
+		<tab name="Chemical">
+			<description>Perform chemical ligand searches</description>
+			<option name="Chemical Query">The Query Value to search on</option>
+			<option name="Query Type">The Type of Query</option>
+			<option name="Descriptor Type">The type of descriptor to use</option>
+			<option name="Match Type">The type of matching to perform</option>
+		</tab>
+	</fullDescription>
+
+	<ports>
+		<outPort
+			index="0"
+			name="Advanced PDB Query">The PDB Query
+		</outPort>
+	</ports>
+</knimeNode>

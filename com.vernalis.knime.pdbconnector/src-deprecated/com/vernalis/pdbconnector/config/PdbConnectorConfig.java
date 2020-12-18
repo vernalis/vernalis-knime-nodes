@@ -48,8 +48,8 @@ import org.xml.sax.SAXException;
  *
  * <P>
  * Singleton class to define the query and report options presented in
- * {@link com.vernalis.internal.pdbconnector.PdbConnectorNodeDialog2} and used
- * by {@link com.vernalis.internal.pdbconnector.PdbConnectorNodeModel2}. The
+ * {@link com.vernalis.pdbconnector.PdbConnectorNodeDialog2} and used
+ * by {@link com.vernalis.pdbconnector.PdbConnectorNodeModel2}. The
  * configuration is loaded dynamically from an external
  * <code>xml/PdbConnectorConfig.xml/dtd</code> file at run time, to allow for
  * updates to the supported PDB query and report options without the need for

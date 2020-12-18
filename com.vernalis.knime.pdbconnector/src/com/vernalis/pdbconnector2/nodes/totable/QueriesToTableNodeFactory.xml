@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Copyright (c) 2020, Vernalis (R&D) Ltd
+	This program is free software; you can redistribute it and/or modify it
+	under the terms of the GNU General Public License, Version 3, as
+	published by the Free Software Foundation.
+
+	This program is distributed in the hope that it will be useful, but
+	WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="../pdb.ico"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v4.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v4.1 http://knime.org/node/v4.1.xsd">
+	<name>PDB Connector Queries To Table</name>
+	<shortDescription>Converts one or more queries to a table
+	</shortDescription>
+	<fullDescription>
+		<intro>
+			This node converts one or more RCSB PDB advanced query definitions to
+			a table, such that it can e.g. be stored in a database
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+		</intro>
+
+		<option name="Column Name">The name of the column in the new output table
+		</option>
+		<option name="No Query at inport behaviour">How the node should behave if an inport does not
+			contain a defined query
+		</option>
+
+		<option
+			name="Treat Missing inport connections as empty queries?">Should a missing inport be treated as an empty query? If not, it
+			is simply skipped
+		</option>
+	</fullDescription>
+	<ports>
+		<inPort
+			index="0"
+			name="First PDB query">The first query
+		</inPort>
+
+
+		<dynInPort
+			insert-before="1"
+			name="Additional PDB query"
+			group-identifier="input">
+			Additional query
+		</dynInPort>
+
+		<outPort
+			index="0"
+			name="PDB Queries">Table containing all input queries</outPort>
+	</ports>
+</knimeNode>

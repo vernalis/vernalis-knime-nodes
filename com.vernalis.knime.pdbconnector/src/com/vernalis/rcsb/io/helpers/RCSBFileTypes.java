@@ -28,7 +28,9 @@ import org.knime.core.data.xml.XMLCellFactory;
  *
  */
 public enum RCSBFileTypes {
+	@SuppressWarnings("javadoc")
 	PDB {
+
 		@Override
 		public String getURL(String pdbid) {
 			return "https://files.rcsb.org/download/" + pdbid + ".pdb.gz";
@@ -57,21 +59,27 @@ public enum RCSBFileTypes {
 		}
 	},
 
+	@SuppressWarnings("javadoc")
 	mmCIF {
+
 		@Override
 		public String getURL(String pdbid) {
 			return "https://files.rcsb.org/download/" + pdbid + ".cif.gz";
 		}
 	},
 
+	@SuppressWarnings("javadoc")
 	Structure_Factors {
+
 		@Override
 		public String getURL(String pdbid) {
 			return "https://files.rcsb.org/download/" + pdbid + "-sf.cif.gz";
 		}
 	},
 
+	@SuppressWarnings("javadoc")
 	PDBML {
+
 		@Override
 		public String getURL(String pdbid) {
 			return "https://files.rcsb.org/download/" + pdbid + ".xml.gz";
@@ -104,28 +112,35 @@ public enum RCSBFileTypes {
 		}
 	},
 
+	@SuppressWarnings("javadoc")
 	FASTA {
+
 		@Override
 		public String getURL(String pdbid) {
-			return "http://www.rcsb.org/pdb/download/viewFastaFiles.do?structureIdList=" + pdbid
-					+ "&compressionType=gz";
+			return "http://www.rcsb.org/fasta/entry/" + pdbid + "/download";
 		}
 	},
 
+	@SuppressWarnings("javadoc")
 	NMR_Restraints {
+
 		@Override
 		public String getURL(String pdbid) {
 			return "https://files.rcsb.org/download/" + pdbid + ".mr.gz";
 		}
 	},
 
+	@SuppressWarnings("javadoc")
 	NMR_Restraints_v2 {
+
 		@Override
 		public String getURL(String pdbid) {
 			return "https://files.rcsb.org/download/" + pdbid + "_mr.str.gz";
 		}
 	},
+	@SuppressWarnings("javadoc")
 	NMR_Chemical_Shifts {
+
 		@Override
 		public String getURL(String pdbid) {
 			return "https://files.rcsb.org/download/" + pdbid + "_cs.str.gz";

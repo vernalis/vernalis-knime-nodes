@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (c) 2016, Vernalis (R&D) Ltd
+	This program is free software; you can redistribute it and/or modify it
+	under the terms of the GNU General Public License, Version 3, as
+	published by the Free Software Foundation.
+
+	This program is distributed in the hope that it will be useful, but
+	WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="pdb_xml.png"
+	type="Manipulator"
+	deprecated="true"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>PDB Connector Combine XML Queries</name>
+	<shortDescription>
+		This node is no longer functional due to the shutdown
+		of the remote webservices
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+
+				<b>This node is no longer functional due to the shutdown of the
+					remote webservices - Please use the new 'PDB Connector Combine Queries' node instead</b>
+			</p>
+			<p>
+				The
+				<i>PDB Connector Combine XML Queries</i>
+				node was developed by
+				<a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+		</intro>
+
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="Flow Variables">Flow variable connection
+		</inPort>
+		<inPort
+			name="Optional Flow Variables"
+			index="1">Optional flow
+			variable connection
+		</inPort>
+		<outPort
+			index="0"
+			name="Combined Query">Flow variable port with the combined
+			query
+		</outPort>
+	</ports>
+	<views>
+		<view
+			name="XML Query"
+			index="0">A view of the combined XML Query
+		</view>
+		<view
+			name="Logical Query"
+			index="1">A 'logical' view of the combined Query
+		</view>
+	</views>
+</knimeNode>
