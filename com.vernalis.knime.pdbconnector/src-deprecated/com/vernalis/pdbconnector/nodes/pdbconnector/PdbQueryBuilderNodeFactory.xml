@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Copyright (c) 2016, Vernalis (R&D) Ltd, based on earlier PDB Connector work.
+
+	Copyright (c) 2012, 2014 Vernalis (R&D) Ltd and Enspiral Discovery Limited
+
+	This program is free software; you can redistribute it and/or modify it
+	under the terms of the GNU General Public License, Version 3, as
+	published by the Free Software Foundation.
+
+	This program is distributed in the hope that it will be useful, but
+	WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode
+	icon="./pdb.ico"
+	type="Source"
+	deprecated="true">
+	<name>PDB Connector XML Query Builder</name>
+
+	<shortDescription>
+		This node is no longer functional due to the shutdown
+		of the remote webservices
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+
+				<b>This node is no longer functional due to the shutdown of the
+					remote webservices - Please use the new 'PDB Connector Query
+					Builder' node instead</b>
+			</p>
+
+			<p>
+				The
+				<i>PDB Connector XML Query Builder</i>
+				node was developed by
+				<a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>
+				, based on the original
+				<i>PDB Connector</i>
+				node developed by
+				<a href="http://www.enspiral-discovery.com/">Enspiral Discovery</a>
+				in collaboration with
+				<a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+		</intro>
+
+		
+
+	</fullDescription>
+
+	<ports>
+		<outPort
+			index="0"
+			name="XML Query">Flow variable containing the PDB
+			Advanced query XML String
+		</outPort>
+	</ports>
+
+	<views>
+		<view
+			name="XML Query"
+			index="0">A view of the combined XML Query
+		</view>
+		<view
+			name="Logical Query"
+			index="1">A 'logical' view of the combined Query
+		</view>
+	</views>
+</knimeNode>

@@ -16,7 +16,9 @@ package com.vernalis.knime.misc;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * A utility class of static helper functions relating to Arrays. Many of these
@@ -660,6 +662,45 @@ public class ArrayUtils {
 	}
 
 	/**
+	 * Method to remove any {@code null} elements from an array
+	 * 
+	 * @param a
+	 *            The array
+	 * @return The array without {@code null}s
+	 */
+	public static <T> T[] trimNulls(T[] a) {
+		List<T> l = Arrays.stream(a).filter(t -> t != null)
+				.collect(Collectors.toList());
+		@SuppressWarnings("unchecked")
+		T[] retVal = (T[]) Array.newInstance(a.getClass().getComponentType(),
+				l.size());
+		return l.toArray(retVal);
+	}
+
+	/**
+	 * Returns a copy of the bit-reverse permuted input array (See
+	 * https://en.wikipedia.org/wiki/Bit-reversal_permutation), which is useful
+	 * in e.g. Fast-Fourier Transforms
+	 * 
+	 * @param a
+	 *            The array to permute
+	 * @return A permuted copy
+	 */
+	public static <T> T[] bitReversePermute(T[] a) {
+		if (Integer.highestOneBit(a.length) != a.length) {
+			throw new IllegalArgumentException("Array must be of length 2^k");
+		}
+		@SuppressWarnings("unchecked")
+		final T[] r = (T[]) Array.newInstance(a.getClass().getComponentType(),
+				a.length);
+		int shift = Integer.numberOfLeadingZeros(a.length) + 1;
+		for (int i = 0; i < a.length; i++) {
+			r[Integer.reverse(i) >>> shift] = a[i];
+		}
+		return r;
+	}
+
+	/**
 	 * Wrapper for {@link Arrays#copyOf(long[], int)} to copy whole array
 	 *
 	 * <pre>
@@ -889,8 +930,10 @@ public class ArrayUtils {
 	/**
 	 * Method to remove an entry from an array and return the new array
 	 * 
-	 * @param a     The incoming array
-	 * @param index The array to copy
+	 * @param a
+	 *            The incoming array
+	 * @param index
+	 *            The array to copy
 	 * @return the newly copied array with one fewer elements
 	 */
 	public static long[] removeEntry(long[] a, int index) {
@@ -899,7 +942,8 @@ public class ArrayUtils {
 		}
 		final long[] retVal = Arrays.copyOf(a, a.length - 1);
 		if (retVal.length != index) {
-			System.arraycopy(a, index + 1, retVal, index, retVal.length - index);
+			System.arraycopy(a, index + 1, retVal, index,
+					retVal.length - index);
 		}
 		return retVal;
 	}
@@ -907,8 +951,10 @@ public class ArrayUtils {
 	/**
 	 * Method to remove an entry from an array and return the new array
 	 * 
-	 * @param a     The incoming array
-	 * @param index The array to copy
+	 * @param a
+	 *            The incoming array
+	 * @param index
+	 *            The array to copy
 	 * @return the newly copied array with one fewer elements
 	 */
 	public static int[] removeEntry(int[] a, int index) {
@@ -917,7 +963,8 @@ public class ArrayUtils {
 		}
 		final int[] retVal = Arrays.copyOf(a, a.length - 1);
 		if (retVal.length != index) {
-			System.arraycopy(a, index + 1, retVal, index, retVal.length - index);
+			System.arraycopy(a, index + 1, retVal, index,
+					retVal.length - index);
 		}
 		return retVal;
 	}
@@ -925,8 +972,10 @@ public class ArrayUtils {
 	/**
 	 * Method to remove an entry from an array and return the new array
 	 * 
-	 * @param a     The incoming array
-	 * @param index The array to copy
+	 * @param a
+	 *            The incoming array
+	 * @param index
+	 *            The array to copy
 	 * @return the newly copied array with one fewer elements
 	 */
 	public static short[] removeEntry(short[] a, int index) {
@@ -935,7 +984,8 @@ public class ArrayUtils {
 		}
 		final short[] retVal = Arrays.copyOf(a, a.length - 1);
 		if (retVal.length != index) {
-			System.arraycopy(a, index + 1, retVal, index, retVal.length - index);
+			System.arraycopy(a, index + 1, retVal, index,
+					retVal.length - index);
 		}
 		return retVal;
 	}
@@ -943,8 +993,10 @@ public class ArrayUtils {
 	/**
 	 * Method to remove an entry from an array and return the new array
 	 * 
-	 * @param a     The incoming array
-	 * @param index The array to copy
+	 * @param a
+	 *            The incoming array
+	 * @param index
+	 *            The array to copy
 	 * @return the newly copied array with one fewer elements
 	 */
 	public static char[] removeEntry(char[] a, int index) {
@@ -953,7 +1005,8 @@ public class ArrayUtils {
 		}
 		final char[] retVal = Arrays.copyOf(a, a.length - 1);
 		if (retVal.length != index) {
-			System.arraycopy(a, index + 1, retVal, index, retVal.length - index);
+			System.arraycopy(a, index + 1, retVal, index,
+					retVal.length - index);
 		}
 		return retVal;
 	}
@@ -961,8 +1014,10 @@ public class ArrayUtils {
 	/**
 	 * Method to remove an entry from an array and return the new array
 	 * 
-	 * @param a     The incoming array
-	 * @param index The array to copy
+	 * @param a
+	 *            The incoming array
+	 * @param index
+	 *            The array to copy
 	 * @return the newly copied array with one fewer elements
 	 */
 	public static byte[] removeEntry(byte[] a, int index) {
@@ -971,7 +1026,8 @@ public class ArrayUtils {
 		}
 		final byte[] retVal = Arrays.copyOf(a, a.length - 1);
 		if (retVal.length != index) {
-			System.arraycopy(a, index + 1, retVal, index, retVal.length - index);
+			System.arraycopy(a, index + 1, retVal, index,
+					retVal.length - index);
 		}
 		return retVal;
 	}
@@ -979,8 +1035,10 @@ public class ArrayUtils {
 	/**
 	 * Method to remove an entry from an array and return the new array
 	 * 
-	 * @param a     The incoming array
-	 * @param index The array to copy
+	 * @param a
+	 *            The incoming array
+	 * @param index
+	 *            The array to copy
 	 * @return the newly copied array with one fewer elements
 	 */
 	public static boolean[] removeEntry(boolean[] a, int index) {
@@ -989,7 +1047,8 @@ public class ArrayUtils {
 		}
 		final boolean[] retVal = Arrays.copyOf(a, a.length - 1);
 		if (retVal.length != index) {
-			System.arraycopy(a, index + 1, retVal, index, retVal.length - index);
+			System.arraycopy(a, index + 1, retVal, index,
+					retVal.length - index);
 		}
 		return retVal;
 	}
@@ -997,8 +1056,10 @@ public class ArrayUtils {
 	/**
 	 * Method to remove an entry from an array and return the new array
 	 * 
-	 * @param a     The incoming array
-	 * @param index The array to copy
+	 * @param a
+	 *            The incoming array
+	 * @param index
+	 *            The array to copy
 	 * @return the newly copied array with one fewer elements
 	 */
 	public static float[] removeEntry(float[] a, int index) {
@@ -1007,7 +1068,8 @@ public class ArrayUtils {
 		}
 		final float[] retVal = Arrays.copyOf(a, a.length - 1);
 		if (retVal.length != index) {
-			System.arraycopy(a, index + 1, retVal, index, retVal.length - index);
+			System.arraycopy(a, index + 1, retVal, index,
+					retVal.length - index);
 		}
 		return retVal;
 	}
@@ -1015,8 +1077,10 @@ public class ArrayUtils {
 	/**
 	 * Method to remove an entry from an array and return the new array
 	 * 
-	 * @param a     The incoming array
-	 * @param index The array to copy
+	 * @param a
+	 *            The incoming array
+	 * @param index
+	 *            The array to copy
 	 * @return the newly copied array with one fewer elements
 	 */
 	public static double[] removeEntry(double[] a, int index) {
@@ -1025,7 +1089,8 @@ public class ArrayUtils {
 		}
 		final double[] retVal = Arrays.copyOf(a, a.length - 1);
 		if (retVal.length != index) {
-			System.arraycopy(a, index + 1, retVal, index, retVal.length - index);
+			System.arraycopy(a, index + 1, retVal, index,
+					retVal.length - index);
 		}
 		return retVal;
 	}
@@ -1033,8 +1098,10 @@ public class ArrayUtils {
 	/**
 	 * Method to remove an entry from an array and return the new array
 	 * 
-	 * @param a     The incoming array
-	 * @param index The array to copy
+	 * @param a
+	 *            The incoming array
+	 * @param index
+	 *            The array to copy
 	 * @return the newly copied array with one fewer elements
 	 */
 	public static <T> T[] removeEntry(T[] a, int index) {
@@ -1043,7 +1110,8 @@ public class ArrayUtils {
 		}
 		final T[] retVal = Arrays.copyOf(a, a.length - 1);
 		if (retVal.length != index) {
-			System.arraycopy(a, index + 1, retVal, index, retVal.length - index);
+			System.arraycopy(a, index + 1, retVal, index,
+					retVal.length - index);
 		}
 		return retVal;
 	}

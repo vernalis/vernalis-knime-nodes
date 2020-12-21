@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Copyright (c) 2020, Vernalis (R&D) Ltd
+	This program is free software; you can redistribute it and/or modify it
+	under the terms of the GNU General Public License, Version 3, as
+	published by the Free Software Foundation.
+
+	This program is distributed in the hope that it will be useful, but
+	WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="../pdb.ico"
+	type="LoopStart"
+	xmlns="http://knime.org/node/v4.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v4.1 http://knime.org/node/v4.1.xsd">
+	<name>PDB Connector Queries Table Loop Start</name>
+	<shortDescription>Loops over a table containing an XML column of query
+		definitions
+	</shortDescription>
+	<fullDescription>
+		<intro>
+			This node loops over a table of XML query definitions in a column.
+			The second output port contains the input table row corresponding to
+			the query at the first output port, allowing results to be joined
+			back to the incoming table in the loop body
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+		</intro>
+
+		<option name="Column Name">The name of the column in the new output table
+		</option>
+		<option name="No Query behaviour">How the node should behave if an inport does not
+			contain a defined query
+		</option>
+
+		<option name="Ignore invalid XML">Should a row containing invalid XML be ignored? If
+			not, execution will fail
+		</option>
+	</fullDescription>
+	<ports>
+		<inPort
+			index="0"
+			name="Incoming table">The incoming table, containg an XML column of query definitions
+		</inPort>
+
+		<outPort
+			index="0"
+			name="PDB Query">The query definition for the current loop iteration</outPort>
+		<outPort
+			index="1"
+			name="Current Row">The table row containing the current query</outPort>
+	</ports>
+</knimeNode>

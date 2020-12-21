@@ -18,14 +18,20 @@ package com.vernalis.pdbconnector.containers;
  * A container class to contain the data returned for a given HetID
  * 
  * @author s.roughley
- * 
+ * @deprecated Query result is now parsed directly from JSON
  */
-public class HeterogenDetails extends AbstractHetDetails implements Comparable<HeterogenDetails> {
+@Deprecated
+public class HeterogenDetails extends AbstractHetDetails
+		implements Comparable<HeterogenDetails> {
 
 	/**
 	 * Create the record from the XML string
 	 * 
+	 * @param xml
+	 *            The XML to parse
+	 * 
 	 * @throws QueryParsingException
+	 *             if there was a problem parsing the XML
 	 */
 	public HeterogenDetails(String xml) throws QueryParsingException {
 		super(xml);

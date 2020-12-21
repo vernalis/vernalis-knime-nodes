@@ -57,6 +57,7 @@ import org.knime.base.data.xml.SvgCellFactory;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
 
+import com.vernalis.knime.chem.rdkit.RDKitRuntimeExceptionHandler;
 import com.vernalis.knime.mmp.ToolkitException;
 import com.vernalis.knime.mmp.frags.abstrct.AbstractMulticomponentFragmentationParser;
 import com.vernalis.knime.mmp.frags.abstrct.BondIdentifier;
@@ -478,12 +479,13 @@ public class RWMolFragmentationFactory
 			long localGcWave, RWMol... rwMols) {
 
 		if (rwMols.length == 1) {
-			ROMol_Vect comps = getGc().markForCleanup(
-					RDKFuncs.getMolFrags(rwMols[0], false/* sanitize frags */,
-							null/* frags to mol mapping */,
-							null/* Atoms in each frag mapping */,
-							false/* copy confs */),
-					localGcWave);
+			ROMol_Vect comps =
+					getGc().markForCleanup(RDKFuncs
+							.getMolFrags(rwMols[0], false/* sanitize frags */,
+									null/* frags to mol mapping */,
+									null/* Atoms in each frag mapping */,
+									false/* copy confs */),
+							localGcWave);
 			if (comps.size() > 1) {
 				// We had a key with multiple components in a single molecule
 				RWMol[] comps2 = new RWMol[(int) comps.size()];
@@ -551,13 +553,10 @@ public class RWMolFragmentationFactory
 								localGcWave)
 								.setProp(AP_ISOTOPIC_LABEL, "" + nextIndex);
 						// And on the key component
-						getGc().markForCleanup(
-								ent1.getValue()
-										.getAtomWithIdx(findIndexOfLabelledAtom(
-												ent1.getValue(),
-												keyCompIndexLookup
-														.get(ent1.getValue()),
-												localGcWave)),
+						getGc().markForCleanup(ent1.getValue().getAtomWithIdx(
+								findIndexOfLabelledAtom(ent1.getValue(),
+										keyCompIndexLookup.get(ent1.getValue()),
+										localGcWave)),
 								localGcWave)
 								.setProp(AP_ISOTOPIC_LABEL, "" + nextIndex);
 					}
@@ -793,7 +792,7 @@ public class RWMolFragmentationFactory
 						"$1" + String.format(Locale.ROOT, "%.2f", alpha));
 			}
 		} catch (ConformerException e) {
-			throw new ToolkitException(e.message(), e);
+			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		} finally {
 			if (drawer != null) {
 				drawer.delete();
@@ -1014,7 +1013,7 @@ public class RWMolFragmentationFactory
 
 			}
 		} catch (ConformerException e) {
-			throw new ToolkitException(e.message(), e);
+			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		} finally {
 			getGc().cleanupMarkedObjects(localGcWave);
 		}
@@ -1065,8 +1064,9 @@ public class RWMolFragmentationFactory
 	}
 
 	@Override
-	protected AbstractMulticomponentFragmentationParser<RWMol> createFragmentationParserFromComponents(
-			Set<RWMol> leafs, RWMol valueComponent, long localGCWave) {
+	protected AbstractMulticomponentFragmentationParser<RWMol>
+			createFragmentationParserFromComponents(Set<RWMol> leafs,
+					RWMol valueComponent, long localGCWave) {
 		try {
 			return new RWMolMulticomponentFragmentationParser(valueComponent,
 					leafs);
@@ -1270,9 +1270,12 @@ public class RWMolFragmentationFactory
 			// bonds
 			RDKFuncs.findPotentialStereoBonds(component, false);
 		} catch (MolSanitizeException e) {
+			String msg = new RDKitRuntimeExceptionHandler(e).getMessage();
 			if (verboseLogging) {
-				logger.info("Problem assigning double bond geometry"
-						+ e.message() == null ? "" : e.message());
+				logger.info(
+						"Problem assigning double bond geometry" + msg == null
+								? ""
+								: msg);
 			}
 			return;
 		} catch (Exception e) {
@@ -1305,18 +1308,20 @@ public class RWMolFragmentationFactory
 					Bond endStereoBond = null;
 					for (int j = 0; j < stereoAtoms.size(); j++) {
 						if (beginStereoBond == null) {
-							beginStereoBond = getGc().markForCleanup(
-									component.getBondBetweenAtoms(
-											bd.getBeginAtomIdx(),
-											stereoAtoms.get(j)),
-									localGCWave);
+							beginStereoBond =
+									getGc().markForCleanup(
+											component.getBondBetweenAtoms(
+													bd.getBeginAtomIdx(),
+													stereoAtoms.get(j)),
+											localGCWave);
 						}
 						if (endStereoBond == null) {
-							endStereoBond = getGc().markForCleanup(
-									component.getBondBetweenAtoms(
-											bd.getEndAtomIdx(),
-											stereoAtoms.get(j)),
-									localGCWave);
+							endStereoBond =
+									getGc().markForCleanup(
+											component.getBondBetweenAtoms(
+													bd.getEndAtomIdx(),
+													stereoAtoms.get(j)),
+											localGCWave);
 						}
 					}
 
@@ -1348,9 +1353,12 @@ public class RWMolFragmentationFactory
 			// Flag possible stereocentres
 			RDKFuncs.assignStereochemistry(component, false, true, true);
 		} catch (MolSanitizeException e) {
+			String msg = new RDKitRuntimeExceptionHandler(e).getMessage();
 			if (verboseLogging) {
-				logger.info("Problem assigning double bond geometry"
-						+ e.message() == null ? "" : e.message());
+				logger.info(
+						"Problem assigning double bond geometry" + msg == null
+								? ""
+								: msg);
 			}
 			return;
 		} catch (Exception e) {
@@ -1413,13 +1421,15 @@ public class RWMolFragmentationFactory
 					mol0.getAtomWithIdx(bd.getStartIdx()), wave);
 			// All this because set/getIntProp isnt exposed in Java wrapper...
 			int count = (at0.hasProp(AP_COUNT))
-					? Integer.parseInt(at0.getProp(AP_COUNT)) : 0;
+					? Integer.parseInt(at0.getProp(AP_COUNT))
+					: 0;
 			at0.setProp(AP_COUNT, String.format("%d", count + 1));
 
 			final Atom at1 = getGc()
 					.markForCleanup(mol0.getAtomWithIdx(bd.getEndIdx()), wave);
 			count = (at1.hasProp(AP_COUNT))
-					? Integer.parseInt(at1.getProp(AP_COUNT)) : 0;
+					? Integer.parseInt(at1.getProp(AP_COUNT))
+					: 0;
 			at1.setProp(AP_COUNT, String.format("%d", count + 1));
 
 			mol0.removeBond(bd.getStartIdx(), bd.getEndIdx());

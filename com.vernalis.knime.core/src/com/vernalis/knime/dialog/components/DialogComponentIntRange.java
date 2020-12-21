@@ -14,14 +14,13 @@
  ******************************************************************************/
 package com.vernalis.knime.dialog.components;
 
-import java.text.ParseException;
+import java.awt.Dimension;
 
-import javax.swing.JComponent;
-import javax.swing.JFormattedTextField;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JSpinner.DefaultEditor;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -44,15 +43,114 @@ import org.knime.core.node.port.PortObjectSpec;
  */
 public class DialogComponentIntRange extends DialogComponent {
 
-	private final JLabel m_label;
+	private static class RangeDialog extends JPanel {
 
-	private final JLabel m_labelMin;
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 5415477367833315706L;
+		private final JLabel label;
+		private final JLabel minLabel, maxLabel;
+		private final JSpinner minSpinner, maxSpinner;
 
-	private final JLabel m_labelMax;
+		public RangeDialog(String label, int min, int max, int minMin,
+				int minStepSize, int minMax, int maxMin, int maxStepSize,
+				int maxMax) {
+			if (min > max) {
+				throw new IllegalArgumentException("Min > max!");
+			}
+			this.label = new JLabel(label);
+			this.minLabel = new JLabel("min=");
+			this.maxLabel = new JLabel("max=");
+			this.minSpinner = new JSpinner(
+					new SpinnerNumberModel(min, minMin, minMax, minStepSize));
+			this.maxSpinner = new JSpinner(
+					new SpinnerNumberModel(max, maxMin, maxMax, maxStepSize));
 
-	private final JSpinner m_spinnerMin;
+			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			setMinimumSize(new Dimension(400, 60));
 
-	private final JSpinner m_spinnerMax;
+			Box box = Box.createHorizontalBox();
+			box.add(this.label);
+			box.add(Box.createHorizontalStrut(15));
+			box.add(minLabel);
+			box.add(Box.createHorizontalStrut(5));
+			box.add(minSpinner);
+			box.add(Box.createHorizontalStrut(10));
+			box.add(maxLabel);
+			box.add(Box.createHorizontalStrut(5));
+			box.add(maxSpinner);
+			add(box);
+			add(Box.createVerticalStrut(10));
+		}
+
+		int getMin() {
+			return ((Integer) minSpinner.getValue()).intValue();
+		}
+
+		int getMax() {
+			return ((Integer) maxSpinner.getValue()).intValue();
+		}
+
+		void setMin(int min) {
+			if (min <= getMax()) {
+				minSpinner.setValue(Integer.valueOf(min));
+			}
+
+		}
+
+		void setMax(int max) {
+			if (max >= getMin()) {
+				maxSpinner.setValue(Integer.valueOf(max));
+			}
+		}
+
+		void setRange(int min, int max) {
+			if (min <= max) {
+				minSpinner.setValue(Integer.valueOf(min));
+				maxSpinner.setValue(Integer.valueOf(max));
+			}
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see javax.swing.JComponent#setEnabled(boolean)
+		 */
+		@Override
+		public void setEnabled(boolean enabled) {
+			label.setEnabled(enabled);
+			minLabel.setEnabled(enabled);
+			maxLabel.setEnabled(enabled);
+			minSpinner.setEnabled(enabled);
+			maxSpinner.setEnabled(enabled);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see javax.swing.JComponent#setEnabled(boolean)
+		 */
+		@Override
+		public void setToolTipText(String tooltip) {
+			label.setToolTipText(tooltip);
+			minLabel.setToolTipText(tooltip);
+			maxLabel.setToolTipText(tooltip);
+			minSpinner.setToolTipText(tooltip);
+			maxSpinner.setToolTipText(tooltip);
+		}
+	}
+
+	// private final JLabel m_label;
+	//
+	// private final JLabel m_labelMin;
+	//
+	// private final JLabel m_labelMax;
+	//
+	// private final JSpinner m_spinnerMin;
+	//
+	// private final JSpinner m_spinnerMax;
+	private final RangeDialog rangeDialog;
 
 	/**
 	 * Creates two spinner to enter the lower and upper value of the range.
@@ -68,9 +166,11 @@ public class DialogComponentIntRange extends DialogComponent {
 	 * @param label
 	 *            label for this component
 	 */
-	public DialogComponentIntRange(final SettingsModelIntegerRange model, final int lowerMin,
-			final int upperMax, final int stepSize, final String label) {
-		this(model, lowerMin, upperMax, stepSize, lowerMin, upperMax, stepSize, label);
+	public DialogComponentIntRange(final SettingsModelIntegerRange model,
+			final int lowerMin, final int upperMax, final int stepSize,
+			final String label) {
+		this(model, lowerMin, upperMax, stepSize, lowerMin, upperMax, stepSize,
+				label);
 	}
 
 	/**
@@ -94,52 +194,83 @@ public class DialogComponentIntRange extends DialogComponent {
 	 * @param label
 	 *            label for this component
 	 */
-	public DialogComponentIntRange(final SettingsModelIntegerRange model, final int lowerMin,
-			final int lowerMax, final int lowerStepSize, final int upperMin, final int upperMax,
-			final int upperStepSize, final String label) {
+	public DialogComponentIntRange(final SettingsModelIntegerRange model,
+			final int lowerMin, final int lowerMax, final int lowerStepSize,
+			final int upperMin, final int upperMax, final int upperStepSize,
+			final String label) {
 		super(model);
 
+		// final JPanel myPanel = getComponentPanel();
+		// m_label = new JLabel(label);
+		// m_labelMin = new JLabel("min=");
+		// m_labelMax = new JLabel("max=");
+		// m_spinnerMin = new JSpinner(new
+		// SpinnerNumberModel(model.getMinRange(),
+		// lowerMin, lowerMax, lowerStepSize));
+		// JSpinner.DefaultEditor editor =
+		// (JSpinner.DefaultEditor) m_spinnerMin.getEditor();
+		// editor.getTextField().setColumns(10);
+		// editor.getTextField().setFocusLostBehavior(JFormattedTextField.COMMIT);
+		// m_spinnerMin.addChangeListener(new ChangeListener() {
+		//
+		// @Override
+		// public void stateChanged(final ChangeEvent arg0) {
+		// updateMinModel();
+		// }
+		// });
+		//
+		// m_spinnerMax = new JSpinner(new
+		// SpinnerNumberModel(model.getMaxRange(),
+		// upperMin, upperMax, upperStepSize));
+		// editor = (JSpinner.DefaultEditor) m_spinnerMax.getEditor();
+		// editor.getTextField().setColumns(10);
+		// editor.getTextField().setFocusLostBehavior(JFormattedTextField.COMMIT);
+		// m_spinnerMax.addChangeListener(new ChangeListener() {
+		//
+		// @Override
+		// public void stateChanged(final ChangeEvent arg0) {
+		// updateMaxModel();
+		// }
+		// });
+		//
+		// myPanel.add(m_label);
+		// myPanel.add(m_labelMin);
+		// myPanel.add(m_spinnerMin);
+		//
+		// myPanel.add(m_labelMax);
+		// myPanel.add(m_spinnerMax);
+
+		// model.prependChangeListener(new ChangeListener() {
+		//
+		// @Override
+		// public void stateChanged(final ChangeEvent e) {
+		// updateComponent();
+		// }
+		// });
+		//
+		// // call this method to be in sync with the settings model
+		// updateComponent();
+		rangeDialog = new RangeDialog(label, model.getMinRange(),
+				model.getMaxRange(), lowerMin, lowerStepSize, lowerMax,
+				upperMin, upperStepSize, upperMax);
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		// panel.setBorder(BorderFactory
+		// .createTitledBorder(BorderFactory.createEtchedBorder(), label));
+		panel.add(rangeDialog);
+		getComponentPanel().add(panel);
+
 		model.prependChangeListener(new ChangeListener() {
+
 			@Override
 			public void stateChanged(final ChangeEvent e) {
 				updateComponent();
 			}
 		});
 
-		final JPanel myPanel = getComponentPanel();
-		m_label = new JLabel(label);
-		m_labelMin = new JLabel("min=");
-		m_labelMax = new JLabel("max=");
-		m_spinnerMin = new JSpinner(
-				new SpinnerNumberModel(model.getMinRange(), lowerMin, lowerMax, lowerStepSize));
-		m_spinnerMin.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(final ChangeEvent arg0) {
-				updateMinModel();
-			}
-		});
-		JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) m_spinnerMin.getEditor();
-		editor.getTextField().setColumns(10);
-		editor.getTextField().setFocusLostBehavior(JFormattedTextField.COMMIT);
-		m_spinnerMax = new JSpinner(
-				new SpinnerNumberModel(model.getMaxRange(), upperMin, upperMax, upperStepSize));
-		m_spinnerMax.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(final ChangeEvent arg0) {
-				updateMaxModel();
-			}
-		});
-		editor = (JSpinner.DefaultEditor) m_spinnerMax.getEditor();
-		editor.getTextField().setColumns(10);
-		editor.getTextField().setFocusLostBehavior(JFormattedTextField.COMMIT);
-		myPanel.add(m_label);
-		myPanel.add(m_labelMin);
-		myPanel.add(m_spinnerMin);
-
-		myPanel.add(m_labelMax);
-		myPanel.add(m_spinnerMax);
 		// call this method to be in sync with the settings model
 		updateComponent();
+
 	}
 
 	/**
@@ -156,8 +287,9 @@ public class DialogComponentIntRange extends DialogComponent {
 	 */
 	@Override
 	protected void setEnabledComponents(final boolean enabled) {
-		m_spinnerMin.setEnabled(enabled);
-		m_spinnerMax.setEnabled(enabled);
+		rangeDialog.setEnabled(enabled);
+		// m_spinnerMin.setEnabled(enabled);
+		// m_spinnerMax.setEnabled(enabled);
 	}
 
 	/**
@@ -165,45 +297,50 @@ public class DialogComponentIntRange extends DialogComponent {
 	 */
 	@Override
 	public void setToolTipText(final String text) {
-		m_spinnerMin.setToolTipText(text);
-		m_spinnerMax.setToolTipText(text);
+		rangeDialog.setToolTipText(text);
+		// m_spinnerMin.setToolTipText(text);
+		// m_spinnerMax.setToolTipText(text);
 	}
 
-	/**
-	 * Transfers the value from the spinner into the model. Colors the spinner
-	 * red, if the number is not accepted by the settings model. And throws an
-	 * exception then.
-	 *
-	 */
-	private void updateMinModel() {
-		try {
-			m_spinnerMin.commitEdit();
-			if (getModel() instanceof SettingsModelIntegerRange) {
-				final SettingsModelIntegerRange model = (SettingsModelIntegerRange) getModel();
-				model.setMinRange(((Integer) m_spinnerMin.getValue()).intValue());
-			}
-		} catch (final ParseException e) {
-			final JComponent editorMin = m_spinnerMin.getEditor();
-			if (editorMin instanceof DefaultEditor) {
-				showError(((DefaultEditor) editorMin).getTextField());
-			}
-		}
-	}
-
-	private void updateMaxModel() {
-		try {
-			m_spinnerMax.commitEdit();
-			if (getModel() instanceof SettingsModelIntegerRange) {
-				final SettingsModelIntegerRange model = (SettingsModelIntegerRange) getModel();
-				model.setMaxRange(((Integer) m_spinnerMax.getValue()).intValue());
-			}
-		} catch (final ParseException e) {
-			final JComponent editorMax = m_spinnerMax.getEditor();
-			if (editorMax instanceof DefaultEditor) {
-				showError(((DefaultEditor) editorMax).getTextField());
-			}
-		}
-	}
+	// /**
+	// * Transfers the value from the spinner into the model. Colors the spinner
+	// * red, if the number is not accepted by the settings model. And throws an
+	// * exception then.
+	// *
+	// */
+	// private void updateMinModel() {
+	// try {
+	// m_spinnerMin.commitEdit();
+	// if (getModel() instanceof SettingsModelIntegerRange) {
+	// final SettingsModelIntegerRange model =
+	// (SettingsModelIntegerRange) getModel();
+	// model.setMinRange(
+	// ((Integer) m_spinnerMin.getValue()).intValue());
+	// }
+	// } catch (final ParseException e) {
+	// final JComponent editorMin = m_spinnerMin.getEditor();
+	// if (editorMin instanceof DefaultEditor) {
+	// showError(((DefaultEditor) editorMin).getTextField());
+	// }
+	// }
+	// }
+	//
+	// private void updateMaxModel() {
+	// try {
+	// m_spinnerMax.commitEdit();
+	// if (getModel() instanceof SettingsModelIntegerRange) {
+	// final SettingsModelIntegerRange model =
+	// (SettingsModelIntegerRange) getModel();
+	// model.setMaxRange(
+	// ((Integer) m_spinnerMax.getValue()).intValue());
+	// }
+	// } catch (final ParseException e) {
+	// final JComponent editorMax = m_spinnerMax.getEditor();
+	// if (editorMax instanceof DefaultEditor) {
+	// showError(((DefaultEditor) editorMax).getTextField());
+	// }
+	// }
+	// }
 
 	/**
 	 * {@inheritDoc}
@@ -211,26 +348,39 @@ public class DialogComponentIntRange extends DialogComponent {
 	@Override
 	protected void updateComponent() {
 
-		// clear any possible error indication
-		JComponent editor = m_spinnerMin.getEditor();
-		if (editor instanceof DefaultEditor) {
-			clearError(((DefaultEditor) editor).getTextField());
-		}
-		editor = m_spinnerMax.getEditor();
-		if (editor instanceof DefaultEditor) {
-			clearError(((DefaultEditor) editor).getTextField());
-		}
+		// // clear any possible error indication
+		// JComponent editor = m_spinnerMin.getEditor();
+		// if (editor instanceof DefaultEditor) {
+		// clearError(((DefaultEditor) editor).getTextField());
+		// }
+		// editor = m_spinnerMax.getEditor();
+		// if (editor instanceof DefaultEditor) {
+		// clearError(((DefaultEditor) editor).getTextField());
+		// }
+		//
+		// // update the spinners
+		// final SettingsModelIntegerRange model =
+		// (SettingsModelIntegerRange) getModel();
+		// try {
+		// m_spinnerMin.commitEdit();
+		// m_spinnerMax.commitEdit();
+		//
+		// final int valMin = ((Integer) m_spinnerMin.getValue()).intValue();
+		// if (valMin != model.getMinRange()) {
+		// m_spinnerMin.setValue(Integer.valueOf(model.getMinRange()));
+		// }
+		// final int valMax = ((Integer) m_spinnerMax.getValue()).intValue();
+		// if (valMax != model.getMaxRange()) {
+		// m_spinnerMax.setValue(Integer.valueOf(model.getMaxRange()));
+		// }
+		// } catch (ParseException e) {
+		// m_spinnerMin.setValue(model.getMinRange());
+		// m_spinnerMax.setValue(model.getMaxRange());
+		// }
 
-		// update the spinners
-		final SettingsModelIntegerRange model = (SettingsModelIntegerRange) getModel();
-		final int valMin = ((Integer) m_spinnerMin.getValue()).intValue();
-		if (valMin != model.getMinRange()) {
-			m_spinnerMin.setValue(new Integer(model.getMinRange()));
-		}
-		final int valMax = ((Integer) m_spinnerMax.getValue()).intValue();
-		if (valMax != model.getMaxRange()) {
-			m_spinnerMax.setValue(new Integer(model.getMaxRange()));
-		}
+		final SettingsModelIntegerRange model =
+				(SettingsModelIntegerRange) getModel();
+		rangeDialog.setRange(model.getMinRange(), model.getMaxRange());
 
 		// update enable status
 		setEnabledComponents(model.isEnabled());
@@ -240,50 +390,55 @@ public class DialogComponentIntRange extends DialogComponent {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettingsBeforeSave() throws InvalidSettingsException {
-		final SettingsModelIntegerRange model = (SettingsModelIntegerRange) getModel();
-		int newMin;
-		int newMax;
-		// try to commit Minimum
-		try {
-			m_spinnerMin.commitEdit();
-			newMin = ((Integer) m_spinnerMin.getValue()).intValue();
-		} catch (final ParseException e) {
-			final JComponent editor = m_spinnerMin.getEditor();
-			if (editor instanceof DefaultEditor) {
-				showError(((DefaultEditor) editor).getTextField());
-			}
-			String errMsg = "Invalid number format. ";
-			errMsg += "Please enter a valid minimum.";
-			throw new InvalidSettingsException(errMsg);
-		}
-		// try to commit Maximum
-		try {
-			m_spinnerMax.commitEdit();
-			newMax = ((Integer) m_spinnerMax.getValue()).intValue();
-		} catch (final ParseException e) {
-			final JComponent editor = m_spinnerMax.getEditor();
-			if (editor instanceof DefaultEditor) {
-				showError(((DefaultEditor) editor).getTextField());
-			}
-			String errMsg = "Invalid number format. ";
-			errMsg += "Please enter a valid maximum.";
-			throw new InvalidSettingsException(errMsg);
-		}
-
-		try {
-			new SettingsModelIntegerRange(model.getConfigName(), newMin, newMax);
-		} catch (final IllegalArgumentException iae) {
-			JComponent editor = m_spinnerMax.getEditor();
-			if (editor instanceof DefaultEditor) {
-				showError(((DefaultEditor) editor).getTextField());
-			}
-			editor = m_spinnerMin.getEditor();
-			if (editor instanceof DefaultEditor) {
-				showError(((DefaultEditor) editor).getTextField());
-			}
-			throw new InvalidSettingsException(iae.getMessage());
-		}
+	protected void validateSettingsBeforeSave()
+			throws InvalidSettingsException {
+		final SettingsModelIntegerRange model =
+				(SettingsModelIntegerRange) getModel();
+		model.setMinRange(rangeDialog.getMin());
+		model.setMaxRange(rangeDialog.getMax());
+		// int newMin;
+		// int newMax;
+		// // try to commit Minimum
+		// try {
+		// m_spinnerMin.commitEdit();
+		// newMin = ((Integer) m_spinnerMin.getValue()).intValue();
+		// } catch (final ParseException e) {
+		// final JComponent editor = m_spinnerMin.getEditor();
+		// if (editor instanceof DefaultEditor) {
+		// showError(((DefaultEditor) editor).getTextField());
+		// }
+		// String errMsg = "Invalid number format. ";
+		// errMsg += "Please enter a valid minimum.";
+		// throw new InvalidSettingsException(errMsg);
+		// }
+		// // try to commit Maximum
+		// try {
+		// m_spinnerMax.commitEdit();
+		// newMax = ((Integer) m_spinnerMax.getValue()).intValue();
+		// } catch (final ParseException e) {
+		// final JComponent editor = m_spinnerMax.getEditor();
+		// if (editor instanceof DefaultEditor) {
+		// showError(((DefaultEditor) editor).getTextField());
+		// }
+		// String errMsg = "Invalid number format. ";
+		// errMsg += "Please enter a valid maximum.";
+		// throw new InvalidSettingsException(errMsg);
+		// }
+		//
+		// try {
+		// new SettingsModelIntegerRange(model.getConfigName(), newMin,
+		// newMax);
+		// } catch (final IllegalArgumentException iae) {
+		// JComponent editor = m_spinnerMax.getEditor();
+		// if (editor instanceof DefaultEditor) {
+		// showError(((DefaultEditor) editor).getTextField());
+		// }
+		// editor = m_spinnerMin.getEditor();
+		// if (editor instanceof DefaultEditor) {
+		// showError(((DefaultEditor) editor).getTextField());
+		// }
+		// throw new InvalidSettingsException(iae.getMessage());
+		// }
 	}
 
 }

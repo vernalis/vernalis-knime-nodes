@@ -53,6 +53,7 @@ import org.knime.core.node.ExecutionContext;
 import org.rdkit.knime.types.RDKitMolValue;
 
 import com.vernalis.exceptions.RowExecutionException;
+import com.vernalis.knime.chem.rdkit.RDKitRuntimeExceptionHandler;
 import com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin;
 import com.vernalis.knime.mmp.MolFormats;
 import com.vernalis.knime.mmp.ToolkitException;
@@ -70,19 +71,22 @@ import com.vernalis.knime.swiggc.SWIGObjectGarbageCollector2;
  */
 public class RWMolFragmentationUtilsFactory
 		implements TransformUtilityFactory<RWMol, ROMol, ChemicalReaction> {
+
 	/**
 	 * The {@link DataType} for the cell renderer
 	 */
 	public static final DataType RDKIT_RENDERER_CELLTYPE = SvgCellFactory.TYPE;
 
 	/** SWIG Garbage collector for RDKit Objects */
-	private final SWIGObjectGarbageCollector2 m_SWIGGC = new SWIGObjectGarbageCollector2();
+	private final SWIGObjectGarbageCollector2 m_SWIGGC =
+			new SWIGObjectGarbageCollector2();
 
 	/**
 	 * Whether the changes which affected dative bond type SMILES rendering have
 	 * been applied
 	 */
-	public static final boolean IS_PREDATIVE_BOND_CHANGE = isPreDativeFixVersion();
+	public static final boolean IS_PREDATIVE_BOND_CHANGE =
+			isPreDativeFixVersion();
 
 	/**
 	 * This is to fix breakage from pull request
@@ -110,7 +114,8 @@ public class RWMolFragmentationUtilsFactory
 	private static boolean isPreDblBondGeomFixVersion() {
 		RWMol mol = RWMol.MolFromSmiles("CC=CCl");
 		RDKFuncs.findPotentialStereoBonds(mol, false);
-		boolean retVal = mol.getBondWithIdx(1).getStereo() != BondStereo.STEREOANY;
+		boolean retVal =
+				mol.getBondWithIdx(1).getStereo() != BondStereo.STEREOANY;
 		mol.delete();
 		return retVal;
 	}
@@ -122,14 +127,15 @@ public class RWMolFragmentationUtilsFactory
 	private static final long GC_LEVEL_EXECUTE = 0;
 
 	@Override
-	public RWMol getMolFromCell(DataCell molCell, long rowIndex, boolean removeExplicitHs)
-			throws ToolkitException {
+	public RWMol getMolFromCell(DataCell molCell, long rowIndex,
+			boolean removeExplicitHs) throws ToolkitException {
 		RWMol mol = null;
 		DataType type = molCell.getType();
 		try {
 			if (type.isCompatible(RDKitMolValue.class)) {
-				mol = new RWMol(m_SWIGGC
-						.markForCleanup(((RDKitMolValue) molCell).readMoleculeValue(), rowIndex));
+				mol = new RWMol(m_SWIGGC.markForCleanup(
+						((RDKitMolValue) molCell).readMoleculeValue(),
+						rowIndex));
 				if (removeExplicitHs) {
 					RDKFuncs.removeHs(mol);
 				}
@@ -137,48 +143,46 @@ public class RWMolFragmentationUtilsFactory
 				// Default SMILES sanitization removes Hs, so sanitize if we
 				// want to remove, otherwise sanitize separately (which does
 				// *not* remove H's!)
-				mol = RWMol.MolFromSmiles(((SmilesValue) molCell).getSmilesValue(), 0,
+				mol = RWMol.MolFromSmiles(
+						((SmilesValue) molCell).getSmilesValue(), 0,
 						removeExplicitHs);
 				if (!removeExplicitHs) {
 					RDKFuncs.sanitizeMol(mol);
 				}
 			} else if (type.isCompatible(MolValue.class)) {
-				mol = RWMol.MolFromMolBlock(((MolValue) molCell).getMolValue(), true,
-						removeExplicitHs);
+				mol = RWMol.MolFromMolBlock(((MolValue) molCell).getMolValue(),
+						true, removeExplicitHs);
 			} else if (type.isCompatible(SdfValue.class)) {
-				mol = RWMol.MolFromMolBlock(((SdfValue) molCell).getSdfValue(), true,
-						removeExplicitHs);
+				mol = RWMol.MolFromMolBlock(((SdfValue) molCell).getSdfValue(),
+						true, removeExplicitHs);
 			} else {
-				throw new RowExecutionException("Cell is not a recognised molecule type");
+				throw new RowExecutionException(
+						"Cell is not a recognised molecule type");
 			}
 		} catch (MolSanitizeException e) {
 			// MolSanitizeException returns null for #getMessage()
+			RDKitRuntimeExceptionHandler e0 =
+					new RDKitRuntimeExceptionHandler(e);
 			throw new ToolkitException("Error in sanitizing molecule: "
-					+ ((StringValue) molCell).getStringValue() + " : " + e.message(), e);
+					+ ((StringValue) molCell).getStringValue() + " : "
+					+ e0.getMessage(), e0);
 		} catch (Exception e) {
 			String msg = e.getMessage();
-			if (msg == null || "".equals(msg)) {
-				// Try to do something useful if we have a different RDKit
-				// Exception - at least try to report the error type!
-				msg = e.getClass().getSimpleName();
-				try {
-					msg += " : " + ((GenericRDKitException) e).message();
-				} catch (Exception e1) {
-					// Do nothing
-				}
-			}
+
 			if (msg.equals("Cell is not a recognised molecule type")) {
 				throw new ToolkitException(msg, e);
 			} else {
 				throw new ToolkitException("Error in parsing molecule: "
-						+ ((StringValue) molCell).getStringValue() + " : " + msg, e);
+						+ ((StringValue) molCell).getStringValue() + " : "
+						+ msg, e);
 			}
 		}
 		return m_SWIGGC.markForCleanup(mol, rowIndex);
 	}
 
 	@Override
-	public RWMol createHAddedMolecule(RWMol mol, long rowIndex) throws ToolkitException {
+	public RWMol createHAddedMolecule(RWMol mol, long rowIndex)
+			throws ToolkitException {
 		RWMol mol2 = m_SWIGGC.markForCleanup(new RWMol(mol), rowIndex);
 		RDKFuncs.addHs(mol2);
 		return mol2;
@@ -196,7 +200,8 @@ public class RWMolFragmentationUtilsFactory
 
 	@Override
 	public ROMol getMatcher(String SMARTS) throws ToolkitException {
-		return m_SWIGGC.markForCleanup(RWMol.MolFromSmarts(SMARTS), GC_LEVEL_EXECUTE);
+		return m_SWIGGC.markForCleanup(RWMol.MolFromSmarts(SMARTS),
+				GC_LEVEL_EXECUTE);
 	}
 
 	/*
@@ -261,7 +266,8 @@ public class RWMolFragmentationUtilsFactory
 				matcher = getMatcher(SMARTS);
 			}
 		} catch (GenericRDKitException e) {
-			return "Unable to generate matcher from SMIRKS - " + e.message();
+			return "Unable to generate matcher from SMIRKS - "
+					+ new RDKitRuntimeExceptionHandler(e).getMessage();
 		} catch (Exception e) {
 			return "Unable to generate matcher from SMIRKS - " + e.getMessage();
 		}
@@ -269,10 +275,12 @@ public class RWMolFragmentationUtilsFactory
 			return "Unable to generate matcher from SMIRKS - unknown reason";
 		}
 		if (matcher.getNumAtoms() != 2) {
-			return "Exactly 2 atoms are required; " + matcher.getNumAtoms() + " found";
+			return "Exactly 2 atoms are required; " + matcher.getNumAtoms()
+					+ " found";
 		}
 		if (matcher.getNumBonds() != 1) {
-			return "Exactly 1 bond is required; " + matcher.getNumBonds() + " found";
+			return "Exactly 1 bond is required; " + matcher.getNumBonds()
+					+ " found";
 		}
 
 		if (matcher.getBondWithIdx(0).getBondType() != BondType.SINGLE) {
@@ -294,12 +302,15 @@ public class RWMolFragmentationUtilsFactory
 	}
 
 	@Override
-	public MoleculeFragmentationFactory2<RWMol, ROMol> createFragmentationFactory(RWMol mol,
-			ROMol bondMatch, boolean stripHsAtEnd, boolean isHAdded, boolean verboseLog,
-			boolean prochiralAsChiral, Integer maxNumVarAtm, Double minCnstToVarAtmRatio,
-			int maxLeafCacheSize) throws ClosedFactoryException, ToolkitException {
-		return new RWMolFragmentationFactory(mol, bondMatch, stripHsAtEnd, isHAdded, verboseLog,
-				prochiralAsChiral, maxNumVarAtm, minCnstToVarAtmRatio, maxLeafCacheSize);
+	public MoleculeFragmentationFactory2<RWMol, ROMol>
+			createFragmentationFactory(RWMol mol, ROMol bondMatch,
+					boolean stripHsAtEnd, boolean isHAdded, boolean verboseLog,
+					boolean prochiralAsChiral, Integer maxNumVarAtm,
+					Double minCnstToVarAtmRatio, int maxLeafCacheSize)
+					throws ClosedFactoryException, ToolkitException {
+		return new RWMolFragmentationFactory(mol, bondMatch, stripHsAtEnd,
+				isHAdded, verboseLog, prochiralAsChiral, maxNumVarAtm,
+				minCnstToVarAtmRatio, maxLeafCacheSize);
 	}
 
 	@Override
@@ -324,7 +335,8 @@ public class RWMolFragmentationUtilsFactory
 
 	@Override
 	public ChemicalReaction generateReactionFromRSmarts(String rSMARTS,
-			boolean allowAdditionalSubstitutionPositions, long rowIndex) throws ToolkitException {
+			boolean allowAdditionalSubstitutionPositions, long rowIndex)
+			throws ToolkitException {
 		ChemicalReaction rxn = null;
 		try {
 
@@ -335,7 +347,8 @@ public class RWMolFragmentationUtilsFactory
 				boolean isFirst = true;
 				for (String component : rSMARTS.split(">>")[0].split("\\.")) {
 					RWMol comp = RWMol.MolFromSmarts(component);
-					RDKFuncs.sanitizeMol(comp, SanitizeFlags.SANITIZE_NONE.swigValue());
+					RDKFuncs.sanitizeMol(comp,
+							SanitizeFlags.SANITIZE_NONE.swigValue());
 					RDKFuncs.addHs(comp);
 					String component2 = RDKFuncs.MolToSmarts(comp, true);
 					comp.delete();
@@ -355,23 +368,25 @@ public class RWMolFragmentationUtilsFactory
 				rxn = ChemicalReaction.ReactionFromSmarts(rSMARTS, false);
 			}
 		} catch (ChemicalReactionException e) {
-			throw new ToolkitException(e.message(), e);
+			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		} catch (ChemicalReactionParserException e) {
-			throw new ToolkitException(e.message(), e);
+			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		} catch (GenericRDKitException e) {
-			throw new ToolkitException(e.message(), e);
+			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		}
 		return m_SWIGGC.markForCleanup(rxn, rowIndex);
 
 	}
 
 	@Override
-	public String getSMARTSFromMolecule(ROMol queryMol) throws ToolkitException {
+	public String getSMARTSFromMolecule(ROMol queryMol)
+			throws ToolkitException {
 		return RDKFuncs.MolToSmarts(queryMol, true);
 	}
 
 	@Override
-	public ROMol addHsToQueryMolecule(ROMol queryMol, long rowIndex) throws ToolkitException {
+	public ROMol addHsToQueryMolecule(ROMol queryMol, long rowIndex)
+			throws ToolkitException {
 		return m_SWIGGC.markForCleanup(queryMol.addHs(false), rowIndex);
 	}
 
@@ -397,8 +412,9 @@ public class RWMolFragmentationUtilsFactory
 	}
 
 	@Override
-	public List<DenseBitVector[]> getEnvironmentFPs(RWMol mol, ChemicalReaction toLeafTransform,
-			long index, int fpLength, int radius, boolean useBondTypes, boolean useChirality,
+	public List<DenseBitVector[]> getEnvironmentFPs(RWMol mol,
+			ChemicalReaction toLeafTransform, long index, int fpLength,
+			int radius, boolean useBondTypes, boolean useChirality,
 			boolean concatenate) throws ToolkitException {
 		ROMol_Vect reactant = new ROMol_Vect();
 		reactant.add(mol);
@@ -413,7 +429,8 @@ public class RWMolFragmentationUtilsFactory
 				String leafSmi = leaf.MolToSmiles(true);
 				try {
 					fps[getAttachmentPointIndex(leafSmi) - 1] =
-							getLeafFingerprint(leaf, fpLength, radius, useBondTypes, useChirality);
+							getLeafFingerprint(leaf, fpLength, radius,
+									useBondTypes, useChirality);
 				} catch (ToolkitException e) {
 					reactant.delete();
 					leafProds.delete();
@@ -439,8 +456,9 @@ public class RWMolFragmentationUtilsFactory
 	}
 
 	@Override
-	public DenseBitVector getLeafFingerprint(RWMol mol, int fpLength, int radius,
-			boolean useBondTypes, boolean useChirality) throws ToolkitException {
+	public DenseBitVector getLeafFingerprint(RWMol mol, int fpLength,
+			int radius, boolean useBondTypes, boolean useChirality)
+			throws ToolkitException {
 
 		UInt_Vect apIdx = new UInt_Vect();
 		ExplicitBitVect ebv;
@@ -449,15 +467,16 @@ public class RWMolFragmentationUtilsFactory
 		try {
 			RDKFuncs.sanitizeMol(mol);
 			// Get the atom ID of the attachment point
-			matches = mol.getSubstructMatch(MatchedPairsMultipleCutsNodePlugin.AP_QUERY_MOL);
+			matches = mol.getSubstructMatch(
+					MatchedPairsMultipleCutsNodePlugin.AP_QUERY_MOL);
 			pair = matches.get(0);
 			apIdx.add(pair.getSecond());
-			ebv = RDKFuncs.getMorganFingerprintAsBitVect(mol, radius, fpLength, null, apIdx,
-					useChirality, useBondTypes);
+			ebv = RDKFuncs.getMorganFingerprintAsBitVect(mol, radius, fpLength,
+					null, apIdx, useChirality, useBondTypes);
 		} catch (MolSanitizeException e) {
-			throw new ToolkitException(e.message(), e);
+			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		} catch (GenericRDKitException e) {
-			throw new ToolkitException(e.message(), e);
+			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		} finally {
 			apIdx.delete();
 			if (pair != null) {
@@ -478,8 +497,9 @@ public class RWMolFragmentationUtilsFactory
 	}
 
 	@Override
-	public Set<String> getTransformedMoleculesSmiles(RWMol mol, ChemicalReaction transform,
-			Set<Integer> okMatchAtoms, boolean cleanChirality, long index) throws ToolkitException {
+	public Set<String> getTransformedMoleculesSmiles(RWMol mol,
+			ChemicalReaction transform, Set<Integer> okMatchAtoms,
+			boolean cleanChirality, long index) throws ToolkitException {
 		Set<String> retVal = new HashSet<>();
 		for (int i = 0; i < mol.getNumAtoms(); i++) {
 			if (!okMatchAtoms.contains(i)) {
@@ -501,7 +521,8 @@ public class RWMolFragmentationUtilsFactory
 					prod.delete();
 					prods.delete();
 					reactant.delete();
-					throw new ToolkitException(e.message(), e);
+					throw new ToolkitException(
+							new RDKitRuntimeExceptionHandler(e));
 				}
 				RDKFuncs.assignStereochemistry(prodrw, true, true);
 				prodrw.Kekulize();
@@ -524,7 +545,8 @@ public class RWMolFragmentationUtilsFactory
 		RDKFuncs.addHs(comp);
 		String component2 = RDKFuncs.MolToSmarts(comp, true);
 		comp.delete();
-		return m_SWIGGC.markForCleanup(RWMol.MolFromSmarts(component2, 0, true), rowIndex);
+		return m_SWIGGC.markForCleanup(RWMol.MolFromSmarts(component2, 0, true),
+				rowIndex);
 	}
 
 }

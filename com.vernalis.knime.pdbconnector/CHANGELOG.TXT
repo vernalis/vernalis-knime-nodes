@@ -1,3 +1,10 @@
+v1.28.0 16-Dec-2020
+-------------------
+New PDB Connector Nodes
+* Retired original PDB Connector nodes
+* Added new Advanced Query Nodes
+
+
 v1.26.0 16-Mar-2020
 -------------------
 

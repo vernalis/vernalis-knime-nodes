@@ -30,6 +30,7 @@ import java.util.Objects;
  *            The 'right' type parameter
  */
 public final class EitherOr<T, U> {
+
 	private final T left;
 	private final U right;
 
@@ -52,7 +53,8 @@ public final class EitherOr<T, U> {
 	 * @throws NullPointerException
 	 *             if a <code>null</code> value was supplied
 	 */
-	public static <T, U> EitherOr<T, U> ofLeft(T value) throws NullPointerException {
+	public static <T, U> EitherOr<T, U> ofLeft(T value)
+			throws NullPointerException {
 		return new EitherOr<>(Objects.requireNonNull(value), null);
 	}
 
@@ -129,7 +131,7 @@ public final class EitherOr<T, U> {
 	 */
 	public U getRight() throws NoSuchElementException {
 		if (!isRight()) {
-			throw new NoSuchElementException("No left value present");
+			throw new NoSuchElementException("No right value present");
 		}
 		return right;
 	}

@@ -1,85 +1,128 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?eclipse version="3.0"?>
+<!--
+    Copyright (c) 2016,2020 Vernalis (R&D) Ltd
+     This program is free software; you can redistribute it and/or modify it 
+     under the terms of the GNU General Public License, Version 3, as 
+     published by the Free Software Foundation.
+     
+     This program is distributed in the hope that it will be useful, but 
+     WITHOUT ANY WARRANTY; without even the implied warranty of 
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+     See the GNU General Public License for more details.
+     
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, see <http://www.gnu.org/licenses>
+ -->
 <plugin>
-   <extension point="org.knime.workbench.repository.nodes">
-      <node
-            category-path="/community/vernalis/rcsb"
-            deprecated="true"
-            factory-class="com.vernalis.pdbconnector.PdbConnectorNodeFactory" />
-      <node
-            category-path="/community/vernalis/rcsb"
-            deprecated="true"
-            factory-class="com.vernalis.pdbconnector.PdbConnectorXmlQueryNodeFactory"
-            />
-   	  <node 
-   	  		category-path="/community/vernalis/rcsb" 
-   	  		factory-class="com.vernalis.pdbconnector.nodes.describehet.PdbDescribeHetNodeFactory" />
-	  <node 
-	  		category-path="/community/vernalis/rcsb" 
+	<extension point="org.knime.workbench.repository.nodes">
+		<node 
+			category-path="/community/vernalis/rcsb" 
+			factory-class="com.vernalis.pdbconnector.nodes.describehet.PdbDescribeHetNodeFactory" />
+		<node 
+			category-path="/community/vernalis/rcsb" 
 			factory-class="com.vernalis.pdbconnector.nodes.smilesquery.PdbSmilesQueryNodeFactory" />
-<node
-      category-path="/community/vernalis/rcsb"
-      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorNodeFactory2"
-      />
-<node
-      category-path="/community/vernalis/rcsb"
-      deprecated="false"
-      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorQueryOnlyNodeFactory"
-     />
-<node
-      category-path="/community/vernalis/rcsb"
-      deprecated="false"
-      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorXmlQueryNodeFactory2"
-     />
-<node
-      category-path="/community/vernalis/rcsb"
-      deprecated="false"
-      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorXmlQueryOnlyNodeFactory"
-      />
-<node
-      category-path="/community/vernalis/rcsb"
-      deprecated="false"
-      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbCustomReportNodeFactory"
-     />
-<node
-      category-path="/community/vernalis/rcsb"
-      deprecated="false"
-      factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbQueryBuilderNodeFactory"
-     />
-<node
-      category-path="/community/vernalis/rcsb"
-      deprecated="false"
-      factory-class="com.vernalis.pdbconnector.nodes.combinequery.CombineQueryNodeFactory"
-     />
-      <node
-            category-path="/community/vernalis/rcsb"
-            deprecated="true"
-            factory-class="com.vernalis.rcsb.io.nodes.source.RCSBsDownloadNodeFactory"
-          />
-      <node
-            category-path="/community/vernalis/rcsb"
-            factory-class="com.vernalis.rcsb.io.nodes.source.RCSBsDownload2NodeFactory"
-            />
-      <node
-            after="RCSBsDownloadNodeFactory"
-            category-path="/community/vernalis/rcsb"
-            deprecated="true"
-            factory-class="com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownloadNodeFactory"
-           />
-      <node
-            after="RCSBsDownloadNodeFactory"
-            category-path="/community/vernalis/rcsb"
-            factory-class="com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownload2NodeFactory"
-            />
-</extension>
-   <extension point="org.knime.workbench.repository.categories">
-      <category description="Vernalis Nodes for RCSB query and reporting" icon="icons/RCSB_PDB.png" level-id="rcsb" name="RCSB PDB Tools" path="/community/vernalis/">
-      </category>
-   </extension>
-   <extension
-         point="org.knime.core.NodeFactoryClassMapper">
-      <NodeFactoryClassMapper
-            classMapper="com.vernalis.rcsb.io.helpers.RCSBIONodeFactoryClassMapper">
-      </NodeFactoryClassMapper>
-   </extension>
+		<node
+	         category-path="/community/vernalis/rcsb"
+	         factory-class="com.vernalis.rcsb.io.nodes.source.RCSBsDownload2NodeFactory" />
+	    <node
+	         after="RCSBsDownloadNodeFactory"
+	         category-path="/community/vernalis/rcsb"
+	         factory-class="com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownload2NodeFactory" />
+	         
+	      
+	    
+	    <!-- Since 1.28.0 -->
+		<node
+			category-path="/community/vernalis/rcsb"
+			deprecated="false"
+			factory-class="com.vernalis.pdbconnector2.nodes.combine.CombineQueriesNodeFactory" />
+		<node
+			category-path="/community/vernalis/rcsb"
+			deprecated="false" 
+			factory-class="com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeFactory"/>
+		<node
+			category-path="/community/vernalis/rcsb"
+			deprecated="false" 
+			factory-class="com.vernalis.pdbconnector2.nodes.build.PdbConnector2QueryNodeFactory"/>
+		<node
+			category-path="/community/vernalis/rcsb"
+			deprecated="false"
+			factory-class="com.vernalis.pdbconnector2.nodes.save.SaveQueryNodeFactory"/>
+		<node
+			category-path="/community/vernalis/rcsb"
+			deprecated="false"
+			factory-class="com.vernalis.pdbconnector2.nodes.load.LoadQueryNodeFactory"/>
+		<node
+			category-path="/community/vernalis/rcsb"
+			deprecated="false"
+			factory-class="com.vernalis.pdbconnector2.nodes.totable.QueriesToTableNodeFactory"/>
+		<node
+			category-path="/community/vernalis/rcsb"
+			deprecated="false"
+			factory-class="com.vernalis.pdbconnector2.nodes.loopstart.QueryLoopStartNodeFactory"/>
+
+	    
+	    <!-- Deprecated nodes -->
+	    <node
+			category-path="/community/vernalis/rcsb"
+			deprecated="true"
+			factory-class="com.vernalis.pdbconnector.PdbConnectorNodeFactory" />
+		<node
+			category-path="/community/vernalis/rcsb"
+			deprecated="true"
+			factory-class="com.vernalis.pdbconnector.PdbConnectorXmlQueryNodeFactory" />
+		<node
+		     category-path="/community/vernalis/rcsb"
+		     deprecated="true"
+		     factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorNodeFactory2"/>
+		<node
+		     category-path="/community/vernalis/rcsb"
+		     deprecated="true"
+		     factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorQueryOnlyNodeFactory" />
+		<node
+		     category-path="/community/vernalis/rcsb"
+		     deprecated="true"
+		     factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorXmlQueryNodeFactory2" />
+		<node
+		     category-path="/community/vernalis/rcsb"
+		     deprecated="true"
+		     factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbConnectorXmlQueryOnlyNodeFactory" />
+		<node
+		     category-path="/community/vernalis/rcsb"
+		     deprecated="true"
+		     factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbCustomReportNodeFactory" />
+		<node
+		     category-path="/community/vernalis/rcsb"
+		     deprecated="true"
+		     factory-class="com.vernalis.pdbconnector.nodes.pdbconnector.PdbQueryBuilderNodeFactory" />
+		<node
+		     category-path="/community/vernalis/rcsb"
+		     deprecated="true"
+		     factory-class="com.vernalis.pdbconnector.nodes.combinequery.CombineQueryNodeFactory" />
+
+	</extension>
+	<extension point="org.knime.workbench.repository.categories">
+	    <category
+	    	description="Vernalis Nodes for RCSB query and reporting" icon="icons/RCSB_PDB.png" 
+	    	level-id="rcsb" 
+	    	name="RCSB PDB Tools" 
+	    	path="/community/vernalis/" />
+	</extension>
+	<extension point="org.knime.core.PortType">
+		<portType
+			color="#009999"
+			hidden="false"
+			name="PDB Advanced Query Port"
+			objectClass="com.vernalis.pdbconnector2.ports.RCSBQueryPortObject"
+			objectSerializer="com.vernalis.pdbconnector2.ports.RCSBQueryPortObject$Serializer"
+			specClass="com.vernalis.pdbconnector2.ports.MultiRCSBQueryModel"
+    		specSerializer="com.vernalis.pdbconnector2.ports.MultiRCSBQueryModel$Serializer">
+		</portType>
+	</extension>
+	<extension point="org.knime.core.NodeFactoryClassMapper">
+		<NodeFactoryClassMapper
+			classMapper="com.vernalis.rcsb.io.helpers.RCSBIONodeFactoryClassMapper">
+		</NodeFactoryClassMapper>
+	</extension>
 </plugin>
