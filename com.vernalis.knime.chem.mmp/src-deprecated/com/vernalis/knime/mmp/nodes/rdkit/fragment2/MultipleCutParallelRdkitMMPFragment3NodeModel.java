@@ -203,9 +203,8 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 
 		if (roMol.MolToSmiles().contains(".")) {
 			retVal.addRowToTable((addFailReasons)
-					? new AppendedColumnRow(row,
-							new StringCell(
-									"Multi-component structures cannot be fragmented"))
+					? new AppendedColumnRow(row, new StringCell(
+							"Multi-component structures cannot be fragmented"))
 					: row, 1);
 			return retVal;
 		}
@@ -236,8 +235,8 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 				RDKFuncs.addHs(rwMolH);
 				fragFactory = new RWMolFragmentationFactory(rwMolH, bondMatch,
 						stripHsAtEnd, false/* trick it! */, verboseLogging,
-						prochiralAsChiral, maxNumVarAtm, minCnstToVarAtmRatio,
-						50);
+						prochiralAsChiral, maxNumVarAtm, null,
+						minCnstToVarAtmRatio, 50);
 				fragmentations.addAll(
 						fragFactory.breakMoleculeAlongMatchingBonds(exec, null,
 								null, null));
@@ -248,7 +247,7 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 				// and in which case we dont strip Hs
 				fragFactory = new RWMolFragmentationFactory(rwMol, bondMatch,
 						false, false, verboseLogging, prochiralAsChiral,
-						maxNumVarAtm, minCnstToVarAtmRatio, 50);
+						maxNumVarAtm, null, minCnstToVarAtmRatio, 50);
 			} else {
 				// Otherwise we just cut along every bond
 				// fragFactory = new ROMolFragmentFactory(roMol, false,
@@ -256,7 +255,7 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 				// maxNumVarAtm, minCnstToVarAtmRatio);
 				fragFactory = new RWMolFragmentationFactory(rwMol, bondMatch,
 						false, false, verboseLogging, prochiralAsChiral,
-						maxNumVarAtm, minCnstToVarAtmRatio, 50);
+						maxNumVarAtm, null, minCnstToVarAtmRatio, 50);
 				fragmentations.addAll(
 						fragFactory.breakMoleculeAlongMatchingBonds(exec, null,
 								null, null));
@@ -267,9 +266,8 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 			if (!couldCut) {
 				// No bonds to cut
 				retVal.addRowToTable((addFailReasons)
-						? new AppendedColumnRow(row,
-								new StringCell(
-										"No matching bonds or found, or too few to cut"))
+						? new AppendedColumnRow(row, new StringCell(
+								"No matching bonds or found, or too few to cut"))
 						: row, 1);
 				return retVal;
 			}
@@ -295,15 +293,12 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 
 		} catch (ClosedFactoryException | ToolkitException
 				| IllegalArgumentException e) {
-			retVal.addRowToTable(
-					(addFailReasons)
-							? new AppendedColumnRow(row, e.getMessage() == null
-									? new StringCell(
-											"Error fragmenting molecule: " + e
-													.getClass().getSimpleName())
-									: new StringCell(e.getMessage()))
-							: row,
-					1);
+			retVal.addRowToTable((addFailReasons) ? new AppendedColumnRow(row,
+					e.getMessage() == null
+							? new StringCell("Error fragmenting molecule: "
+									+ e.getClass().getSimpleName())
+							: new StringCell(e.getMessage()))
+					: row, 1);
 		} finally {
 			if (fragFactory != null) {
 				fragFactory.close();
@@ -324,9 +319,8 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 		if (!addedFragmentations) {
 			// There were no valid fragmentatins after filtering
 			retVal.addRowToTable((addFailReasons)
-					? new AppendedColumnRow(row,
-							new StringCell(
-									"No fragmentations passed the specified filters"))
+					? new AppendedColumnRow(row, new StringCell(
+							"No fragmentations passed the specified filters"))
 					: row, 1);
 		}
 

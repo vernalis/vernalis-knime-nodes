@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2021, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -43,6 +43,7 @@ import com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractColumnRearrangerFra
  */
 public class AbstractMMPMatchingBondsRenderNodeModel<T, U>
 		extends AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U> {
+
 	private final SettingsModelColor m_bondColour =
 			AbstractMMPMatchingBondsRenderNodeDialog.createBondColourModel();
 
@@ -52,25 +53,31 @@ public class AbstractMMPMatchingBondsRenderNodeModel<T, U>
 	 * @param fragUtilityFactory
 	 *            The {@link FragmentationUtilsFactory} instance for the node
 	 */
-	AbstractMMPMatchingBondsRenderNodeModel(FragmentationUtilsFactory<T, U> fragUtilityFactory) {
+	AbstractMMPMatchingBondsRenderNodeModel(
+			FragmentationUtilsFactory<T, U> fragUtilityFactory) {
 		super(fragUtilityFactory, false, false, false, false, true,
 				new String[] { "Matching Bonds", "Number of Matching Bonds" },
-				new DataType[] { fragUtilityFactory.getRendererType(), IntCell.TYPE });
+				new DataType[] { fragUtilityFactory.getRendererType(),
+						IntCell.TYPE });
 	}
 
 	@Override
-	protected DataCell[] getResultColumns(T mol, MoleculeFragmentationFactory2<T, U> fragFactory,
-			long rowIndex, int length) throws RowExecutionException {
+	protected DataCell[] getResultColumns(T mol,
+			MoleculeFragmentationFactory2<T, U> fragFactory, long rowIndex,
+			int length) throws RowExecutionException {
 		try {
 			if (m_AddHs.getBooleanValue()) {
 				// We need explicit H's, but we also need to use a bit of
 				// trickery to ensure we show all matching bonds
 				fragFactory.close();
 				fragFactory = fragUtilityFactory.createFragmentationFactory(
-						fragUtilityFactory.createHAddedMolecule(mol, rowIndex), matcher, false,
-						false, verboseLogging, false, 0, 0.0, 0);
+						fragUtilityFactory.createHAddedMolecule(mol, rowIndex),
+						matcher, false, false, verboseLogging, false, 0,
+						0, 0.0, 0);
 			}
-			return new DataCell[] { fragFactory.renderMatchingBonds(m_bondColour.getColorValue()),
+			return new DataCell[] {
+					fragFactory
+							.renderMatchingBonds(m_bondColour.getColorValue()),
 					new IntCell(fragFactory.getMatchingBonds().size()) };
 		} catch (ClosedFactoryException | IOException | ToolkitException e) {
 			throw new RowExecutionException("Error evaluting row", e);
@@ -112,7 +119,8 @@ public class AbstractMMPMatchingBondsRenderNodeModel<T, U>
 	 * node.NodeSettingsRO)
 	 */
 	@Override
-	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		m_bondColour.validateSettings(settings);
 		super.validateSettings(settings);
 	}

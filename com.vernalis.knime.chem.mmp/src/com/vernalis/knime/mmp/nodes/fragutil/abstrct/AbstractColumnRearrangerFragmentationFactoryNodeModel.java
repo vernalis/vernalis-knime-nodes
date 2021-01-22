@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017,2019 Vernalis (R&D) Ltd
+ * Copyright (c) 2017,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -232,10 +232,12 @@ public abstract class AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U
 							? fragUtilityFactory
 									.createHAddedFragmentationFactory(mol,
 											matcher, false, verboseLogging,
-											false, 0, 0.0, rowIndex)
+											false, 0, 0, 0.0,
+											rowIndex)
 							: fragUtilityFactory.createFragmentationFactory(mol,
 									matcher, false, false, verboseLogging,
-									false, 0, 0.0, cacheSize);
+									false, 0,  0, 0.0,
+									cacheSize);
 					retVal = getResultColumns(mol, fragFactory, rowIndex,
 							newColSpecs.length);
 				} catch (ToolkitException | RowExecutionException

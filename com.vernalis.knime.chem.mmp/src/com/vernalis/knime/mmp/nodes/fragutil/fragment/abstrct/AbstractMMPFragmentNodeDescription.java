@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017,2018 Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2021, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -29,6 +29,7 @@ import org.knime.node2012.ViewDocument.View;
 import org.knime.node2012.ViewsDocument.Views;
 import org.w3c.dom.Element;
 
+import com.vernalis.knime.mmp.MMPConstants;
 import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
 
 import static com.vernalis.knime.mmp.nodes.abstrct.MMPNodeDescriptionUtils.addFragmentationOptionsDiscription;
@@ -60,6 +61,8 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 	 *            The {@link FragmentationUtilsFactory} instance for the node
 	 * @param isMulticut
 	 *            Is the node multicut or only performs n cuts?
+	 * @param version
+	 *            The version of the node implementation
 	 */
 	public AbstractMMPFragmentNodeDescription(
 			FragmentationUtilsFactory<T, U> fragUtilityFactory,
@@ -81,20 +84,20 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 	@Override
 	public String getInportDescription(int index) {
 		switch (index) {
-		case 0:
-			return "Molecules for fragmenting";
-		default:
-			return null;
+			case 0:
+				return "Molecules for fragmenting";
+			default:
+				return null;
 		}
 	}
 
 	@Override
 	public String getInportName(int index) {
 		switch (index) {
-		case 0:
-			return "Molecules";
-		default:
-			return null;
+			case 0:
+				return "Molecules";
+			default:
+				return null;
 		}
 	}
 
@@ -120,26 +123,26 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 	@Override
 	public String getOutportDescription(int index) {
 		switch (index) {
-		case 0:
-			return "Key-value fragmentation pairs";
-		case 1:
-			return "Input rows for which the molecule could not be parsed in "
-					+ fragUtilityFactory.getToolkitName()
-					+ ", or which could not be fragmented according to the options specified";
-		default:
-			return null;
+			case 0:
+				return "Key-value fragmentation pairs";
+			case 1:
+				return "Input rows for which the molecule could not be parsed in "
+						+ fragUtilityFactory.getToolkitName()
+						+ ", or which could not be fragmented according to the options specified";
+			default:
+				return null;
 		}
 	}
 
 	@Override
 	public String getOutportName(int index) {
 		switch (index) {
-		case 0:
-			return "Fragments";
-		case 1:
-			return "Failed Input Rows";
-		default:
-			return null;
+			case 0:
+				return "Fragments";
+			case 1:
+				return "Failed Input Rows";
+			default:
+				return null;
 		}
 	}
 
@@ -156,25 +159,25 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 	@Override
 	public String getViewDescription(int index) {
 		switch (index) {
-		case 0:
-			return "The view shows the proportion of the table completely "
-					+ "processed, the proportion of the queue currently filled, and the "
-					+ "proportion of the allocated threads currently active. The size of the "
-					+ "queue and the number of threads can be controlled in the preferences "
-					+ "- a bigger queue may use more memory, but is more likely to keep all "
-					+ "parallel threads active, resulting in shorter processing times";
-		default:
-			return null;
+			case 0:
+				return "The view shows the proportion of the table completely "
+						+ "processed, the proportion of the queue currently filled, and the "
+						+ "proportion of the allocated threads currently active. The size of the "
+						+ "queue and the number of threads can be controlled in the preferences "
+						+ "- a bigger queue may use more memory, but is more likely to keep all "
+						+ "parallel threads active, resulting in shorter processing times";
+			default:
+				return null;
 		}
 	}
 
 	@Override
 	public String getViewName(int index) {
 		switch (index) {
-		case 0:
-			return "Fragmentation Progress";
-		default:
-			return null;
+			case 0:
+				return "Fragmentation Progress";
+			default:
+				return null;
 		}
 	}
 
@@ -196,20 +199,18 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 
 		XmlCursor introCursor = intro.newCursor();
 		introCursor.toFirstContentToken();
-		introCursor
-				.insertElementWithText("p",
-						"This node implements the molecule fragmentation part of the Hussain and Rea "
-								+ "algorithm (Ref 1) for finding Matched Molecular Pairs in a dataset, enabling "
-								+ "the fragmented molecule key-value pairs to be stored in a database for later "
-								+ "recall or used directly in a subsequent pair-finding node. The user "
-								+ "can specify the "
-								+ (isMulticut ? "maximum " : "")
-								+ "number of cuts to be made (1 - 10), and whether "
-								+ "Hydrogens should be added (1 cut only)"
-								+ (isMulticut
-										? ". All cuts from 1 to the"
-												+ "specified number are made"
-										: ""));
+		introCursor.insertElementWithText("p",
+				"This node implements the molecule fragmentation part of the Hussain and Rea "
+						+ "algorithm (Ref 1) for finding Matched Molecular Pairs in a dataset, enabling "
+						+ "the fragmented molecule key-value pairs to be stored in a database for later "
+						+ "recall or used directly in a subsequent pair-finding node. The user "
+						+ "can specify the " + (isMulticut ? "maximum " : "")
+						+ "number of cuts to be made (1 - 10), and whether "
+						+ "Hydrogens should be added (1 cut only)"
+						+ (isMulticut
+								? ". All cuts from 1 to the"
+										+ "specified number are made"
+								: ""));
 		addFragmentationOptionsDiscription(introCursor);
 		addRSmartsGuidelines(introCursor);
 
@@ -314,6 +315,11 @@ public class AbstractMMPFragmentNodeDescription<T, U> extends NodeDescription {
 						+ "atoms which are allowed to change between Matched Pairs");
 		addOptionToTab(tab, "Maximum Number of variable heavy atoms",
 				"The maximum number of heavy atoms which are allowed to change between pairs");
+		addOptionToTab(tab, MMPConstants.FILTER_BY_FIXED_HEAVY_ATOMS,
+				"If checked, the user can specify a minimum number of heavy "
+						+ "atoms which are present in the 'Key'");
+		addOptionToTab(tab, MMPConstants.MIN_FIXED_KEY_HEAVY_ATOMS,
+				"The minimum number of heavy atoms which are required in the fixed 'Key' part of the pair");
 		addOptionToTab(tab, "Filter by ratio of changing / unchanging atoms?",
 				"If checked, the user can specify a maximum ratio of changing "
 						+ "to unchanging heavy atoms during fragmentation");

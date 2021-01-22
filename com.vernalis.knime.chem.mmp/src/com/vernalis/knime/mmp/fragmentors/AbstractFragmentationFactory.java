@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -113,6 +113,12 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * for 1 cut
 	 */
 	protected Integer maxNumberChangingHAs;
+
+	/**
+	 * The minimum number of Fixed HAs ({@code null} if no filter)
+	 */
+	protected Integer minFixedHAs;
+
 	/**
 	 * The minimum ratio of constant to changing atoms ({@code null} if not
 	 * filter) - not used for 1 cut
@@ -172,6 +178,9 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 *            Should explicit H atoms be removed after fragmentation?
 	 * @param verboseLogging
 	 *            Should the logger be used
+	 * @param minFixedHAs
+	 *            The minimum number of fixed heay atoms if such a filter is
+	 *            present
 	 * @throws ToolkitException
 	 *             Thrown if the underlying toolkit throws an exception
 	 * @throws ClosedFactoryException
@@ -182,7 +191,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	public AbstractFragmentationFactory(T mol, U bondMatch, boolean removeHs,
 			boolean isHAdded, boolean verboseLogging,
 			boolean treatProchiralAsChiral, Integer maxNumberChangingHAs,
-			Double minCnstToVarAtmRatio, int maxLeafCacheSize)
+			Integer minFixedHAs, Double minCnstToVarAtmRatio,
+			int maxLeafCacheSize)
 			throws ClosedFactoryException, ToolkitException {
 
 		this.removeHs = removeHs;
@@ -190,6 +200,7 @@ public abstract class AbstractFragmentationFactory<T, U>
 		this.bondMatch = setMatchValue(bondMatch);
 		this.verboseLogging = verboseLogging;
 		this.maxNumberChangingHAs = maxNumberChangingHAs;
+		this.minFixedHAs = minFixedHAs;
 		this.minCnstToVarAtmRatio = minCnstToVarAtmRatio;
 		this.HAC = getNumHeavyAtoms(this.mol);
 		this.treatProchiralAsChiral = treatProchiralAsChiral;
@@ -206,8 +217,9 @@ public abstract class AbstractFragmentationFactory<T, U>
 		bondOnlyValueComponent = getComponentFromSmiles("[501*][500*]", false);
 		leafLookup = new SizedBondCache<>(maxLeafCacheSize);
 		// If we are H-added always use index 500
-		hydrogenOnlyLeaf = this.isHAdded
-				? getComponentFromSmiles("[500*][H]", false) : null;
+		hydrogenOnlyLeaf =
+				this.isHAdded ? getComponentFromSmiles("[500*][H]", false)
+						: null;
 	}
 
 	/**
@@ -312,11 +324,12 @@ public abstract class AbstractFragmentationFactory<T, U>
 	}
 
 	@Override
-	public Set<AbstractMulticomponentFragmentationParser<T>> breakMoleculeAlongBondCombos(
-			Set<Set<BondIdentifier>> bondCombos, boolean prochiralAsChiral,
-			ExecutionContext exec, Color bondColour, Color keyColour,
-			Color valueColour, NodeLogger logger, boolean verboseLogging)
-			throws CanceledExecutionException, ClosedFactoryException {
+	public Set<AbstractMulticomponentFragmentationParser<T>>
+			breakMoleculeAlongBondCombos(Set<Set<BondIdentifier>> bondCombos,
+					boolean prochiralAsChiral, ExecutionContext exec,
+					Color bondColour, Color keyColour, Color valueColour,
+					NodeLogger logger, boolean verboseLogging)
+					throws CanceledExecutionException, ClosedFactoryException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -369,10 +382,12 @@ public abstract class AbstractFragmentationFactory<T, U>
 	}
 
 	@Override
-	public Set<AbstractMulticomponentFragmentationParser<T>> breakMoleculeAlongMatchingBonds(
-			ExecutionContext exec, Color breakingBondColour, Color keyColour,
-			Color valueColour) throws CanceledExecutionException,
-			IllegalArgumentException, ToolkitException, ClosedFactoryException {
+	public Set<AbstractMulticomponentFragmentationParser<T>>
+			breakMoleculeAlongMatchingBonds(ExecutionContext exec,
+					Color breakingBondColour, Color keyColour,
+					Color valueColour)
+					throws CanceledExecutionException, IllegalArgumentException,
+					ToolkitException, ClosedFactoryException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -426,10 +441,12 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * ExecutionContext)
 	 */
 	@Override
-	public Set<AbstractMulticomponentFragmentationParser<T>> breakMoleculeAlongMatchingBondsWithBondInsertion(
-			ExecutionContext exec, Color bondColour, Color keyColour,
-			Color valueColour) throws CanceledExecutionException,
-			IllegalArgumentException, ToolkitException, ClosedFactoryException {
+	public Set<AbstractMulticomponentFragmentationParser<T>>
+			breakMoleculeAlongMatchingBondsWithBondInsertion(
+					ExecutionContext exec, Color bondColour, Color keyColour,
+					Color valueColour)
+					throws CanceledExecutionException, IllegalArgumentException,
+					ToolkitException, ClosedFactoryException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -489,9 +506,9 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * @throws ClosedFactoryException
 	 *             If the {@link #close()} method has already been called
 	 */
-	protected AbstractMulticomponentFragmentationParser<T> rawFragmentMoleculeWithBondInsertion(
-			BondIdentifier bond)
-			throws ToolkitException, ClosedFactoryException {
+	protected AbstractMulticomponentFragmentationParser<T>
+			rawFragmentMoleculeWithBondInsertion(BondIdentifier bond)
+					throws ToolkitException, ClosedFactoryException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -590,10 +607,11 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * abstrct.BondIdentifier)
 	 */
 	@Override
-	public final AbstractMulticomponentFragmentationParser<T> fragmentMoleculeWithBondInsertion(
-			BondIdentifier bond)
-			throws IllegalArgumentException, MoleculeFragmentationException,
-			ToolkitException, ClosedFactoryException {
+	public final AbstractMulticomponentFragmentationParser<T>
+			fragmentMoleculeWithBondInsertion(BondIdentifier bond)
+					throws IllegalArgumentException,
+					MoleculeFragmentationException, ToolkitException,
+					ClosedFactoryException {
 		AbstractMulticomponentFragmentationParser<T> retVal =
 				rawFragmentMoleculeWithBondInsertion(bond);
 		if (retVal == null) {
@@ -616,9 +634,10 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * @throws ClosedFactoryException
 	 *             If the {@link #close()} method has already been called
 	 */
-	protected AbstractMulticomponentFragmentationParser<T> rawFragmentMoleculeAlongBond(
-			BondIdentifier bond) throws IllegalArgumentException,
-			ToolkitException, ClosedFactoryException {
+	protected AbstractMulticomponentFragmentationParser<T>
+			rawFragmentMoleculeAlongBond(BondIdentifier bond)
+					throws IllegalArgumentException, ToolkitException,
+					ClosedFactoryException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -635,27 +654,7 @@ public abstract class AbstractFragmentationFactory<T, U>
 		} catch (MoleculeFragmentationException e) {
 			return null;
 		}
-		int valueHAC;
-		if (heavyAtomMask.cardinality() == heavyAtomMask.size()) {
-			// Everything is a heavy atom
-			valueHAC = valueAtomIDs.cardinality();
-		} else {
-			BitSet valueHAs = (BitSet) valueAtomIDs.clone();
-			valueHAs.and(valueAtomIDs);
-			valueHAC = valueHAs.cardinality();
-		}
-		int keyHAC = HAC - valueHAC;
-
-		if (maxNumberChangingHAs != null && valueHAC > maxNumberChangingHAs) {
-			// There is a Maximum number of changing atoms filter, and it is
-			// violated
-			return null;
-		}
-
-		if (minCnstToVarAtmRatio != null
-				&& (1.0 * keyHAC / valueHAC) < minCnstToVarAtmRatio) {
-			// There is a Minumum const/varying atom ratio filter, and it is
-			// violated
+		if (!checkFragmentationAgainstFilters(valueAtomIDs)) {
 			return null;
 		}
 
@@ -766,9 +765,10 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * @throws ClosedFactoryException
 	 *             If the {@link #close()} method has already been called
 	 */
-	protected AbstractMulticomponentFragmentationParser<T> rawFragmentMoleculeAlongBondCombos(
-			Set<BondIdentifier> bonds) throws IllegalArgumentException,
-			ToolkitException, ClosedFactoryException {
+	protected AbstractMulticomponentFragmentationParser<T>
+			rawFragmentMoleculeAlongBondCombos(Set<BondIdentifier> bonds)
+					throws IllegalArgumentException, ToolkitException,
+					ClosedFactoryException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -790,27 +790,7 @@ public abstract class AbstractFragmentationFactory<T, U>
 		if (valueAtomIDs == null) {
 			return null;
 		}
-		int valueHAC;
-		if (heavyAtomMask.cardinality() == heavyAtomMask.size()) {
-			// Everything is a heavy atom
-			valueHAC = valueAtomIDs.cardinality();
-		} else {
-			BitSet valueHAs = (BitSet) valueAtomIDs.clone();
-			valueHAs.and(valueAtomIDs);
-			valueHAC = valueHAs.cardinality();
-		}
-		int keyHAC = HAC - valueHAC;
-
-		if (maxNumberChangingHAs != null && valueHAC > maxNumberChangingHAs) {
-			// There is a Maximum number of changing atoms filter, and it is
-			// violated
-			return null;
-		}
-
-		if (minCnstToVarAtmRatio != null
-				&& (1.0 * keyHAC / valueHAC) < minCnstToVarAtmRatio) {
-			// There is a Minumum const/varying atom ratio filter, and it is
-			// violated
+		if (!checkFragmentationAgainstFilters(valueAtomIDs)) {
 			return null;
 		}
 
@@ -880,6 +860,44 @@ public abstract class AbstractFragmentationFactory<T, U>
 	}
 
 	/**
+	 * @param valueAtomIDs
+	 *            The value atom IDs
+	 * @return whether the fragmentation passes the filters
+	 */
+	protected boolean checkFragmentationAgainstFilters(BitSet valueAtomIDs) {
+		int valueHAC;
+		if (heavyAtomMask.cardinality() == graphNeighbours.length) {
+			// Everything is a heavy atom
+			valueHAC = valueAtomIDs.cardinality();
+		} else {
+			BitSet valueHAs = (BitSet) valueAtomIDs.clone();
+			valueHAs.and(heavyAtomMask);
+			valueHAC = valueHAs.cardinality();
+		}
+		int keyHAC = HAC - valueHAC;
+
+		if (maxNumberChangingHAs != null && valueHAC > maxNumberChangingHAs) {
+			// There is a Maximum number of changing atoms filter, and it is
+			// violated
+			return false;
+		}
+
+		if (minFixedHAs != null && keyHAC < minFixedHAs) {
+			// There is a Minimum number of fixed atoms filter, and it is
+			// violated
+			return false;
+		}
+
+		if (minCnstToVarAtmRatio != null
+				&& (1.0 * keyHAC / valueHAC) < minCnstToVarAtmRatio) {
+			// There is a Minumum const/varying atom ratio filter, and it is
+			// violated
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * @param leafs
 	 *            The set of leafs to check
 	 * @return <code>true</code> if the set of leafs has duplicates (i.e.
@@ -918,8 +936,9 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 *            The wave index to use for stored native objects
 	 * @return The fragmentation container
 	 */
-	protected abstract AbstractMulticomponentFragmentationParser<T> createFragmentationParserFromComponents(
-			Set<T> leafs, T valueComponent, long localGCWave);
+	protected abstract AbstractMulticomponentFragmentationParser<T>
+			createFragmentationParserFromComponents(Set<T> leafs,
+					T valueComponent, long localGCWave);
 
 	/**
 	 * Method to create a 'value' given a {@link BitSet} containing the relevant
@@ -1568,8 +1587,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 *            The bonds
 	 * @return A set of singleton sets
 	 */
-	protected Set<Set<BondIdentifier>> createSetOfSingletonSets(
-			Set<BondIdentifier> bondsToCombinate) {
+	protected Set<Set<BondIdentifier>>
+			createSetOfSingletonSets(Set<BondIdentifier> bondsToCombinate) {
 		Set<Set<BondIdentifier>> newCombos = new HashSet<>();
 		for (BondIdentifier bond : bondsToCombinate) {
 			newCombos.add(Collections.singleton(bond));
@@ -1713,9 +1732,9 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * getMaximumNumberOfCuts()
 	 */
 	@Override
-	public synchronized int getMaximumNumberOfCuts(
-			boolean allowTwoCutsToSingleBond)
-			throws ClosedFactoryException, ToolkitException {
+	public synchronized int
+			getMaximumNumberOfCuts(boolean allowTwoCutsToSingleBond)
+					throws ClosedFactoryException, ToolkitException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
