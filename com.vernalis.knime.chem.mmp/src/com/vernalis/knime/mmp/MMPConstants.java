@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2015, 2021, Vernalis (R&D) Ltd
  * This program is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License, Version 3, as 
  * published by the Free Software Foundation.
@@ -36,7 +36,8 @@ public class MMPConstants {
 			SmilesAdapterCell.RAW_TYPE;
 
 	/** The default column type for Transform (i.e.) reaction outputs */
-	public static final DataType DEFAULT_TRANSFORM_TYPE = SmilesAdapterCell.RAW_TYPE;
+	public static final DataType DEFAULT_TRANSFORM_TYPE =
+			SmilesAdapterCell.RAW_TYPE;
 
 	/** Default add attachment point fingerprints */
 	public static final boolean DEFAULT_ADD_AP_FINGERPRINTS = true;
@@ -87,7 +88,8 @@ public class MMPConstants {
 	public static final boolean DEFAULT_OUTPUT_CHANGING_HA_COUNTS = false;
 
 	/** Default output HAC Ratios */
-	public static final boolean DEFAULT_OUTPUT_CHANGING_UNCHANGING_HAC_RATIOS = false;
+	public static final boolean DEFAULT_OUTPUT_CHANGING_UNCHANGING_HAC_RATIOS =
+			false;
 
 	/** Default output HAC Differences */
 	public static final boolean DEFAULT_OUTPUT_DELTA_HAC = false;
@@ -150,7 +152,8 @@ public class MMPConstants {
 	/**
 	 * Key for the Remove Explicit H's option
 	 */
-	public static final String REMOVE_EXPLICIT_H_S_FROM_OUTPUT = "Remove Explicit H's from output";
+	public static final String REMOVE_EXPLICIT_H_S_FROM_OUTPUT =
+			"Remove Explicit H's from output";
 
 	/**
 	 * Key for the Add H's option
@@ -175,12 +178,14 @@ public class MMPConstants {
 	/**
 	 * Key for the Two cuts to bond option
 	 */
-	public static final String TWO_CUTS_TO_BOND_VALUE = "Two Cuts to Bond Value";
+	public static final String TWO_CUTS_TO_BOND_VALUE =
+			"Two Cuts to Bond Value";
 
 	/**
 	 * Key for the Incoming explicit H's handling option
 	 */
-	public static final String INCOMING_EXPLICIT_H_S_OPTION = "Incoming Explicit H's Option";
+	public static final String INCOMING_EXPLICIT_H_S_OPTION =
+			"Incoming Explicit H's Option";
 
 	/**
 	 * The key for the FP use bond types setting
@@ -205,7 +210,8 @@ public class MMPConstants {
 	/**
 	 * The key for the AP FP option
 	 */
-	public static final String ATTACHMENT_POINT_FINGERPRINTS = "Attachment Point Fingerprints";
+	public static final String ATTACHMENT_POINT_FINGERPRINTS =
+			"Attachment Point Fingerprints";
 
 	/**
 	 * The default value for the graph distance FP setting
@@ -215,7 +221,8 @@ public class MMPConstants {
 	/**
 	 * The key for the value graph distance FP setting
 	 */
-	public static final String VALUE_GRAPH_DISTANCE_FP = "Value Graph Distance FP";
+	public static final String VALUE_GRAPH_DISTANCE_FP =
+			"Value Graph Distance FP";
 
 	/**
 	 * The key for the kept columns setting
@@ -236,7 +243,8 @@ public class MMPConstants {
 	/**
 	 * The key for the Output changing HA counts setting
 	 */
-	public static final String OUTPUT_CHANGING_HA_COUNTS = "Output changing HA counts";
+	public static final String OUTPUT_CHANGING_HA_COUNTS =
+			"Output changing HA counts";
 
 	/**
 	 * The key for the Max ratio of unchanging to changing heavy atoms setting
@@ -253,12 +261,14 @@ public class MMPConstants {
 	/**
 	 * The key for the Has Max Changing Atoms Ratio Filter setting
 	 */
-	public static final String MAX_CHANGING_HEAVY_ATOMS = "Max Changing Heavy Atoms";
+	public static final String MAX_CHANGING_HEAVY_ATOMS =
+			"Max Changing Heavy Atoms";
 
 	/**
 	 * The key for the Has Max Changing Atoms Filter setting
 	 */
-	public static final String HAS_MAX_CHANGING_ATOMS_FILTER = "Has Max Changing Atoms Filter";
+	public static final String HAS_MAX_CHANGING_ATOMS_FILTER =
+			"Has Max Changing Atoms Filter";
 
 	/**
 	 * The default treat-prochiral as chiral setting
@@ -268,7 +278,8 @@ public class MMPConstants {
 	/**
 	 * The key for the Treat Prochiral as Chiral setting
 	 */
-	public static final String TREAT_PROCHIRAL_AS_CHIRAL = "Treat Prochiral as Chiral";
+	public static final String TREAT_PROCHIRAL_AS_CHIRAL =
+			"Treat Prochiral as Chiral";
 
 	/**
 	 * The default limit by complecity setting
@@ -458,7 +469,8 @@ public class MMPConstants {
 	/**
 	 * Key for first AP fingerprint column name setting
 	 */
-	public static final String FIRST_AP_FINGERPRINT_COLUMN = "First AP Fingerprint Column";
+	public static final String FIRST_AP_FINGERPRINT_COLUMN =
+			"First AP Fingerprint Column";
 
 	/**
 	 * Key for rSMARTS column setting
@@ -479,7 +491,8 @@ public class MMPConstants {
 	/**
 	 * Key for filter by transform environment setting
 	 */
-	public static final String FILTER_BY_TRANSFROM_ENVIRONMENT = "Filter by Transfrom Environment";
+	public static final String FILTER_BY_TRANSFROM_ENVIRONMENT =
+			"Filter by Transfrom Environment";
 
 	/**
 	 * Key for transform pass through columns
@@ -505,7 +518,14 @@ public class MMPConstants {
 	/**
 	 * Key for create chiral products setting
 	 */
-	public static final String CREATE_CHIRAL_PRODUCTS = "Create chiral products";
+	public static final String CREATE_CHIRAL_PRODUCTS =
+			"Create chiral products";
+
+	public static final String FILTER_BY_FIXED_HEAVY_ATOMS =
+			"Filter by fixed heavy atoms?";
+
+	public static final String MIN_FIXED_KEY_HEAVY_ATOMS =
+			"Min Fixed ('Key') Heavy Atoms";
 
 	private MMPConstants() {
 		// Dont instantiate!

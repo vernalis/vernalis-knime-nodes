@@ -43,6 +43,7 @@ import com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractColumnRearrangerFra
  */
 public class AbstractMMPCuttableBondsRenderNodeModel<T, U>
 		extends AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U> {
+
 	private final SettingsModelColor m_bondColour =
 			AbstractMMPMatchingBondsRenderNodeDialog.createBondColourModel();
 
@@ -52,15 +53,18 @@ public class AbstractMMPCuttableBondsRenderNodeModel<T, U>
 	 * @param fragUtilityFactory
 	 *            The {@link FragmentationUtilsFactory} instance for the node
 	 */
-	AbstractMMPCuttableBondsRenderNodeModel(FragmentationUtilsFactory<T, U> fragUtilityFactory) {
+	AbstractMMPCuttableBondsRenderNodeModel(
+			FragmentationUtilsFactory<T, U> fragUtilityFactory) {
 		super(fragUtilityFactory, false, false, true, false,
 				new String[] { "Cuttable Bonds", "Number of cuttable bonds" },
-				new DataType[] { fragUtilityFactory.getRendererType(), IntCell.TYPE });
+				new DataType[] { fragUtilityFactory.getRendererType(),
+						IntCell.TYPE });
 	}
 
 	@Override
-	protected DataCell[] getResultColumns(T mol, MoleculeFragmentationFactory2<T, U> fragFactory,
-			long rowIndex, int length) throws RowExecutionException {
+	protected DataCell[] getResultColumns(T mol,
+			MoleculeFragmentationFactory2<T, U> fragFactory, long rowIndex,
+			int length) throws RowExecutionException {
 
 		try {
 
@@ -69,14 +73,15 @@ public class AbstractMMPCuttableBondsRenderNodeModel<T, U>
 				// trickery to ensure we show al matching bonds
 				fragFactory.close();
 				fragFactory = fragUtilityFactory.createFragmentationFactory(
-						fragUtilityFactory.createHAddedMolecule(mol, rowIndex), matcher, false,
-						false, verboseLogging, false, 0, 0.0, 0);
+						fragUtilityFactory.createHAddedMolecule(mol, rowIndex),
+						matcher, false, false, verboseLogging, false, 0,
+						0, 0.0, 0);
 			}
-			return new DataCell[] {
-					fragFactory.renderCuttableBonds(m_bondColour.getColorValue(),
-							m_numCuts.getIntValue()),
-					new IntCell(
-							fragFactory.identifyAllCuttableBonds(m_numCuts.getIntValue()).size()) };
+			return new DataCell[] { fragFactory.renderCuttableBonds(
+					m_bondColour.getColorValue(), m_numCuts.getIntValue()),
+					new IntCell(fragFactory
+							.identifyAllCuttableBonds(m_numCuts.getIntValue())
+							.size()) };
 		} catch (ClosedFactoryException | IOException | ToolkitException e) {
 			throw new RowExecutionException("Error evaluting row", e);
 		}
@@ -117,7 +122,8 @@ public class AbstractMMPCuttableBondsRenderNodeModel<T, U>
 	 * node.NodeSettingsRO)
 	 */
 	@Override
-	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		m_bondColour.validateSettings(settings);
 		super.validateSettings(settings);
 	}

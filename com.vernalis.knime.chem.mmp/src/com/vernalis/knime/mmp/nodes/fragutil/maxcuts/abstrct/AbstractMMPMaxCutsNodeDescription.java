@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -47,7 +47,6 @@ import static com.vernalis.knime.nodes.NodeDescriptionUtils.insertReference;
  *            The matcher type parameter
  */
 public class AbstractMMPMaxCutsNodeDescription<T, U> extends NodeDescription {
-
 	private final FragmentationUtilsFactory<T, U> fragUtilityFactory;
 
 	/**
@@ -56,8 +55,7 @@ public class AbstractMMPMaxCutsNodeDescription<T, U> extends NodeDescription {
 	 * @param fragUtilityFactory
 	 *            The {@link FragmentationUtilsFactory} instance for the node
 	 */
-	public AbstractMMPMaxCutsNodeDescription(
-			FragmentationUtilsFactory<T, U> fragUtilityFactory) {
+	public AbstractMMPMaxCutsNodeDescription(FragmentationUtilsFactory<T, U> fragUtilityFactory) {
 		super();
 		this.fragUtilityFactory = fragUtilityFactory;
 	}
@@ -94,8 +92,7 @@ public class AbstractMMPMaxCutsNodeDescription<T, U> extends NodeDescription {
 
 	@Override
 	public String getNodeName() {
-		return "MMP Calculate Maximum Cuts ("
-				+ fragUtilityFactory.getToolkitName() + ")";
+		return "MMP Calculate Maximum Cuts (" + fragUtilityFactory.getToolkitName() + ")";
 	}
 
 	@Override
@@ -104,8 +101,7 @@ public class AbstractMMPMaxCutsNodeDescription<T, U> extends NodeDescription {
 		case 0:
 			return "Incoming table with the maximum number of cuts according to the selected "
 					+ "schema calculated. Molecules which could not be parsed in "
-					+ fragUtilityFactory.getToolkitName()
-					+ " will return missing values.";
+					+ fragUtilityFactory.getToolkitName() + " will return missing values.";
 		default:
 			return null;
 		}
@@ -163,9 +159,8 @@ public class AbstractMMPMaxCutsNodeDescription<T, U> extends NodeDescription {
 
 		addRSmartsGuidelines(introCursor);
 
-		introCursor.insertElementWithText("p",
-				"The algorithm is implemented using the "
-						+ fragUtilityFactory.getToolkitName() + " toolkit");
+		introCursor.insertElementWithText("p", "The algorithm is implemented using the "
+				+ fragUtilityFactory.getToolkitName() + " toolkit");
 
 		addDevelopedByVernalis(introCursor);
 
@@ -175,8 +170,7 @@ public class AbstractMMPMaxCutsNodeDescription<T, U> extends NodeDescription {
 		insertReference(introCursor, 2, "J. Hussain and C Rea",
 				"Computationally efficient algorithm to identify matched molecular pairs"
 						+ " (MMPs) in large datasets",
-				"J. Chem. Inf. Model.", 2010, 50, "339-348",
-				"10.1021/ci900450m");
+				"J. Chem. Inf. Model.", 2010, 50, "339-348", "10.1021/ci900450m");
 
 		introCursor.beginElement("p");
 		introCursor.insertChars("3. G. Landrum, \"");
@@ -186,14 +180,12 @@ public class AbstractMMPMaxCutsNodeDescription<T, U> extends NodeDescription {
 		introCursor.insertChars("An Overview of RDKit");
 		introCursor.toEndToken();
 		introCursor.toNextToken();
-		introCursor.insertChars(
-				" (http://www.rdkit.org/docs/Overview.html#the-contrib-directory) "
-						+ "(section entitled 'mmpa')");
+		introCursor.insertChars(" (http://www.rdkit.org/docs/Overview.html#the-contrib-directory) "
+				+ "(section entitled 'mmpa')");
 		introCursor.toEndToken();
 		introCursor.toNextToken();
 
-		insertReference(introCursor, 4,
-				"N. M. O'Boyle, J. Bostrom, R. A. Sayle and A. Gill",
+		insertReference(introCursor, 4, "N. M. O'Boyle, J. Bostrom, R. A. Sayle and A. Gill",
 				"Using Matched Molecular Series as a Predictive Tool To Optimize Biological Activity",
 				"J. Med. Chem.", 2014, 57, "2704-2713", "10.1021/jm500022q");
 		introCursor.dispose();

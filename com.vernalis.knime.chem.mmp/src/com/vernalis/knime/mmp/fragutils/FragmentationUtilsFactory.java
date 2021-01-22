@@ -148,6 +148,8 @@ public interface FragmentationUtilsFactory<T, U> {
 	 *            Treat prochiral atoms as chiral
 	 * @param maxNumVarAtm
 	 *            The maximum number of varying heavy atoms
+	 * @param minNumFixedAtm
+	 *            TODO
 	 * @param minCnstToVarAtmRatio
 	 *            The minimum ratio of constant to varying heavy atoms
 	 * @param maxLeafCacheSize
@@ -156,9 +158,11 @@ public interface FragmentationUtilsFactory<T, U> {
 	 * @return The fragmentation factory
 	 * @throws ToolkitException
 	 */
-	MoleculeFragmentationFactory2<T, U> createFragmentationFactory(T mol, U bondMatch,
-			boolean stripHsAtEnd, boolean isHAdded, boolean verboseLog, boolean prochiralAsChiral,
-			Integer maxNumVarAtm, Double minCnstToVarAtmRatio, int maxLeafCacheSize)
+	MoleculeFragmentationFactory2<T, U> createFragmentationFactory(T mol,
+			U bondMatch, boolean stripHsAtEnd, boolean isHAdded,
+			boolean verboseLog, boolean prochiralAsChiral, Integer maxNumVarAtm,
+			Integer minNumFixedAtm, Double minCnstToVarAtmRatio,
+			int maxLeafCacheSize)
 			throws ClosedFactoryException, ToolkitException;
 
 	/**
@@ -177,6 +181,8 @@ public interface FragmentationUtilsFactory<T, U> {
 	 *            Treat prochiral atoms as chiral
 	 * @param maxNumVarAtm
 	 *            The maximum number of varying heavy atoms
+	 * @param minNumFixedAtm
+	 *            TODO
 	 * @param minCnstToVarAtmRatio
 	 *            The minimum ratio of constant to varying heavy atoms
 	 * @param rowIndex
@@ -185,14 +191,17 @@ public interface FragmentationUtilsFactory<T, U> {
 	 * @throws ToolkitException
 	 * @throws ClosedFactoryException
 	 */
-	default MoleculeFragmentationFactory2<T, U> createHAddedFragmentationFactory(T mol, U bondMatch,
-			boolean stripHsAtEnd, boolean verboseLog, boolean prochiralAsChiral,
-			Integer maxNumVarAtm, Double minCnstToVarAtmRatio, long rowIndex)
-			throws ToolkitException, ClosedFactoryException {
+	default MoleculeFragmentationFactory2<T, U>
+			createHAddedFragmentationFactory(T mol, U bondMatch,
+					boolean stripHsAtEnd, boolean verboseLog,
+					boolean prochiralAsChiral, Integer maxNumVarAtm,
+					Integer minNumFixedAtm, Double minCnstToVarAtmRatio,
+					long rowIndex)
+					throws ToolkitException, ClosedFactoryException {
 		// We don't cache in H-added case as there is no point in doing so!
-		return createFragmentationFactory(createHAddedMolecule(mol, rowIndex), bondMatch,
-				stripHsAtEnd, true, verboseLog, prochiralAsChiral, maxNumVarAtm,
-				minCnstToVarAtmRatio, 0);
+		return createFragmentationFactory(createHAddedMolecule(mol, rowIndex),
+				bondMatch, stripHsAtEnd, true, verboseLog, prochiralAsChiral,
+				maxNumVarAtm, minNumFixedAtm, minCnstToVarAtmRatio, 0);
 	}
 
 	/**

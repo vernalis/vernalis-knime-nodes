@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2015, 2021, Vernalis (R&D) Ltd
  * This program is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License, Version 3, as 
  * published by the Free Software Foundation.
@@ -122,6 +122,8 @@ public class RWMolFragmentationFactory
 	 *            Should prochiral centres be treated as chiral?
 	 * @param maxNumberChangingHAs
 	 *            The maximum number of changing heavy atoms
+	 * @param minFixedHAs
+	 *            Them minimum number of fixed heavy atoms
 	 * @param minCnstToVarAtmRatio
 	 *            The minumum ratio of constant to changing heavy atoms
 	 * @throws ClosedFactoryException
@@ -130,10 +132,11 @@ public class RWMolFragmentationFactory
 	public RWMolFragmentationFactory(RWMol mol, ROMol bondMatch,
 			boolean removeHs, boolean isHAdded, boolean verboseLogging,
 			boolean treatProchiralAsChiral, Integer maxNumberChangingHAs,
-			Double minCnstToVarAtmRatio, int maxLeafCacheSize)
+			Integer minFixedHAs, Double minCnstToVarAtmRatio,
+			int maxLeafCacheSize)
 			throws ClosedFactoryException, ToolkitException {
 		super(mol, bondMatch, removeHs, isHAdded, verboseLogging,
-				treatProchiralAsChiral, maxNumberChangingHAs,
+				treatProchiralAsChiral, maxNumberChangingHAs, minFixedHAs,
 				minCnstToVarAtmRatio, maxLeafCacheSize);
 		dblBondMatch = getGc().markForCleanup(RWMol.MolFromSmarts("*=*"),
 				ENDURANCE_WAVE_ID);
@@ -1270,8 +1273,8 @@ public class RWMolFragmentationFactory
 			// bonds
 			RDKFuncs.findPotentialStereoBonds(component, false);
 		} catch (MolSanitizeException e) {
-			String msg = new RDKitRuntimeExceptionHandler(e).getMessage();
 			if (verboseLogging) {
+				String msg = new RDKitRuntimeExceptionHandler(e).getMessage();
 				logger.info(
 						"Problem assigning double bond geometry" + msg == null
 								? ""
@@ -1353,8 +1356,8 @@ public class RWMolFragmentationFactory
 			// Flag possible stereocentres
 			RDKFuncs.assignStereochemistry(component, false, true, true);
 		} catch (MolSanitizeException e) {
-			String msg = new RDKitRuntimeExceptionHandler(e).getMessage();
 			if (verboseLogging) {
+				String msg = new RDKitRuntimeExceptionHandler(e).getMessage();
 				logger.info(
 						"Problem assigning double bond geometry" + msg == null
 								? ""

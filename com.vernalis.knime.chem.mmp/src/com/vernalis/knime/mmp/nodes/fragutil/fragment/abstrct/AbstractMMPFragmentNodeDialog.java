@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2018 Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -109,10 +109,34 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 		});
 		maxChangingAtomsMdl.setEnabled(hasChangingAtomsMdl.getBooleanValue());
 
+		setHorizontalPlacement(true);
 		addDialogComponent(new DialogComponentBoolean(hasChangingAtomsMdl,
 				"Filter by maximum number of changing heavy atoms?"));
 		addDialogComponent(new DialogComponentNumber(maxChangingAtomsMdl,
 				"Maximum Number of variable heavy atoms:", 1));
+		setHorizontalPlacement(false);
+
+		// Added 04-Jan-2020
+		createNewGroup("Fixed (Key) Heavy Atom filter");
+		SettingsModelBoolean hasFixedAtomsMdl =
+				createHasFixedAtomsFilterModel();
+		SettingsModelIntegerBounded minFixedAtomMdl =
+				createMinFixedAtomsModel();
+		hasFixedAtomsMdl.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				minFixedAtomMdl.setEnabled(hasFixedAtomsMdl.getBooleanValue());
+
+			}
+		});
+		minFixedAtomMdl.setEnabled(hasFixedAtomsMdl.getBooleanValue());
+		setHorizontalPlacement(true);
+		addDialogComponent(new DialogComponentBoolean(hasFixedAtomsMdl,
+				MMPConstants.FILTER_BY_FIXED_HEAVY_ATOMS));
+		addDialogComponent(new DialogComponentNumber(minFixedAtomMdl,
+				MMPConstants.MIN_FIXED_KEY_HEAVY_ATOMS, 1));
+		setHorizontalPlacement(false);
 
 		createNewGroup("Heavy Atom Ratio Filter");
 		SettingsModelBoolean hasHARatioFilterMdl =
@@ -266,7 +290,8 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 			closeCurrentGroup();
 		}
 		createNewGroup("Incoming Columns to Keep");
-		addDialogComponent(new DialogComponentColumnFilter2(createKeptColumnsModel(), 0));
+		addDialogComponent(
+				new DialogComponentColumnFilter2(createKeptColumnsModel(), 0));
 
 		/*
 		 * Attachment Point Fingerprints Tab
@@ -336,6 +361,23 @@ public class AbstractMMPFragmentNodeDialog<T, U>
 			addDialogComponent(new DialogComponentBoolean(fpUseChiralityMdl,
 					"Use chirality"));
 		}
+	}
+
+	/**
+	 * @return The settings model for the minimum fixed HA filter
+	 */
+	static SettingsModelIntegerBounded createMinFixedAtomsModel() {
+		return new SettingsModelIntegerBounded(
+				MMPConstants.MIN_FIXED_KEY_HEAVY_ATOMS, 0, 0,
+				Integer.MAX_VALUE);
+	}
+
+	/**
+	 * @return The settings model for the has key HA filter setting
+	 */
+	static SettingsModelBoolean createHasFixedAtomsFilterModel() {
+		return new SettingsModelBoolean(
+				MMPConstants.FILTER_BY_FIXED_HEAVY_ATOMS, false);
 	}
 
 	/**

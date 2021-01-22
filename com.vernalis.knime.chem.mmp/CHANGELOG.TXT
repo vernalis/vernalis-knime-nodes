@@ -1,0 +1,6 @@
+v1.28.1 22-Jan-2021
+-------------------
+
+* Added rdkit jar to extra jars in classpath
+* Corrected bug in key HAC calculation
+* Added Filter for minimum key HAC

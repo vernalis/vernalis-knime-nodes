@@ -44,11 +44,13 @@ import com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFac
  * @param <U>
  *            The matcher type parameter
  */
-public class AbstractMMPMaxCutsNodeFactory<T, U>
-		extends NodeFactory<AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U>> {
+public class AbstractMMPMaxCutsNodeFactory<T, U> extends
+		NodeFactory<AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U>> {
+
 	private final Class<? extends FragmentationUtilsFactory<T, U>> fragUtilsFactory;
 	private static final String[] newColNames = new String[] { "Maximum Cuts" };
-	private static final DataType[] newColTypes = new DataType[] { IntCell.TYPE };
+	private static final DataType[] newColTypes =
+			new DataType[] { IntCell.TYPE };
 
 	/**
 	 * Constructor
@@ -74,9 +76,11 @@ public class AbstractMMPMaxCutsNodeFactory<T, U>
 		try {
 			return new AbstractMMPMaxCutsNodeDescription<>(
 					fragUtilsFactory.getConstructor().newInstance());
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			throw new RuntimeException("Error instantiating Fragmentation Utilities factory", e);
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			throw new RuntimeException(
+					"Error instantiating Fragmentation Utilities factory", e);
 		}
 	}
 
@@ -86,16 +90,18 @@ public class AbstractMMPMaxCutsNodeFactory<T, U>
 	 * @see org.knime.core.node.NodeFactory#createNodeModel()
 	 */
 	@Override
-	public AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U> createNodeModel() {
+	public AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U>
+			createNodeModel() {
 		// Dont add Hs to the fragmentationFractory by default
 		try {
 			return new AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U>(
-					fragUtilsFactory.getConstructor().newInstance(), false, false, false, false,
-					newColNames, newColTypes) {
+					fragUtilsFactory.getConstructor().newInstance(), false,
+					false, false, false, newColNames, newColTypes) {
 
 				@Override
 				protected DataCell[] getResultColumns(T mol,
-						MoleculeFragmentationFactory2<T, U> fragFactory, long rowIndex, int length)
+						MoleculeFragmentationFactory2<T, U> fragFactory,
+						long rowIndex, int length)
 						throws RowExecutionException {
 					int retVal = 0;
 					try {
@@ -104,21 +110,27 @@ public class AbstractMMPMaxCutsNodeFactory<T, U>
 						if (retVal < 1 && m_AddHs.getBooleanValue()) {
 							// See if adding Hs helps
 							fragFactory.close();
-							fragFactory = fragUtilityFactory.createHAddedFragmentationFactory(mol,
-									matcher, false, verboseLogging, false, 0, 0.0, rowIndex);
+							fragFactory = fragUtilityFactory
+									.createHAddedFragmentationFactory(mol,
+											matcher, false, verboseLogging,
+											false, 0, 0, 0.0,
+											rowIndex);
 							if (fragFactory.canCutNTimes(1, false)) {
 								retVal = 1;
 							}
 						}
 					} catch (ClosedFactoryException | ToolkitException e) {
-						throw new RowExecutionException("Error evaluting row", e);
+						throw new RowExecutionException("Error evaluting row",
+								e);
 					}
 					return new IntCell[] { new IntCell(retVal) };
 				}
 			};
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			throw new RuntimeException("Error instantiating Fragmentation Utilities factory", e);
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			throw new RuntimeException(
+					"Error instantiating Fragmentation Utilities factory", e);
 		}
 
 	}
@@ -140,8 +152,9 @@ public class AbstractMMPMaxCutsNodeFactory<T, U>
 	 * org.knime.core.node.NodeModel)
 	 */
 	@Override
-	public NodeView<AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U>> createNodeView(
-			int viewIndex, AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U> nodeModel) {
+	public NodeView<AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U>>
+			createNodeView(int viewIndex,
+					AbstractColumnRearrangerFragmentationFactoryNodeModel<T, U> nodeModel) {
 		return null;
 	}
 
@@ -164,10 +177,13 @@ public class AbstractMMPMaxCutsNodeFactory<T, U>
 	protected NodeDialogPane createNodeDialogPane() {
 		try {
 			return new AbstractMMPFragmentationFactoryNodeDialog<>(
-					fragUtilsFactory.getConstructor().newInstance(), false, false, false);
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			throw new RuntimeException("Error instantiating Fragmentation Utilities factory", e);
+					fragUtilsFactory.getConstructor().newInstance(), false,
+					false, false);
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			throw new RuntimeException(
+					"Error instantiating Fragmentation Utilities factory", e);
 		}
 	}
 

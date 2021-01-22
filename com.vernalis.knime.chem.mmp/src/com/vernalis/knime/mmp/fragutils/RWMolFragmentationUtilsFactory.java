@@ -161,14 +161,18 @@ public class RWMolFragmentationUtilsFactory
 			}
 		} catch (MolSanitizeException e) {
 			// MolSanitizeException returns null for #getMessage()
-			RDKitRuntimeExceptionHandler e0 =
-					new RDKitRuntimeExceptionHandler(e);
-			throw new ToolkitException("Error in sanitizing molecule: "
-					+ ((StringValue) molCell).getStringValue() + " : "
-					+ e0.getMessage(), e0);
+			throw new ToolkitException(
+					"Error in sanitizing molecule: "
+							+ ((StringValue) molCell).getStringValue() + " : "
+							+ new RDKitRuntimeExceptionHandler(e).getMessage(),
+					e);
 		} catch (Exception e) {
 			String msg = e.getMessage();
-
+			if (msg == null || "".equals(msg)) {
+				// Try to do something useful if we have a different RDKit
+				// Exception - at least try to report the error type!
+				msg = e.getClass().getSimpleName();
+			}
 			if (msg.equals("Cell is not a recognised molecule type")) {
 				throw new ToolkitException(msg, e);
 			} else {
@@ -306,11 +310,12 @@ public class RWMolFragmentationUtilsFactory
 			createFragmentationFactory(RWMol mol, ROMol bondMatch,
 					boolean stripHsAtEnd, boolean isHAdded, boolean verboseLog,
 					boolean prochiralAsChiral, Integer maxNumVarAtm,
-					Double minCnstToVarAtmRatio, int maxLeafCacheSize)
+					Integer minNumFixedAtm, Double minCnstToVarAtmRatio,
+					int maxLeafCacheSize)
 					throws ClosedFactoryException, ToolkitException {
 		return new RWMolFragmentationFactory(mol, bondMatch, stripHsAtEnd,
 				isHAdded, verboseLog, prochiralAsChiral, maxNumVarAtm,
-				minCnstToVarAtmRatio, maxLeafCacheSize);
+				minNumFixedAtm, minCnstToVarAtmRatio, maxLeafCacheSize);
 	}
 
 	@Override
@@ -339,40 +344,47 @@ public class RWMolFragmentationUtilsFactory
 			throws ToolkitException {
 		ChemicalReaction rxn = null;
 		try {
+			try {
 
-			if (!allowAdditionalSubstitutionPositions) {
-				// We are going to have to dismantle the reactants and product 1
-				// by one, add Hs and re-assemble them
-				StringBuilder sb = new StringBuilder();
-				boolean isFirst = true;
-				for (String component : rSMARTS.split(">>")[0].split("\\.")) {
-					RWMol comp = RWMol.MolFromSmarts(component);
-					RDKFuncs.sanitizeMol(comp,
-							SanitizeFlags.SANITIZE_NONE.swigValue());
-					RDKFuncs.addHs(comp);
-					String component2 = RDKFuncs.MolToSmarts(comp, true);
-					comp.delete();
-					comp = RWMol.MolFromSmarts(component2, 0, true);
-					if (!isFirst) {
-						sb.append(".");
-					} else {
-						isFirst = false;
+				if (!allowAdditionalSubstitutionPositions) {
+					// We are going to have to dismantle the reactants and
+					// product 1
+					// by one, add Hs and re-assemble them
+					StringBuilder sb = new StringBuilder();
+					boolean isFirst = true;
+					for (String component : rSMARTS.split(">>")[0]
+							.split("\\.")) {
+						RWMol comp = RWMol.MolFromSmarts(component);
+						RDKFuncs.sanitizeMol(comp,
+								SanitizeFlags.SANITIZE_NONE.swigValue());
+						RDKFuncs.addHs(comp);
+						String component2 = RDKFuncs.MolToSmarts(comp, true);
+						comp.delete();
+						comp = RWMol.MolFromSmarts(component2, 0, true);
+						if (!isFirst) {
+							sb.append(".");
+						} else {
+							isFirst = false;
+						}
+						sb.append(RDKFuncs.MolToSmarts(comp, true));
+						comp.delete();
 					}
-					sb.append(RDKFuncs.MolToSmarts(comp, true));
-					comp.delete();
+					sb.append(">>").append(rSMARTS.split(">>")[1]);
+					rxn = ChemicalReaction.ReactionFromSmarts(sb.toString(),
+							false);
+					// rxn = new ChemicalReaction(sb.toString());
+				} else {
+					rxn = ChemicalReaction.ReactionFromSmarts(rSMARTS, false);
 				}
-				sb.append(">>").append(rSMARTS.split(">>")[1]);
-				rxn = ChemicalReaction.ReactionFromSmarts(sb.toString(), false);
-				// rxn = new ChemicalReaction(sb.toString());
-			} else {
-				rxn = ChemicalReaction.ReactionFromSmarts(rSMARTS, false);
+			} catch (ChemicalReactionException e) {
+				throw new RDKitRuntimeExceptionHandler(e);
+			} catch (ChemicalReactionParserException e) {
+				throw new RDKitRuntimeExceptionHandler(e);
+			} catch (GenericRDKitException e) {
+				throw new RDKitRuntimeExceptionHandler(e);
 			}
-		} catch (ChemicalReactionException e) {
-			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
-		} catch (ChemicalReactionParserException e) {
-			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
-		} catch (GenericRDKitException e) {
-			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
+		} catch (RDKitRuntimeExceptionHandler e) {
+			throw new ToolkitException(e);
 		}
 		return m_SWIGGC.markForCleanup(rxn, rowIndex);
 
@@ -474,9 +486,11 @@ public class RWMolFragmentationUtilsFactory
 			ebv = RDKFuncs.getMorganFingerprintAsBitVect(mol, radius, fpLength,
 					null, apIdx, useChirality, useBondTypes);
 		} catch (MolSanitizeException e) {
-			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
+			throw new ToolkitException(
+					new RDKitRuntimeExceptionHandler(e).getMessage(), e);
 		} catch (GenericRDKitException e) {
-			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
+			throw new ToolkitException(
+					new RDKitRuntimeExceptionHandler(e).getMessage(), e);
 		} finally {
 			apIdx.delete();
 			if (pair != null) {
@@ -522,7 +536,8 @@ public class RWMolFragmentationUtilsFactory
 					prods.delete();
 					reactant.delete();
 					throw new ToolkitException(
-							new RDKitRuntimeExceptionHandler(e));
+							new RDKitRuntimeExceptionHandler(e).getMessage(),
+							e);
 				}
 				RDKFuncs.assignStereochemistry(prodrw, true, true);
 				prodrw.Kekulize();
