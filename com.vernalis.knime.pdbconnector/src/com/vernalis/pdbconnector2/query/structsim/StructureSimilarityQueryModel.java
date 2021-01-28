@@ -315,17 +315,17 @@ public class StructureSimilarityQueryModel implements QueryModel {
 	}
 
 	private void validateMatchUnitID(String unitId) {
-		if (!getPossibleIDs().contains(unitId)) {
-			throw new IllegalArgumentException(
-					"'" + unitId + "' is not a valid unit id");
+		// Only validate the unit id if we have a query
+		if (hasQuery()) {
+			if (!getPossibleIDs().contains(unitId)) {
+				throw new IllegalArgumentException(
+						"'" + unitId + "' is not a valid unit id");
+			}
 		}
-
 	}
 
 	private MatchUnitType validateMatchUnitType(String matchUnitType) {
-
 		return MatchUnitType.fromString(matchUnitType);
-
 	}
 
 	@Override
