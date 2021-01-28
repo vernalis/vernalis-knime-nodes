@@ -1,3 +1,7 @@
+v1.28.2 28-Jan-2021
+-------------------
+* Fixed #8 - Over-zealous query validation in sequence query
+
 v1.28.0 16-Dec-2020
 -------------------
 New PDB Connector Nodes
