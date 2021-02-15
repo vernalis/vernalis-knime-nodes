@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -16,6 +16,9 @@ package com.vernalis.pdbconnector2.nodes.execute;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
@@ -39,6 +42,9 @@ import com.vernalis.pdbconnector2.query.ScoringType;
 public class PdbConnector2QueryExecutionNodeDialog
 		extends DefaultNodeSettingsPane {
 
+	private static final String MAXIMUM_HITS_TO_RETURN =
+			"Maximum hits to return";
+	private static final String LIMIT_HITS = "Limit Hits";
 	private static final String INCLUDE_JSON_IN_OUTPUT =
 			"Include JSON in output";
 	private static final String PAGE_SIZE = "Page Size";
@@ -63,9 +69,45 @@ public class PdbConnector2QueryExecutionNodeDialog
 		addDialogComponent(new DialogComponentNumber(createPageSizeModel(),
 				PAGE_SIZE, 10, 5));
 
+		setHorizontalPlacement(true);
+		final SettingsModelBoolean limitHitsMdl = createLimitHitsModel();
+		final SettingsModelIntegerBounded maxHitsMdl = createMaxHitsModel();
+		limitHitsMdl.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				maxHitsMdl.setEnabled(limitHitsMdl.getBooleanValue());
+
+			}
+		});
+		maxHitsMdl.setEnabled(limitHitsMdl.getBooleanValue());
+
+		addDialogComponent(
+				new DialogComponentBoolean(limitHitsMdl, LIMIT_HITS));
+		addDialogComponent(new DialogComponentNumber(maxHitsMdl,
+				MAXIMUM_HITS_TO_RETURN, 100));
+		setHorizontalPlacement(false);
+
 		addDialogComponent(new DialogComponentBoolean(createIncludeJsonModel(),
 				INCLUDE_JSON_IN_OUTPUT));
 
+	}
+
+	/**
+	 * @return The model for the 'Maximum Hits' setting
+	 * @since 1.28.3
+	 */
+	static SettingsModelIntegerBounded createMaxHitsModel() {
+		return new SettingsModelIntegerBounded(MAXIMUM_HITS_TO_RETURN, 1000, 0,
+				Integer.MAX_VALUE);
+	}
+
+	/**
+	 * @return The model for the 'Limit Hits' setting
+	 * @since 1.28.3
+	 */
+	static SettingsModelBoolean createLimitHitsModel() {
+		return new SettingsModelBoolean(LIMIT_HITS, false);
 	}
 
 	/**

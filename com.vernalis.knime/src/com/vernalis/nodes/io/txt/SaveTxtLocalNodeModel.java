@@ -19,9 +19,7 @@ package com.vernalis.nodes.io.txt;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -218,8 +216,22 @@ public class SaveTxtLocalNodeModel extends SimpleStreamableFunctionNodeModel {
 				new DataColumnSpecCreator(m_SuccesscolumnName.getStringValue(),
 						BooleanCell.TYPE).createSpec();
 
-		File parentFolder = userParentFolderMdl.getBooleanValue()
-				? new File(parentFolderMdl.getStringValue()) : null;
+		File parentFolder;
+
+		try {
+			parentFolder = userParentFolderMdl.getBooleanValue()
+					? FileHelpers.resolveKnimeProtocol(
+							parentFolderMdl.getStringValue())
+					: null;
+			if (parentFolder != null
+					&& !FileHelpers.createContainerFolder(parentFolder, true)) {
+				throw new IOException("Unable to create parent directory '"
+						+ parentFolderMdl.getStringValue() + "'");
+			}
+		} catch (Exception e) {
+			throw new InvalidSettingsException(
+					"Error resolving local folder path - " + e.getMessage(), e);
+		}
 
 		// utility object that performs the calculation
 		SingleCellFactory factory = new SingleCellFactory(true, newColSpec) {
@@ -243,37 +255,32 @@ public class SaveTxtLocalNodeModel extends SimpleStreamableFunctionNodeModel {
 				// Here we actually do the meat of the work and save the txt
 				// file
 				// 1. Check if the directory exist and create it if not
-
-				String pathToFile = ((StringValue) pathcell).getStringValue();
-				if (userParentFolderMdl.getBooleanValue()) {
-					pathToFile = new File(parentFolder, pathToFile).getPath();
-				}
+				File pathToFile;
 				try {
-					pathToFile = FileHelpers.forceURL(pathToFile);
-					pathToFile = Paths.get(new URI(pathToFile)).toAbsolutePath()
-							.toString();
+					pathToFile = FileHelpers.resolveKnimeProtocol(
+							((StringValue) pathcell).getStringValue());
+					if (userParentFolderMdl.getBooleanValue()) {
+						pathToFile =
+								new File(parentFolder, pathToFile.getPath());
+					}
+					if (!FileHelpers.createContainerFolder(pathToFile, false)) {
+						// Containing folder doesnt exist and for unknown reason
+						// we fail to make it
+						throw new IOException("Container folder for file '"
+								+ pathToFile.getPath()
+								+ "' does not exist and could not be created");
+					}
+					// Now we actually write the file..
+					String stringText =
+							((StringValue) txtcell).getStringValue();
+					return BooleanCellFactory
+							.create(FileHelpers.saveStringToPath(stringText,
+									pathToFile, m_Overwrite.getBooleanValue()));
 				} catch (IOException | URISyntaxException e) {
 					logger.warn("Error parsing file path: " + e.getMessage());
-				}
-				logger.debug(pathToFile);
-				// if (!(FileHelpers.isPath(pathToFile))) {
-				// // Well it doesnt look like a path so return fail!
-				// logger.info("Path '" + pathToFile + "' does not look like a
-				// path!");
-				// return BooleanCell.FALSE;
-				// }
-				if (!(FileHelpers.checkContainerFolderExists(pathToFile))
-						&& !(FileHelpers.createContainerFolder(pathToFile))) {
-					// Folder doesnt exist and for unknown reason we fail to
-					// make it
-					logger.info("Container folder for file '" + pathToFile
-							+ "' does not exist and could not be created");
 					return BooleanCell.FALSE;
 				}
-				// Now we actually write the file..
-				String stringText = ((StringValue) txtcell).getStringValue();
-				return BooleanCellFactory.create(FileHelpers.saveStringToPath(
-						stringText, pathToFile, m_Overwrite.getBooleanValue()));
+
 			}
 		};
 		c.append(factory);

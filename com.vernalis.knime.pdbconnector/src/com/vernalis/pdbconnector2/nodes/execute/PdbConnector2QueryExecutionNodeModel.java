@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -18,6 +18,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
@@ -48,6 +51,8 @@ import com.vernalis.pdbconnector2.query.RCSBQueryRunner;
 import com.vernalis.pdbconnector2.query.ScoringType;
 
 import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createIncludeJsonModel;
+import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createLimitHitsModel;
+import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createMaxHitsModel;
 import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createPageSizeModel;
 import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createReturnTypeModel;
 import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createScoringTypeModel;
@@ -55,13 +60,9 @@ import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecuti
 /**
  * {@link NodeModel} implementation for the PDB Connector Query Executer node
  * 
+ * Changes v.1.28.3 - Added support for limiting returned hits
+ * 
  * @author S.Roughley knime@vernalis.com
- * @since 1.28.0
- *
- */
-/**
- * @author S.Roughley knime@vernalis.com
- * @since 1.28.0
  *
  */
 public class PdbConnector2QueryExecutionNodeModel extends NodeModel
@@ -77,6 +78,8 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 			registerSettingsModel(createPageSizeModel());
 	private final SettingsModelBoolean includeJsonMdl =
 			registerSettingsModel(createIncludeJsonModel());
+	private final SettingsModelBoolean limitHitsMdl = createLimitHitsModel();
+	private final SettingsModelIntegerBounded maxHitsMdl = createMaxHitsModel();
 
 	/**
 	 * Constructor
@@ -84,7 +87,15 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 	public PdbConnector2QueryExecutionNodeModel() {
 		super(new PortType[] { RCSBQueryPortObject.TYPE },
 				new PortType[] { BufferedDataTable.TYPE });
+		limitHitsMdl.addChangeListener(new ChangeListener() {
 
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				maxHitsMdl.setEnabled(limitHitsMdl.getBooleanValue());
+
+			}
+		});
+		maxHitsMdl.setEnabled(limitHitsMdl.getBooleanValue());
 	}
 
 	@Override
@@ -149,7 +160,15 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 				ScoringType.fromText(scoringTypeMdl.getStringValue()));
 		runner.setPageSize(pageSizeMdl.getIntValue());
 		runner.setIncludeJson(includeJsonMdl.getBooleanValue());
-		runner.runQueryToTable(bdc, exec);
+		if (limitHitsMdl.getBooleanValue()) {
+			runner.setReturnedHitsLimit(maxHitsMdl.getIntValue());
+		} else {
+			runner.clearReturnedHitsLimit();
+		}
+		if (!runner.runQueryToTable(bdc, exec)) {
+			setWarningMessage(
+					"Returned hits were truncated by node settings - not all hits were returned");
+		}
 		bdc.close();
 		return new PortObject[] { bdc.getTable() };
 	}
@@ -174,7 +193,8 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 	@Override
 	public void saveSettingsTo(NodeSettingsWO settings) {
 		SettingsModelRegistry.super.saveSettingsTo(settings);
-
+		limitHitsMdl.saveSettingsTo(settings);
+		maxHitsMdl.saveSettingsTo(settings);
 	}
 
 	@Override
@@ -188,7 +208,13 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 	public void loadValidatedSettingsFrom(NodeSettingsRO settings)
 			throws InvalidSettingsException {
 		SettingsModelRegistry.super.loadValidatedSettingsFrom(settings);
-
+		try {
+			limitHitsMdl.loadSettingsFrom(settings);
+			maxHitsMdl.loadSettingsFrom(settings);
+		} catch (InvalidSettingsException e) {
+			setWarningMessage(
+					"Using default legacy values for limit hits settings");
+		}
 	}
 
 	@Override

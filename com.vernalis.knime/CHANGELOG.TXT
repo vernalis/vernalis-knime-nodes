@@ -1,3 +1,8 @@
+v1.28.3 15-Feb-2021
+===================
+* PDB Saver node now correctly handles knime:// URL protocol in both full paths in columns and in parent folder settings (#12)
+* Save File Locally node now correctly handles knime:// URL protocol in both full paths in columns and in parent folder settings (Fixes #12)
+
 v1.25.0 16-Dec-2019
 ===================
 * Fixed bug in inject column properties node causing IndexOutOfBoundsException to be thrown if < 3 input columns present in the 2nd table

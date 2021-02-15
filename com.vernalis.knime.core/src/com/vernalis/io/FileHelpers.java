@@ -90,6 +90,37 @@ public class FileHelpers {
 	}
 
 	/**
+	 * Method to return a valid local File from a knime:/ or file:/ protocol
+	 * URL.
+	 * 
+	 * @param knimeUrl
+	 *            The url or file path
+	 * @return A local File object pointing to the path resolved to be the url
+	 * @throws IOException
+	 *             If there were errors resolving the local URL
+	 * @throws URISyntaxException
+	 *             If there were problems with the URI
+	 * @throws IllegalArgumentException
+	 *             If an http, https or ftp protocol url is supplied
+	 * @since 1.28.3
+	 */
+	public static File resolveKnimeProtocol(String knimeUrl)
+			throws IOException, URISyntaxException, IllegalArgumentException {
+		if (knimeUrl.toLowerCase().startsWith("knime:")) {
+			return new File(ResolverUtil
+					.resolveURItoLocalFile(new URI(knimeUrl)).toURI());
+		} else if (knimeUrl.toLowerCase().startsWith("file:")) {
+			return new File(new URI(knimeUrl));
+		} else if ((knimeUrl.toLowerCase().startsWith("http:")
+				|| knimeUrl.toLowerCase().startsWith("https:")
+				|| knimeUrl.toLowerCase().startsWith("ftp:"))) {
+			throw new IllegalArgumentException(
+					"http, https, and ftp protocols are not accepted");
+		}
+		return new File(knimeUrl);
+	}
+
+	/**
 	 * Utility function to check whether the container folder exists for a given
 	 * filepath
 	 * 
@@ -111,16 +142,67 @@ public class FileHelpers {
 	 *            folder being created)
 	 * @return True if the folder was successfully created (NB will return False
 	 *         if already exists)
+	 * @deprecated Use {@link #createContainerFolder(File, boolean)}. Since
+	 *             v1.28.3
 	 */
-	public static synchronized boolean createContainerFolder(
-			String PathToFile) {
-		File f = new File(PathToFile);
-		f = f.getParentFile();
+	@Deprecated
+	public static synchronized boolean
+			createContainerFolder(String PathToFile) {
+		return createContainerFolder(new File(PathToFile), false);
+	}
+
+	/**
+	 * Method to ensure a directory exists in a thread-safe manner (If a second
+	 * thread creates a folder after the initial check, the
+	 * {@link File#mkdirs()} will return {@code false})
+	 * 
+	 * @param pathToFile
+	 *            The file
+	 * @param fileIsParent
+	 *            if true, the pathToFile argument represents a parent folder,
+	 *            otherwise, it represents a file, and we want to create the
+	 *            parent folder
+	 * @return true if the folder exists or was successfully created
+	 * @since 1.28.3
+	 */
+	public static synchronized boolean createContainerFolder(File pathToFile,
+			boolean fileIsParent) {
+		File f = fileIsParent ? pathToFile : pathToFile.getParentFile();
 		if (f.exists()) {
 			// It now exists, even if it didnt previously!
 			return true;
 		}
 		return f.mkdirs();
+	}
+
+	/**
+	 * Method to save a text file. The caller is responsible for ensuring the
+	 * parent directory structure exists.
+	 * 
+	 * @param fileContent
+	 *            The text to save to the file
+	 * @param pathToFile
+	 *            The file to save to
+	 * @param overwrite
+	 *            Whether the file should be overwritten
+	 * @return true if the file was successfully written
+	 * @since 1.28.3
+	 */
+	public static boolean saveStringToPath(String fileContent, File pathToFile,
+			boolean overwrite) {
+		boolean r = false;
+		if (overwrite || !pathToFile.exists()) {
+			try (BufferedWriter output =
+					new BufferedWriter(new FileWriter(pathToFile))) {
+				// FileWriter always assumes default encoding is OK!
+				output.write(fileContent);
+				r = true;
+			} catch (Exception e) {
+				logger.warn(e.getMessage());
+				r = false;
+			}
+		}
+		return r;
 	}
 
 	/**
@@ -136,26 +218,13 @@ public class FileHelpers {
 	 * @param Overwrite
 	 *            If True, existing files will be overwritten
 	 * @return True if the file was successfully written
+	 * @deprecated Use {@link #saveStringToPath(String, File, boolean)} Since
+	 *             v1.28.3
 	 */
+	@Deprecated
 	public static boolean saveStringToPath(String PDBString, String PathToFile,
 			Boolean Overwrite) {
-
-		File f = new File(PathToFile);
-		Boolean r = false;
-		if (Overwrite || !f.exists()) {
-			try {
-				BufferedWriter output =
-						new BufferedWriter(new FileWriter(PathToFile));
-				// FileWriter always assumes default encoding is OK!
-				output.write(PDBString);
-				output.close();
-				r = true;
-			} catch (Exception e) {
-				e.printStackTrace();
-				r = false;
-			}
-		}
-		return r;
+		return saveStringToPath(PDBString, new File(PathToFile), Overwrite);
 	}
 
 	/**
@@ -473,29 +542,30 @@ public class FileHelpers {
 			rd.reset();
 		}
 		switch (sb.length()) {
-		case 0:
-			// Nothing found
-			logger.info(
-					"No linebreak found, using System default ("
-							+ LineBreak.SYSTEM.getNewlineString()
-									.replace("\n", "\\n").replace("\r", "\\r")
-							+ ")");
-			return LineBreak.SYSTEM;
-		case 1:
-			logger.debug("Using UNIX-Style linebreaks");
-			return LineBreak.UNIX;
-		case 2:
-			logger.debug("Using Windows-style linebreaks");
-			return LineBreak.WINDOWS;
-		default:
-			// Shouldnt ever be here!
-			logger.info("Linebreak found has " + sb.length() + " characters ("
-					+ sb.toString() + "), using System default");
-			return LineBreak.getDefault();
+			case 0:
+				// Nothing found
+				logger.info("No linebreak found, using System default ("
+						+ LineBreak.SYSTEM.getNewlineString()
+								.replace("\n", "\\n").replace("\r", "\\r")
+						+ ")");
+				return LineBreak.SYSTEM;
+			case 1:
+				logger.debug("Using UNIX-Style linebreaks");
+				return LineBreak.UNIX;
+			case 2:
+				logger.debug("Using Windows-style linebreaks");
+				return LineBreak.WINDOWS;
+			default:
+				// Shouldnt ever be here!
+				logger.info(
+						"Linebreak found has " + sb.length() + " characters ("
+								+ sb.toString() + "), using System default");
+				return LineBreak.getDefault();
 		}
 	}
 
 	public enum LineBreak implements ButtonGroupEnumInterface {
+
 		SYSTEM {
 
 			@Override
