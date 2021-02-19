@@ -17,21 +17,27 @@ package com.vernalis.knime.flowcontrol.nodes.loops.abstrct.multiportloopend;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
-import org.knime.core.data.DataTable;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataTableSpecCreator;
+import org.knime.core.data.DataType;
 import org.knime.core.data.RowIterator;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.append.AppendedColumnRow;
 import org.knime.core.data.append.AppendedRowsTable;
 import org.knime.core.data.container.BlobSupportDataRow;
 import org.knime.core.data.container.ConcatenateTable;
-import org.knime.core.data.def.DefaultRowIterator;
+import org.knime.core.data.def.DefaultRow;
+import org.knime.core.data.def.DefaultTable;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
@@ -40,6 +46,7 @@ import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.tableview.TableView;
 import org.knime.core.util.DuplicateChecker;
 import org.knime.core.util.DuplicateKeyException;
+import org.knime.core.util.Pair;
 
 import com.vernalis.knime.core.collections.FixedLengthQueue;
 
@@ -95,7 +102,7 @@ public class ConcatenatingTablesCollector {
 	 * 
 	 * @since v1.29.0
 	 */
-	private FixedLengthQueue<DataRow> previewRows;
+	private FixedLengthQueue<Pair<DataTableSpec, DataRow>> previewRows;
 
 	/**
 	 * The number of preview rows to store
@@ -233,6 +240,9 @@ public class ConcatenatingTablesCollector {
 				String comparisonMessage =
 						getComparisonMessage(tmpSpec1, tmpSpec2);
 				if (comparisonMessage != null) {
+					synchronized (previewRows) {
+						previewRows.clear();
+					}
 					throw new IllegalArgumentException(comparisonMessage);
 				}
 			}
@@ -290,7 +300,7 @@ public class ConcatenatingTablesCollector {
 			// Make sure we dont modify the preview table while we are using it
 			// to create a view
 			synchronized (previewRows) {
-				previewRows.add(row);
+				previewRows.add(new Pair<>(newTableSpec, row));
 			}
 
 		}
@@ -302,27 +312,72 @@ public class ConcatenatingTablesCollector {
 	 * @return A Table Preview of the current preview rows
 	 * @since v1.29.0
 	 */
+	@SuppressWarnings("deprecation")
 	TableView getPreviewView() {
-
-		return new TableView(new DataTable() {
-
-			@Override
-			public RowIterator iterator() {
-				// Take a copy for the view to avoid iterator weirdness as the
-				// underlying collection changes, making sure that the
-				// collection cant be changed while we create teh snapshot
-				FixedLengthQueue<DataRow> snapshot;
-				synchronized (previewRows) {
-					snapshot = new FixedLengthQueue<>(previewRows);
+		if (getTableSpec() == null) {
+			return null;
+		}
+		DataTableSpec[] previewSpecs;
+		List<DataRow> snapshot;
+		DataTableSpec spec;
+		synchronized (previewRows) {
+			previewSpecs = previewRows.stream().map(p -> p.getFirst())
+					.toArray(DataTableSpec[]::new);
+			if (previewSpecs.length == 1) {
+				// All the preview rows use the same column spec - simple!
+				snapshot = previewRows.stream().map(p -> p.getSecond())
+						.collect(Collectors.toList());
+				spec = previewSpecs[0];
+			} else {
+				// We have a mix of column specs in the preview rows -
+				// complicated!
+				spec = AppendedRowsTable.generateDataTableSpec(previewSpecs);
+				// Create a map of column mappings for each spec. The array
+				// index is the position in the output spec, the value is the
+				// old index, or -1 for a missing cell. e.g [0,2,-1,1,-1,-1]
+				// means the columns map as follows:
+				// @formatter:off
+				// New | Old
+				// =========
+				//  0  |  0 
+				//  1  |  2
+				//  2  |  Missing Cell
+				//  3  |  1
+				//  4  |  Missing Cell
+				//  5  |  Missing Cell
+				// @formatter:on
+				Map<DataTableSpec, int[]> mappings = new HashMap<>();
+				for (DataTableSpec tSpec : previewSpecs) {
+					if (!tSpec.equalStructure(spec)) {
+						mappings.put(tSpec,
+								spec.stream().mapToInt(colSpec -> tSpec
+										.findColumnIndex(colSpec.getName()))
+										.toArray());
+					}
 				}
-				return new DefaultRowIterator(snapshot);
+				// Now we need to Map the Rows to new Rows
+				snapshot = new ArrayList<>();
+				for (Pair<DataTableSpec, DataRow> row : previewRows) {
+					if (row.getFirst().equalStructure(spec)) {
+						// This row can go straight over...
+						snapshot.add(row.getSecond());
+					} else {
+						// Need to Map the cells
+						int[] map = mappings.get(row.getFirst());
+						DataCell[] cells = new DataCell[spec.getNumColumns()];
+						for (int i = 0; i < cells.length; i++) {
+							cells[i] = map[i] < 0 ? DataType.getMissingCell()
+									: row.getSecond().getCell(map[i]);
+						}
+						snapshot.add(new DefaultRow(row.getSecond().getKey(),
+								cells));
+					}
+				}
 			}
+		}
 
-			@Override
-			public DataTableSpec getDataTableSpec() {
-				return getTableSpec();
-			}
-		});
+		return new TableView(
+				new DefaultTable(snapshot.toArray(new DataRow[0]), spec));
 	}
 
 	/**
@@ -411,11 +466,18 @@ public class ConcatenatingTablesCollector {
 				null, tables);
 		BufferedDataContainer con =
 				exec.createDataContainer(wrapper.getDataTableSpec());
+		synchronized (previewRows) {
+			previewRows.clear();
+		}
 		RowIterator rowIt = wrapper.iterator();
 		exec.setProgress("Too many tables. Copy tables into one table.");
 		while (rowIt.hasNext()) {
 			exec.checkCanceled();
-			con.addRowToTable(rowIt.next());
+			final DataRow row = rowIt.next();
+			con.addRowToTable(row);
+			synchronized (previewRows) {
+				previewRows.add(new Pair<>(wrapper.getDataTableSpec(), row));
+			}
 		}
 		con.close();
 		BufferedDataContainer last = m_tables.get(m_tables.size() - 1);
