@@ -21,8 +21,11 @@ package com.vernalis.knime.flowcontrol.nodes.loops.abstrct.multiportloopend;
  *
  */
 public enum RowPolicies {
-	GENERATE_NEW("Generate new Row IDs"), APPEND_SUFFIX("Unique Row IDs by appending suffix"),
+
+	GENERATE_NEW("Generate new Row IDs"),
+	APPEND_SUFFIX("Unique Row IDs by appending suffix"),
 	UNMODIFIED("Leave Row IDs unchanged");
+
 	private final String displayText;
 
 	private RowPolicies(String displayText) {
