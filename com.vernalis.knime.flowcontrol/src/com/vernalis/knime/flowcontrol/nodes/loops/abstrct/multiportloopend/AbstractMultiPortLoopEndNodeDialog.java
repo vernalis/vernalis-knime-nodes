@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2016 Vernalis (R&D) Ltd
+ * Copyright (c) 2014, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -36,6 +36,7 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.NotConfigurableException;
+import org.knime.core.node.context.ports.PortsConfiguration;
 
 /**
  * <code>NodeDialog</code> for the "AbstractMultiPortLoopEnd" Node. Loop end
@@ -43,9 +44,12 @@ import org.knime.core.node.NotConfigurableException;
  * 
  * This node dialog derives from {@link AbstractLoopEndNodeDialog}.
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @version 1.29.0 Added {@link PortsConfiguration} constructor
+ * 
+ * @author "Stephen Roughley knime@vernalis.com"
  */
 public class AbstractMultiPortLoopEndNodeDialog extends NodeDialogPane {
+
 	/** The node settings */
 	protected final AbstractMultiPortLoopEndSettings m_settings;
 
@@ -96,7 +100,8 @@ public class AbstractMultiPortLoopEndNodeDialog extends NodeDialogPane {
 	 * @param optionalInPorts
 	 *            the optional in ports
 	 */
-	public AbstractMultiPortLoopEndNodeDialog(final int numPorts, final boolean optionalInPorts) {
+	public AbstractMultiPortLoopEndNodeDialog(final int numPorts,
+			final boolean optionalInPorts) {
 
 		m_panel = new JPanel(new GridBagLayout());
 		m_gbc = new GridBagConstraints();
@@ -120,12 +125,14 @@ public class AbstractMultiPortLoopEndNodeDialog extends NodeDialogPane {
 			if (m_NumPorts > 1) {
 				portPanel.setBorder(new TitledBorder("Port " + i));
 			} else {
-				portPanel.setLayout(new BoxLayout(portPanel, BoxLayout.PAGE_AXIS));
+				portPanel.setLayout(
+						new BoxLayout(portPanel, BoxLayout.PAGE_AXIS));
 			}
 
 			// A but group for the row policy in its own panel
 			m_rowKeyPolicies[i] = new ButtonGroup();
-			JPanel rkPolicyPanel = new JPanel(new GridLayout(RowPolicies.values().length, 1));
+			JPanel rkPolicyPanel =
+					new JPanel(new GridLayout(RowPolicies.values().length, 1));
 			rkPolicyPanel.setBorder(new TitledBorder("Row key policy"));
 			for (RowPolicies p : RowPolicies.values()) {
 				JRadioButton rButton = new JRadioButton(p.getDisplayText());
@@ -144,10 +151,12 @@ public class AbstractMultiPortLoopEndNodeDialog extends NodeDialogPane {
 			m_ignoreEmptyTables[i] = new JCheckBox("Ignore empty input tables");
 			booleans.add(m_ignoreEmptyTables[i]);
 
-			m_allowChangingColTypes[i] = new JCheckBox("Allow changing column types");
+			m_allowChangingColTypes[i] =
+					new JCheckBox("Allow changing column types");
 			booleans.add(m_allowChangingColTypes[i]);
 
-			m_allowChangingSpecs[i] = new JCheckBox("Allow changing table specs");
+			m_allowChangingSpecs[i] =
+					new JCheckBox("Allow changing table specs");
 			booleans.add(m_allowChangingSpecs[i]);
 			portPanel.add(booleans);
 			addComponent(portPanel);
@@ -160,6 +169,24 @@ public class AbstractMultiPortLoopEndNodeDialog extends NodeDialogPane {
 		addTab("Standard Settings", m_panel);
 	}
 
+	/**
+	 * Constructor from a {@link PortsConfiguration} object
+	 * 
+	 * @param portsConfiguration
+	 *            The port configuration object
+	 * @since v1.29.0
+	 */
+	public AbstractMultiPortLoopEndNodeDialog(
+			PortsConfiguration portsConfiguration) {
+		this(portsConfiguration.getInputPorts().length, false);
+	}
+
+	/**
+	 * Method to add a component to the settings panel
+	 * 
+	 * @param component
+	 *            The component to add
+	 */
 	protected void addComponent(final Component component) {
 		m_gbc.gridy++;
 		m_panel.add(component, m_gbc);
@@ -173,17 +200,23 @@ public class AbstractMultiPortLoopEndNodeDialog extends NodeDialogPane {
 	 * (org.knime.base.node.meta.looper.AbstractLoopEndNodeSettings)
 	 */
 	@Override
-	protected void saveSettingsTo(final NodeSettingsWO settings) throws InvalidSettingsException {
+	protected void saveSettingsTo(final NodeSettingsWO settings)
+			throws InvalidSettingsException {
 
 		for (int i = 0; i < m_NumPorts; i++) {
-			m_settings.ignoreEmptyTables(i, m_ignoreEmptyTables[i].isSelected());
-			m_settings.setAllowChangingTableSpecs(i, m_allowChangingSpecs[i].isSelected());
-			m_settings.setAllowChangingColumnTypes(i, m_allowChangingColTypes[i].isSelected());
-			m_settings.setAddIterationColumn(i, m_addIterationCols[i].isSelected());
+			m_settings.ignoreEmptyTables(i,
+					m_ignoreEmptyTables[i].isSelected());
+			m_settings.setAllowChangingTableSpecs(i,
+					m_allowChangingSpecs[i].isSelected());
+			m_settings.setAllowChangingColumnTypes(i,
+					m_allowChangingColTypes[i].isSelected());
+			m_settings.setAddIterationColumn(i,
+					m_addIterationCols[i].isSelected());
 			m_settings.setRowKeyPolicyName(i,
 					m_rowKeyPolicies[i].getSelection().getActionCommand());
 		}
-		m_settings.setInactivatedDisconnectedBranches(m_inactivateDisconnecteds.isSelected());
+		m_settings.setInactivatedDisconnectedBranches(
+				m_inactivateDisconnecteds.isSelected());
 		m_settings.saveSettings(settings);
 	}
 
@@ -195,17 +228,20 @@ public class AbstractMultiPortLoopEndNodeDialog extends NodeDialogPane {
 	 * (org.knime.base.node.meta.looper.AbstractLoopEndNodeSettings)
 	 */
 	@Override
-	protected void loadSettingsFrom(final NodeSettingsRO settings, final DataTableSpec[] specs)
-			throws NotConfigurableException {
+	protected void loadSettingsFrom(final NodeSettingsRO settings,
+			final DataTableSpec[] specs) throws NotConfigurableException {
 		m_settings.loadSettings(settings);
 		for (int i = 0; i < m_NumPorts; i++) {
 			m_ignoreEmptyTables[i].setSelected(m_settings.ignoreEmptyTables(i));
-			m_allowChangingSpecs[i].setSelected(m_settings.allowChangingTableSpecs(i));
-			m_allowChangingColTypes[i].setSelected(m_settings.allowChangingColumnTypes(i));
-			m_addIterationCols[i].setSelected(m_settings.getAddIterationColumn(i));
+			m_allowChangingSpecs[i]
+					.setSelected(m_settings.allowChangingTableSpecs(i));
+			m_allowChangingColTypes[i]
+					.setSelected(m_settings.allowChangingColumnTypes(i));
+			m_addIterationCols[i]
+					.setSelected(m_settings.getAddIterationColumn(i));
 			String rkp = m_settings.getRowKeyPolicy(i).getActionCommand();
-			for (Enumeration<AbstractButton> e = m_rowKeyPolicies[i].getElements(); e
-					.hasMoreElements();) {
+			for (Enumeration<AbstractButton> e =
+					m_rowKeyPolicies[i].getElements(); e.hasMoreElements();) {
 				AbstractButton b = e.nextElement();
 				b.setSelected(b.getActionCommand().equals(rkp));
 				b.setEnabled(specs[i] != null);
@@ -223,7 +259,8 @@ public class AbstractMultiPortLoopEndNodeDialog extends NodeDialogPane {
 				m_addIterationCols[i].setEnabled(true);
 			}
 		}
-		m_inactivateDisconnecteds.setSelected(m_settings.inactivateDisconnectedBranches());
+		m_inactivateDisconnecteds
+				.setSelected(m_settings.inactivateDisconnectedBranches());
 	}
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, Vernalis (R&D) Ltd
+ * Copyright (c) 2014, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -22,10 +22,11 @@ import org.knime.core.node.NodeView;
  * <code>NodeFactory</code> for the "AbstractMultiPortLoopEnd" Node. Loop end
  * node to handle optional input ports n
  * 
- * @author "Stephen Roughley  knime@vernalis.com"
+ * @version 1.29.0 Added node view
+ * @author "Stephen Roughley knime@vernalis.com"
  */
-public abstract class AbstractMultiPortLoopEndNodeFactory extends
-		NodeFactory<AbstractMultiPortLoopEndNodeModel> {
+public abstract class AbstractMultiPortLoopEndNodeFactory
+		extends NodeFactory<AbstractMultiPortLoopEndNodeModel> {
 
 	/** The number of ports. */
 	final Integer m_numPorts;
@@ -72,7 +73,7 @@ public abstract class AbstractMultiPortLoopEndNodeFactory extends
 	 */
 	@Override
 	public int getNrNodeViews() {
-		return 0;
+		return 1;
 	}
 
 	/**
@@ -82,7 +83,7 @@ public abstract class AbstractMultiPortLoopEndNodeFactory extends
 	public NodeView<AbstractMultiPortLoopEndNodeModel> createNodeView(
 			final int viewIndex,
 			final AbstractMultiPortLoopEndNodeModel nodeModel) {
-		return null;
+		return new AbstractMultiPortLoopEndNodeView(nodeModel);
 	}
 
 	/**

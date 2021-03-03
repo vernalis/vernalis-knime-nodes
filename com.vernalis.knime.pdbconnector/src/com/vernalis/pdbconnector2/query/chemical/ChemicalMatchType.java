@@ -44,7 +44,25 @@ public enum ChemicalMatchType implements ButtonGroupEnumInterface {
 	/**
 	 * Fingerprint similarity match
 	 */
-	Fingerprint_Similarity;
+	Fingerprint_Similarity,
+
+	/**
+	 * Strict Substructure Graph Query
+	 * @since 1.28.3
+	 */
+	Sub_Struct_Graph_Strict,
+
+	/**
+	 * Relaxed Substructure Graph Query
+	 * @since 1.28.3
+	 */
+	Sub_Struct_Graph_Relaxed,
+
+	/**
+	 * Relaxed Substructure Stereo Graph Query
+	 * @since 1.28.3
+	 */
+	Sub_Struct_Graph_Relaxed_Stereo;
 
 	@Override
 	public String getText() {

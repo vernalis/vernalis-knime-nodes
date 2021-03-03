@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2016 Vernalis (R&D) Ltd
+ * Copyright (c) 2014, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -31,6 +31,7 @@ import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.context.ports.PortsConfiguration;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
@@ -46,9 +47,11 @@ import com.vernalis.knime.flowcontrol.FlowControlHelpers;
  * This is the model implementation of AbstractMultiPortLoopEnd. Loop end node
  * to handle optional input ports n
  * 
+ * @version 1.29.0 Added {@link PortsConfiguration} constructor
  * @author S. Roughley
  */
-public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements LoopEndNode {
+public class AbstractMultiPortLoopEndNodeModel extends NodeModel
+		implements LoopEndNode {
 
 	/** the logger instance. */
 	protected final NodeLogger logger = NodeLogger.getLogger(getClass());
@@ -86,54 +89,86 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements Loop
 
 	/**
 	 * Constructor for the model, specifying the number of ports and whether any
-	 * are optional. If there are more than two ports, and
-	 * {@link optionalInPorts} are specified, then all except the first are
-	 * optional
+	 * are optional. If there are more than two ports, and {code
+	 * optionalInPorts} are specified, then all except the first are optional
 	 * 
 	 * @param numPorts
 	 *            The number of dataports
 	 * @param optionalInPorts
 	 *            Boolean specifying whether the in-ports are optional when
-	 *            there {@link numPorts} > 2. Omitting this argument treats it
+	 *            there {@code numPorts} > 2. Omitting this argument treats it
 	 *            as 'true'
 	 */
-	public AbstractMultiPortLoopEndNodeModel(final int numPorts, final boolean optionalInPorts) {
+	public AbstractMultiPortLoopEndNodeModel(final int numPorts,
+			final boolean optionalInPorts) {
 		this((optionalInPorts)
-				? FlowControlHelpers.createEndInPorts(BufferedDataTable.TYPE, numPorts)
-				: FlowControlHelpers.createStartOutPorts(BufferedDataTable.TYPE, numPorts),
-				FlowControlHelpers.createStartOutPorts(BufferedDataTable.TYPE, numPorts));
+				? FlowControlHelpers.createEndInPorts(BufferedDataTable.TYPE,
+						numPorts)
+				: FlowControlHelpers.createStartOutPorts(BufferedDataTable.TYPE,
+						numPorts),
+				FlowControlHelpers.createStartOutPorts(BufferedDataTable.TYPE,
+						numPorts));
 	}
 
+	/**
+	 * Constructor specifying the port types
+	 * 
+	 * @param inPortTypes
+	 *            The incoming port types
+	 * @param outPortTypes
+	 *            The outgoing port types
+	 */
 	protected AbstractMultiPortLoopEndNodeModel(final PortType[] inPortTypes,
 			final PortType[] outPortTypes) {
 		super(inPortTypes, outPortTypes);
 		m_NumPorts = inPortTypes.length;
-		m_resultContainer = new ConcatenatingTablesCollector[inPortTypes.length];
+		m_resultContainer =
+				new ConcatenatingTablesCollector[inPortTypes.length];
 		m_settings = new AbstractMultiPortLoopEndSettings(inPortTypes.length);
-		// m_emptyTable = new BufferedDataTable[inPortTypes.];
+
+	}
+
+	/**
+	 * Constructor from a {@link PortsConfiguration} object
+	 * 
+	 * @param portsConfiguration
+	 *            The port configuration
+	 * @since v1.29.0
+	 */
+	public AbstractMultiPortLoopEndNodeModel(
+			PortsConfiguration portsConfiguration) {
+		super(portsConfiguration.getInputPorts(),
+				portsConfiguration.getOutputPorts());
+		m_NumPorts = getNrInPorts();
+		m_resultContainer = new ConcatenatingTablesCollector[m_NumPorts];
+		m_settings = new AbstractMultiPortLoopEndSettings(m_NumPorts);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
-			throws Exception {
+	protected PortObject[] execute(final PortObject[] inData,
+			final ExecutionContext exec) throws Exception {
 		validateLoopStartNode();
 
 		// Handle whatever data tables we find in the current iteration
 		for (int i = 0; i < m_NumPorts; i++) {
 			if (m_currentIteration == 0 || m_resultContainer[i] == null) {
 				m_resultContainer[i] = new ConcatenatingTablesCollector(
-						m_settings.ignoreEmptyTables(i), m_settings.getAddIterationColumn(i),
+						m_settings.ignoreEmptyTables(i),
+						m_settings.getAddIterationColumn(i),
 						m_settings.allowChangingColumnTypes(i),
 						m_settings.allowChangingTableSpecs(i),
-						Optional.of(m_settings.getRowKeyPolicy(i)), Optional.of(i));
+						Optional.of(m_settings.getRowKeyPolicy(i)),
+						Optional.of(i));
 			}
 
 			if (inData[i] != null) {
 				try {
-					m_resultContainer[i].appendTable((BufferedDataTable) inData[i], exec);
+					m_resultContainer[i]
+							.appendTable((BufferedDataTable) inData[i], exec);
+
 				} catch (IllegalArgumentException e) {
 					for (String errorLine : e.getMessage().split(";[\\s]*")) {
 						// Report the problem(s) to the console in a
@@ -148,7 +183,8 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements Loop
 		}
 
 		// Now check whether we are at the end of the loop
-		if (((LoopStartNodeTerminator) this.getLoopStartNode()).terminateLoop()) {
+		if (((LoopStartNodeTerminator) this.getLoopStartNode())
+				.terminateLoop()) {
 			boolean[] portsConnected = new boolean[inData.length];
 			for (int i = 0; i < inData.length; i++) {
 				portsConnected[i] = inData[i] != null;
@@ -161,7 +197,9 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements Loop
 	}
 
 	/**
-	 * @return
+	 * Method to end loop iteration and trigger next loop iteration
+	 * 
+	 * @return An empty set of tables as we are in an intermediate iteration
 	 */
 	protected PortObject[] continueLoopExecution() {
 		continueLoop();
@@ -175,7 +213,8 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements Loop
 	 */
 	protected void validateLoopStartNode() throws IllegalStateException {
 		if (!(this.getLoopStartNode() instanceof LoopStartNodeTerminator)) {
-			throw new IllegalStateException("No matching loop start node found!");
+			throw new IllegalStateException(
+					"No matching loop start node found!");
 		}
 	}
 
@@ -183,18 +222,22 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements Loop
 	 * Method called after incoming tables have been processed for what is then
 	 * found to be the final time
 	 * 
-	 * @param inData
+	 * @param inConnected
 	 *            Are the incoming ports connected?
 	 * @param exec
 	 *            The execution context
-	 * @return The out-going port objects
+	 * @return The out-going port objects for the final loop output
 	 * @throws CanceledExecutionException
+	 *             If the user cancels during execution of this method
 	 * @throws DuplicateKeyException
+	 *             If duplicate row keys are encountered
 	 * @throws IOException
+	 *             IF there is an IOException whilst checking for duplicate
+	 *             RowKeys
 	 */
 	protected PortObject[] endLoopExecution(final boolean[] inConnected,
-			final ExecutionContext exec)
-			throws CanceledExecutionException, DuplicateKeyException, IOException {
+			final ExecutionContext exec) throws CanceledExecutionException,
+			DuplicateKeyException, IOException {
 		final PortObject[] outTables = new PortObject[m_NumPorts];
 		for (int i = 0; i < m_NumPorts; i++) {
 			if (!inConnected[i]) {
@@ -224,12 +267,14 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements Loop
 	 * @param portId
 	 * @return The {@link DataTableSpec} for the output port
 	 */
-	private DataTableSpec createOutputTableSpec(final PortObjectSpec inSpec, int portId) {
-		return (m_settings.getAddIterationColumn(portId)) ? new DataTableSpec(
-				(DataTableSpec) inSpec,
-				new DataTableSpec((new DataColumnSpecCreator(
-						DataTableSpec.getUniqueColumnName(((DataTableSpec) inSpec), "Iteration"),
-						IntCell.TYPE)).createSpec()))
+	private DataTableSpec createOutputTableSpec(final PortObjectSpec inSpec,
+			int portId) {
+		return (m_settings.getAddIterationColumn(portId))
+				? new DataTableSpec((DataTableSpec) inSpec,
+						new DataTableSpec((new DataColumnSpecCreator(
+								DataTableSpec.getUniqueColumnName(
+										((DataTableSpec) inSpec), "Iteration"),
+								IntCell.TYPE)).createSpec()))
 				: ((DataTableSpec) inSpec);
 	}
 
@@ -258,7 +303,8 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements Loop
 				}
 			} else {
 				m_specs[i] = (m_settings.inactivateDisconnectedBranches())
-						? InactiveBranchPortObjectSpec.INSTANCE : new DataTableSpec();
+						? InactiveBranchPortObjectSpec.INSTANCE
+						: new DataTableSpec();
 			}
 		}
 		return m_specs;
@@ -287,9 +333,11 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements Loop
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		// We just try loading
-		AbstractMultiPortLoopEndSettings s = new AbstractMultiPortLoopEndSettings(m_NumPorts);
+		AbstractMultiPortLoopEndSettings s =
+				new AbstractMultiPortLoopEndSettings(m_NumPorts);
 		s.loadSettings(settings);
 	}
 
@@ -297,7 +345,8 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements Loop
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 
 	}
@@ -306,7 +355,8 @@ public class AbstractMultiPortLoopEndNodeModel extends NodeModel implements Loop
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 	}
 

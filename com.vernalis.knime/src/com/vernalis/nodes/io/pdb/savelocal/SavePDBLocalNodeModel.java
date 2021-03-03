@@ -18,6 +18,8 @@
 package com.vernalis.nodes.io.pdb.savelocal;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -212,8 +214,22 @@ public class SavePDBLocalNodeModel extends SimpleStreamableFunctionNodeModel {
 				new DataColumnSpecCreator(m_SuccesscolumnName.getStringValue(),
 						BooleanCell.TYPE).createSpec();
 
-		File parentFolder = userParentFolderMdl.getBooleanValue()
-				? new File(parentFolderMdl.getStringValue()) : null;
+		File parentFolder;
+
+		try {
+			parentFolder = userParentFolderMdl.getBooleanValue()
+					? FileHelpers.resolveKnimeProtocol(
+							parentFolderMdl.getStringValue())
+					: null;
+			if (parentFolder != null
+					&& !FileHelpers.createContainerFolder(parentFolder, true)) {
+				throw new IOException("Unable to create parent directory '"
+						+ parentFolderMdl.getStringValue() + "'");
+			}
+		} catch (Exception e) {
+			throw new InvalidSettingsException(
+					"Error resolving local folder path - " + e.getMessage(), e);
+		}
 
 		// utility object that performs the calculation
 		SingleCellFactory factory = new SingleCellFactory(true, newColSpec) {
@@ -236,27 +252,36 @@ public class SavePDBLocalNodeModel extends SimpleStreamableFunctionNodeModel {
 				// Here we actually do the meat of the work and save the pdb
 				// file
 				// 1. Check if the directory exist and create it if not
+				File pathToFile;
 
-				String pathToFile = ((StringValue) pathcell).getStringValue();
-				if (userParentFolderMdl.getBooleanValue()) {
-					if (!pathToFile.toLowerCase().endsWith(".pdb")) {
-						pathToFile += ".pdb";
+				try {
+					String pathStr = ((StringValue) pathcell).getStringValue();
+					if (!pathStr.toLowerCase().endsWith(".pdb")) {
+						pathStr += ".pdb";
 					}
-					pathToFile = new File(parentFolder, pathToFile).getPath();
-				}
-				if (!(FileHelpers.checkContainerFolderExists(pathToFile))) {
-					// If the folder doesnt exist we need to make it exist
-					if (!(FileHelpers.createContainerFolder(pathToFile))) {
-						// Folder doesnt exist and for unknown reason we
-						// fail to
-						// make it
-						return BooleanCell.FALSE;
+					pathToFile = FileHelpers.resolveKnimeProtocol(pathStr);
+					if (userParentFolderMdl.getBooleanValue()) {
+						pathToFile =
+								new File(parentFolder, pathToFile.getPath());
 					}
+					if (!FileHelpers.createContainerFolder(pathToFile, false)) {
+						// Containing folder doesnt exist and for unknown reason
+						// we fail to make it
+						throw new IOException("Container folder for file '"
+								+ pathToFile.getPath()
+								+ "' does not exist and could not be created");
+					}
+					// Now we actually write the file..
+					String stringText =
+							((StringValue) pdbcell).getStringValue();
+					return BooleanCellFactory
+							.create(FileHelpers.saveStringToPath(stringText,
+									pathToFile, m_Overwrite.getBooleanValue()));
+				} catch (IOException | URISyntaxException e) {
+					logger.warn("Error parsing file path: " + e.getMessage());
+					return BooleanCell.FALSE;
 				}
-				// Now we actually write the file..
-				String pdbtext = ((StringValue) pdbcell).getStringValue();
-				return BooleanCellFactory.create(FileHelpers.saveStringToPath(
-						pdbtext, pathToFile, m_Overwrite.getBooleanValue()));
+
 			}
 		};
 		c.append(factory);

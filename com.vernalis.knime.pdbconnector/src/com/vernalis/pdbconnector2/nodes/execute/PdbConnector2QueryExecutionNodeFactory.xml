@@ -60,8 +60,15 @@
 			call. Larger values will use more memory during node execution, but
 			result in fewer calls to the remote webservice
 		</option>
+		<option name="Limit Hits">Should the number of returned hits be limited
+		</option>
+		<option name="Maximum Hits to return">If the number of hits is limited, then the maximum
+			number of hits to return. If the node output is truncated by this
+			setting, then a node warning message will be displayed when query execution has completed
+		</option>
 		<option name="Include JSON in output">Should the raw JSON response from the webservice
-			call be included in the output table</option>
+			call be included in the output table
+		</option>
 
 	</fullDescription>
 

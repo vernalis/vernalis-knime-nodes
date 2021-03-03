@@ -1,3 +1,9 @@
+v1.28.3 15-Feb-2021
+-------------------
+* Added Substructure chemical query types (Closes #11)
+* Added optional limit to returned hits in Query Execution Node (Closes #10)
+* Added retries to failed download in Query Execution (Fixes #9)
+
 v1.28.2 28-Jan-2021
 -------------------
 * Fixed #8 - Over-zealous query validation in sequence query

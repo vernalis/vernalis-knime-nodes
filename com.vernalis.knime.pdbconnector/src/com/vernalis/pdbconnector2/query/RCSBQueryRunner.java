@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -16,6 +16,7 @@ package com.vernalis.pdbconnector2.query;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -34,6 +35,7 @@ import org.knime.core.data.json.JSONCellFactory;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
+import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeLogger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,7 +59,7 @@ public class RCSBQueryRunner {
 	 * An exception thrown during query executions
 	 * 
 	 * @author S.Roughley knime@vernalis.com
- * @since 1.28.0
+	 * @since 1.28.0
 	 *
 	 */
 	public static class QueryException extends Exception {
@@ -112,11 +114,14 @@ public class RCSBQueryRunner {
 			NodeLogger.getLogger(RCSBQueryRunner.class);
 	private static final String SEARCH_LOCATION =
 			"http://search.rcsb.org/rcsbsearch/v1/query";
+	private static final int[] RETRY_DELAYS =
+			new int[] { 1, 2, 5, 10, 30, 60, 120, 300, 600 };
 	private final QueryModel model;
 	private ScoringType scoringType = ScoringType.getDefault();
 	private QueryResultType queryResultType = QueryResultType.getDefault();
 	private int pageSize = 10;
 	private boolean includeJson = false;
+	private Integer maxRowsToReturn = null;
 
 	/**
 	 * Constructor
@@ -163,6 +168,26 @@ public class RCSBQueryRunner {
 	}
 
 	/**
+	 * Method to set an optional hit limit
+	 * 
+	 * @param hitLimit
+	 *            The maximum number of hits to return
+	 * @since 1.28.3
+	 */
+	public final void setReturnedHitsLimit(int hitLimit) {
+		this.maxRowsToReturn = hitLimit;
+	}
+
+	/**
+	 * Method to clear an optional hit limit
+	 * 
+	 * @since 1.28.3
+	 */
+	public final void clearReturnedHitsLimit() {
+		this.maxRowsToReturn = null;
+	}
+
+	/**
 	 * @return The number of hits for the query
 	 * @throws QueryException
 	 *             If there was an error running the query
@@ -184,12 +209,14 @@ public class RCSBQueryRunner {
 	 * @param exec
 	 *            The {@link ExecutionContext} to allow cancelling and progress
 	 *            reporting. Maybe {@code null}
+	 * @return {@code true} if all hits were returned to the table, or
+	 *         {@code false} if the output was truncated (Since 1.28.3)
 	 * @throws QueryException
 	 *             If there was an error running the query
 	 * @throws CanceledExecutionException
 	 *             If the user cancelled
 	 */
-	public void runQueryToTable(BufferedDataContainer bdc,
+	public boolean runQueryToTable(BufferedDataContainer bdc,
 			ExecutionContext exec)
 			throws QueryException, CanceledExecutionException {
 		// query_id appears to be retained for each page in web UI
@@ -197,6 +224,7 @@ public class RCSBQueryRunner {
 				model.getQuery(false, scoringType, queryResultType, pageSize);
 		int pageStart = 0;
 		long hits = -1;
+		double progPerRow = 0;
 		long rowCnt = 0;
 		while (hits < 0 || pageStart < hits) {
 			q.with("request_options").with("pager").put("start", pageStart);
@@ -207,6 +235,9 @@ public class RCSBQueryRunner {
 			}
 			if (hits < 0) {
 				hits = r.get("total_count").asInt();
+				progPerRow = 1.0 / (maxRowsToReturn != null
+						? Math.min(maxRowsToReturn, hits)
+						: hits);
 			}
 			pageStart += pageSize;
 			final Iterator<JsonNode> iter = r.get("result_set").iterator();
@@ -232,15 +263,23 @@ public class RCSBQueryRunner {
 					row = new AppendedColumnRow(row, jsonCell);
 				}
 				bdc.addRowToTable(row);
+				if (maxRowsToReturn != null
+						&& rowCnt == maxRowsToReturn.intValue() - 1) {
+					return rowCnt >= (hits - 1);
+				}
 				rowCnt++;
 				if (rowCnt % 10 == 0) {
 					exec.checkCanceled();
-					exec.setProgress(1.0 * rowCnt / hits,
-							"Processed " + rowCnt + " of " + hits + " results");
+					exec.setProgress(rowCnt * progPerRow,
+							"Processed " + rowCnt + " of "
+									+ (maxRowsToReturn != null
+											? Math.min(maxRowsToReturn, hits)
+											: hits)
+									+ " results");
 				}
 			}
 		}
-
+		return true;
 	}
 
 	private JsonNode runQuery(JsonNode q)
@@ -272,42 +311,61 @@ public class RCSBQueryRunner {
 		} catch (final JsonProcessingException e1) {
 			// Ignore
 		}
-		try {
-			final URL url = new URL(SEARCH_LOCATION);
-			// Now send the request in a separate thread, waiting for it to
-			// complete
-			final ExecutorService pool = Executors.newSingleThreadExecutor();
-			final Future<JsonNode> future =
-					pool.submit(new JsonPostRunner(url, query));
-			while (!future.isDone()) {
-				// wait a 0.1 seconds
-				final long time = System.nanoTime();
-				while (System.nanoTime() - time < 100000) {
-					// Wait
-				}
-				if (exec != null) {
-					try {
-						exec.checkCanceled();
-					} catch (final CanceledExecutionException e) {
-						future.cancel(true);
-						while (!future.isCancelled()) {
-							// Wait for the cancel to happen
+		QueryException lastException = null;
+		for (int delay : RETRY_DELAYS) {
+			try {
+				final URL url = new URL(SEARCH_LOCATION);
+				// Now send the request in a separate thread, waiting for it to
+				// complete
+				final ExecutorService pool =
+						Executors.newSingleThreadExecutor();
+				final Future<JsonNode> future =
+						pool.submit(new JsonPostRunner(url, query));
+				while (!future.isDone()) {
+					// wait a 0.1 seconds
+					final long time = System.nanoTime();
+					while (System.nanoTime() - time < 100000) {
+						// Wait
+					}
+					if (exec != null) {
+						try {
+							exec.checkCanceled();
+						} catch (final CanceledExecutionException e) {
+							future.cancel(true);
+							while (!future.isCancelled()) {
+								// Wait for the cancel to happen
+							}
+							throw e;
 						}
-						throw e;
 					}
 				}
+				final JsonNode retVal = future.get();
+				if (retVal != null && !query.get("request_info").get("query_id")
+						.asText().equals(retVal.get("query_id").asText())) {
+					lastException = new QueryException(
+							"Error in results - submitted and returned query IDs do not match!");
+				} else {
+					return retVal;
+				}
+			} catch (IOException | InterruptedException
+					| ExecutionException e) {
+				lastException = new QueryException(e);
 			}
-			final JsonNode retVal = future.get();
-			if (retVal != null && !query.get("request_info").get("query_id")
-					.asText().equals(retVal.get("query_id").asText())) {
-				throw new QueryException(
-						"Error in results - submitted and returned query IDs do not match!");
-			}
-			return retVal;
-		} catch (IOException | InterruptedException | ExecutionException e) {
-			throw new QueryException(e);
+			exec.setMessage("Error retrieving results - retrying in " + delay
+					+ " seconds...");
+			logger.info("Error retrieving results - retrying in " + delay
+					+ " seconds...");
+			pause(delay, exec);
 		}
-
+		throw lastException;
 	}
 
+	private static void pause(int seconds, ExecutionMonitor exec)
+			throws CanceledExecutionException {
+		// simple delay function without using threads
+		Date start = new Date();
+		while (new Date().getTime() - start.getTime() < seconds * 1000) {
+			exec.checkCanceled();
+		}
+	}
 }

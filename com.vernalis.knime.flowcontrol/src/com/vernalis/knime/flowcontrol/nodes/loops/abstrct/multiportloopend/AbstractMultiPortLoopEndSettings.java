@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2016 Vernalis (R&D) Ltd
+ * Copyright (c) 2014, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -24,15 +24,33 @@ import org.knime.core.node.NodeSettingsWO;
  * properties except the inactivate disconnected branches property on a
  * port-by-port basis. The settings maintain backwards compatibility with legacy
  * workflows.
+ * 
+ * @version 1.29.0 Settings keys made package visible for possible future
+ *          NodeMigrationRule
+ * @author S.Roughley knime@vernalis.com
  */
 public class AbstractMultiPortLoopEndSettings {
-	private static final String CFG_INACTIVATE_DISCONNECTED_BRANCHES = "inactivateDisconnectedBranches";
-	private static final String CFG_ROW_KEY_POLICY = "rowKeyPolicy";
-	private static final String CFG_ADD_ITERATION_COLUMN = "addIterationColumn";
-	private static final String CFG_ALLOW_CHANGING_COL_TYPES = "allowChangingColTypes";
-	private static final String CFG_ALLOW_CHANGING_SPECS = "allowChangingSpecs";
-	private static final String CFG_IGNORE_EMPTY_TABLES = "ignoreEmptyTables";
-	private static final String CFG_UNIQUE_ROW_IDS = "uniqueRowIDs";
+
+	private static final String CFG_INACTIVATE_DISCONNECTED_BRANCHES =
+			"inactivateDisconnectedBranches";
+
+	/** The key for the row key policy setting */
+	static final String CFG_ROW_KEY_POLICY = "rowKeyPolicy";
+
+	/** The key for the add iteration column setting */
+	static final String CFG_ADD_ITERATION_COLUMN = "addIterationColumn";
+
+	/** The key for the allow changing column types setting */
+	static final String CFG_ALLOW_CHANGING_COL_TYPES = "allowChangingColTypes";
+
+	/** The key for the allow changins specs setting */
+	static final String CFG_ALLOW_CHANGING_SPECS = "allowChangingSpecs";
+
+	/** The key for the ignore empty tables setting */
+	static final String CFG_IGNORE_EMPTY_TABLES = "ignoreEmptyTables";
+
+	/** The key for the unique row ids setting */
+	static final String CFG_UNIQUE_ROW_IDS = "uniqueRowIDs";
 
 	/** The m_num ports. */
 	Integer m_numPorts;
@@ -48,6 +66,7 @@ public class AbstractMultiPortLoopEndSettings {
 
 	/** Allow column types (but not names!) to change */
 	private boolean[] m_allowChangingColumnTypes;
+
 	/** Row key policies */
 	private RowPolicies[] rowKeyPolicies;
 
@@ -104,8 +123,11 @@ public class AbstractMultiPortLoopEndSettings {
 	 * @param portId
 	 *            The port index
 	 * @return true, if successful
+	 * @throws IllegalArgumentException
+	 *             if an invalid port id is supplied
 	 */
-	public boolean ignoreEmptyTables(final int portId) throws IllegalArgumentException {
+	public boolean ignoreEmptyTables(final int portId)
+			throws IllegalArgumentException {
 		validatePortID(portId);
 		return m_ignoreEmptyTables[portId];
 	}
@@ -117,6 +139,8 @@ public class AbstractMultiPortLoopEndSettings {
 	 *            The port index
 	 * @param ignore
 	 *            true to ignore, false not to ignore
+	 * @throws IllegalArgumentException
+	 *             if an invalid port id is supplied
 	 */
 	public void ignoreEmptyTables(final int portId, final boolean ignore)
 			throws IllegalArgumentException {
@@ -131,13 +155,24 @@ public class AbstractMultiPortLoopEndSettings {
 	 * @throws IllegalArgumentException
 	 *             If the port ID is not valid
 	 */
-	public boolean allowChangingTableSpecs(final int portId) throws IllegalArgumentException {
+	public boolean allowChangingTableSpecs(final int portId)
+			throws IllegalArgumentException {
 		validatePortID(portId);
 		return m_allowChangingTableSpecs[portId];
 	}
 
-	public void setAllowChangingTableSpecs(final int portId, boolean allowChangingTableSpec)
-			throws IllegalArgumentException {
+	/**
+	 * Set the allow changing specs value for the port
+	 * 
+	 * @param portId
+	 *            The port index
+	 * @param allowChangingTableSpec
+	 *            The value to set
+	 * @throws IllegalArgumentException
+	 *             if an invalid port id is supplied
+	 */
+	public void setAllowChangingTableSpecs(final int portId,
+			boolean allowChangingTableSpec) throws IllegalArgumentException {
 		validatePortID(portId);
 		m_allowChangingTableSpecs[portId] = allowChangingTableSpec;
 	}
@@ -149,13 +184,24 @@ public class AbstractMultiPortLoopEndSettings {
 	 * @throws IllegalArgumentException
 	 *             If the port ID is not valid
 	 */
-	public boolean allowChangingColumnTypes(final int portId) throws IllegalArgumentException {
+	public boolean allowChangingColumnTypes(final int portId)
+			throws IllegalArgumentException {
 		validatePortID(portId);
 		return m_allowChangingColumnTypes[portId];
 	}
 
-	public void setAllowChangingColumnTypes(final int portId, boolean allowChangingColumnTypes)
-			throws IllegalArgumentException {
+	/**
+	 * Set the allow changing column types value for the port
+	 * 
+	 * @param portId
+	 *            The port index
+	 * @param allowChangingColumnTypes
+	 *            The value to set
+	 * @throws IllegalArgumentException
+	 *             if an invalid port id is supplied
+	 */
+	public void setAllowChangingColumnTypes(final int portId,
+			boolean allowChangingColumnTypes) throws IllegalArgumentException {
 		validatePortID(portId);
 		m_allowChangingColumnTypes[portId] = allowChangingColumnTypes;
 	}
@@ -166,18 +212,44 @@ public class AbstractMultiPortLoopEndSettings {
 	 * @param portId
 	 *            the port index
 	 * @return The row key policy
+	 * @throws IllegalArgumentException
+	 *             if an invalid port id is supplied
 	 */
-	public RowPolicies getRowKeyPolicy(int portId) {
+	public RowPolicies getRowKeyPolicy(int portId)
+			throws IllegalArgumentException {
 		validatePortID(portId);
 		return rowKeyPolicies[portId];
 	}
 
-	public void setRowKeyPolicy(int portId, RowPolicies policy) throws IllegalArgumentException {
+	/**
+	 * Set the row key policy for the port
+	 * 
+	 * @param portId
+	 *            The port index
+	 * @param policy
+	 *            The value to set
+	 * @throws IllegalArgumentException
+	 *             if an invalid port id is supplied
+	 */
+	public void setRowKeyPolicy(int portId, RowPolicies policy)
+			throws IllegalArgumentException {
 		validatePortID(portId);
 		rowKeyPolicies[portId] = policy;
 	}
 
-	public void setRowKeyPolicyName(int portId, String policyName) throws IllegalArgumentException {
+	/**
+	 * Set the row key policy for the port from a string name
+	 * 
+	 * @param portId
+	 *            The port index
+	 * @param policyName
+	 *            The value to set
+	 * @throws IllegalArgumentException
+	 *             if an invalid port id is supplied or the policy name cannot
+	 *             be resolved
+	 */
+	public void setRowKeyPolicyName(int portId, String policyName)
+			throws IllegalArgumentException {
 		validateRowKeyPolicyName(policyName);
 		setRowKeyPolicy(portId, RowPolicies.valueOf(policyName));
 	}
@@ -200,11 +272,22 @@ public class AbstractMultiPortLoopEndSettings {
 	 * @throws IllegalArgumentException
 	 *             If the port ID is not valid
 	 */
-	public boolean getAddIterationColumn(int portId) throws IllegalArgumentException {
+	public boolean getAddIterationColumn(int portId)
+			throws IllegalArgumentException {
 		validatePortID(portId);
 		return m_addIterationColumns[portId];
 	}
 
+	/**
+	 * Set the add iteratione column setting for the port
+	 * 
+	 * @param portId
+	 *            The port index
+	 * @param addIterationColumn
+	 *            The value to set
+	 * @throws IllegalArgumentException
+	 *             if an invalid port id is supplied
+	 */
 	public void setAddIterationColumn(int portId, boolean addIterationColumn)
 			throws IllegalArgumentException {
 		validatePortID(portId);
@@ -219,14 +302,16 @@ public class AbstractMultiPortLoopEndSettings {
 	 * @throws IllegalArgumentException
 	 *             If an invalid name is supplied
 	 */
-	private void validateRowKeyPolicyName(String policyName) throws IllegalArgumentException {
+	private void validateRowKeyPolicyName(String policyName)
+			throws IllegalArgumentException {
 		for (RowPolicies p : RowPolicies.values()) {
 			if (p.getActionCommand().equals(policyName)) {
 				return;
 			}
 		}
 		throw new IllegalArgumentException(
-				"Policy must be one of accepted values" + Arrays.toString(RowPolicies.values()));
+				"Policy must be one of accepted values"
+						+ Arrays.toString(RowPolicies.values()));
 
 	}
 
@@ -253,31 +338,39 @@ public class AbstractMultiPortLoopEndSettings {
 	 */
 	public void loadSettings(final NodeSettingsRO settings) {
 		for (int i = 0; i < m_numPorts; i++) {
-			m_ignoreEmptyTables[i] = settings.getBoolean(CFG_IGNORE_EMPTY_TABLES + i, true);
+			m_ignoreEmptyTables[i] =
+					settings.getBoolean(CFG_IGNORE_EMPTY_TABLES + i, true);
 			// Following are both false for backwards compatibility
-			m_allowChangingTableSpecs[i] = settings.getBoolean(CFG_ALLOW_CHANGING_SPECS + i, false);
-			m_allowChangingColumnTypes[i] = settings.getBoolean(CFG_ALLOW_CHANGING_COL_TYPES + i,
-					false);
+			m_allowChangingTableSpecs[i] =
+					settings.getBoolean(CFG_ALLOW_CHANGING_SPECS + i, false);
+			m_allowChangingColumnTypes[i] = settings
+					.getBoolean(CFG_ALLOW_CHANGING_COL_TYPES + i, false);
 			// Try old settings name first for backwards compatability
-			m_addIterationColumns[i] = settings.containsKey(CFG_ADD_ITERATION_COLUMN)
-					? settings.getBoolean(CFG_ADD_ITERATION_COLUMN, true)
-					: settings.getBoolean(CFG_ADD_ITERATION_COLUMN + i, true);
+			m_addIterationColumns[i] =
+					settings.containsKey(CFG_ADD_ITERATION_COLUMN)
+							? settings.getBoolean(CFG_ADD_ITERATION_COLUMN,
+									true)
+							: settings.getBoolean(CFG_ADD_ITERATION_COLUMN + i,
+									true);
 			// old settings -> check for backwards compatibility
 			// Complicated as 2 'layers' of back compatibility...
 			// use setter to validate strings
 			if (settings.containsKey(CFG_UNIQUE_ROW_IDS)) {
-				boolean uniqueRowIDs = settings.getBoolean(CFG_UNIQUE_ROW_IDS, false);
-				setRowKeyPolicy(i, RowPolicies.getFromUniqueRowIDs(uniqueRowIDs));
+				boolean uniqueRowIDs =
+						settings.getBoolean(CFG_UNIQUE_ROW_IDS, false);
+				setRowKeyPolicy(i,
+						RowPolicies.getFromUniqueRowIDs(uniqueRowIDs));
 			} else if (settings.containsKey(CFG_ROW_KEY_POLICY)) {
 				setRowKeyPolicyName(i, settings.getString(CFG_ROW_KEY_POLICY,
 						RowPolicies.getDefault().getActionCommand()));
 			} else {
-				setRowKeyPolicyName(i, settings.getString(CFG_ROW_KEY_POLICY + i,
-						RowPolicies.getDefault().getActionCommand()));
+				setRowKeyPolicyName(i,
+						settings.getString(CFG_ROW_KEY_POLICY + i,
+								RowPolicies.getDefault().getActionCommand()));
 			}
 		}
-		m_inactivateDisconnectedBranches = settings.getBoolean(CFG_INACTIVATE_DISCONNECTED_BRANCHES,
-				true);
+		m_inactivateDisconnectedBranches =
+				settings.getBoolean(CFG_INACTIVATE_DISCONNECTED_BRANCHES, true);
 
 	}
 
@@ -289,13 +382,19 @@ public class AbstractMultiPortLoopEndSettings {
 	 */
 	public void saveSettings(final NodeSettingsWO settings) {
 		for (int i = 0; i < m_numPorts; i++) {
-			settings.addBoolean(CFG_IGNORE_EMPTY_TABLES + i, m_ignoreEmptyTables[i]);
-			settings.addBoolean(CFG_ALLOW_CHANGING_SPECS + i, m_allowChangingTableSpecs[i]);
-			settings.addBoolean(CFG_ALLOW_CHANGING_COL_TYPES + i, m_allowChangingColumnTypes[i]);
-			settings.addBoolean(CFG_ADD_ITERATION_COLUMN + i, m_addIterationColumns[i]);
-			settings.addString(CFG_ROW_KEY_POLICY + i, rowKeyPolicies[i].getActionCommand());
+			settings.addBoolean(CFG_IGNORE_EMPTY_TABLES + i,
+					m_ignoreEmptyTables[i]);
+			settings.addBoolean(CFG_ALLOW_CHANGING_SPECS + i,
+					m_allowChangingTableSpecs[i]);
+			settings.addBoolean(CFG_ALLOW_CHANGING_COL_TYPES + i,
+					m_allowChangingColumnTypes[i]);
+			settings.addBoolean(CFG_ADD_ITERATION_COLUMN + i,
+					m_addIterationColumns[i]);
+			settings.addString(CFG_ROW_KEY_POLICY + i,
+					rowKeyPolicies[i].getActionCommand());
 		}
-		settings.addBoolean(CFG_INACTIVATE_DISCONNECTED_BRANCHES, m_inactivateDisconnectedBranches);
+		settings.addBoolean(CFG_INACTIVATE_DISCONNECTED_BRANCHES,
+				m_inactivateDisconnectedBranches);
 	}
 
 }
