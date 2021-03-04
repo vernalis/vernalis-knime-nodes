@@ -53,7 +53,15 @@
       <!-- Since 1.18.0 -->
       <node
             category-path="/community/vernalis/io"
-            factory-class="com.vernalis.knime.io.nodes.load.fasta.LoadFASTANodeFactory" />  
+            factory-class="com.vernalis.knime.io.nodes.load.fasta.LoadFASTANodeFactory" />
+      <node
+            category-path="/community/vernalis/io"
+            factory-class="com.vernalis.knime.io.nodes.knimeresolver.KNIMEResolverNodeFactory">
+      </node>
+      <node
+            category-path="/community/vernalis/io"
+            factory-class="com.vernalis.knime.io.nodes.knimeresolver.VariableKNIMEResolverNodeFactory">
+      </node>  
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">

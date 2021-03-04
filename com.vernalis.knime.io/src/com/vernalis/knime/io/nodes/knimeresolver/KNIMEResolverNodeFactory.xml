@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2021, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="./knime2file.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>KNIME URI Resolver</name>
+
+	<shortDescription>
+		Node to resolve KNIME URIs
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			A column of KNIME URIs is resolved to their absolute paths. If the
+			incoming column is a URI column, then the output is a URI column of
+			<tt>file:</tt>
+			URIs, otherwise it is a string column of absolute file paths
+			<p>
+				<ul>
+					<li>knime://knime.mountpoint/path/to/file - relative to the
+						current
+						mountpoint (repository) as the workflow
+					</li>
+					<li>knime://knime.workflow/path/to/file - relative to the current
+						workflow
+					</li>
+					<li>knime://knime.node/path/to/file - relative to the current node
+						(NB this will be this 'KNIME URL Resolver' node!)
+					</li>
+					<li>knime://MOUNT-ID/path/to/file - Absolute path - NB this is
+						likely to fail to resolve to a local file path unless the MOUNT-ID is 'LOCAL'</li>
+				</ul>
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+
+		</intro>
+
+
+
+		<option name="KNIME URI Column Name">The name of the column containing the incoming
+			URIs
+		</option>
+		<option name="Canonicalise Output">Should the output be canonicalised? i.e. any '..'
+			and '.' subpaths will be resolved and removed
+		</option>
+		<option name="Replace Input">Should the input column be replaced? If not, a new
+			column with the name ' (Resolved)' will be appended to the table
+		</option>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="knime:// URI table">Table containing a column of knime: protocol URIs</inPort>
+		<outPort
+			index="0"
+			name="Resolved URIs">The resolved URIs
+		</outPort>
+
+	</ports>
+
+</knimeNode>
