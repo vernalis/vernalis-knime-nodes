@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019, 2021, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -553,7 +553,12 @@ public class RdkitConfgenNodeModel
 			rowTemplateMol = null;
 		} else {
 			if (mol.hasSubstructMatch(rowBaseTemplateMol)) {
-				rowTemplateMol = rowBaseTemplateMol;
+				// new object otherwise we will clean up the template
+				// during execution of this row!
+				rowTemplateMol = new ROMol(rowBaseTemplateMol);
+				rowTemplateMol.setProp(NROT, String.format("%d",
+						RDKFuncs.calcNumRotatableBonds(rowTemplateMol)));
+
 			} else {
 				ROMol_Vect molVect =
 						gc.markForCleanup(new ROMol_Vect(), waveID);
@@ -622,6 +627,7 @@ public class RdkitConfgenNodeModel
 	 */
 	private ROMol getRowBaseTemplate(int templateColIdx,
 			final ROMol globalTemplateMol, DataRow row, long waveID) {
+		// TODO: Makes sure the returned template has the NROT property set
 		ROMol rowBaseTemplateMol;
 		if (templateColIdx > 0) {
 			DataCell templateCell = row.getCell(templateColIdx);
@@ -845,18 +851,20 @@ public class RdkitConfgenNodeModel
 			} else {
 				// Add distance constraints between each pair of atoms matching
 				// those in the template
-				for (int j = 0; j < match.size(); j++) {
+				for (int j = 0; j < match.size() - 1; j++) {
 					Int_Pair m = match.get(j);
-					for (int k = m.getFirst() + 1; k < match.size(); k++) {
-						int idxK = match.get(k).getSecond();
-						double d =
-								gc.markForCleanup(
+					for (int k = j + 1; k < match.size(); k++) {
+						Int_Pair n = match.get(k);
+
+						double d = gc
+								.markForCleanup(
 										templateConf.getAtomPos(m.getFirst())
-												.minus(templateConf
-														.getAtomPos(idxK)),
-										waveId).length();
+												.minus(templateConf.getAtomPos(
+														n.getFirst())),
+										waveId)
+								.length();
 						ff.contribs().add(new DistanceConstraintContrib(ff,
-								m.getFirst(), idxK, d, d, 100.0));
+								m.getSecond(), n.getSecond(), d, d, 100.0));
 					}
 				}
 			}
