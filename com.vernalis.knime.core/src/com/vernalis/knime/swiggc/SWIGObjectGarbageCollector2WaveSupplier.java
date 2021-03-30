@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2021, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * A Native object grabage collector which is also capable of supplying new
  * unique wave IDs
+ * 
+ * 30-Mar-2021 (SDR) - Stopped 'dangerous' wave re-use code
  * 
  * @author s.roughley
  * 
@@ -61,10 +63,7 @@ public class SWIGObjectGarbageCollector2WaveSupplier
 	 */
 	@Override
 	public synchronized long getNextWaveIndex() {
-		while (this.containsKey(waveIndex.incrementAndGet())) {
-			// Ensure we supply an unused idx;
-		}
-		return waveIndex.get();
+		return waveIndex.incrementAndGet();
 	}
 
 	/*
@@ -76,7 +75,6 @@ public class SWIGObjectGarbageCollector2WaveSupplier
 	@Override
 	public synchronized void cleanupMarkedObjects() {
 		super.cleanupMarkedObjects();
-		waveIndex.set(1);
 	}
 
 	/*
@@ -88,7 +86,6 @@ public class SWIGObjectGarbageCollector2WaveSupplier
 	@Override
 	public synchronized void cleanupMarkedObjects(Long wave) {
 		super.cleanupMarkedObjects(wave);
-		waveIndex.set(wave);
 	}
 
 	/*
@@ -98,10 +95,9 @@ public class SWIGObjectGarbageCollector2WaveSupplier
 	 * quarantineAndCleanupMarkedObjects(long)
 	 */
 	@Override
-	public synchronized void quarantineAndCleanupMarkedObjects(
-			long delayMilliSec) {
+	public synchronized void
+			quarantineAndCleanupMarkedObjects(long delayMilliSec) {
 		super.quarantineAndCleanupMarkedObjects(delayMilliSec);
-		waveIndex.set(1);
 	}
 
 	/*
@@ -113,7 +109,6 @@ public class SWIGObjectGarbageCollector2WaveSupplier
 	@Override
 	public synchronized void quarantineAndCleanupMarkedObjects() {
 		super.quarantineAndCleanupMarkedObjects();
-		waveIndex.set(1);
 	}
 
 }
