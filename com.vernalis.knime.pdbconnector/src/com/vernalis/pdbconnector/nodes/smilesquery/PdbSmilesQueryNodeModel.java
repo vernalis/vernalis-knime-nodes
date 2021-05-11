@@ -95,7 +95,7 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 	static final String SMILES_KEY = "SMILES String";
 
 	/** The base URL of the webservice */
-	static final String SERVICE_BASE_URL = "//www.rcsb.org/pdb/rest/smilesQuery";
+	static final String SERVICE_BASE_URL = "https://www.rcsb.org/pdb/rest/smilesQuery";
 	static final String SMILES_PREFIX = "smiles=";
 	static final String SEARCH_TYPE_PREFIX = "&search_type=";
 	static final String SIMILARITY_PREFIX = "&similarity=";
