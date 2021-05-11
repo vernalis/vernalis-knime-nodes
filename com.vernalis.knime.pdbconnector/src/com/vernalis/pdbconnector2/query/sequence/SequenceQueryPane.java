@@ -58,7 +58,7 @@ public class SequenceQueryPane
 			"X: XXXXXXXXXXXXXXXXX...";
 	private static final long serialVersionUID = 1L;
 	private static final String RCSB_STRUCTURE_QUERY_URL_MASK =
-			"http://www.rcsb.org/search/sequence/%s";
+			"https://www.rcsb.org/search/sequence/%s";
 	private final Map<String, String> possibleSequences = new TreeMap<>();
 	private final JComboBox<String> seqChooser;
 
@@ -104,7 +104,7 @@ public class SequenceQueryPane
 		seqLookupBox.add(createHorizontalStrut(5));
 		final JSuggestingTextField pdbID = new JSuggestingTextField(
 				RcsbUrlSuggester.get(
-						"http://www.rcsb.org/search/suggester/rcsb_entry_container_identifiers.entry_id/%s"),
+						"https://www.rcsb.org/search/suggester/rcsb_entry_container_identifiers.entry_id/%s"),
 				1, 4);
 		pdbID.setMinimumSize(pdbID.getPreferredSize());
 		pdbID.setMaximumSize(pdbID.getPreferredSize());

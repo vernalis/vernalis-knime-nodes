@@ -43,12 +43,12 @@ public class PDBIOHelperFunctions {
 		if (pdbid == null) {
 			return null;
 		}
-		String URL = "http://www.rcsb.org/pdb/files/" + pdbid;
+		String URL = "https://www.rcsb.org/pdb/files/" + pdbid;
 
 		switch (filetype.toLowerCase()) {
 
 		case "fasta":
-			return "http://www.rcsb.org/pdb/download/viewFastaFiles.do?structureIdList=" + pdbid
+			return "https://www.rcsb.org/pdb/download/viewFastaFiles.do?structureIdList=" + pdbid
 					+ (gz ? "&compressionType=gz" : "&compressionType=uncompressed");
 
 		case "structurefactor":

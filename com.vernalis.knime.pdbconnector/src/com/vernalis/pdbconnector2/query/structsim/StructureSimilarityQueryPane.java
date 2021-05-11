@@ -78,7 +78,7 @@ public class StructureSimilarityQueryPane extends Box
 		add(SwingUtils.forceToPreferredSize(new DialogComponentStringSuggester(
 				model.getPdbIdModel(), "PDB ID",
 				RcsbUrlSuggester.get(
-						"http://www.rcsb.org/search/suggester/rcsb_entry_container_identifiers.entry_id/%s"),
+						"https://www.rcsb.org/search/suggester/rcsb_entry_container_identifiers.entry_id/%s"),
 				1, 4)));
 		matchUnitTypeDiaC = new DialogComponentStringSelection(
 				model.getMatchUnitTypeModel(), "",

@@ -22,10 +22,7 @@ import java.util.Set;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
-import org.knime.core.data.DataTableSpecCreator;
-import org.knime.core.data.json.JSONCellFactory;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
@@ -50,6 +47,7 @@ import com.vernalis.pdbconnector2.query.QueryResultType;
 import com.vernalis.pdbconnector2.query.RCSBQueryRunner;
 import com.vernalis.pdbconnector2.query.ScoringType;
 
+import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createIncludeHitCountModel;
 import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createIncludeJsonModel;
 import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createLimitHitsModel;
 import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createMaxHitsModel;
@@ -80,6 +78,8 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 			registerSettingsModel(createIncludeJsonModel());
 	private final SettingsModelBoolean limitHitsMdl = createLimitHitsModel();
 	private final SettingsModelIntegerBounded maxHitsMdl = createMaxHitsModel();
+	private final SettingsModelBoolean includeHitCountMdl =
+			createIncludeHitCountModel();
 
 	/**
 	 * Constructor
@@ -127,7 +127,8 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 							+ "' is not a valid Return Type");
 		}
 
-		return new PortObjectSpec[] { createOutputSpec(model) };
+		return new PortObjectSpec[] {
+				createQueryRunner(model).getOutputTableSpec() };
 	}
 
 	/**
@@ -135,15 +136,8 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 	 * @return
 	 */
 	private DataTableSpec createOutputSpec(final MultiRCSBQueryModel model) {
+		return createQueryRunner(model).getOutputTableSpec();
 
-		if (includeJsonMdl.getBooleanValue()) {
-			return new DataTableSpecCreator(model.getResultTableSpec())
-					.addColumns(new DataColumnSpecCreator("Raw Json",
-							JSONCellFactory.TYPE).createSpec())
-					.createSpec();
-		} else {
-			return model.getResultTableSpec();
-		}
 	}
 
 	@Override
@@ -151,8 +145,26 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 			ExecutionContext exec) throws Exception {
 		final MultiRCSBQueryModel model =
 				((RCSBQueryPortObject) inObjects[0]).getSpec();
+
+		final RCSBQueryRunner runner = createQueryRunner(model);
 		final BufferedDataContainer bdc =
-				exec.createDataContainer(createOutputSpec(model));
+				exec.createDataContainer(runner.getOutputTableSpec());
+		if (!runner.runQueryToTable(bdc, exec)) {
+			setWarningMessage(
+					"Returned hits were truncated by node settings - not all hits were returned");
+		}
+		bdc.close();
+		return new PortObject[] { bdc.getTable() };
+	}
+
+	/**
+	 * @param model
+	 * @return
+	 * @throws NullPointerException
+	 * @throws IllegalArgumentException
+	 */
+	private RCSBQueryRunner createQueryRunner(final MultiRCSBQueryModel model)
+			throws NullPointerException, IllegalArgumentException {
 		final RCSBQueryRunner runner = new RCSBQueryRunner(model);
 		runner.setQueryResultType(
 				QueryResultType.fromText(returnTypeMdl.getStringValue()));
@@ -160,17 +172,13 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 				ScoringType.fromText(scoringTypeMdl.getStringValue()));
 		runner.setPageSize(pageSizeMdl.getIntValue());
 		runner.setIncludeJson(includeJsonMdl.getBooleanValue());
+		runner.setIncludeHitCount(includeHitCountMdl.getBooleanValue());
 		if (limitHitsMdl.getBooleanValue()) {
 			runner.setReturnedHitsLimit(maxHitsMdl.getIntValue());
 		} else {
 			runner.clearReturnedHitsLimit();
 		}
-		if (!runner.runQueryToTable(bdc, exec)) {
-			setWarningMessage(
-					"Returned hits were truncated by node settings - not all hits were returned");
-		}
-		bdc.close();
-		return new PortObject[] { bdc.getTable() };
+		return runner;
 	}
 
 	@Override
@@ -195,6 +203,7 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 		SettingsModelRegistry.super.saveSettingsTo(settings);
 		limitHitsMdl.saveSettingsTo(settings);
 		maxHitsMdl.saveSettingsTo(settings);
+		includeHitCountMdl.saveSettingsTo(settings);
 	}
 
 	@Override
@@ -214,6 +223,12 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 		} catch (InvalidSettingsException e) {
 			setWarningMessage(
 					"Using default legacy values for limit hits settings");
+		}
+		try {
+			includeHitCountMdl.loadSettingsFrom(settings);
+		} catch (InvalidSettingsException e) {
+			setWarningMessage(
+					"Using legacy value for include hit counts setting");
 		}
 	}
 

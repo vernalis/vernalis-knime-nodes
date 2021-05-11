@@ -39,6 +39,7 @@ import com.vernalis.knime.mmp.RDKitBondIdentifier;
 import com.vernalis.knime.mmp.RDKitFragmentationUtils;
 import com.vernalis.knime.mmp.ToolkitException;
 import com.vernalis.knime.mmp.fragmentors.ClosedFactoryException;
+import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationException;
 import com.vernalis.knime.mmp.fragmentors.RWMolFragmentationFactory;
 import com.vernalis.knime.mmp.frags.abstrct.AbstractMulticomponentFragmentationParser;
 import com.vernalis.knime.mmp.frags.abstrct.BondIdentifier;
@@ -292,7 +293,7 @@ public class MultipleCutParallelRdkitMMPFragment3NodeModel
 					m_Logger, verboseLogging));
 
 		} catch (ClosedFactoryException | ToolkitException
-				| IllegalArgumentException e) {
+				| IllegalArgumentException | MoleculeFragmentationException e) {
 			retVal.addRowToTable((addFailReasons) ? new AppendedColumnRow(row,
 					e.getMessage() == null
 							? new StringCell("Error fragmenting molecule: "

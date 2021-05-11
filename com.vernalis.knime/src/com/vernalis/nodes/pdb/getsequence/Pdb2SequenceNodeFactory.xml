@@ -26,7 +26,7 @@
          regardless of which sequences are extracted.
          <p>
          <i>'Sanitization'</i> is as follows (which follows as closely as possible the process 
-         implemented by the <a href="http://www.rcsb.org/pdb">PDB</a>):
+         implemented by the <a href="https://www.rcsb.org/pdb">PDB</a>):
          <ul>
          <li>Phosphorylated, Sulfated, Acylated and Side-chain Methylated amino acids are converted 
          to their unmodified parents</li>

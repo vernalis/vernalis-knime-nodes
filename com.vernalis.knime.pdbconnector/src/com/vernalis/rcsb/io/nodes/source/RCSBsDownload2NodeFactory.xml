@@ -15,7 +15,7 @@
 			This node, and the corresponding
 			<i>manipulator</i>
 			node, allows the downloading of structure and sequence files from the
-			<a href="http://www.rcsb.org/pdb">RCSB PDB</a>
+			<a href="https://www.rcsb.org/pdb">RCSB PDB</a>
 			.
 			The formats supported are:
 			<ul>

@@ -50,6 +50,7 @@ public class PdbConnector2QueryExecutionNodeDialog
 	private static final String PAGE_SIZE = "Page Size";
 	private static final String SCORING_STRATEGY = "Scoring Strategy";
 	private static final String RETURN_TYPE = "Return Type";
+	private static final String INCLUDE_HITCOUNT = "Include hit count";
 
 	/**
 	 * Constructor
@@ -90,7 +91,17 @@ public class PdbConnector2QueryExecutionNodeDialog
 
 		addDialogComponent(new DialogComponentBoolean(createIncludeJsonModel(),
 				INCLUDE_JSON_IN_OUTPUT));
+		addDialogComponent(new DialogComponentBoolean(
+				createIncludeHitCountModel(), INCLUDE_HITCOUNT));
 
+	}
+
+	/**
+	 * @return The model for the 'Include hitcount' setting
+     * @since 1.30.2
+	 */
+	static SettingsModelBoolean createIncludeHitCountModel() {
+		return new SettingsModelBoolean(INCLUDE_HITCOUNT, false);
 	}
 
 	/**

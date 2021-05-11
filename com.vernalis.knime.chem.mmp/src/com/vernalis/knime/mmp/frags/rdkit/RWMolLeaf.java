@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -15,11 +15,14 @@
 package com.vernalis.knime.mmp.frags.rdkit;
 
 import org.RDKit.ExplicitBitVect;
+import org.RDKit.GenericRDKitException;
 import org.RDKit.Int_Pair;
 import org.RDKit.Int_Vect;
 import org.RDKit.Match_Vect;
+import org.RDKit.MolSanitizeException;
 import org.RDKit.RDKFuncs;
 import org.RDKit.RWMol;
+import org.RDKit.SmilesParseException;
 import org.RDKit.UInt_Vect;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataType;
@@ -28,6 +31,7 @@ import org.knime.core.data.vector.bitvector.DenseBitVectorCellFactory;
 import org.knime.core.node.NodeLogger;
 
 import com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin;
+import com.vernalis.knime.mmp.ToolkitException;
 import com.vernalis.knime.mmp.frags.abstrct.AbstractLeaf;
 
 /**
@@ -40,30 +44,49 @@ import com.vernalis.knime.mmp.frags.abstrct.AbstractLeaf;
 public class RWMolLeaf extends AbstractLeaf<RWMol> {
 
 	/**
-	 * Constructor with optional removal of hydrogen atoms. The SMILES is
-	 * canonicalised and the incoming attachment point index stored for
-	 * reference
+	 * ConstructorThe SMILES is canonicalised and the incoming attachment point
+	 * index stored for reference
 	 * 
 	 * @param smiles
 	 *            The SMILES String
 	 * @throws IllegalArgumentException
 	 *             If no or >1 attachment points are found
+	 * @throws ToolkitException
+	 *             If the toolkit implementation threw an exception
 	 */
-	public RWMolLeaf(String smiles) throws IllegalArgumentException {
+	public RWMolLeaf(String smiles)
+			throws IllegalArgumentException, ToolkitException {
 		super(smiles);
 	}
 
-	public RWMolLeaf(RWMol comp) {
+	/**
+	 * Constructor from {@link RWMol} object
+	 * 
+	 * @param comp
+	 *            The component
+	 * @throws IllegalArgumentException
+	 *             if no or &gt;1 attachment points are found
+	 * @throws ToolkitException
+	 *             If the toolkit implementation threw an exception
+	 */
+	public RWMolLeaf(RWMol comp)
+			throws IllegalArgumentException, ToolkitException {
 		this(comp.MolToSmiles(true));
 	}
 
 	@Override
-	protected String toolkitCanonicalize(String smiles) {
-		RWMol mol = RWMol.MolFromSmiles(smiles, 0, false);
-		mol.sanitizeMol();
-		String retVal = mol.MolToSmiles(true);
-		mol.delete();
-		return retVal;
+	protected String toolkitCanonicalize(String smiles)
+			throws ToolkitException {
+		try {
+			RWMol mol = RWMol.MolFromSmiles(smiles, 0, false);
+			mol.sanitizeMol();
+			String retVal = mol.MolToSmiles(true);
+			mol.delete();
+			return retVal;
+		} catch (MolSanitizeException | GenericRDKitException
+				| SmilesParseException e) {
+			throw new ToolkitException(e);
+		}
 	}
 
 	/**
@@ -83,8 +106,8 @@ public class RWMolLeaf extends AbstractLeaf<RWMol> {
 	 *         {@link ExplicitBitVect}
 	 * @see #getMorganFingerprintCell(int, int, boolean, boolean)
 	 */
-	public ExplicitBitVect getMorganFingerprint(int radius, int numBits, boolean useChirality,
-			boolean useBondTypes) {
+	public ExplicitBitVect getMorganFingerprint(int radius, int numBits,
+			boolean useChirality, boolean useBondTypes) {
 
 		RWMol mol = RWMol.MolFromSmiles(canonicalSmiles, 0, false);
 		UInt_Vect apIdx = new UInt_Vect();
@@ -95,15 +118,17 @@ public class RWMolLeaf extends AbstractLeaf<RWMol> {
 		try {
 			RDKFuncs.sanitizeMol(mol);
 			// Get the atom ID of the attachment point
-			matches = mol.getSubstructMatch(MatchedPairsMultipleCutsNodePlugin.AP_QUERY_MOL);
+			matches = mol.getSubstructMatch(
+					MatchedPairsMultipleCutsNodePlugin.AP_QUERY_MOL);
 			pair = matches.get(0);
 			apIdx.add(pair.getSecond());
-			retVal = RDKFuncs.getMorganFingerprintAsBitVect(mol, radius, numBits, null, apIdx,
-					useChirality, useBondTypes);
+			retVal = RDKFuncs.getMorganFingerprintAsBitVect(mol, radius,
+					numBits, null, apIdx, useChirality, useBondTypes);
 		} catch (Exception e) {
 			retVal = null;
 			NodeLogger.getLogger("Key Leaf Generation Fingerprinter")
-					.info("Unable to generate fingerprint for Leaf " + canonicalSmiles);
+					.info("Unable to generate fingerprint for Leaf "
+							+ canonicalSmiles);
 		} finally {
 			mol.delete();
 			apIdx.delete();
@@ -118,9 +143,10 @@ public class RWMolLeaf extends AbstractLeaf<RWMol> {
 	}
 
 	@Override
-	public DataCell getMorganFingerprintCell(int radius, int numBits, boolean useChirality,
-			boolean useBondTypes) {
-		ExplicitBitVect ebv = getMorganFingerprint(radius, numBits, useChirality, useBondTypes);
+	public DataCell getMorganFingerprintCell(int radius, int numBits,
+			boolean useChirality, boolean useBondTypes) {
+		ExplicitBitVect ebv = getMorganFingerprint(radius, numBits,
+				useChirality, useBondTypes);
 		if (ebv == null) {
 			return DataType.getMissingCell();
 		}
