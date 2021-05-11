@@ -45,7 +45,7 @@ public class PdbConnector2Helpers {
 	 * The URL of the schema
 	 */
 	public static final String SCHEMA_URL =
-			"http://search.rcsb.org/rcsbsearch/v1/metadata/schema";
+			"https://search.rcsb.org/rcsbsearch/v1/metadata/schema";
 
 	/**
 	 * Method to read the Metadata Schema

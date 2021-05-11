@@ -36,6 +36,7 @@ import com.vernalis.knime.mmp.CombinationFinder;
 import com.vernalis.knime.mmp.RDKitFragmentationUtils;
 import com.vernalis.knime.mmp.ToolkitException;
 import com.vernalis.knime.mmp.fragmentors.ClosedFactoryException;
+import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationException;
 import com.vernalis.knime.mmp.fragmentors.RWMolFragmentationFactory;
 import com.vernalis.knime.mmp.frags.abstrct.AbstractMulticomponentFragmentationParser;
 import com.vernalis.knime.mmp.frags.abstrct.BondIdentifier;
@@ -264,7 +265,7 @@ public class ParallelRdkitMMPFragment3NodeModel
 								null, null));
 			}
 		} catch (ClosedFactoryException | ToolkitException
-				| IllegalArgumentException e) {
+				| IllegalArgumentException | MoleculeFragmentationException e) {
 			retVal.addRowToTable((addFailReasons) ? new AppendedColumnRow(row,
 					e.getMessage() == null
 							? new StringCell("Error fragmenting molecule: "

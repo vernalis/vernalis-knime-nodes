@@ -117,7 +117,7 @@ public enum RCSBFileTypes {
 
 		@Override
 		public String getURL(String pdbid) {
-			return "http://www.rcsb.org/fasta/entry/" + pdbid + "/download";
+			return "https://www.rcsb.org/fasta/entry/" + pdbid + "/download";
 		}
 	},
 

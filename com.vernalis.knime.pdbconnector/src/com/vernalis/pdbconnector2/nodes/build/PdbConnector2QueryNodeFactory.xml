@@ -31,7 +31,7 @@
 				This node provides access to the RCSB PDB advanced query
 				webservice,
 				in an interface which closely follows the web UI at
-				<a href="http://www.rcsb.org/search/advanced">http://www.rcsb.org/search/advanced</a>
+				<a href="https://www.rcsb.org/search/advanced">https://www.rcsb.org/search/advanced</a>
 				Queries comprise nested fields and subgroups (which themselves can
 				contain fields / subgroups to an arbitrary depth). The items in each
 				field are combined using the indicated logic operator

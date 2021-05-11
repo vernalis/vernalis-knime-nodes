@@ -65,7 +65,7 @@ import static com.vernalis.pdbconnector2.RcsbJSONConstants.VALUE;
 public class StructureSimilarityQueryModel implements QueryModel {
 
 	private static final String RCSB_STRUCTURE_QUERY_URL_MASK =
-			"http://www.rcsb.org/search/structure/%s";
+			"https://www.rcsb.org/search/structure/%s";
 
 	private static final String CFGKEY_MATCH_UNIT_ID = "Match Unit ID";
 	private static final String CFGKEY_MATCH_UNIT = "Match Unit";
@@ -325,7 +325,9 @@ public class StructureSimilarityQueryModel implements QueryModel {
 	}
 
 	private MatchUnitType validateMatchUnitType(String matchUnitType) {
+
 		return MatchUnitType.fromString(matchUnitType);
+
 	}
 
 	@Override

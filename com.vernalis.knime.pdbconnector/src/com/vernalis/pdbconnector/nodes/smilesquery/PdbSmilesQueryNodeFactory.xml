@@ -21,8 +21,8 @@
     </shortDescription>
     
     <fullDescription>
-        <intro><p>This node queries the PDB (<a href="http://www.rcsb.org/pdb">www.rcsb.org</a>) webservice described briefly 
-        <a href="http://www.rcsb.org/pdb/software/rest.do#smiles">here</a>. The query accepts a SMILES or SMARTS query string, and can 
+        <intro><p>This node queries the PDB (<a href="https://www.rcsb.org/pdb">www.rcsb.org</a>) webservice described briefly 
+        <a href="https://www.rcsb.org/pdb/software/rest.do#smiles">here</a>. The query accepts a SMILES or SMARTS query string, and can 
         perform a variety of query types:
         <ul><li>Exact Match</li>
         	<li>Substructure</li>

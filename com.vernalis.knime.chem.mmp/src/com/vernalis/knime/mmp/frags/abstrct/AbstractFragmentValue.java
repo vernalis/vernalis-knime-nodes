@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -33,6 +33,7 @@ import org.knime.core.data.vector.bytevector.DenseByteVectorCellFactory;
 
 import com.vernalis.knime.chem.speedysmiles.helpers.SmilesHelpers;
 import com.vernalis.knime.mmp.MMPConstants;
+import com.vernalis.knime.mmp.ToolkitException;
 
 /**
  * The abstract implementation of the Fragmentation 'Value' component.
@@ -42,11 +43,12 @@ import com.vernalis.knime.mmp.MMPConstants;
  * @param <T>
  *            The type of the molecule object
  */
-public abstract class AbstractFragmentValue<T> implements Comparable<AbstractFragmentValue<T>> {
+public abstract class AbstractFragmentValue<T>
+		implements Comparable<AbstractFragmentValue<T>> {
 
 	protected String SMILES;
 
-	protected abstract void toolkitCanonicalize();
+	protected abstract void toolkitCanonicalize() throws ToolkitException;
 
 	protected final String ID;
 	protected boolean ignoreIDsForComparisons = false;
@@ -87,7 +89,8 @@ public abstract class AbstractFragmentValue<T> implements Comparable<AbstractFra
 	 * @param ignoreIDsForComparisons
 	 *            Is the ID ignored in comparisons?
 	 */
-	protected AbstractFragmentValue(String smiles, String ID, boolean ignoreIDsForComparisons) {
+	protected AbstractFragmentValue(String smiles, String ID,
+			boolean ignoreIDsForComparisons) {
 		if (smiles.matches("^\\[[0-9]*?\\*[H]?\\]$")) {
 			this.SMILES = smiles.replaceAll("^\\[([0-9]*?)\\*.*", "[$1*][H]");
 		} else {
@@ -130,7 +133,8 @@ public abstract class AbstractFragmentValue<T> implements Comparable<AbstractFra
 	 * Get the SMILES as a {@link DataCell}
 	 */
 	public SmilesAdapterCell getSMILESCell() {
-		return (SmilesAdapterCell) SmilesCellFactory.createAdapterCell(getSMILES());
+		return (SmilesAdapterCell) SmilesCellFactory
+				.createAdapterCell(getSMILES());
 	}
 
 	/**
@@ -234,7 +238,8 @@ public abstract class AbstractFragmentValue<T> implements Comparable<AbstractFra
 	 * @return The fingerprint as a {@link DenseByteVector} or <code>null</code>
 	 *         if no fingerprint is possible
 	 */
-	protected abstract DenseByteVector initialistGraphDistanceFingerprint(int numBytes);
+	protected abstract DenseByteVector
+			initialistGraphDistanceFingerprint(int numBytes);
 
 	/*
 	 * (non-Javadoc)
@@ -284,11 +289,15 @@ public abstract class AbstractFragmentValue<T> implements Comparable<AbstractFra
 	 * @return A map of the indices (mainly to allow subclasses to call this
 	 *         implementation and subsequently reuse the map without
 	 *         recalculation; Key is original AP index, Value is the new Index
+	 * @throws ToolkitException
 	 */
-	public Map<Integer, Integer> setAttachmentPointIndices(AbstractFragmentKey<T> key) {
-		HashMap<Integer, Integer> apLookup = key.getAttachmentPointIndexLookup();
+	public Map<Integer, Integer> setAttachmentPointIndices(
+			AbstractFragmentKey<T> key) throws ToolkitException {
+		HashMap<Integer, Integer> apLookup =
+				key.getAttachmentPointIndexLookup();
 		for (Entry<Integer, Integer> ent : apLookup.entrySet()) {
-			SMILES = SMILES.replace("[" + ent.getValue() + "*]", "[" + ent.getKey() + "*]");
+			SMILES = SMILES.replace("[" + ent.getValue() + "*]",
+					"[" + ent.getKey() + "*]");
 		}
 		canonicalize();
 		return apLookup;
@@ -298,7 +307,7 @@ public abstract class AbstractFragmentValue<T> implements Comparable<AbstractFra
 	 * Canonicalise the SMILES String. This calls {@link #toolkitCanonicalize()}
 	 * if the value is more than '*-*'
 	 */
-	public void canonicalize() {
+	public void canonicalize() throws ToolkitException {
 		if (SMILES.matches("\\[\\d+\\*\\](-)?\\[\\d+\\*\\]")) {
 			canonicalizeBondOnlyValue();
 		} else if (SMILES.matches("^\\[[0-9]*?\\*[H]?\\]$")) {
@@ -335,7 +344,7 @@ public abstract class AbstractFragmentValue<T> implements Comparable<AbstractFra
 	public Integer countAttachmentPoints() {
 		int result;
 		try {
-			result = SMILES.split("\\[[0-9]*?\\*", -1).length;
+			result = SMILES.split("\\[[0-9]*?\\*").length;
 		} catch (Exception e) {
 			try {
 				result = SMILES.split("\\*", -1).length;

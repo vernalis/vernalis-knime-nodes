@@ -91,6 +91,7 @@ import com.vernalis.knime.mmp.MMPConstants;
 import com.vernalis.knime.mmp.ToolkitException;
 import com.vernalis.knime.mmp.fragmentors.AbstractFragmentationFactory;
 import com.vernalis.knime.mmp.fragmentors.ClosedFactoryException;
+import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationException;
 import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationFactory2;
 import com.vernalis.knime.mmp.frags.abstrct.AbstractFragmentKey;
 import com.vernalis.knime.mmp.frags.abstrct.AbstractLeaf;
@@ -1084,7 +1085,8 @@ public class AbstractMMPFragmentNodeModel<T, U>
 				fragmentations.addAll(
 						fragFactoryHAdded.breakMoleculeAlongMatchingBonds(exec,
 								bondColour, keyColour, valueColour));
-			} catch (IllegalArgumentException | ToolkitException e) {
+			} catch (IllegalArgumentException | ToolkitException
+					| MoleculeFragmentationException e) {
 				fragFactory.close();
 				throw new IncomingMoleculeException(
 						"Unable to fragment molecule - " + e.getMessage(), e);
@@ -1099,7 +1101,8 @@ public class AbstractMMPFragmentNodeModel<T, U>
 				fragmentations.addAll(
 						fragFactory.breakMoleculeAlongMatchingBonds(exec,
 								bondColour, keyColour, valueColour));
-			} catch (ToolkitException e) {
+			} catch (ToolkitException | IllegalArgumentException
+					| MoleculeFragmentationException e) {
 				fragFactory.close();
 				throw new IncomingMoleculeException(
 						"Unable to fragment molecule - " + e.getMessage(), e);
@@ -1112,7 +1115,8 @@ public class AbstractMMPFragmentNodeModel<T, U>
 				fragmentations.addAll(fragFactory
 						.breakMoleculeAlongMatchingBondsWithBondInsertion(exec,
 								bondColour, keyColour, valueColour));
-			} catch (ToolkitException e) {
+			} catch (ToolkitException | IllegalArgumentException
+					| MoleculeFragmentationException e) {
 				fragFactory.close();
 				throw new IncomingMoleculeException(
 						"Unable to fragment molecule - " + e.getMessage(), e);
@@ -1132,14 +1136,15 @@ public class AbstractMMPFragmentNodeModel<T, U>
 			try {
 				bondCombos = fragFactory.generateCuttableBondCombos(
 						Math.max(minNumCuts, 2), maxNumCuts);
-			} catch (IllegalArgumentException | ToolkitException e) {
+				fragmentations.addAll(fragFactory.breakMoleculeAlongBondCombos(
+						bondCombos, prochiralAsChiral, exec, bondColour,
+						keyColour, valueColour, logger, verboseLogging));
+			} catch (IllegalArgumentException | ToolkitException
+					| MoleculeFragmentationException e) {
 				fragFactory.close();
 				throw new IncomingMoleculeException(
 						"Unable to fragment molecule - " + e.getMessage(), e);
 			}
-			fragmentations.addAll(fragFactory.breakMoleculeAlongBondCombos(
-					bondCombos, prochiralAsChiral, exec, bondColour, keyColour,
-					valueColour, logger, verboseLogging));
 		}
 		fragFactory.close();
 

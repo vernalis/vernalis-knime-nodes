@@ -1,3 +1,9 @@
+v1.30.2 11-May-2021
+-------------------
+* Added optional hit count to PDB Connector Query Executor node
+* Moved some of the query execution control from the node model to the query executor
+* Made all RCSB.org service calls point to https:// rather than http://
+
 v1.28.3 15-Feb-2021
 -------------------
 * Added Substructure chemical query types (Closes #11)

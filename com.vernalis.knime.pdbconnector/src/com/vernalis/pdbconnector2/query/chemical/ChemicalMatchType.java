@@ -26,6 +26,7 @@ import org.knime.core.node.util.ButtonGroupEnumInterface;
  *
  */
 public enum ChemicalMatchType implements ButtonGroupEnumInterface {
+
 	/**
 	 * Relaxed molecular graph match
 	 */

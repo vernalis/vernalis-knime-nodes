@@ -1069,13 +1069,12 @@ public class RWMolFragmentationFactory
 	@Override
 	protected AbstractMulticomponentFragmentationParser<RWMol>
 			createFragmentationParserFromComponents(Set<RWMol> leafs,
-					RWMol valueComponent, long localGCWave) {
-		try {
-			return new RWMolMulticomponentFragmentationParser(valueComponent,
-					leafs);
-		} catch (MoleculeFragmentationException | ToolkitException e) {
-			return null;
-		}
+					RWMol valueComponent, long localGCWave)
+					throws MoleculeFragmentationException, ToolkitException {
+
+		return new RWMolMulticomponentFragmentationParser(valueComponent,
+				leafs);
+
 	}
 
 	@Override

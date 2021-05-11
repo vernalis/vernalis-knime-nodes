@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -63,20 +63,26 @@ public class RWMolMulticomponentFragmentationParser
 	}
 
 	@Override
-	protected AbstractLeaf<RWMol> createLeafFromMolecule(RWMol comp) {
+	protected AbstractLeaf<RWMol> createLeafFromMolecule(RWMol comp)
+			throws IllegalArgumentException, ToolkitException {
 		return new RWMolLeaf(comp);
 	}
 
 	@Override
-	protected AbstractFragmentValue<RWMol> createValueFromMolecule(RWMol value) {
+	protected AbstractFragmentValue<RWMol>
+			createValueFromMolecule(RWMol value) {
 		return new RWMolFragmentValue(value, null);
 	}
 
 	@Override
 	protected RWMol[] getComponentsFromMultiComponent(RWMol multiCompMol) {
-		ROMol_Vect comps = getGc().markForCleanup(RDKFuncs.getMolFrags(multiCompMol,
-				false/* sanitize frags */, null/* frags to mol mapping */,
-				null/* Atoms in each frag mapping */, false/* copy confs */), 1L);
+		ROMol_Vect comps =
+				getGc().markForCleanup(RDKFuncs
+						.getMolFrags(multiCompMol, false/* sanitize frags */,
+								null/* frags to mol mapping */,
+								null/* Atoms in each frag mapping */,
+								false/* copy confs */),
+						1L);
 		RWMol[] retVal = new RWMol[(int) comps.size()];
 		for (int i = 0; i < comps.size(); i++) {
 			retVal[i] = (RWMol) getGc().markForCleanup(comps.get(i), 1L);
