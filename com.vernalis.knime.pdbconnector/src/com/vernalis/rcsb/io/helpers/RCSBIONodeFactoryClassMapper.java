@@ -22,6 +22,7 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
 
 import com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownload2NodeFactory;
+import com.vernalis.rcsb.io.nodes.source.RCSBsDownload2NodeFactory;
 
 public class RCSBIONodeFactoryClassMapper extends MapNodeFactoryClassMapper {
 
@@ -37,9 +38,9 @@ public class RCSBIONodeFactoryClassMapper extends MapNodeFactoryClassMapper {
 				"com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownloadNodeFactory",
 				RCSBmultiDownload2NodeFactory.class);
 		retVal.put("com.vernalis.nodes.io.rcsb.source.RCSBsDownloadNodeFactory",
-				RCSBmultiDownload2NodeFactory.class);
+				RCSBsDownload2NodeFactory.class);
 		retVal.put("com.vernalis.rcsb.io.nodes.source.RCSBsDownloadNodeFactory",
-				RCSBmultiDownload2NodeFactory.class);
+				RCSBsDownload2NodeFactory.class);
 		return retVal;
 	}
 
