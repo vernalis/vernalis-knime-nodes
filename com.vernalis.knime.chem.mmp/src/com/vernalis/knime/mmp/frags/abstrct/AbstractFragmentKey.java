@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -26,6 +26,7 @@ import org.knime.core.data.def.DoubleCell;
 
 import com.vernalis.knime.chem.speedysmiles.helpers.SmilesHelpers;
 import com.vernalis.knime.mmp.MMPConstants;
+import com.vernalis.knime.mmp.ToolkitException;
 
 /**
  * The abstract implementation of a Fragmenation Key. A key comprises a number
@@ -50,8 +51,12 @@ public abstract class AbstractFragmentKey<T>
 	 * @param keyAsString
 	 *            the SMILES String of the key
 	 * @return The correct {@link AbstractLeaf} implementation
+	 * @throws ToolkitException
+	 *             If the toolkit implementation threw an exception
+	 * @throws IllegalArgumentException
 	 */
-	protected abstract AbstractLeaf<T> getLeafFromString(String keyAsString);
+	protected abstract AbstractLeaf<T> getLeafFromString(String keyAsString)
+			throws IllegalArgumentException, ToolkitException;
 
 	/**
 	 * Constructor - initialises an empty key
@@ -71,13 +76,12 @@ public abstract class AbstractFragmentKey<T>
 
 	}
 
-	public AbstractFragmentKey(String keyAsString) {
+	public AbstractFragmentKey(String keyAsString) throws ToolkitException {
 		this();
 		try {
 			addSMILESComponent(keyAsString);
 		} catch (IllegalArgumentException iae) {
 			// Do nothing - null arguments are allowed!
-			// TODO: We need to handle this a bit better really
 		}
 	}
 
@@ -87,8 +91,11 @@ public abstract class AbstractFragmentKey<T>
 	 * 
 	 * @param smiles
 	 *            The SMILES string to add
+	 * @throws ToolkitException
+	 * @throws IllegalArgumentException
 	 */
-	public void addSMILESComponent(String smiles) {
+	public void addSMILESComponent(String smiles)
+			throws IllegalArgumentException, ToolkitException {
 		if (smiles == null) {
 			throw new IllegalArgumentException(
 					"A non-null string must be supplied");
@@ -212,7 +219,6 @@ public abstract class AbstractFragmentKey<T>
 	 */
 	private Integer calcHAC() {
 		return SmilesHelpers.countHAC(this.getKeyAsString());
-
 	}
 
 	/**
@@ -220,8 +226,8 @@ public abstract class AbstractFragmentKey<T>
 	 * {@link AbstractFragmentKey}) to varying (HAs from the
 	 * {@link AbstractFragmentValue}) heavy atoms
 	 */
-	public double getConstantToVaryingAtomRatio(
-			AbstractFragmentValue<T> value) {
+	public double
+			getConstantToVaryingAtomRatio(AbstractFragmentValue<T> value) {
 		return (double) this.calcHAC()
 				/ (double) value.getNumberChangingAtoms();
 	}
@@ -231,8 +237,8 @@ public abstract class AbstractFragmentKey<T>
 	 * {@link AbstractFragmentKey}) to varying (HAs from the
 	 * {@link AbstractFragmentValue}) heavy atoms as a {@link DoubleCell}
 	 */
-	public DataCell getConstantToVaryingAtomRatioCell(
-			AbstractFragmentValue<T> value) {
+	public DataCell
+			getConstantToVaryingAtomRatioCell(AbstractFragmentValue<T> value) {
 		return new DoubleCell(getConstantToVaryingAtomRatio(value));
 	}
 

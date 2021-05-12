@@ -94,7 +94,7 @@ public class PdbDescribeHetNodeModel extends NodeModel {
 	/**
 	 * The GraphQL Query
 	 */
-	// See http://data.rcsb.org/migration-guide.html#pdb-ligands - modified
+	// See https://data.rcsb.org/migration-guide.html#pdb-ligands - modified
 	// slightly!
 	//:@formatter:off
 	static final String GRAPHQL = "query ($ids: [String]!, $inchiSmiles: Boolean!){chem_comps(comp_ids: $ids) {\n"

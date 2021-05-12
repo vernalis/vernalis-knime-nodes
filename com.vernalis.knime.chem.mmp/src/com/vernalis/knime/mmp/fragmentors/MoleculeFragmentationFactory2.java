@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2021 Vernalis (R&D) Ltd
  * This program is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License, Version 3, as 
  * published by the Free Software Foundation.
@@ -58,9 +58,11 @@ public interface MoleculeFragmentationFactory2<T, U> {
 	 * @throws ToolkitException
 	 *             Thrown if the underlying toolkit throws an exception
 	 */
-	public default AbstractMulticomponentFragmentationParser<T> fragmentMolecule(
-			BondIdentifier bond) throws MoleculeFragmentationException, IllegalArgumentException,
-			ToolkitException, ClosedFactoryException {
+	public default AbstractMulticomponentFragmentationParser<T>
+			fragmentMolecule(BondIdentifier bond)
+					throws MoleculeFragmentationException,
+					IllegalArgumentException, ToolkitException,
+					ClosedFactoryException {
 		return fragmentMolecule(Collections.singleton(bond));
 	}
 
@@ -79,9 +81,11 @@ public interface MoleculeFragmentationFactory2<T, U> {
 	 * @throws ToolkitException
 	 *             Thrown if the underlying toolkit throws an exception
 	 */
-	public abstract AbstractMulticomponentFragmentationParser<T> fragmentMolecule(
-			Set<BondIdentifier> bonds) throws IllegalArgumentException,
-			MoleculeFragmentationException, ToolkitException, ClosedFactoryException;
+	public abstract AbstractMulticomponentFragmentationParser<T>
+			fragmentMolecule(Set<BondIdentifier> bonds)
+					throws IllegalArgumentException,
+					MoleculeFragmentationException, ToolkitException,
+					ClosedFactoryException;
 
 	/**
 	 * This is the method to fragment a molecule by breaking a single bond
@@ -101,9 +105,11 @@ public interface MoleculeFragmentationFactory2<T, U> {
 	 * @throws ToolkitException
 	 *             Thrown if the underlying toolkit throws an exception
 	 */
-	public abstract AbstractMulticomponentFragmentationParser<T> fragmentMoleculeWithBondInsertion(
-			BondIdentifier bond) throws IllegalArgumentException, MoleculeFragmentationException,
-			ToolkitException, ClosedFactoryException;
+	public abstract AbstractMulticomponentFragmentationParser<T>
+			fragmentMoleculeWithBondInsertion(BondIdentifier bond)
+					throws IllegalArgumentException,
+					MoleculeFragmentationException, ToolkitException,
+					ClosedFactoryException;
 
 	/**
 	 * Set the verboseLogging parameter which should influence logging output
@@ -119,7 +125,8 @@ public interface MoleculeFragmentationFactory2<T, U> {
 	 * @return A set of {@link BondIdentifier}s of the bonds which match the
 	 *         query
 	 */
-	public abstract Set<BondIdentifier> identifyAllMatchingBonds() throws ClosedFactoryException;
+	public abstract Set<BondIdentifier> identifyAllMatchingBonds()
+			throws ClosedFactoryException;
 
 	/**
 	 * Check whether the supplied set of {@link BondIdentifier}s (which must be
@@ -153,11 +160,14 @@ public interface MoleculeFragmentationFactory2<T, U> {
 	 *             Thrown if the underlying toolkit throws an exception
 	 * @throws IllegalArgumentException
 	 *             If one of the bonds is {@code null}
+	 * @throws MoleculeFragmentationException
 	 */
-	Set<AbstractMulticomponentFragmentationParser<T>> breakMoleculeAlongMatchingBonds(
-			ExecutionContext exec, Color breakingBondColour, Color keyColour, Color valueColour)
-			throws CanceledExecutionException, IllegalArgumentException, ToolkitException,
-			ClosedFactoryException;
+	Set<AbstractMulticomponentFragmentationParser<T>>
+			breakMoleculeAlongMatchingBonds(ExecutionContext exec,
+					Color breakingBondColour, Color keyColour,
+					Color valueColour) throws CanceledExecutionException,
+					IllegalArgumentException, ToolkitException,
+					ClosedFactoryException, MoleculeFragmentationException;
 
 	/**
 	 * Method to break the supplied molecule along all matching bonds, inserting
@@ -181,11 +191,14 @@ public interface MoleculeFragmentationFactory2<T, U> {
 	 *             If one of the bonds is {@code null}
 	 * @throws ClosedFactoryException
 	 *             If the {@link #close()} methods has previously been called
+	 * @throws MoleculeFragmentationException
 	 */
-	Set<AbstractMulticomponentFragmentationParser<T>> breakMoleculeAlongMatchingBondsWithBondInsertion(
-			ExecutionContext exec, Color bondColour, Color keyColour, Color valueColour)
-			throws CanceledExecutionException, IllegalArgumentException, ToolkitException,
-			ClosedFactoryException;
+	Set<AbstractMulticomponentFragmentationParser<T>>
+			breakMoleculeAlongMatchingBondsWithBondInsertion(
+					ExecutionContext exec, Color bondColour, Color keyColour,
+					Color valueColour) throws CanceledExecutionException,
+					IllegalArgumentException, ToolkitException,
+					ClosedFactoryException, MoleculeFragmentationException;
 
 	/**
 	 * Method to find combinations of cuttable bonds. For combinations of 3 or
@@ -205,8 +218,9 @@ public interface MoleculeFragmentationFactory2<T, U> {
 	 * @throws ClosedFactoryException
 	 *             If the {@link #close()} methods has previously been called
 	 */
-	Set<Set<BondIdentifier>> generateCuttableBondCombos(int minNumCuts, int maxNumCuts)
-			throws IllegalArgumentException, ToolkitException, ClosedFactoryException;
+	Set<Set<BondIdentifier>> generateCuttableBondCombos(int minNumCuts,
+			int maxNumCuts) throws IllegalArgumentException, ToolkitException,
+			ClosedFactoryException;
 
 	/**
 	 * Method to find combinations of cuttable bonds. For combinations of 3 or
@@ -225,7 +239,8 @@ public interface MoleculeFragmentationFactory2<T, U> {
 	 *             If the {@link #close()} methods has previously been called
 	 */
 	Set<Set<BondIdentifier>> generateCuttableBondCombos(int numCuts)
-			throws IllegalArgumentException, ToolkitException, ClosedFactoryException;
+			throws IllegalArgumentException, ToolkitException,
+			ClosedFactoryException;
 
 	/**
 	 * Method to identify all the bonds which may be part of a valid cut pattern
@@ -241,7 +256,8 @@ public interface MoleculeFragmentationFactory2<T, U> {
 	 *             If the {@link #close()} methods has previously been called
 	 */
 	Set<BondIdentifier> identifyAllCuttableBonds(int numCuts)
-			throws ClosedFactoryException, IllegalArgumentException, ToolkitException;
+			throws ClosedFactoryException, IllegalArgumentException,
+			ToolkitException;
 
 	/**
 	 * Method to break the supplied molecule along the indicated bond
@@ -272,16 +288,20 @@ public interface MoleculeFragmentationFactory2<T, U> {
 	 *             if the user cancels during execution
 	 * @throws ClosedFactoryException
 	 *             If the {@link #close()} methods has previously been called
+	 * @throws MoleculeFragmentationException
 	 */
-	Set<AbstractMulticomponentFragmentationParser<T>> breakMoleculeAlongBondCombos(
-			Set<Set<BondIdentifier>> bondCombos, boolean prochiralAsChiral, ExecutionContext exec,
-			Color bondColour, Color keyColour, Color valueColour, NodeLogger logger,
-			boolean verboseLogging) throws CanceledExecutionException, ClosedFactoryException;
+	Set<AbstractMulticomponentFragmentationParser<T>>
+			breakMoleculeAlongBondCombos(Set<Set<BondIdentifier>> bondCombos,
+					boolean prochiralAsChiral, ExecutionContext exec,
+					Color bondColour, Color keyColour, Color valueColour,
+					NodeLogger logger, boolean verboseLogging)
+					throws CanceledExecutionException, ClosedFactoryException,
+					MoleculeFragmentationException;
 
 	/**
-	 * @param Should
-	 *            a single bond be allowed to be cut twice if 2 cuts are being
-	 *            made?
+	 * @param allowTwoCutsToSingleBond
+	 *            Should a single bond be allowed to be cut twice if 2 cuts are
+	 *            being made?
 	 * @return The maximum number of cuts that can be made
 	 * @throws ToolkitException
 	 *             Thrown if the underlying toolkit throws an exception
@@ -361,9 +381,10 @@ public interface MoleculeFragmentationFactory2<T, U> {
 	 * @throws MoleculeFragmentationException
 	 *             if an invalid pattern was supplied
 	 */
-	default DataCell renderFragmentation(Set<BondIdentifier> bonds, Color breakingBondColour,
-			Color keyColour, Color valueColour) throws IOException, IllegalArgumentException,
-			ToolkitException, MoleculeFragmentationException {
+	default DataCell renderFragmentation(Set<BondIdentifier> bonds,
+			Color breakingBondColour, Color keyColour, Color valueColour)
+			throws IOException, IllegalArgumentException, ToolkitException,
+			MoleculeFragmentationException {
 		return DataType.getMissingCell();
 	}
 
@@ -397,6 +418,7 @@ public interface MoleculeFragmentationFactory2<T, U> {
 	 * @throws ClosedFactoryException
 	 *             If the {@link #close()} methods has previously been called
 	 */
-	public abstract Set<BondIdentifier> getMatchingBonds() throws ClosedFactoryException;
+	public abstract Set<BondIdentifier> getMatchingBonds()
+			throws ClosedFactoryException;
 
 }

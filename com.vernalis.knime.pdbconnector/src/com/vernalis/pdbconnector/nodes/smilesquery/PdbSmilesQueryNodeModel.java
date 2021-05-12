@@ -80,7 +80,8 @@ import com.vernalis.rest.GetRunner;
 public class PdbSmilesQueryNodeModel extends NodeModel {
 
 	/** The node logger instance */
-	static final NodeLogger logger = NodeLogger.getLogger(PdbSmilesQueryNodeModel.class);
+	static final NodeLogger logger =
+			NodeLogger.getLogger(PdbSmilesQueryNodeModel.class);
 
 	// Settings Model Keys
 	static final String SMILES_STRING_KEY = "SMILES Query String";
@@ -95,7 +96,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 	static final String SMILES_KEY = "SMILES String";
 
 	/** The base URL of the webservice */
-	static final String SERVICE_BASE_URL = "//www.rcsb.org/pdb/rest/smilesQuery";
+	static final String SERVICE_BASE_URL =
+			"//www.rcsb.org/pdb/rest/smilesQuery";
 	static final String SMILES_PREFIX = "smiles=";
 	static final String SEARCH_TYPE_PREFIX = "&search_type=";
 	static final String SIMILARITY_PREFIX = "&similarity=";
@@ -103,20 +105,30 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 	/**
 	 * The possible query type options. NB These need #toLowerCase() in the URL
 	 */
-	static final String[] QUERY_TYPES = { "Exact", "Substructure", "Superstructure", "Similarity" };
+	static final String[] QUERY_TYPES =
+			{ "Exact", "Substructure", "Superstructure", "Similarity" };
 
 	// The SettingsModels
-	private SettingsModelString m_SmilesQuery = PdbSmilesQueryNodeDialog.createSmilesQueryModel();
+	private SettingsModelString m_SmilesQuery =
+			PdbSmilesQueryNodeDialog.createSmilesQueryModel();
 	private SettingsModelDoubleBounded m_Similarity =
 			PdbSmilesQueryNodeDialog.createSimilarityQueryModel();
-	private SettingsModelString m_QueryType = PdbSmilesQueryNodeDialog.createQueryTypeModel();
-	private SettingsModelBoolean m_type = PdbSmilesQueryNodeDialog.createTypeModel();
-	private SettingsModelBoolean m_MolWt = PdbSmilesQueryNodeDialog.createMolWtModel();
-	private SettingsModelBoolean m_ChemName = PdbSmilesQueryNodeDialog.createChemicalNameModel();
-	private SettingsModelBoolean m_Formula = PdbSmilesQueryNodeDialog.createFormulaModel();
-	private SettingsModelBoolean m_InChiKey = PdbSmilesQueryNodeDialog.createInchiKeyModel();
-	private SettingsModelBoolean m_InChi = PdbSmilesQueryNodeDialog.createInchiModel();
-	private SettingsModelBoolean m_Smiles = PdbSmilesQueryNodeDialog.createSmilesModel();
+	private SettingsModelString m_QueryType =
+			PdbSmilesQueryNodeDialog.createQueryTypeModel();
+	private SettingsModelBoolean m_type =
+			PdbSmilesQueryNodeDialog.createTypeModel();
+	private SettingsModelBoolean m_MolWt =
+			PdbSmilesQueryNodeDialog.createMolWtModel();
+	private SettingsModelBoolean m_ChemName =
+			PdbSmilesQueryNodeDialog.createChemicalNameModel();
+	private SettingsModelBoolean m_Formula =
+			PdbSmilesQueryNodeDialog.createFormulaModel();
+	private SettingsModelBoolean m_InChiKey =
+			PdbSmilesQueryNodeDialog.createInchiKeyModel();
+	private SettingsModelBoolean m_InChi =
+			PdbSmilesQueryNodeDialog.createInchiModel();
+	private SettingsModelBoolean m_Smiles =
+			PdbSmilesQueryNodeDialog.createSmilesModel();
 
 	private Map<String, DataType> m_newCols;// The added columns and their types
 
@@ -233,16 +245,16 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 		// // Now write the 3rd table
 		// cont2.close();
 		// BufferedDataTable out2 = cont2.getTable();
-		BufferedDataTableRowOutput out0 =
-				new BufferedDataTableRowOutput(exec.createDataContainer(getSpec0()));
-		BufferedDataTableRowOutput out1 =
-				new BufferedDataTableRowOutput(exec.createDataContainer(getSpec1()));
-		BufferedDataTableRowOutput out2 =
-				new BufferedDataTableRowOutput(exec.createDataContainer(getSpec2()));
+		BufferedDataTableRowOutput out0 = new BufferedDataTableRowOutput(
+				exec.createDataContainer(getSpec0()));
+		BufferedDataTableRowOutput out1 = new BufferedDataTableRowOutput(
+				exec.createDataContainer(getSpec1()));
+		BufferedDataTableRowOutput out2 = new BufferedDataTableRowOutput(
+				exec.createDataContainer(getSpec2()));
 		createStreamableOperator(null, null).runFinal(new PortInput[0],
 				new PortOutput[] { out0, out1, out2 }, exec);
-		return new BufferedDataTable[] { out0.getDataTable(), out1.getDataTable(),
-				out2.getDataTable() };
+		return new BufferedDataTable[] { out0.getDataTable(),
+				out1.getDataTable(), out2.getDataTable() };
 	}
 
 	/*
@@ -253,13 +265,14 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 	 * node.streamable.PartitionInfo, org.knime.core.node.port.PortObjectSpec[])
 	 */
 	@Override
-	public StreamableOperator createStreamableOperator(PartitionInfo partitionInfo,
-			PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+	public StreamableOperator createStreamableOperator(
+			PartitionInfo partitionInfo, PortObjectSpec[] inSpecs)
+			throws InvalidSettingsException {
 		return new StreamableOperator() {
 
 			@Override
-			public void runFinal(PortInput[] inputs, PortOutput[] outputs, ExecutionContext exec)
-					throws Exception {
+			public void runFinal(PortInput[] inputs, PortOutput[] outputs,
+					ExecutionContext exec) throws Exception {
 				// First we need to perform the query
 				// URL is built (NB the SMILES needs "cleaned" of special
 				// characters)
@@ -267,8 +280,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 
 				// Build the URL - use the URI constructor to clean the SMILES
 				// string
-				String url = (new URI("http", null, SERVICE_BASE_URL, getQueryString(), null))
-						.toString();
+				String url = (new URI("https", null, SERVICE_BASE_URL,
+						getQueryString(), null)).toString();
 				logger.info("Query URL: " + url);
 
 				// Sets for the IDs - we use TreeSets to have sorted IDs
@@ -279,7 +292,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 				// Running the query is 50% of time
 				ExecutionMonitor exec0 = exec.createSubProgress(0.50);
 				exec0.setProgress(0.0);
-				ArrayList<HeterogenStructureDetails> hetDetails = getHeterogenData(url, exec0);
+				ArrayList<HeterogenStructureDetails> hetDetails =
+						getHeterogenData(url, exec0);
 				Collections.sort(hetDetails);
 				exec0.setProgress(1.0, "Query phase Complete");
 				logger.info("Query returned " + hetDetails.size() + " hits");
@@ -296,7 +310,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 				for (HeterogenStructureDetails entry : hetDetails) {
 					RowKey rowKey = RowKey.createRowKey(row);
 					exec0.checkCanceled();
-					exec0.setProgress(row * progPerRow, "Row " + (++row) + " of " + numRows);
+					exec0.setProgress(row * progPerRow,
+							"Row " + (++row) + " of " + numRows);
 					DefaultRow newRow = createDataRow(rowKey, entry);
 					cont0.push(newRow);
 
@@ -316,12 +331,15 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 				progPerRow = 1.0 / numRows;
 
 				exec.setMessage("Writing 2nd output Table");
-				logger.info(numRows + " Unique matching chemical components found");
+				logger.info(
+						numRows + " Unique matching chemical components found");
 				for (String entry : hetIDs) {
 					RowKey rowKey = RowKey.createRowKey(row);
 					exec0.checkCanceled();
-					exec0.setProgress(row * progPerRow, "Row " + (++row) + " of " + numRows);
-					cont1.push(new DefaultRow(rowKey, new DataCell[] { new StringCell(entry) }));
+					exec0.setProgress(row * progPerRow,
+							"Row " + (++row) + " of " + numRows);
+					cont1.push(new DefaultRow(rowKey,
+							new DataCell[] { new StringCell(entry) }));
 				}
 
 				cont1.close();
@@ -339,8 +357,10 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 				for (String entry : pdbIDs) {
 					RowKey rowKey = RowKey.createRowKey(row);
 					exec0.checkCanceled();
-					exec0.setProgress(row * progPerRow, "Row " + (++row) + " of " + numRows);
-					cont2.push(new DefaultRow(rowKey, new DataCell[] { new StringCell(entry) }));
+					exec0.setProgress(row * progPerRow,
+							"Row " + (++row) + " of " + numRows);
+					cont2.push(new DefaultRow(rowKey,
+							new DataCell[] { new StringCell(entry) }));
 				}
 
 				// Now write the 3rd table
@@ -362,20 +382,24 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 		return retVal;
 	}
 
-	private DefaultRow createDataRow(RowKey rowKey, HeterogenStructureDetails entry) {
+	private DefaultRow createDataRow(RowKey rowKey,
+			HeterogenStructureDetails entry) {
 		// There are always the Heterogen and Structure ID columns
 		DataCell[] cells = new DataCell[m_newCols.size()];
 		Arrays.fill(cells, DataType.getMissingCell());
 		int i = 0;
 		String val = entry.getHetID();
-		cells[i] = (!"".equals(val) && val != null) ? new StringCell(val) : cells[i];
+		cells[i] = (!"".equals(val) && val != null) ? new StringCell(val)
+				: cells[i];
 		i++;
 		val = entry.getStructureID();
-		cells[i] = (!"".equals(val) && val != null) ? new StringCell(val) : cells[i];
+		cells[i] = (!"".equals(val) && val != null) ? new StringCell(val)
+				: cells[i];
 		i++;
 		if (m_type.getBooleanValue()) {
 			val = entry.getType();
-			cells[i] = (!"".equals(val) && val != null) ? new StringCell(val) : cells[i];
+			cells[i] = (!"".equals(val) && val != null) ? new StringCell(val)
+					: cells[i];
 			i++;
 		}
 		if (m_MolWt.getBooleanValue()) {
@@ -389,27 +413,33 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 		}
 		if (m_ChemName.getBooleanValue()) {
 			val = entry.getChemName();
-			cells[i] = (!"".equals(val) && val != null) ? new StringCell(val) : cells[i];
+			cells[i] = (!"".equals(val) && val != null) ? new StringCell(val)
+					: cells[i];
 			i++;
 		}
 		if (m_Formula.getBooleanValue()) {
 			val = entry.getFormula();
-			cells[i] = (!"".equals(val) && val != null) ? new StringCell(val) : cells[i];
+			cells[i] = (!"".equals(val) && val != null) ? new StringCell(val)
+					: cells[i];
 			i++;
 		}
 		if (m_InChiKey.getBooleanValue()) {
 			val = entry.getInChiKey();
-			cells[i] = (!"".equals(val) && val != null) ? new StringCell(val) : cells[i];
+			cells[i] = (!"".equals(val) && val != null) ? new StringCell(val)
+					: cells[i];
 			i++;
 		}
 		if (m_InChi.getBooleanValue()) {
 			val = entry.getInChi();
-			cells[i] = (!"".equals(val) && val != null) ? InchiCellFactory.create(val) : cells[i];
+			cells[i] = (!"".equals(val) && val != null)
+					? InchiCellFactory.create(val)
+					: cells[i];
 			i++;
 		}
 		if (m_Smiles.getBooleanValue()) {
 			val = entry.getSmiles();
-			cells[i] = (!"".equals(val) && val != null) ? SmilesCellFactory.createAdapterCell(val)
+			cells[i] = (!"".equals(val) && val != null)
+					? SmilesCellFactory.createAdapterCell(val)
 					: cells[i];
 			i++;
 		}
@@ -443,8 +473,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 	 * @return A list of {@link HeterogenStructureDetails} for the query result
 	 * @throws Exception
 	 */
-	private ArrayList<HeterogenStructureDetails> getHeterogenData(final String url,
-			final ExecutionMonitor exec) throws Exception {
+	private ArrayList<HeterogenStructureDetails> getHeterogenData(
+			final String url, final ExecutionMonitor exec) throws Exception {
 
 		// Increasing delays in seconds - we start with 0 in case the url
 		// timeout is a sufficient delay
@@ -460,7 +490,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 				// Now send the request in a separate thread, waiting for it to
 				// complete
 				ExecutorService pool = Executors.newSingleThreadExecutor();
-				Future<List<String>> future = pool.submit(new GetRunner(new URL(url)));
+				Future<List<String>> future =
+						pool.submit(new GetRunner(new URL(url)));
 				while (!future.isDone()) {
 					// wait a 0.1 seconds
 					long time = System.nanoTime();
@@ -484,8 +515,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 				if ("Read timed out".equals(e.getMessage())) {
 					// This is the robot checker or just poor connection - so
 					// wait a bit and retry
-					logger.warn("GET request failed for data block - Waiting " + delay
-							+ " seconds before re-trying...");
+					logger.warn("GET request failed for data block - Waiting "
+							+ delay + " seconds before re-trying...");
 					exec.checkCanceled();
 					pause(delay, exec);
 				} else {
@@ -498,7 +529,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 		}
 		if (lines == null) {
 			// In this case, we never managed to contact the server...
-			String errMsg = "Unable to contact the remote server - please try again later!";
+			String errMsg =
+					"Unable to contact the remote server - please try again later!";
 			logger.error(errMsg);
 			throw new IOException(errMsg);
 		}
@@ -525,7 +557,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 				// and add to results
 				inRec = false;
 				currentRecord += line;
-				HeterogenStructureDetails het = new HeterogenStructureDetails(currentRecord);
+				HeterogenStructureDetails het =
+						new HeterogenStructureDetails(currentRecord);
 				dataReturn.add(het);
 				currentRecord = "";
 			} else if (inRec) {
@@ -536,7 +569,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 		return dataReturn;
 	}
 
-	private static void pause(int seconds, ExecutionMonitor exec1) throws Exception {
+	private static void pause(int seconds, ExecutionMonitor exec1)
+			throws Exception {
 		// simple delay function without using threads
 		Date start = new Date();
 		while (new Date().getTime() - start.getTime() < seconds * 1000) {
@@ -559,9 +593,11 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 			throws InvalidSettingsException {
 
 		// Check there is a SMILES String - no validation!
-		if (m_SmilesQuery.getStringValue() == null || "".equals(m_SmilesQuery.getStringValue())) {
+		if (m_SmilesQuery.getStringValue() == null
+				|| "".equals(m_SmilesQuery.getStringValue())) {
 			logger.warn("No SMILES query string entered");
-			throw new InvalidSettingsException("No SMILES query string entered");
+			throw new InvalidSettingsException(
+					"No SMILES query string entered");
 		}
 
 		// Now we need to decide which columns are added
@@ -602,7 +638,9 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 		DataColumnSpec[] newSpec = new DataColumnSpec[m_newCols.size()];
 		int i = 0;
 		for (Entry<String, DataType> col : m_newCols.entrySet()) {
-			newSpec[i++] = new DataColumnSpecCreator(col.getKey(), col.getValue()).createSpec();
+			newSpec[i++] =
+					new DataColumnSpecCreator(col.getKey(), col.getValue())
+							.createSpec();
 		}
 		return new DataTableSpec(newSpec);
 	}
@@ -614,7 +652,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 	 */
 	private DataTableSpec getSpec1() {
 		DataColumnSpec[] newSpec = new DataColumnSpec[1];
-		newSpec[0] = new DataColumnSpecCreator("Ligand ID", StringCell.TYPE).createSpec();
+		newSpec[0] = new DataColumnSpecCreator("Ligand ID", StringCell.TYPE)
+				.createSpec();
 		return new DataTableSpec(newSpec);
 	}
 
@@ -625,7 +664,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 	 */
 	private DataTableSpec getSpec2() {
 		DataColumnSpec[] newSpec = new DataColumnSpec[1];
-		newSpec[0] = new DataColumnSpecCreator("Structure ID", StringCell.TYPE).createSpec();
+		newSpec[0] = new DataColumnSpecCreator("Structure ID", StringCell.TYPE)
+				.createSpec();
 		return new DataTableSpec(newSpec);
 	}
 
@@ -669,7 +709,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		m_SmilesQuery.validateSettings(settings);
 		m_QueryType.validateSettings(settings);
 		m_Similarity.validateSettings(settings);
@@ -686,7 +727,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 
 	}
@@ -695,7 +737,8 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 
 	}

@@ -627,7 +627,6 @@ public class RdkitConfgenNodeModel
 	 */
 	private ROMol getRowBaseTemplate(int templateColIdx,
 			final ROMol globalTemplateMol, DataRow row, long waveID) {
-		// TODO: Makes sure the returned template has the NROT property set
 		ROMol rowBaseTemplateMol;
 		if (templateColIdx > 0) {
 			DataCell templateCell = row.getCell(templateColIdx);

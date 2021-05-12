@@ -982,39 +982,44 @@ public class RWMolFragmentationFactory
 					atomColourMap, bondColourMap);
 			drawer.finishDrawing();
 			svg = drawer.getDrawingText();
-			// This swaps the svg header to match the scaleable version in the
-			// Renderer to Image node
-			if (svg != null) {
-				// Make it scaleable
-				svg = svg.replaceAll("(?s)<svg:svg.*?>",
-						"<svg:svg contentScriptType=\"text/ecmascript\" zoomAndPan=\"magnify\"\n "
-								+ "xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n xmlns:svg=\"http://www.w3.org/2000/svg\" baseProfile=\"full\"\n "
-								+ "contentStyleType=\"text/css\" version=\"1.1\" width=\""
-								+ RENDERER_WIDTH
-								+ "px\"\n preserveAspectRatio=\"xMidYMid meet\"\n "
-								+ "xmlns:rdkit=\"http://www.rdkit.org/xml\" height=\""
-								+ RENDERER_HEIGHT
-								+ "px\"\n xmlns=\"http://www.w3.org/2000/svg\">");
-				// Make the highlights have nice rounded ends
-				svg = svg.replaceAll(
-						"(<(svg:)?path.*?stroke-width:[\\d]+px;stroke-linecap:).*?;",
-						"$1round;");
-				// Lazy qualifier before <svg:path gets us first matching which
-				// is in the highlights as they come before the bonds
-				// Locale.ROOT keeps '.' as decimal as required by SVG standard
-				// - see
-				// https://forum.knime.com/t/mmp-molecule-fragment-node-output-svg-cells-and-system-locale/10315
-				String radius = String.format(Locale.ROOT, "%.4f",
-						BREAK_ATOM_END_RADIUS_SCALE
-								* Integer.parseInt(svg.replaceAll(
-										"(?s).*?<(?:svg:)?path.*?;stroke:#(?!000000)[0-9A-F]{6};stroke-width:(\\d+)px;.*",
-										"$1"))
-								/ 2.0);
-				svg = svg.replaceAll(
-						"(<svg:ellipse cx='.*?' cy='.*?' rx=').*?' ry='.*?'",
-						"$1" + radius + "' ry='" + radius + "'");
-
-			}
+			// NO LONGER NECESSARY due to improved RDKit rendering
+			// // This swaps the svg header to match the scaleable version in
+			// the
+			// // Renderer to Image node
+			// if (svg != null) {
+			// // Make it scaleable
+			// svg = svg.replaceAll("(?s)<svg:svg.*?>",
+			// "<svg:svg contentScriptType=\"text/ecmascript\"
+			// zoomAndPan=\"magnify\"\n "
+			// + "xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n
+			// xmlns:svg=\"http://www.w3.org/2000/svg\" baseProfile=\"full\"\n "
+			// + "contentStyleType=\"text/css\" version=\"1.1\" width=\""
+			// + RENDERER_WIDTH
+			// + "px\"\n preserveAspectRatio=\"xMidYMid meet\"\n "
+			// + "xmlns:rdkit=\"http://www.rdkit.org/xml\" height=\""
+			// + RENDERER_HEIGHT
+			// + "px\"\n xmlns=\"http://www.w3.org/2000/svg\">");
+			// // Make the highlights have nice rounded ends
+			// svg = svg.replaceAll(
+			// "(<(svg:)?path.*?stroke-width:[\\d]+px;stroke-linecap:).*?;",
+			// "$1round;");
+			// // Lazy qualifier before <svg:path gets us first matching which
+			// // is in the highlights as they come before the bonds
+			// // Locale.ROOT keeps '.' as decimal as required by SVG standard
+			// // - see
+			// //
+			// https://forum.knime.com/t/mmp-molecule-fragment-node-output-svg-cells-and-system-locale/10315
+			// String radius = String.format(Locale.ROOT, "%.4f",
+			// BREAK_ATOM_END_RADIUS_SCALE
+			// * Integer.parseInt(svg.replaceAll(
+			// "(?s).*?<(?:svg:)?path.*?;stroke:#(?!000000)[0-9A-F]{6};stroke-width:(\\d+)px;.*",
+			// "$1"))
+			// / 2.0);
+			// svg = svg.replaceAll(
+			// "(<svg:ellipse cx='.*?' cy='.*?' rx=').*?' ry='.*?'",
+			// "$1" + radius + "' ry='" + radius + "'");
+			//
+			// }
 		} catch (ConformerException e) {
 			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		} finally {
@@ -1069,13 +1074,12 @@ public class RWMolFragmentationFactory
 	@Override
 	protected AbstractMulticomponentFragmentationParser<RWMol>
 			createFragmentationParserFromComponents(Set<RWMol> leafs,
-					RWMol valueComponent, long localGCWave) {
-		try {
-			return new RWMolMulticomponentFragmentationParser(valueComponent,
-					leafs);
-		} catch (MoleculeFragmentationException | ToolkitException e) {
-			return null;
-		}
+					RWMol valueComponent, long localGCWave)
+					throws MoleculeFragmentationException, ToolkitException {
+
+		return new RWMolMulticomponentFragmentationParser(valueComponent,
+				leafs);
+
 	}
 
 	@Override

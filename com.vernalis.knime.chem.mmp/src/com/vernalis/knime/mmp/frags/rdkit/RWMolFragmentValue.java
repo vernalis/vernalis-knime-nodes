@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -18,12 +18,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.RDKit.Atom;
+import org.RDKit.GenericRDKitException;
 import org.RDKit.Int_List;
+import org.RDKit.MolSanitizeException;
 import org.RDKit.RDKFuncs;
 import org.RDKit.ROMol;
 import org.RDKit.RWMol;
+import org.RDKit.SmilesParseException;
 import org.knime.core.data.vector.bytevector.DenseByteVector;
 
+import com.vernalis.knime.mmp.ToolkitException;
 import com.vernalis.knime.mmp.frags.abstrct.AbstractFragmentValue;
 
 /**
@@ -88,11 +92,16 @@ public class RWMolFragmentValue extends AbstractFragmentValue<RWMol> {
 	}
 
 	@Override
-	protected void toolkitCanonicalize() {
-		RWMol mol = RWMol.MolFromSmiles(SMILES, 0, false);
-		mol.sanitizeMol();
-		SMILES = mol.MolToSmiles(true);
-		mol.delete();
+	protected void toolkitCanonicalize() throws ToolkitException {
+		try {
+			RWMol mol = RWMol.MolFromSmiles(SMILES, 0, false);
+			mol.sanitizeMol();
+			SMILES = mol.MolToSmiles(true);
+			mol.delete();
+		} catch (MolSanitizeException | GenericRDKitException
+				| SmilesParseException e) {
+			throw new ToolkitException(e);
+		}
 	}
 
 	@Override

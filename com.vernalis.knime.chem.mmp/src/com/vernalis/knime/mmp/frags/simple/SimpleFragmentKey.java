@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -21,6 +21,7 @@ import org.knime.core.data.DataCell;
 import org.knime.core.data.vector.bitvector.DenseBitVector;
 import org.knime.core.data.vector.bitvector.DenseBitVectorCell;
 
+import com.vernalis.knime.mmp.ToolkitException;
 import com.vernalis.knime.mmp.frags.abstrct.AbstractFragmentKey;
 
 /**
@@ -33,6 +34,7 @@ import com.vernalis.knime.mmp.frags.abstrct.AbstractFragmentKey;
  *
  */
 public class SimpleFragmentKey extends AbstractFragmentKey<String> {
+
 	private DenseBitVector[] fps = null;
 	private DenseBitVector concatenatedFp = null;
 	private DataCell[] fpCells = null;
@@ -54,13 +56,14 @@ public class SimpleFragmentKey extends AbstractFragmentKey<String> {
 	/**
 	 * {@inheritDoc}
 	 */
-	public SimpleFragmentKey(String keyAsString) {
+	public SimpleFragmentKey(String keyAsString) throws ToolkitException {
 		super(keyAsString);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	protected SimpleFragmentLeaf getLeafFromString(String keyAsString) {
+	protected SimpleFragmentLeaf getLeafFromString(String keyAsString)
+			throws IllegalArgumentException, ToolkitException {
 		return new SimpleFragmentLeaf(keyAsString);
 	}
 
@@ -77,8 +80,10 @@ public class SimpleFragmentKey extends AbstractFragmentKey<String> {
 	public void setLeafFingerprints(DataCell[] fpCells)
 			throws IllegalArgumentException, UnsupportedOperationException {
 		if (fpCells.length != getNumComponents()) {
-			throw new IllegalArgumentException("Incorrect number of fingerprint cells ("
-					+ fpCells.length + " supplied, " + getNumComponents() + " required)");
+			throw new IllegalArgumentException(
+					"Incorrect number of fingerprint cells (" + fpCells.length
+							+ " supplied, " + getNumComponents()
+							+ " required)");
 		}
 		if (this.fpCells != null) {
 			throw new UnsupportedOperationException(
@@ -86,7 +91,8 @@ public class SimpleFragmentKey extends AbstractFragmentKey<String> {
 		}
 		// Pass down to the individual Leafs in case those are accessed
 		for (int i = 0; i < fpCells.length; i++) {
-			((SimpleFragmentLeaf) getLeafWithIdx(i + 1)).setFingerprintCell(fpCells[i]);
+			((SimpleFragmentLeaf) getLeafWithIdx(i + 1))
+					.setFingerprintCell(fpCells[i]);
 		}
 		// Store here too for brevity
 		this.fpCells = fpCells;
@@ -102,7 +108,8 @@ public class SimpleFragmentKey extends AbstractFragmentKey<String> {
 	 */
 	public DataCell[] getLeafFingerprintCells() throws NoSuchElementException {
 		if (fpCells == null) {
-			throw new NoSuchElementException("The Fingerprints have not been initialised");
+			throw new NoSuchElementException(
+					"The Fingerprints have not been initialised");
 		}
 		return fpCells;
 	}
@@ -115,7 +122,8 @@ public class SimpleFragmentKey extends AbstractFragmentKey<String> {
 	 *             if the cells have not previously been stored by a call to
 	 *             {@link #setLeafFingerprints(DataCell[])}
 	 */
-	public DenseBitVector[] getLeafFingerprints() throws NoSuchElementException {
+	public DenseBitVector[] getLeafFingerprints()
+			throws NoSuchElementException {
 		if (fps == null) {
 			fps = Arrays.stream(getLeafFingerprintCells())
 					.map(x -> ((DenseBitVectorCell) x).getBitVectorCopy())
@@ -132,7 +140,8 @@ public class SimpleFragmentKey extends AbstractFragmentKey<String> {
 	 *             if the cells have not previously been stored by a call to
 	 *             {@link #setLeafFingerprints(DataCell[])}
 	 */
-	public DenseBitVector getConcatenatedFingerprints() throws NoSuchElementException {
+	public DenseBitVector getConcatenatedFingerprints()
+			throws NoSuchElementException {
 		if (concatenatedFp == null) {
 			concatenatedFp = getLeafFingerprints()[0];
 			for (int i = 1; i < fps.length; i++) {

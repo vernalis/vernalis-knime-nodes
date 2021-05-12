@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -21,6 +21,8 @@ import org.knime.core.data.DataCell;
 import org.knime.core.data.vector.bitvector.DenseBitVectorCell;
 import org.knime.core.node.NodeLogger;
 
+import com.vernalis.knime.mmp.ToolkitException;
+
 /**
  * The abstract implementation of a 'Leaf' resulting from a fragmentation. A
  * 'Leaf' is an individual component of a Key, which may have 1 or more leaves.
@@ -31,6 +33,7 @@ import org.knime.core.node.NodeLogger;
  *            The type of molecule object for the toolkit
  */
 public abstract class AbstractLeaf<T> implements Comparable<AbstractLeaf<T>> {
+
 	protected final NodeLogger logger = NodeLogger.getLogger(this.getClass());
 	protected final String canonicalSmiles;
 	protected final int originalIndex;
@@ -43,12 +46,16 @@ public abstract class AbstractLeaf<T> implements Comparable<AbstractLeaf<T>> {
 	 *            The SMILES String
 	 * @throws IllegalArgumentException
 	 *             If no or &gt;1 attachment points are found
+	 * @throws ToolkitException
+	 *             If the toolkit implementation threw an exception
 	 */
-	public AbstractLeaf(String smiles) throws IllegalArgumentException {
+	public AbstractLeaf(String smiles)
+			throws IllegalArgumentException, ToolkitException {
 		Pattern p = Pattern.compile("\\[([0-9]+)\\*\\H?]");
 		Matcher m = p.matcher(smiles);
 		if (!m.find()) {
-			throw new IllegalArgumentException("No Attachment Point found in SMILES String");
+			throw new IllegalArgumentException(
+					"No Attachment Point found in SMILES String");
 		}
 		originalIndex = Integer.parseInt(m.group(1));
 		if (m.find()) {
@@ -59,7 +66,8 @@ public abstract class AbstractLeaf<T> implements Comparable<AbstractLeaf<T>> {
 		if (smiles.matches("^\\[[0-9]*?\\*[H]?\\]$")) {
 			smiles = smiles.replaceAll("^\\[([0-9]*?)\\*.*", "[$1*][H]");
 		}
-		canonicalSmiles = toolkitCanonicalize(smiles.replaceAll("\\[[0-9]+\\*\\]", "[*]"));
+		canonicalSmiles = toolkitCanonicalize(
+				smiles.replaceAll("\\[[0-9]+\\*\\]", "[*]"));
 	}
 
 	/**
@@ -77,8 +85,8 @@ public abstract class AbstractLeaf<T> implements Comparable<AbstractLeaf<T>> {
 	 * @return The RDKit binary Morgan Fingerprint as a KNIME DenseBitVector
 	 *         Cell
 	 */
-	public abstract DataCell getMorganFingerprintCell(int radius, int numBits, boolean useChirality,
-			boolean useBondTypes);
+	public abstract DataCell getMorganFingerprintCell(int radius, int numBits,
+			boolean useChirality, boolean useBondTypes);
 
 	/**
 	 * Method to return a canonical SMILES string using the implementing toolkit
@@ -86,8 +94,11 @@ public abstract class AbstractLeaf<T> implements Comparable<AbstractLeaf<T>> {
 	 * @param smiles
 	 *            The SMILES to canonicalise
 	 * @return The canonical form of the SMILES
+	 * @throws ToolkitException
+	 *             If the toolkit implementation threw an exception
 	 */
-	protected abstract String toolkitCanonicalize(String smiles);
+	protected abstract String toolkitCanonicalize(String smiles)
+			throws ToolkitException;
 
 	/**
 	 * @return The Canonical SMILES. NB The attachment point will have been
@@ -115,7 +126,8 @@ public abstract class AbstractLeaf<T> implements Comparable<AbstractLeaf<T>> {
 	 *             if idx &lt; 0
 	 * 
 	 */
-	public String getIndexedCanonicalSmiles(int idx) throws IllegalArgumentException {
+	public String getIndexedCanonicalSmiles(int idx)
+			throws IllegalArgumentException {
 		if (idx < 0) {
 			throw new IllegalArgumentException("Index must be >= 0");
 		}
@@ -146,15 +158,17 @@ public abstract class AbstractLeaf<T> implements Comparable<AbstractLeaf<T>> {
 	 */
 	@Override
 	public String toString() {
-		return "AbstractLeaf [canonicalSmiles=" + canonicalSmiles + ", originalIndex="
-				+ originalIndex + ", " + (is3D() ? "3D" : "2D") + "]";
+		return "AbstractLeaf [canonicalSmiles=" + canonicalSmiles
+				+ ", originalIndex=" + originalIndex + ", "
+				+ (is3D() ? "3D" : "2D") + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((canonicalSmiles == null) ? 0 : canonicalSmiles.hashCode());
+		result = prime * result
+				+ ((canonicalSmiles == null) ? 0 : canonicalSmiles.hashCode());
 		return result;
 	}
 

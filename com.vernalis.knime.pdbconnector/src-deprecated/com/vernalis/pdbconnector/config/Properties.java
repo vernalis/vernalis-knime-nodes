@@ -147,9 +147,9 @@ public class Properties {
 	static {
 		PdbConnectorConfig2 config = PdbConnectorConfig2.getInstance();
 		SEARCH_LOCATION = config.getProperty("SEARCH_LOCATION",
-				"http://www.rcsb.org/pdb/rest/search");
+				"https://www.rcsb.org/pdb/rest/search");
 		REPORT_LOCATION = config.getProperty("REPORT_LOCATION",
-				"http://www.rcsb.org/pdb/rest/customReport");
+				"https://www.rcsb.org/pdb/rest/customReport");
 		LIGAND_IMG_LOCATION = config.getProperty("LIGAND_IMG_LOCATION",
 				"http://www.pdb.org/pdb/images/");
 		COMPOSITE_START = config.getProperty("COMPOSITE_START",

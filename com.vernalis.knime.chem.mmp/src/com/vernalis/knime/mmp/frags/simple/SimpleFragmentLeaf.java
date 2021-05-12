@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -16,6 +16,7 @@ package com.vernalis.knime.mmp.frags.simple;
 
 import org.knime.core.data.DataCell;
 
+import com.vernalis.knime.mmp.ToolkitException;
 import com.vernalis.knime.mmp.frags.abstrct.AbstractLeaf;
 
 /**
@@ -29,7 +30,8 @@ public class SimpleFragmentLeaf extends AbstractLeaf<String> {
 
 	private DataCell fpCell = null;
 
-	public SimpleFragmentLeaf(String smiles) throws IllegalArgumentException {
+	public SimpleFragmentLeaf(String smiles)
+			throws IllegalArgumentException, ToolkitException {
 		super(smiles);
 
 	}
@@ -40,17 +42,19 @@ public class SimpleFragmentLeaf extends AbstractLeaf<String> {
 	 * @param fpCell
 	 *            The fingerprint cell
 	 */
-	public void setFingerprintCell(DataCell fpCell) throws UnsupportedOperationException {
+	public void setFingerprintCell(DataCell fpCell)
+			throws UnsupportedOperationException {
 		if (this.fpCell != null) {
-			throw new UnsupportedOperationException("The fingerprint has already been set");
+			throw new UnsupportedOperationException(
+					"The fingerprint has already been set");
 		}
 		this.fpCell = fpCell;
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public DataCell getMorganFingerprintCell(int radius, int numBits, boolean useChirality,
-			boolean useBondTypes) {
+	public DataCell getMorganFingerprintCell(int radius, int numBits,
+			boolean useChirality, boolean useBondTypes) {
 		return fpCell;
 	}
 

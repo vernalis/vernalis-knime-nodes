@@ -12,9 +12,9 @@
 		<intro>
 			<p>
 				This node uses the PDB (
-				<a href="http://www.rcsb.org/pdb">www.rcsb.org</a>
+				<a href="https://www.rcsb.org/pdb">www.rcsb.org</a>
 				) "
-				<a href="http://www.rcsb.org/pdb/software/rest.do#descComp">
+				<a href="https://www.rcsb.org/pdb/software/rest.do#descComp">
 					Describe Chemical Components
 				</a>
 				" webservice to provide details of chemical components

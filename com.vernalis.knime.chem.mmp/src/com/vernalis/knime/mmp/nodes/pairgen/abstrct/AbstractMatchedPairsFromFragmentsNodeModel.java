@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -93,6 +93,7 @@ import com.vernalis.knime.dialog.components.SettingsModelIntegerRange;
 import com.vernalis.knime.iterators.PairwiseIterable;
 import com.vernalis.knime.mmp.MMPConstants;
 import com.vernalis.knime.mmp.MatchedPairsMultipleCutsNodePlugin;
+import com.vernalis.knime.mmp.ToolkitException;
 import com.vernalis.knime.mmp.frags.simple.SimpleFragmentKey;
 import com.vernalis.knime.mmp.frags.simple.SimpleFragmentValue;
 import com.vernalis.knime.mmp.prefs.MatchedPairPreferencePage;
@@ -799,10 +800,15 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel
 
 		// Get the Left ID and key
 		String leftID = ((StringValue) leftIDCell).getStringValue();
-		SimpleFragmentKey leftKey = new SimpleFragmentKey(
-				((SmilesValue) leftKeyCell).getSmilesValue());
+		SimpleFragmentKey leftKey;
+		try {
+			leftKey = new SimpleFragmentKey(
+					((SmilesValue) leftKeyCell).getSmilesValue());
+		} catch (ToolkitException e1) {
+			// Should never happen
+			throw new RuntimeException(e1);
+		}
 
-		// TODO: Maybe check here for leftKey being 'empty'?
 		applyFingerprintToKey(leftKey, leftRow);
 
 		SimpleFragmentValue leftVal = new SimpleFragmentValue(
@@ -836,8 +842,14 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel
 				continue;
 			}
 
-			SimpleFragmentKey rightKey = new SimpleFragmentKey(
-					((SmilesValue) rightKeyCell).getSmilesValue());
+			SimpleFragmentKey rightKey;
+			try {
+				rightKey = new SimpleFragmentKey(
+						((SmilesValue) rightKeyCell).getSmilesValue());
+			} catch (ToolkitException e) {
+				// Should never happen
+				throw new RuntimeException(e);
+			}
 
 			if (leftKey.getNumComponents() != rightKey.getNumComponents()) {
 				continue;
@@ -1782,21 +1794,21 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel
 	@Override
 	protected void setInHiLiteHandler(int inIndex, HiLiteHandler hiLiteHdl) {
 		switch (inIndex) {
-		case 0:
-			topHiLiteTranslator.removeAllToHiliteHandlers();
-			topHiLiteTranslator.addToHiLiteHandler(hiLiteHdl);
-			break;
-
-		case 1:
-			if (hasTwoInputs) {
-				bottomHiLiteTranslator.removeAllToHiliteHandlers();
-				bottomHiLiteTranslator.addToHiLiteHandler(hiLiteHdl);
+			case 0:
+				topHiLiteTranslator.removeAllToHiliteHandlers();
+				topHiLiteTranslator.addToHiLiteHandler(hiLiteHdl);
 				break;
-			}
 
-		default:
-			super.setInHiLiteHandler(inIndex, hiLiteHdl);
-			break;
+			case 1:
+				if (hasTwoInputs) {
+					bottomHiLiteTranslator.removeAllToHiliteHandlers();
+					bottomHiLiteTranslator.addToHiLiteHandler(hiLiteHdl);
+					break;
+				}
+
+			default:
+				super.setInHiLiteHandler(inIndex, hiLiteHdl);
+				break;
 		}
 	}
 
@@ -1808,16 +1820,16 @@ abstract public class AbstractMatchedPairsFromFragmentsNodeModel
 	@Override
 	protected HiLiteHandler getOutHiLiteHandler(int outIndex) {
 		switch (outIndex) {
-		case 0:
-			return topHiLiteTranslator.getFromHiLiteHandler();
+			case 0:
+				return topHiLiteTranslator.getFromHiLiteHandler();
 
-		case 1:
-			if (hasTwoInputs) {
-				return bottomHiLiteTranslator.getFromHiLiteHandler();
-			}
+			case 1:
+				if (hasTwoInputs) {
+					return bottomHiLiteTranslator.getFromHiLiteHandler();
+				}
 
-		default:
-			return super.getOutHiLiteHandler(outIndex);
+			default:
+				return super.getOutHiLiteHandler(outIndex);
 		}
 	}
 

@@ -329,7 +329,8 @@ public abstract class AbstractFragmentationFactory<T, U>
 					boolean prochiralAsChiral, ExecutionContext exec,
 					Color bondColour, Color keyColour, Color valueColour,
 					NodeLogger logger, boolean verboseLogging)
-					throws CanceledExecutionException, ClosedFactoryException {
+					throws CanceledExecutionException, ClosedFactoryException,
+					MoleculeFragmentationException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -385,9 +386,9 @@ public abstract class AbstractFragmentationFactory<T, U>
 	public Set<AbstractMulticomponentFragmentationParser<T>>
 			breakMoleculeAlongMatchingBonds(ExecutionContext exec,
 					Color breakingBondColour, Color keyColour,
-					Color valueColour)
-					throws CanceledExecutionException, IllegalArgumentException,
-					ToolkitException, ClosedFactoryException {
+					Color valueColour) throws CanceledExecutionException,
+					IllegalArgumentException, ToolkitException,
+					ClosedFactoryException, MoleculeFragmentationException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -444,9 +445,9 @@ public abstract class AbstractFragmentationFactory<T, U>
 	public Set<AbstractMulticomponentFragmentationParser<T>>
 			breakMoleculeAlongMatchingBondsWithBondInsertion(
 					ExecutionContext exec, Color bondColour, Color keyColour,
-					Color valueColour)
-					throws CanceledExecutionException, IllegalArgumentException,
-					ToolkitException, ClosedFactoryException {
+					Color valueColour) throws CanceledExecutionException,
+					IllegalArgumentException, ToolkitException,
+					ClosedFactoryException, MoleculeFragmentationException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -505,10 +506,12 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 *             If there was a problem from the toolkit during fragmentation
 	 * @throws ClosedFactoryException
 	 *             If the {@link #close()} method has already been called
+	 * @throws MoleculeFragmentationException
 	 */
 	protected AbstractMulticomponentFragmentationParser<T>
 			rawFragmentMoleculeWithBondInsertion(BondIdentifier bond)
-					throws ToolkitException, ClosedFactoryException {
+					throws ToolkitException, ClosedFactoryException,
+					MoleculeFragmentationException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -633,11 +636,12 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 *             If there was a problem from the toolkit during fragmentation
 	 * @throws ClosedFactoryException
 	 *             If the {@link #close()} method has already been called
+	 * @throws MoleculeFragmentationException
 	 */
 	protected AbstractMulticomponentFragmentationParser<T>
 			rawFragmentMoleculeAlongBond(BondIdentifier bond)
 					throws IllegalArgumentException, ToolkitException,
-					ClosedFactoryException {
+					ClosedFactoryException, MoleculeFragmentationException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -764,11 +768,12 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 *             If there was a problem from the toolkit during fragmentation
 	 * @throws ClosedFactoryException
 	 *             If the {@link #close()} method has already been called
+	 * @throws MoleculeFragmentationException
 	 */
 	protected AbstractMulticomponentFragmentationParser<T>
 			rawFragmentMoleculeAlongBondCombos(Set<BondIdentifier> bonds)
 					throws IllegalArgumentException, ToolkitException,
-					ClosedFactoryException {
+					ClosedFactoryException, MoleculeFragmentationException {
 		if (isClosed) {
 			throw new ClosedFactoryException();
 		}
@@ -935,10 +940,13 @@ public abstract class AbstractFragmentationFactory<T, U>
 	 * @param localGCWave
 	 *            The wave index to use for stored native objects
 	 * @return The fragmentation container
+	 * @throws ToolkitException
+	 * @throws MoleculeFragmentationException
 	 */
 	protected abstract AbstractMulticomponentFragmentationParser<T>
 			createFragmentationParserFromComponents(Set<T> leafs,
-					T valueComponent, long localGCWave);
+					T valueComponent, long localGCWave)
+					throws MoleculeFragmentationException, ToolkitException;
 
 	/**
 	 * Method to create a 'value' given a {@link BitSet} containing the relevant

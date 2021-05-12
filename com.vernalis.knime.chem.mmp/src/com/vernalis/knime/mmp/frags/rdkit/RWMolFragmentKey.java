@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -16,6 +16,7 @@ package com.vernalis.knime.mmp.frags.rdkit;
 
 import org.RDKit.RWMol;
 
+import com.vernalis.knime.mmp.ToolkitException;
 import com.vernalis.knime.mmp.frags.abstrct.AbstractFragmentKey;
 
 /**
@@ -26,6 +27,7 @@ import com.vernalis.knime.mmp.frags.abstrct.AbstractFragmentKey;
  * 
  */
 public class RWMolFragmentKey extends AbstractFragmentKey<RWMol> {
+
 	/**
 	 * Constructor - initialises an empty key
 	 */
@@ -50,13 +52,15 @@ public class RWMolFragmentKey extends AbstractFragmentKey<RWMol> {
 	 * 
 	 * @param keyAsString
 	 *            The key as a SMILES string
+	 * @throws ToolkitException
 	 */
-	public RWMolFragmentKey(String keyAsString) {
+	public RWMolFragmentKey(String keyAsString) throws ToolkitException {
 		super(keyAsString);
 	}
 
 	@Override
-	protected RWMolLeaf getLeafFromString(String keyAsString) {
+	protected RWMolLeaf getLeafFromString(String keyAsString)
+			throws IllegalArgumentException, ToolkitException {
 		return new RWMolLeaf(keyAsString);
 	}
 

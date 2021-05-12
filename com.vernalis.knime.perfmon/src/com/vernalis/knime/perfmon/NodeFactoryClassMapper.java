@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,6 +14,10 @@
  ******************************************************************************/
 package com.vernalis.knime.perfmon;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.knime.core.node.MapNodeFactoryClassMapper;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeModel;
 
@@ -30,29 +34,33 @@ import com.vernalis.knime.perfmon.nodes.loopstart.timing.PerfMonTimingStartNodeF
  * @author S.Roughley
  *
  */
-public class NodeFactoryClassMapper extends org.knime.core.node.NodeFactoryClassMapper {
-
-	public NodeFactoryClassMapper() {
-
-	}
+public class NodeFactoryClassMapper extends MapNodeFactoryClassMapper {
 
 	@Override
-	public NodeFactory<? extends NodeModel> mapFactoryClassName(String factoryClassName) {
-		switch (factoryClassName) {
-		case "com.vernalis.knime.perfmon.nodes.timing.end.PerfMonTimingEndNodeFactory":
-			return new PerfMonTimingEndNodeFactory();
-		case "com.vernalis.knime.perfmon.nodes.timing.end.PerfMonTimingEnd2PortNodeFactory":
-			return new PerfMonTimingEnd2PortNodeFactory();
-		case "com.vernalis.knime.perfmon.nodes.timing.end.PerfMonTimingEnd3PortNodeFactory":
-			return new PerfMonTimingEnd3PortNodeFactory();
-		case "com.vernalis.knime.perfmon.nodes.timing.start.PerfMonTimingStartNodeFactory":
-			return new PerfMonTimingStartNodeFactory();
-		case "com.vernalis.knime.perfmon.nodes.timing.start.PerfMonTiming2PortStartNodeFactory":
-			return new PerfMonTiming2PortStartNodeFactory();
-		case "com.vernalis.knime.perfmon.nodes.timing.start.PerfMonTiming3PortStartNodeFactory":
-			return new PerfMonTiming3PortStartNodeFactory();
-		default:
-			return null;
-		}
+	protected Map<String, Class<? extends NodeFactory<? extends NodeModel>>>
+			getMapInternal() {
+
+		Map<String, Class<? extends NodeFactory<? extends NodeModel>>> retVal =
+				new HashMap<>();
+		retVal.put(
+				"com.vernalis.knime.perfmon.nodes.timing.end.PerfMonTimingEndNodeFactory",
+				PerfMonTimingEndNodeFactory.class);
+		retVal.put(
+				"com.vernalis.knime.perfmon.nodes.timing.end.PerfMonTimingEnd2PortNodeFactory",
+				PerfMonTimingEnd2PortNodeFactory.class);
+		retVal.put(
+				"com.vernalis.knime.perfmon.nodes.timing.end.PerfMonTimingEnd3PortNodeFactory",
+				PerfMonTimingEnd3PortNodeFactory.class);
+		retVal.put(
+				"com.vernalis.knime.perfmon.nodes.timing.start.PerfMonTimingStartNodeFactory",
+				PerfMonTimingStartNodeFactory.class);
+		retVal.put(
+				"com.vernalis.knime.perfmon.nodes.timing.start.PerfMonTiming2PortStartNodeFactory",
+				PerfMonTiming2PortStartNodeFactory.class);
+		retVal.put(
+				"com.vernalis.knime.perfmon.nodes.timing.start.PerfMonTiming3PortStartNodeFactory",
+				PerfMonTiming3PortStartNodeFactory.class);
+
+		return retVal;
 	}
 }

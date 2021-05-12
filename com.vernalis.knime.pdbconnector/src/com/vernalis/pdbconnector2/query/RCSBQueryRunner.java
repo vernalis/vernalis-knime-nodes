@@ -24,12 +24,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.knime.core.data.DataCell;
+import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
+import org.knime.core.data.DataTableSpec;
+import org.knime.core.data.DataTableSpecCreator;
 import org.knime.core.data.DataType;
 import org.knime.core.data.RowKey;
 import org.knime.core.data.append.AppendedColumnRow;
 import org.knime.core.data.def.DefaultRow;
 import org.knime.core.data.def.DoubleCell;
+import org.knime.core.data.def.LongCell;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.json.JSONCellFactory;
 import org.knime.core.node.BufferedDataContainer;
@@ -42,7 +46,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.vernalis.pdbconnector2.ports.MultiRCSBQueryModel;
 import com.vernalis.rest.JsonPostRunner;
+import com.vernalis.knime.
+misc.ArrayUtils;
 
 /**
  * Class to run an RCSB Query. The class should be instantiated with a query
@@ -113,7 +120,7 @@ public class RCSBQueryRunner {
 	private static final NodeLogger logger =
 			NodeLogger.getLogger(RCSBQueryRunner.class);
 	private static final String SEARCH_LOCATION =
-			"http://search.rcsb.org/rcsbsearch/v1/query";
+			"https://search.rcsb.org/rcsbsearch/v1/query";
 	private static final int[] RETRY_DELAYS =
 			new int[] { 1, 2, 5, 10, 30, 60, 120, 300, 600 };
 	private final QueryModel model;
@@ -122,6 +129,7 @@ public class RCSBQueryRunner {
 	private int pageSize = 10;
 	private boolean includeJson = false;
 	private Integer maxRowsToReturn = null;
+	private boolean includeHitCount = false;
 
 	/**
 	 * Constructor
@@ -187,6 +195,46 @@ public class RCSBQueryRunner {
 		this.maxRowsToReturn = null;
 	}
 
+    /**
+     * Method to set the includeHitCount setting
+     *
+     * @since 1.30.2
+     */
+	public final void setIncludeHitCount(boolean includeHitCount) {
+		this.includeHitCount = includeHitCount;
+	}
+
+    /**
+     * Method to create the output table spec based on the current settings
+     *
+     * @since 1.30.2
+     */
+	public final DataTableSpec getOutputTableSpec() {
+		if (model instanceof MultiRCSBQueryModel) {
+			DataTableSpec modelSpec =
+					((MultiRCSBQueryModel) model).getResultTableSpec();
+			DataTableSpecCreator specFact = null;
+			if (includeJson) {
+				specFact = new DataTableSpecCreator(modelSpec)
+						.addColumns(new DataColumnSpecCreator("Raw Json",
+								JSONCellFactory.TYPE).createSpec());
+			}
+			if (includeHitCount) {
+				if (specFact == null) {
+					specFact = new DataTableSpecCreator(modelSpec);
+				}
+				specFact.addColumns(
+						new DataColumnSpecCreator("Hit Count", LongCell.TYPE)
+								.createSpec());
+			}
+			if (specFact == null) {
+				return modelSpec;
+			}
+			return specFact.createSpec();
+		}
+		return null;
+	}
+
 	/**
 	 * @return The number of hits for the query
 	 * @throws QueryException
@@ -231,6 +279,9 @@ public class RCSBQueryRunner {
 			final JsonNode r = runQuery(q, exec);
 			if (r == null) {
 				// response 204 - No Hits returned
+				if (includeHitCount) {
+					writeHitCountToEmptyTable(bdc, r);
+				}
 				break;
 			}
 			if (hits < 0) {
@@ -239,6 +290,12 @@ public class RCSBQueryRunner {
 						? Math.min(maxRowsToReturn, hits)
 						: hits);
 			}
+			if (hits == 0 && includeHitCount) {
+				// Special case - we need to add a row containing only the hit
+				// count
+				return writeHitCountToEmptyTable(bdc, r);
+			}
+
 			pageStart += pageSize;
 			final Iterator<JsonNode> iter = r.get("result_set").iterator();
 			while (iter.hasNext()) {
@@ -262,6 +319,12 @@ public class RCSBQueryRunner {
 					}
 					row = new AppendedColumnRow(row, jsonCell);
 				}
+
+				if (includeHitCount) {
+					DataCell countCell = new LongCell(hits);
+					row = new AppendedColumnRow(row, countCell);
+				}
+
 				bdc.addRowToTable(row);
 				if (maxRowsToReturn != null
 						&& rowCnt == maxRowsToReturn.intValue() - 1) {
@@ -279,6 +342,34 @@ public class RCSBQueryRunner {
 				}
 			}
 		}
+		return true;
+	}
+
+	/**
+	 * @param bdc
+	 *            DataContainer to add the row to
+	 * @param r
+	 *            The {@link JsonNode} containing the service result (may be
+	 *            {@code null})
+	 * @return whether the full hitset was added to the table
+     * @since 1.30.2
+	 */
+	private boolean writeHitCountToEmptyTable(BufferedDataContainer bdc,
+			final JsonNode r) {
+		DataCell[] row = ArrayUtils.fill(
+				new DataCell[bdc.getTableSpec().getNumColumns()],
+				DataType.getMissingCell());
+		if (includeJson && r != null) {
+			try {
+				row[row.length - 2] = JSONCellFactory
+						.create(new ObjectMapper().writeValueAsString(r), true);
+			} catch (IOException e) {
+				logger.warn("Error generating json cell for json '"
+						+ r.toString() + "'");
+			}
+		}
+		row[row.length - 1] = new LongCell(0);
+		bdc.addRowToTable(new DefaultRow(RowKey.createRowKey(0L), row));
 		return true;
 	}
 
