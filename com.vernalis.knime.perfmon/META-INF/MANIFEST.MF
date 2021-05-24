@@ -22,5 +22,5 @@ Export-Package:
  com.vernalis.knime.perfmon.nodes.memoryuse,
  com.vernalis.knime.perfmon.nodes.testing.missingvals,
  com.vernalis.knime.perfmon.nodes.timing.abstrct
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 

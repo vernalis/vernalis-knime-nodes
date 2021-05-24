@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.regex.Pattern;
 
-import javax.xml.ws.soap.MTOM;
-
 /**
  * A reader class to provide one or more objects from a Reader, where each
  * object is represented by multiple lines of text. Most implementations should
@@ -29,7 +27,7 @@ import javax.xml.ws.soap.MTOM;
  * @author s.roughley
  *
  * @param <T>
- *            The type of the {@link MTOM} to return
+ *            The type of the {@link MultilineTextObject} to return
  * @see AbstractMultilineTextObjectReader
  */
 public interface MultilineTextObjectReader<T extends MultilineTextObject> {

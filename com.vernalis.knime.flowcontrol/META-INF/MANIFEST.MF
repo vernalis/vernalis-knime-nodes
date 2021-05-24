@@ -47,5 +47,5 @@ Export-Package: com.vernalis.knime.flowcontrol,
  com.vernalis.knime.flowcontrol.nodes.wait.totime,
  com.vernalis.knime.flowvar.nodes.io.read,
  com.vernalis.knime.flowvar.nodes.io.write
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 

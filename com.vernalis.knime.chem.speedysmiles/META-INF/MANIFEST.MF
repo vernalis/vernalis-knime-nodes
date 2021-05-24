@@ -29,5 +29,5 @@ Export-Package: com.vernalis.knime.chem.speedysmiles,
  com.vernalis.knime.chem.speedysmiles.nodes.manip.hacdesalt,
  com.vernalis.knime.chem.speedysmiles.nodes.manip.stereo.enumerate,
  com.vernalis.knime.chem.speedysmiles.nodes.manip.stereo.invert
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 

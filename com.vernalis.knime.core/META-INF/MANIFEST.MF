@@ -36,5 +36,5 @@ Export-Package: com.vernalis.exceptions,
  com.vernalis.knime.swiggc,
  com.vernalis.knime.util.math,
  com.vernalis.rest
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 

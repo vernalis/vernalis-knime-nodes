@@ -24,5 +24,5 @@ Export-Package: com.vernalis.knime.io,
  com.vernalis.knime.io.nodes.load.rxn,
  com.vernalis.knime.io.nodes.load.txt,
  com.vernalis.knime.io.nodes.load.xml
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 

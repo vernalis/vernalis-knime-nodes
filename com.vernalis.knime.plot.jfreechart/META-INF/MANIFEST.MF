@@ -17,5 +17,5 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.13.0,4.0.0)",
 Bundle-ActivationPolicy: lazy
 Export-Package: com.vernalis.knime.plot.jfreechart,
  com.vernalis.knime.plot.nodes.kerneldensity
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 
