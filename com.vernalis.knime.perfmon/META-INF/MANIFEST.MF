@@ -23,4 +23,5 @@ Export-Package:
  com.vernalis.knime.perfmon.nodes.testing.missingvals,
  com.vernalis.knime.perfmon.nodes.timing.abstrct
 Bundle-RequiredExecutionEnvironment: JavaSE-11
+Automatic-Module-Name: com.vernalis.knime.perfmon
 

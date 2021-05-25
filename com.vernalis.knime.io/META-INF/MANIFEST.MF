@@ -25,4 +25,5 @@ Export-Package: com.vernalis.knime.io,
  com.vernalis.knime.io.nodes.load.txt,
  com.vernalis.knime.io.nodes.load.xml
 Bundle-RequiredExecutionEnvironment: JavaSE-11
+Automatic-Module-Name: com.vernalis.knime.io
 

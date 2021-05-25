@@ -18,4 +18,5 @@ Bundle-ActivationPolicy: lazy
 Export-Package: com.vernalis.knime.plot.jfreechart,
  com.vernalis.knime.plot.nodes.kerneldensity
 Bundle-RequiredExecutionEnvironment: JavaSE-11
+Automatic-Module-Name: com.vernalis.knime.plot.jfreechart
 

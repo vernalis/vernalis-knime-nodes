@@ -48,4 +48,5 @@ Export-Package: com.vernalis.knime.flowcontrol,
  com.vernalis.knime.flowvar.nodes.io.read,
  com.vernalis.knime.flowvar.nodes.io.write
 Bundle-RequiredExecutionEnvironment: JavaSE-11
+Automatic-Module-Name: com.vernalis.knime.flowcontrol
 

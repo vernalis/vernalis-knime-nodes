@@ -37,4 +37,5 @@ Export-Package: com.vernalis.exceptions,
  com.vernalis.knime.util.math,
  com.vernalis.rest
 Bundle-RequiredExecutionEnvironment: JavaSE-11
+Automatic-Module-Name: com.vernalis.knime.core
 
