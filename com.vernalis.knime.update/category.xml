@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature id="com.vernalis.knime.feature">
+      <category name="vernalis-nodes"/>
+   </feature>
+   <feature id="com.vernalis.knime.testing.feature">
+      <category name="vernalis-nodes"/>
+   </feature>
+   <category-def name="vernalis-nodes" label="Build artifacts from vernalis community nodes">
+      <description>
+         Build artifacts from vernalis community nodes
+      </description>
+   </category-def>
+</site>
