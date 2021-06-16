@@ -49,7 +49,7 @@
 		<repository>
 			<id>p2-knime-update-site</id>
 			<layout>p2</layout>
-			<url>https://update.knime.com/analytics-platform/${knime.version}</url>
+			<url>https://update.knime.com/analytics-platform/master</url>
 		</repository>
 		<repository>
 			<id>p2-knime-trusted-community</id>
@@ -57,6 +57,20 @@
 			<url>https://update.knime.com/community-contributions/trusted/${knime.version}</url>
 		</repository>
 	</repositories>
+
+	<profiles>
+		<profile>
+			<!-- This profile is used on the community server to allow testing with the most recently built rdkit -->
+			<id>community-jenkins</id>
+			<repositories>
+				<repository>
+					<id>rdkit-update-site</id>
+					<layout>p2</layout>
+					<url>file://${project.basedir}/../../../tmp/buckminster.output/site</url>
+				</repository>
+			</repositories>
+		</profile>
+	</profiles>
 
 
 	<build>
