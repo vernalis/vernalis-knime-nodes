@@ -19,7 +19,7 @@
 
 	<!-- List the modules of your project here -->
 	<modules>
-	<!-- Plugins -->
+		<!-- Plugins -->
 		<module>com.vernalis.knime</module>
 		<module>com.vernalis.knime.chem.core</module>
 		<module>com.vernalis.knime.chem.mmp</module>
@@ -36,14 +36,14 @@
 		<module>com.vernalis.knime.perfmon</module>
 		<module>com.vernalis.knime.plot.jfreechart</module>
 
-	<!-- Features -->
+		<!-- Features -->
 		<module>com.vernalis.knime.feature</module>
 		<module>com.vernalis.knime.testing.feature</module>
 
-	<!-- Update Site -->
+		<!-- Update Site -->
 		<module>com.vernalis.knime.update</module>
 	</modules>
-	
+
 	<!-- List the update sites providing dependencies for your projects here -->
 	<repositories>
 		<repository>
@@ -52,9 +52,9 @@
 			<url>https://update.knime.com/analytics-platform/${knime.version}</url>
 		</repository>
 		<repository>
-		<id>p2-knime-trusted-community</id>
-		<layout>p2</layout>
-		<url>https://update.knime.com/community-contributions/trusted/${knime.version}</url>
+			<id>p2-knime-trusted-community</id>
+			<layout>p2</layout>
+			<url>https://update.knime.com/community-contributions/trusted/${knime.version}</url>
 		</repository>
 	</repositories>
 
