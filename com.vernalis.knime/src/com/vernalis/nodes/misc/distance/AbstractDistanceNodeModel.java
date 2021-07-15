@@ -40,8 +40,6 @@ import org.knime.core.data.container.SingleCellFactory;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.util.Pair;
@@ -62,7 +60,7 @@ public abstract class AbstractDistanceNodeModel
 		extends AbstractVectorDistanceNodeModel {
 
 	protected final SettingsModelBoolean sqrDistanceMdl =
-			createSquareDistanceModel();
+			registerSettingsModel(createSquareDistanceModel());
 
 	/**
 	 * Constructor for a non-collection-based implementation. At least one
@@ -308,26 +306,6 @@ public abstract class AbstractDistanceNodeModel
 			checkColumn(ent.getValue().getSecond(), ent.getKey(),
 					numericalColNames, selectedColNames);
 		}
-	}
-
-	@Override
-	protected void saveSettingsTo(NodeSettingsWO settings) {
-		super.saveSettingsTo(settings);
-		sqrDistanceMdl.saveSettingsTo(settings);
-	}
-
-	@Override
-	protected void validateSettings(NodeSettingsRO settings)
-			throws InvalidSettingsException {
-		super.validateSettings(settings);
-		sqrDistanceMdl.validateSettings(settings);
-	}
-
-	@Override
-	protected void loadValidatedSettingsFrom(NodeSettingsRO settings)
-			throws InvalidSettingsException {
-		super.loadValidatedSettingsFrom(settings);
-		sqrDistanceMdl.loadSettingsFrom(settings);
 	}
 
 }

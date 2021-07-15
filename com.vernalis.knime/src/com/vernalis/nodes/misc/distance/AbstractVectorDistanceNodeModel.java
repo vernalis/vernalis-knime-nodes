@@ -41,13 +41,12 @@ import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.def.DoubleCell;
 import org.knime.core.data.def.IntCell;
 import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.NodeSettingsRO;
-import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
-import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 import org.knime.core.node.util.ColumnFilter;
 import org.knime.core.node.util.DataValueColumnFilter;
 import org.knime.core.util.Pair;
+
+import com.vernalis.knime.nodes.AbstractSimpleStreamableFunctionNodeModel;
 
 import static com.vernalis.nodes.misc.distance.AbstractVectorDistanceNodeDialog.LIST_OF_NUMBERS;
 import static com.vernalis.nodes.misc.distance.AbstractVectorDistanceNodeDialog.createEndModel;
@@ -64,7 +63,7 @@ import static com.vernalis.nodes.misc.distance.AbstractVectorDistanceNodeDialog.
  *
  */
 public abstract class AbstractVectorDistanceNodeModel
-		extends SimpleStreamableFunctionNodeModel {
+		extends AbstractSimpleStreamableFunctionNodeModel {
 
 	/**
 	 * A primitive implementation of Pair<T,U> to store a pair of ints
@@ -176,8 +175,12 @@ public abstract class AbstractVectorDistanceNodeModel
 		if (!Character.isLetter(dim)) {
 			throw new IllegalArgumentException("Dimension must be a letter!");
 		}
+		final SettingsModelString startMdl =
+				registerSettingsModel(createStartModel(dim));
+		final SettingsModelString endMdl =
+				registerSettingsModel(createEndModel(dim));
 		dimensionModels.put(String.valueOf(dim).toLowerCase(),
-				new Pair<>(createStartModel(dim), createEndModel(dim)));
+				new Pair<>(startMdl, endMdl));
 	}
 
 	@Override
@@ -353,8 +356,8 @@ public abstract class AbstractVectorDistanceNodeModel
 	 * @return A {@link StringBuilder} containing any messages about guesses
 	 *         made along the way
 	 */
-	protected StringBuilder guessMissingColumnNames(
-			Deque<String> numericalColNames) {
+	protected StringBuilder
+			guessMissingColumnNames(Deque<String> numericalColNames) {
 		StringBuilder retVal = new StringBuilder();
 		for (Entry<String, Pair<SettingsModelString, SettingsModelString>> ent : dimensionModels
 				.entrySet()) {
@@ -479,35 +482,6 @@ public abstract class AbstractVectorDistanceNodeModel
 						"Column '" + mdl.getStringValue() + "' selected twice");
 			}
 			selectedColNames.add(mdl.getStringValue());
-		}
-	}
-
-	@Override
-	protected void saveSettingsTo(NodeSettingsWO settings) {
-		for (Pair<SettingsModelString, SettingsModelString> mdls : dimensionModels
-				.values()) {
-			mdls.getFirst().saveSettingsTo(settings);
-			mdls.getSecond().saveSettingsTo(settings);
-		}
-	}
-
-	@Override
-	protected void validateSettings(NodeSettingsRO settings)
-			throws InvalidSettingsException {
-		for (Pair<SettingsModelString, SettingsModelString> mdls : dimensionModels
-				.values()) {
-			mdls.getFirst().validateSettings(settings);
-			mdls.getSecond().validateSettings(settings);
-		}
-	}
-
-	@Override
-	protected void loadValidatedSettingsFrom(NodeSettingsRO settings)
-			throws InvalidSettingsException {
-		for (Pair<SettingsModelString, SettingsModelString> mdls : dimensionModels
-				.values()) {
-			mdls.getFirst().loadSettingsFrom(settings);
-			mdls.getSecond().loadSettingsFrom(settings);
 		}
 	}
 
