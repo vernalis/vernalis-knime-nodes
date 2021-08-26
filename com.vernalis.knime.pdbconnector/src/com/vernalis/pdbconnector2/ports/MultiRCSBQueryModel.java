@@ -300,6 +300,12 @@ public class MultiRCSBQueryModel
 	}
 
 	@Override
+	public boolean hasInvalidQuery() {
+		return models.stream().anyMatch(m -> m.hasInvalidQuery())
+				|| subMultis.stream().anyMatch(m -> m.hasInvalidQuery());
+	}
+
+	@Override
 	public void clearQuery() {
 		while (!models.isEmpty()) {
 			removeModel(models.get(0));

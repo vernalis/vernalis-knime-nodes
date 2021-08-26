@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -13,6 +13,15 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
 package com.vernalis.pdbconnector2.query;
+
+import java.awt.Color;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vernalis.pdbconnector2.dialogcomponents.swing.CountClearButtonBox;
@@ -102,5 +111,52 @@ public interface QueryPanel<T extends QueryModel> {
 	 * @return The {@link QueryModel} backing the panel
 	 */
 	public T getQueryModel();
+
+	/**
+	 * @return The JComponent representing the panel
+	 */
+	public JComponent getComponent();
+
+	/**
+	 * @return A title for the panel border. {@code null} if no title is to be
+	 *         displayed
+	 */
+	public default String getBorderTitle() {
+		return null;
+	}
+
+	/**
+	 * Method to reset the panel border to it's default
+	 */
+	public default void resetBorder() {
+		Border bord = BorderFactory.createCompoundBorder(
+				new EtchedBorder(EtchedBorder.RAISED),
+				new EtchedBorder(EtchedBorder.LOWERED));
+		if (getBorderTitle() != null) {
+			bord = new TitledBorder(bord, getBorderTitle());
+		}
+		bord = BorderFactory.createCompoundBorder(bord,
+				new EmptyBorder(5, 5, 5, 5));
+		getComponent().setBorder(bord);
+	}
+
+	/**
+	 * Method to highlight the panel border with the given colour
+	 * 
+	 * @param highlightColor
+	 *            The highlight colour for the border
+	 */
+	public default void highlightBorder(Color highlightColor) {
+		Border bord = BorderFactory.createCompoundBorder(
+				new EtchedBorder(EtchedBorder.RAISED, highlightColor,
+						highlightColor),
+				new EtchedBorder(EtchedBorder.LOWERED));
+		if (getBorderTitle() != null) {
+			bord = new TitledBorder(bord, getBorderTitle());
+		}
+		bord = BorderFactory.createCompoundBorder(bord,
+				new EmptyBorder(5, 5, 5, 5));
+		getComponent().setBorder(bord);
+	}
 
 }

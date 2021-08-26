@@ -43,9 +43,21 @@ public enum ChemicalMatchType implements ButtonGroupEnumInterface {
 	Graph_Strict,
 
 	/**
+	 * Exact molecular graph match
+     * @since 1.30.3
+	 */
+	Graph_Exact,
+
+	/**
 	 * Fingerprint similarity match
 	 */
 	Fingerprint_Similarity,
+
+	/**
+	 * Exact Substructure Graph Query
+     * @since 1.30.3
+	 */
+	Sub_Struct_Graph_Exact,
 
 	/**
 	 * Strict Substructure Graph Query

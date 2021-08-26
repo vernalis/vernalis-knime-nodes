@@ -16,12 +16,10 @@ package com.vernalis.pdbconnector2.query.text.fields;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
@@ -120,23 +118,35 @@ public final class QueryFieldRegistry {
 			}
 
 			// Now work through the section data
-			final List<String> categories = new ArrayList<>();
+			final Map<Integer, String> categories = new LinkedHashMap<>();
 			int catIndex = 0;
 			String catName = null;
 			QueryField qField = null;
 			for (final JsonNode node : PdbStaticSchemaLoader.getInstance()
 					.getSelectorItems()) {
 				try {
-
+					boolean deprecated =
+							node.path("deprecated").asBoolean(false);
+					if (deprecated) {
+						// We just ignore it!
+						continue;
+					}
 					switch (node.get("type").asText()) {
 						case "header":
-							categories.add(node.get("name").asText());
+							int headerIndex = node.path("index").asInt(-1);
+							if (!deprecated && headerIndex > -1) {
+								categories.put(headerIndex,
+										node.get("name").asText());
+							}
 							break;
 
 						case "item":
 							catIndex = node.get("header_index").asInt();
-							catName = catIndex < 0 ? null
-									: categories.get(catIndex);
+							catName = categories.get(catIndex); // null for a
+																// deprecated,
+																// negative-indexed
+																// or invalid
+																// index
 							qField = fields.get(node.get("attribute").asText());
 
 							addField(catName, qField);
@@ -150,7 +160,8 @@ public final class QueryFieldRegistry {
 												"Latest Released Structures",
 												qField.getSearchGroupName(),
 												"Structures released in the last 7 days",
-												"LatestReleased"));
+												"LatestReleased",
+												qField.getServiceName()));
 							} else if (qField.getDisplayName()
 									.equalsIgnoreCase("Revision Date")) {
 								// Add the artificial 'Latest Revised
@@ -161,21 +172,26 @@ public final class QueryFieldRegistry {
 												"Latest Revised Structures",
 												qField.getSearchGroupName(),
 												"Structures revised in the last 7 days",
-												"LatestRevised"));
+												"LatestRevised",
+												qField.getServiceName()));
 							} else if (qField.getDisplayName().equalsIgnoreCase(
 									"Chemical Component Type")) {
 								// Add the artificial 'Has Ligand' field
 								addField(qField.getSearchGroupName(),
 										new QueryFieldHasLigand(
 												qField.getAttribute(),
-												qField.getSearchGroupName()));
+												qField.getSearchGroupName(),
+												qField.getServiceName()));
 							}
 							break;
 
 						case "item-nested":
 							catIndex = node.get("header_index").asInt();
-							catName = catIndex < 0 ? null
-									: categories.get(catIndex);
+							catName = categories.get(catIndex); // null for a
+							// deprecated,
+							// negative-indexed
+							// or invalid
+							// index
 							qField = fields.get(node.get("attribute").asText());
 							addField(catName, qField.createCloneWithSubquery(
 									node.get("attribute_nested_value").asText(),
@@ -192,7 +208,8 @@ public final class QueryFieldRegistry {
 												"Latest Released Structures",
 												qField.getSearchGroupName(),
 												"Structures released in the last 7 days",
-												"LatestReleased")
+												"LatestReleased",
+												qField.getServiceName())
 														.createCloneWithSubquery(
 																node.get(
 																		"attribute_nested_value")
@@ -211,7 +228,8 @@ public final class QueryFieldRegistry {
 												"Latest Revised Structures",
 												qField.getSearchGroupName(),
 												"Structures revised in the last 7 days",
-												"LatestRevised")
+												"LatestRevised",
+												qField.getServiceName())
 														.createCloneWithSubquery(
 																node.get(
 																		"attribute_nested_value")

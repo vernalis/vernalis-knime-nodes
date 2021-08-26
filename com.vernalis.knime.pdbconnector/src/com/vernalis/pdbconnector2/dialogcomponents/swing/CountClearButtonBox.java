@@ -115,6 +115,8 @@ public class CountClearButtonBox extends Box implements ChangeListener {
 
 			}
 		});
+		addCountButtonMouseListener(new QueryPanelHighlightBorderMouseListener(
+				Color.GREEN, this.panel));
 		resetCountButton();
 
 		// A bit of space between the buttons
@@ -134,6 +136,8 @@ public class CountClearButtonBox extends Box implements ChangeListener {
 
 			}
 		});
+		addClearButtonMouseListener(new QueryPanelHighlightBorderMouseListener(
+				Color.MAGENTA, this.panel));
 		resetClearButton();
 		add(clearButton);
 		SwingUtils.forceToPreferredSize(this);

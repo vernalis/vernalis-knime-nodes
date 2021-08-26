@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -35,7 +35,6 @@ import static com.vernalis.pdbconnector2.RcsbJSONConstants.NODE_ID;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.OPERATOR;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.PARAMETERS;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.SERVICE_KEY;
-import static com.vernalis.pdbconnector2.RcsbJSONConstants.SERVICE_TEXT;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.TYPE_KEY;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.TYPE_TERMINAL;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.VALUE;
@@ -59,11 +58,14 @@ public class QueryFieldHasLigand extends QueryField {
 	 *            The id
 	 * @param searchGroupName
 	 *            The search group name
+	 * @param serviceName
+	 *            The search service name
 	 */
-	protected QueryFieldHasLigand(String attribute, String searchGroupName) {
+	protected QueryFieldHasLigand(String attribute, String searchGroupName,
+			String serviceName) {
 		super(attribute, "Has Ligand",
 				"Structure contains a non-polymer component", null, false,
-				searchGroupName, priority);
+				searchGroupName, priority, null, null, serviceName);
 		priority += 5;
 	}
 
@@ -92,7 +94,7 @@ public class QueryFieldHasLigand extends QueryField {
 		final ObjectNode retVal = new ObjectMapper().createObjectNode()
 				.put(TYPE_KEY, TYPE_TERMINAL)
 				.put(NODE_ID, nodeIndex.getAndIncrement())
-				.put(SERVICE_KEY, SERVICE_TEXT);
+				.put(SERVICE_KEY, getServiceName());
 		ObjectNode paramObj = retVal.putObject(PARAMETERS)
 				.put(ATTRIBUTE, getAttribute())
 				.put(NEGATION,
@@ -114,8 +116,8 @@ public class QueryFieldHasLigand extends QueryField {
 	@Override
 	protected QueryField createCloneWithSubquery(String optionName,
 			QueryFieldDropdown ddqf) {
-		return new QueryFieldHasLigand(getAttribute(), getSearchGroupName())
-				.setSubqueryNode(optionName, ddqf);
+		return new QueryFieldHasLigand(getAttribute(), getSearchGroupName(),
+				getServiceName()).setSubqueryNode(optionName, ddqf);
 	}
 
 }

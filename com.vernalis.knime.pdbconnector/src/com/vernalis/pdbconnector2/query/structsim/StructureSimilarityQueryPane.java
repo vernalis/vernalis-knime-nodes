@@ -17,14 +17,11 @@ package com.vernalis.pdbconnector2.query.structsim;
 import java.awt.Component;
 import java.awt.Dimension;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -59,6 +56,8 @@ public class StructureSimilarityQueryPane extends Box
 
 	private final CountClearButtonBox countButtons;
 
+	private static final String borderTitle = "Structure Similarity";
+
 	/**
 	 * Constructor
 	 * 
@@ -68,9 +67,7 @@ public class StructureSimilarityQueryPane extends Box
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public StructureSimilarityQueryPane(StructureSimilarityQueryModel model) {
 		super(BoxLayout.X_AXIS);
-		setBorder(BorderFactory.createCompoundBorder(
-				new TitledBorder(new EtchedBorder(), "Structure Similarity"),
-				new EmptyBorder(5, 5, 5, 0)));
+		resetBorder();
 		this.model = model;
 		this.model.addChangeListener(this);
 		countButtons = new CountClearButtonBox(this);
@@ -147,6 +144,16 @@ public class StructureSimilarityQueryPane extends Box
 	@Override
 	public CountClearButtonBox getButtons() {
 		return countButtons;
+	}
+
+	@Override
+	public String getBorderTitle() {
+		return borderTitle;
+	}
+
+	@Override
+	public JComponent getComponent() {
+		return this;
 	}
 
 	@Override

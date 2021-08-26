@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,8 +49,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vernalis.pdbconnector2.ports.MultiRCSBQueryModel;
 import com.vernalis.rest.JsonPostRunner;
-import com.vernalis.knime.
-misc.ArrayUtils;
+import com.vernalis.rest.PostIOException;
+import com.vernalis.knime.misc.ArrayUtils;
 
 /**
  * Class to run an RCSB Query. The class should be instantiated with a query
@@ -136,9 +137,17 @@ public class RCSBQueryRunner {
 	 * 
 	 * @param model
 	 *            the {@link QueryModel} containing the query to execute
+	 * @throws QueryException
+	 *             If the model has an invalid component
 	 */
-	public RCSBQueryRunner(QueryModel model) {
+	public RCSBQueryRunner(QueryModel model) throws QueryException {
+		Objects.requireNonNull(model);
+		if (model.hasInvalidQuery()) {
+			throw new QueryException(
+					"Supplied model has invalid queries - check in query builder!");
+		}
 		this.model = model;
+
 	}
 
 	/**
@@ -195,20 +204,25 @@ public class RCSBQueryRunner {
 		this.maxRowsToReturn = null;
 	}
 
-    /**
-     * Method to set the includeHitCount setting
-     *
-     * @since 1.30.2
-     */
+	/**
+	 * Method to set the includeHitCount setting
+	 * 
+	 * @param includeHitCount
+	 *            The value to set
+	 *
+	 * @since 1.30.2
+	 */
 	public final void setIncludeHitCount(boolean includeHitCount) {
 		this.includeHitCount = includeHitCount;
 	}
 
-    /**
-     * Method to create the output table spec based on the current settings
-     *
-     * @since 1.30.2
-     */
+	/**
+	 * Method to create the output table spec based on the current settings
+	 * 
+	 * @return The output table spec based on the current state of the runner
+	 *
+	 * @since 1.30.2
+	 */
 	public final DataTableSpec getOutputTableSpec() {
 		if (model instanceof MultiRCSBQueryModel) {
 			DataTableSpec modelSpec =
@@ -375,6 +389,12 @@ public class RCSBQueryRunner {
 
 	private JsonNode runQuery(JsonNode q)
 			throws QueryException, CanceledExecutionException {
+		if (model.hasInvalidQuery()) {
+			logger.error(
+					"Invalid query item present in model - check query in builder!");
+			throw new QueryException(
+					"Invalide query present in model - check query in builder!");
+		}
 		return runQuery(q, null);
 	}
 
@@ -394,6 +414,7 @@ public class RCSBQueryRunner {
 	 */
 	public static JsonNode runQuery(JsonNode query, ExecutionContext exec)
 			throws QueryException, CanceledExecutionException {
+
 		try {
 			logger.infoWithFormat("Sending query:%n %s%nto '%s",
 					new ObjectMapper().writerWithDefaultPrettyPrinter()
@@ -438,12 +459,30 @@ public class RCSBQueryRunner {
 				} else {
 					return retVal;
 				}
-			} catch (IOException | InterruptedException
-					| ExecutionException e) {
+			} catch (ExecutionException e) {
+				lastException = new QueryException(e);
+				Throwable cause = e.getCause();
+				if (cause instanceof PostIOException) {
+					// Handle fatal response codes here
+					PostIOException pioe = (PostIOException) cause;
+					if (pioe.getResponseCode() >= 400
+							&& pioe.getResponseCode() < 500) {
+						// Broken query - no point retrying!
+						if (exec != null) {
+							exec.setMessage(
+									"Error retrieving results - broken query!");
+						}
+						logger.warn("Error retrieving results - broken query!");
+						break;
+					}
+				}
+			} catch (IOException | InterruptedException e) {
 				lastException = new QueryException(e);
 			}
-			exec.setMessage("Error retrieving results - retrying in " + delay
-					+ " seconds...");
+			if (exec != null) {
+				exec.setMessage("Error retrieving results - retrying in "
+						+ delay + " seconds...");
+			}
 			logger.info("Error retrieving results - retrying in " + delay
 					+ " seconds...");
 			pause(delay, exec);
