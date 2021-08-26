@@ -16,7 +16,7 @@ package com.vernalis.pdbconnector2.query.text.dialog;
 
 import javax.swing.event.ChangeEvent;
 
-import com.vernalis.pdbconnector2.query.text.dialog.QueryGroupModel.QueryGroupEventType;
+import com.vernalis.pdbconnector2.query.text.dialog.AbstractQueryGroupModel.QueryGroupEventType;
 
 /**
  * A {@link ChangeEvent} subclass which also tracks the type of change event

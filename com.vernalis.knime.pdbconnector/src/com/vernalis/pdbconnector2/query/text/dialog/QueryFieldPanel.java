@@ -18,8 +18,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
@@ -27,10 +25,9 @@ import java.util.stream.Collectors;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -49,8 +46,10 @@ import com.vernalis.pdbconnector2.dialogcomponents.SettingsModelDateRangeBounded
 import com.vernalis.pdbconnector2.dialogcomponents.SettingsModelDoubleRangeBounded;
 import com.vernalis.pdbconnector2.dialogcomponents.SettingsModelIntegerRangeBounded;
 import com.vernalis.pdbconnector2.dialogcomponents.swing.CountClearButtonBox;
+import com.vernalis.pdbconnector2.dialogcomponents.swing.RemoveMeButton;
 import com.vernalis.pdbconnector2.dialogcomponents.swing.SwingUtils;
 import com.vernalis.pdbconnector2.query.QueryPanel;
+import com.vernalis.pdbconnector2.query.RemovableQueryPanel;
 import com.vernalis.pdbconnector2.query.text.dialog.QueryFieldModel.QueryFieldEventType;
 import com.vernalis.pdbconnector2.query.text.fields.QueryFieldRegistry;
 
@@ -73,12 +72,10 @@ import com.vernalis.pdbconnector2.query.text.fields.QueryFieldRegistry;
  * @since 1.28.0
  *
  */
-public class QueryFieldPanel extends Box
-		implements ChangeListener, QueryPanel<QueryFieldModel> {
+public class QueryFieldPanel extends Box implements ChangeListener,
+		RemovableQueryPanel<QueryFieldModel, QueryGroupPanel> {
 
 	private static final Color BACKGROUND = new JFrame().getBackground();
-
-	private static final String X_LABEL = "X";
 
 	private static final int OPERATOR_MAX_WIDTH =
 			new DialogComponentStringSelection(
@@ -122,21 +119,10 @@ public class QueryFieldPanel extends Box
 		this.parent = parent;
 		this.model = model;
 		this.model.addChangeListener(this);
-		setBorder(new EtchedBorder());
-		// setBorder(BorderFactory.createCompoundBorder(new EtchedBorder(), new
-		// EmptyBorder(5, 5, 5, 5)));
+		resetBorder();
 
 		// 'X' button to remove query
-		final JButton removeMe = new JButton(X_LABEL);
-		removeMe.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				getParentGroup().removeQueryField(getQueryModel());
-
-			}
-		});
-		add(removeMe);
+		add(new RemoveMeButton(this));
 
 		// The query type chooser
 		queryTypeChooser = DialogComponentNestedDropdown.fromMenuActions(
@@ -191,8 +177,6 @@ public class QueryFieldPanel extends Box
 		setFieldValueComponent(model.getQueryField().getDialogComponent(
 				model.getOperator(), model.getQueryFieldValueModel()));
 
-		// if (DUMMY_PANEL != null) {
-		// DUMMY_PANEL is null when we are still initialising it here!
 		SwingUtils.forceToSize(this,
 				new Dimension(600, this.getPreferredSize().height));
 		SwingUtils.keepHeightFillWidth(this);
@@ -204,6 +188,7 @@ public class QueryFieldPanel extends Box
 	/**
 	 * @return The parent {@link QueryGroupPanel} to which the field belongs
 	 */
+	@Override
 	public QueryGroupPanel getParentGroup() {
 		return parent;
 	}
@@ -437,4 +422,16 @@ public class QueryFieldPanel extends Box
 		return countButton;
 	}
 
+	@Override
+	public JComponent getComponent() {
+		return this;
+	}
+
+	@Override
+	public void removeMe() {
+		if (!isRoot()) {
+			getParentGroup().removeQueryField(getQueryModel());
+		}
+
+	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020,2021, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -78,7 +78,8 @@ public class JsonRestClient {
 					err.append(line).append('\n');
 				}
 			}
-			throw new IOException(err.toString().trim() + "'");
+			throw new PostIOException(responseCode,
+					err.toString().trim() + "'");
 		}
 		return conn.getInputStream();
 	}

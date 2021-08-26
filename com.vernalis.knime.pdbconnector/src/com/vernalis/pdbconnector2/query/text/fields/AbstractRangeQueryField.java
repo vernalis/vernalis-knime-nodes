@@ -15,6 +15,7 @@
 package com.vernalis.pdbconnector2.query.text.fields;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.vernalis.pdbconnector2.RcsbJSONConstants;
 
 /**
  * An abstract {@link QueryField} for range values
@@ -70,15 +71,57 @@ public abstract class AbstractRangeQueryField<T> extends QueryField {
 	 *            The minimum value
 	 * @param max
 	 *            The maximum value
+	 * @deprecated Use new full constructor with service name
 	 */
+	@Deprecated
 	protected AbstractRangeQueryField(String attribute, String displayName,
 			String description, String placeholder,
 			boolean canHaveMultipleFields, String searchGroupName,
 			int searchGroupPriority, String[] operators, String defaultOperator,
 			T min, T max) {
+		this(attribute, displayName, description, placeholder,
+				canHaveMultipleFields, searchGroupName, searchGroupPriority,
+				operators, defaultOperator, null, min, max);
+	}
+
+	/**
+	 * Full constructor
+	 * 
+	 * @param attribute
+	 *            The field attribute or id
+	 * @param displayName
+	 *            The field display name
+	 * @param description
+	 *            The field description
+	 * @param placeholder
+	 *            The field placeholder text
+	 * @param canHaveMultipleFields
+	 *            whether the field can have multiple fields
+	 * @param searchGroupName
+	 *            The category name
+	 * @param searchGroupPriority
+	 *            The priority - governs position within the category submenu
+	 * @param operators
+	 *            The possible operators
+	 * @param defaultOperator
+	 *            The default operator
+	 * @param serviceName
+	 *            The service name ({@code null} uses the default
+	 *            {@link RcsbJSONConstants#SERVICE_TEXT})
+	 * @param min
+	 *            The minimum value
+	 * @param max
+	 *            The maximum value
+	 */
+	protected AbstractRangeQueryField(String attribute, String displayName,
+			String description, String placeholder,
+			boolean canHaveMultipleFields, String searchGroupName,
+			int searchGroupPriority, String[] operators, String defaultOperator,
+			String serviceName, T min, T max) {
+
 		super(attribute, displayName, description, placeholder,
 				canHaveMultipleFields, searchGroupName, searchGroupPriority,
-				operators, defaultOperator);
+				operators, defaultOperator, serviceName);
 		this.min = min;
 		this.max = max;
 	}

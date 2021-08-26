@@ -23,6 +23,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettings;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
@@ -32,6 +33,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vernalis.pdbconnector2.InvalidSettingsExceptionCombiner;
 import com.vernalis.pdbconnector2.query.QueryModel;
+import com.vernalis.pdbconnector2.query.text.fields.InvalidQueryField;
 import com.vernalis.pdbconnector2.query.text.fields.QueryField;
 import com.vernalis.pdbconnector2.query.text.fields.QueryFieldRegistry;
 
@@ -45,6 +47,134 @@ import com.vernalis.pdbconnector2.query.text.fields.QueryFieldRegistry;
  */
 public class QueryFieldModel implements QueryModel {
 
+	/**
+	 * A {@link QueryFieldModel} with limited functionality to represent an
+	 * invalid query - most likely one removed from the remote API
+	 * 
+	 * @author S.Roughley knime@vernalis.com
+	 * @since 1.30.3
+	 */
+	public static class InvalidQueryFieldModel extends QueryFieldModel {
+
+		private final NodeSettings brokenSettings;
+
+		/**
+		 * Constructor
+		 * 
+		 * @param brokenSettings
+		 *            The settings object for the broken field
+		 */
+		public InvalidQueryFieldModel(NodeSettingsRO brokenSettings) {
+			super((String) null);
+			this.brokenSettings = (NodeSettings) brokenSettings;
+		}
+
+		@Override
+		public QueryField getQueryField() {
+			return new InvalidQueryField(brokenSettings);
+		}
+
+		/**
+		 * @return The broken Node Settings object for the field
+		 */
+		public NodeSettingsRO getSettings() {
+			return brokenSettings;
+		}
+
+		@Override
+		public boolean hasInvalidQuery() {
+			return true;
+		}
+
+		@Override
+		public void setIsNot(boolean isNot) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean getIsNot() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void setOperator(QueryFieldOperator operator) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean hasOperator() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public QueryFieldOperator getOperator() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void validateSettings(NodeSettingsRO settings)
+				throws InvalidSettingsException {
+			// do nothing
+		}
+
+		@Override
+		public void loadSettings(NodeSettingsRO settings)
+				throws InvalidSettingsException {
+			// do nothing
+		}
+
+		@Override
+		public void saveSettingsTo(NodeSettingsWO settings) {
+			settings.addNodeSettings(brokenSettings);
+		}
+
+		@Override
+		public SettingsModelString getQueryTypeModel() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public SettingsModelString getQueryOperatorModel() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void clearQueryFieldValueModel() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void setQueryFieldValueModel(SettingsModel settingsModel) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public SettingsModel getQueryFieldValueModel() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean hasQuery() {
+			return false;
+		}
+
+		@Override
+		public void clearQuery() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<ChangeListener> getChangeListeners() {
+			return Collections.emptyList();
+		}
+
+		@Override
+		public JsonNode getQueryNodes(AtomicInteger nodeId) {
+			throw new UnsupportedOperationException();
+		}
+
+	}
+
 	private static final String CFGKEY_ATTRIBUTE = "attribute";
 	private static final String CFGKEY_OPERATOR = "operator";
 	private static final String CFGKEY_IS_NOT = "isNot";
@@ -53,7 +183,7 @@ public class QueryFieldModel implements QueryModel {
 	 * An change even type for the query field
 	 * 
 	 * @author S.Roughley knime@vernalis.com
- * @since 1.28.0
+	 * @since 1.28.0
 	 *
 	 */
 	public static enum QueryFieldEventType {
@@ -91,34 +221,37 @@ public class QueryFieldModel implements QueryModel {
 
 		this.attributeMdl =
 				new SettingsModelString(CFGKEY_ATTRIBUTE, attribute);
-		setOperator(getQueryField().getDefaultOperator());
-		queryFieldValueModel =
-				getQueryField().getValueSettingsModel(getOperator());
-		isNotMdl.addChangeListener(new ChangeListener() {
+		// null is passed when the query is invalid
+		if (attribute != null) {
+			setOperator(getQueryField().getDefaultOperator());
+			queryFieldValueModel =
+					getQueryField().getValueSettingsModel(getOperator());
+			isNotMdl.addChangeListener(new ChangeListener() {
 
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				notifyChangeListeners(QueryFieldEventType.InversionChange);
+				@Override
+				public void stateChanged(ChangeEvent e) {
+					notifyChangeListeners(QueryFieldEventType.InversionChange);
 
-			}
-		});
+				}
+			});
 
-		operatorMdl.addChangeListener(new ChangeListener() {
+			operatorMdl.addChangeListener(new ChangeListener() {
 
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				notifyChangeListeners(QueryFieldEventType.OperatorChange);
+				@Override
+				public void stateChanged(ChangeEvent e) {
+					notifyChangeListeners(QueryFieldEventType.OperatorChange);
 
-			}
-		});
-		attributeMdl.addChangeListener(new ChangeListener() {
+				}
+			});
+			attributeMdl.addChangeListener(new ChangeListener() {
 
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				notifyChangeListeners(QueryFieldEventType.QueryTypeChange);
+				@Override
+				public void stateChanged(ChangeEvent e) {
+					notifyChangeListeners(QueryFieldEventType.QueryTypeChange);
 
-			}
-		});
+				}
+			});
+		}
 	}
 
 	/**
@@ -137,8 +270,13 @@ public class QueryFieldModel implements QueryModel {
 		operatorMdl.loadSettingsFrom(nodeSettings);
 		attributeMdl.loadSettingsFrom(nodeSettings);
 		operatorMdl.loadSettingsFrom(nodeSettings);
-		queryFieldValueModel =
-				getQueryField().getValueSettingsModel(getOperator());
+		final QueryField queryField = getQueryField();
+		if (queryField == null) {
+			throw new KnowsROSettingsInvalidSettingsException("Query field '"
+					+ attributeMdl.getStringValue() + "' not found!",
+					nodeSettings);
+		}
+		queryFieldValueModel = queryField.getValueSettingsModel(getOperator());
 		if (queryFieldValueModel != null) {
 			queryFieldValueModel.loadSettingsFrom(nodeSettings);
 		}

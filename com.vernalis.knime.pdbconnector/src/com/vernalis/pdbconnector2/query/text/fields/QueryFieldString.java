@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -79,15 +79,17 @@ public class QueryFieldString extends QueryField {
 	 *            The allowed operators
 	 * @param defaultOperator
 	 *            The default operator
+	 * @param serviceName
+	 *            The search service name
 	 */
 	protected QueryFieldString(String attribute, String displayName,
 			String description, String placeholder,
 			boolean canHaveMultipleFields, String searchGroupName,
-			int searchGroupPriority, String[] operators,
-			String defaultOperator) {
+			int searchGroupPriority, String[] operators, String defaultOperator,
+			String serviceName) {
 		super(attribute, displayName, description, placeholder,
 				canHaveMultipleFields, searchGroupName, searchGroupPriority,
-				operators, defaultOperator);
+				operators, defaultOperator, serviceName);
 	}
 
 	@Override
@@ -198,7 +200,8 @@ public class QueryFieldString extends QueryField {
 				getSearchGroupPriority(),
 				getOperators().stream().map(op -> op.name())
 						.toArray(String[]::new),
-				getDefaultOperator().name()).setSubqueryNode(optionName, ddqf);
+				getDefaultOperator().name(), getServiceName())
+						.setSubqueryNode(optionName, ddqf);
 
 	}
 

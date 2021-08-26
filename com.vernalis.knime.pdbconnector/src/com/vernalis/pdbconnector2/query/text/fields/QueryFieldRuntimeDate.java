@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -32,7 +32,6 @@ import static com.vernalis.pdbconnector2.RcsbJSONConstants.NODE_ID;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.OPERATOR;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.PARAMETERS;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.SERVICE_KEY;
-import static com.vernalis.pdbconnector2.RcsbJSONConstants.SERVICE_TEXT;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.TYPE_KEY;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.TYPE_TERMINAL;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.VALUE;
@@ -64,11 +63,14 @@ public class QueryFieldRuntimeDate extends QueryField {
 	 *            The optional description
 	 * @param uniqueID
 	 *            The unique field ID
+	 * @param serviceName
+	 *            The service name
 	 */
 	protected QueryFieldRuntimeDate(String attribute, String displayName,
-			String searchGroupName, String description, String uniqueID) {
+			String searchGroupName, String description, String uniqueID,
+			String serviceName) {
 		super(attribute, displayName, description, null, false, searchGroupName,
-				priority);
+				priority, null, null, serviceName);
 		this.uniqueID = uniqueID;
 		priority += 5;
 	}
@@ -101,7 +103,7 @@ public class QueryFieldRuntimeDate extends QueryField {
 		final ObjectNode retVal = new ObjectMapper().createObjectNode()
 				.put(TYPE_KEY, TYPE_TERMINAL)
 				.put(NODE_ID, nodeIndex.getAndIncrement())
-				.put(SERVICE_KEY, SERVICE_TEXT);
+				.put(SERVICE_KEY, getServiceName());
 		retVal.putObject(PARAMETERS).put(ATTRIBUTE, getAttribute())
 				.put(NEGATION, false)
 				.put(OPERATOR, QueryFieldOperator.greater.getQueryString())
@@ -118,8 +120,8 @@ public class QueryFieldRuntimeDate extends QueryField {
 	protected QueryField createCloneWithSubquery(String optionName,
 			QueryFieldDropdown ddqf) {
 		return new QueryFieldRuntimeDate(getAttribute(), getDisplayName(),
-				getSearchGroupName(), getDescription(), getUniqueID())
-						.setSubqueryNode(optionName, ddqf);
+				getSearchGroupName(), getDescription(), getUniqueID(),
+				getServiceName()).setSubqueryNode(optionName, ddqf);
 	}
 
 }

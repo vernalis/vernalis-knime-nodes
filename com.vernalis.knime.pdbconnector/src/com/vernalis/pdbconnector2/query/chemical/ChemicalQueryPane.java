@@ -22,14 +22,10 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -60,6 +56,7 @@ public class ChemicalQueryPane extends Box
 	private final Box optsBox;
 	private final EnumMap<ChemicalQueryType, List<JComponent>> queryOptionsComponents =
 			new EnumMap<>(ChemicalQueryType.class);
+	private static final String borderTitle = "Chemical Query";
 
 	/**
 	 * Constructor
@@ -78,9 +75,7 @@ public class ChemicalQueryPane extends Box
 		this.model = model;
 		this.model.addChangeListener(this);
 
-		setBorder(BorderFactory.createCompoundBorder(
-				new TitledBorder(new EtchedBorder(), "Chemical Query"),
-				new EmptyBorder(5, 5, 5, 5)));
+		resetBorder();
 
 		final Box seqBox = addNewRow();
 		seqBox.add(new DialogComponentLineWrappedStringInput(
@@ -171,6 +166,16 @@ public class ChemicalQueryPane extends Box
 	@Override
 	public CountClearButtonBox getButtons() {
 		return ccButtons;
+	}
+
+	@Override
+	public String getBorderTitle() {
+		return borderTitle;
+	}
+
+	@Override
+	public JComponent getComponent() {
+		return this;
 	}
 
 	@Override

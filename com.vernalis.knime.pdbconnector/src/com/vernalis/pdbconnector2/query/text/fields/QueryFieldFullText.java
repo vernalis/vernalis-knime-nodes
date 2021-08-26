@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -55,9 +55,12 @@ public class QueryFieldFullText extends QueryField {
 
 	private QueryFieldFullText(String attribute, String displayName,
 			String description, String placeholder,
-			boolean canHaveMultipleFields) {
+			boolean canHaveMultipleFields, String searchGroupName,
+			int searchGroupPriority, String[] operators, String defaultOperator,
+			String serviceName) {
 		super(attribute, displayName, description, placeholder,
-				canHaveMultipleFields);
+				canHaveMultipleFields, searchGroupName, searchGroupPriority,
+				operators, defaultOperator, serviceName);
 	}
 
 	@Override
@@ -89,7 +92,7 @@ public class QueryFieldFullText extends QueryField {
 		final ObjectNode param = (ObjectNode) retVal.get(PARAMETERS);
 		param.remove(ATTRIBUTE);
 		param.remove(OPERATOR);
-		param.put(NEGATION, false);
+		param.remove(NEGATION);
 		return retVal;
 	}
 
@@ -98,8 +101,9 @@ public class QueryFieldFullText extends QueryField {
 			QueryFieldDropdown queryFieldDropdown) {
 		return (QueryFieldFullText) new QueryFieldFullText(getAttribute(),
 				getDisplayName(), getDescription(), getPlaceholder(),
-				canHaveMultipleFields()).setSubqueryNode(asText,
-						queryFieldDropdown);
+				canHaveMultipleFields(), getSearchGroupName(),
+				getSearchGroupPriority(), null, null, getServiceName())
+						.setSubqueryNode(asText, queryFieldDropdown);
 
 	}
 

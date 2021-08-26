@@ -210,4 +210,12 @@ public interface QueryModel {
 		sb.append(System.currentTimeMillis());
 		return Base64.getEncoder().encodeToString(sb.toString().getBytes());
 	}
+
+	/**
+	 * @return Whether the query has any invalid components which would render
+	 *         it non-executable
+	 */
+	public default boolean hasInvalidQuery() {
+		return false;
+	}
 }
