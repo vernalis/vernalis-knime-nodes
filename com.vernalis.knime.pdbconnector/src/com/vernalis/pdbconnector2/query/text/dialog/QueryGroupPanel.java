@@ -21,29 +21,28 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.Scrollable;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.knime.core.node.defaultnodesettings.DialogComponentButtonGroup;
 
 import com.vernalis.pdbconnector2.dialogcomponents.swing.CountClearButtonBox;
+import com.vernalis.pdbconnector2.dialogcomponents.swing.RemoveMeButton;
 import com.vernalis.pdbconnector2.dialogcomponents.swing.SwingUtils;
 import com.vernalis.pdbconnector2.query.QueryPanel;
+import com.vernalis.pdbconnector2.query.RemovableQueryPanel;
+import com.vernalis.pdbconnector2.query.text.dialog.QueryFieldModel.InvalidQueryFieldModel;
 
 import static com.vernalis.pdbconnector2.PdbConnector2Helpers.SCROLL_SPEED;
 
@@ -57,7 +56,7 @@ import static com.vernalis.pdbconnector2.PdbConnector2Helpers.SCROLL_SPEED;
  * <li>A {@link Box} for any subquery panels to go in</li>
  * <li>A button panel, which contains
  * <ul>
- * <li>If this is not the root parient group, a 'Remove Group' button</li>
+ * <li>If this is not the root parent group, a 'Remove Group' button</li>
  * <li>An 'Add Field' button</li>
  * <li>An 'Add SubGroup' button</li>
  * <li>A query conjunction selector</li>
@@ -73,50 +72,8 @@ import static com.vernalis.pdbconnector2.PdbConnector2Helpers.SCROLL_SPEED;
  * @since 1.28.0
  *
  */
-public class QueryGroupPanel extends JPanel
-		implements Scrollable, ChangeListener, QueryPanel<QueryGroupModel> {
-
-	private final class HighlightBorderMouseListener implements MouseListener {
-
-		private final Color highlightColor;
-
-		/**
-		 * @param highlightColor
-		 */
-		private HighlightBorderMouseListener(Color highlightColor) {
-			this.highlightColor = highlightColor;
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			// Nothing
-
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			// Nothing
-
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			resetBorder();
-
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			highlightBorder(highlightColor);
-
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			// nothing
-
-		}
-	}
+public class QueryGroupPanel extends JPanel implements Scrollable,
+		ChangeListener, RemovableQueryPanel<QueryGroupModel, QueryGroupPanel> {
 
 	private static final Color BACKGROUND = new JFrame().getBackground();
 
@@ -164,7 +121,7 @@ public class QueryGroupPanel extends JPanel
 		this.model.addChangeListener(this);
 
 		componentBox = new Box(BoxLayout.Y_AXIS);
-		if (parent == null) {
+		if (isRoot()) {
 			// If this is the top level, then the components go in a scrollpane
 			// - otherwise
 			// not (the result if they are is an extremely busy chaos!)
@@ -200,42 +157,20 @@ public class QueryGroupPanel extends JPanel
 		componentBox.add(Box.createGlue());
 
 		clearCountButtons = new CountClearButtonBox(this);
-		clearCountButtons.addCountButtonMouseListener(
-				new HighlightBorderMouseListener(Color.GREEN));
-		clearCountButtons.addClearButtonMouseListener(
-				new HighlightBorderMouseListener(Color.MAGENTA));
 
 		buttonPanel = createButtonBox();
 		SwingUtils.keepHeightFillWidth(buttonPanel);
 		add(buttonPanel, BorderLayout.SOUTH);
 
 		getQueryModel().addChangeListener(this);
-		if (getQueryModel().isEmpty()) {
-			getQueryModel().addField(new QueryFieldModel());
-		}
 
 	}
 
 	private Box createButtonBox() {
 		final Box retVal = new Box(BoxLayout.X_AXIS);
 		retVal.add(Box.createGlue());
-		if (this.parent != null) {
-			final JButton removeGrp = new JButton("Remove Group");
-			removeGrp.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// The QueryGroupChangeListener on the parent model will
-					// remove the dialog
-					// component
-					getParentGroup().getQueryModel()
-							.removeGroup(getQueryModel());
-
-				}
-			});
-			removeGrp.addMouseListener(
-					new HighlightBorderMouseListener(Color.RED));
-			retVal.add(removeGrp);
+		if (!isRoot()) {
+			retVal.add(new RemoveMeButton("Remove Group", this));
 			retVal.add(Box.createHorizontalStrut(5));
 		}
 		final JButton addField = new JButton("Add Field");
@@ -254,7 +189,7 @@ public class QueryGroupPanel extends JPanel
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				getQueryModel().addGroup(new QueryGroupModel());
+				getQueryModel().addGroup(new QueryGroupModel(true));
 
 			}
 		});
@@ -276,6 +211,7 @@ public class QueryGroupPanel extends JPanel
 	/**
 	 * @return the parent query group, which maybe {@code null}
 	 */
+	@Override
 	public QueryGroupPanel getParentGroup() {
 		return parent;
 	}
@@ -289,7 +225,7 @@ public class QueryGroupPanel extends JPanel
 
 	@Override
 	public void revalidate() {
-		if (getParentGroup() != null) {
+		if (!isRoot()) {
 			getParentGroup().revalidate();
 		}
 		super.revalidate();
@@ -298,8 +234,12 @@ public class QueryGroupPanel extends JPanel
 	private void addFieldDialog(QueryFieldModel fieldModel) {
 		fieldPanel.setVisible(true);
 		revalidate();
-		fieldPanel.add(new QueryFieldPanel(fieldModel, this));
-		// fieldPanel.revalidate();
+		if (fieldModel instanceof InvalidQueryFieldModel) {
+			fieldPanel.add(new InvalidQueryFieldPanel(
+					(InvalidQueryFieldModel) fieldModel, this));
+		} else {
+			fieldPanel.add(new QueryFieldPanel(fieldModel, this));
+		}
 		revalidate();
 
 	}
@@ -370,6 +310,7 @@ public class QueryGroupPanel extends JPanel
 	public void removeQueryField(QueryFieldModel queryFieldModel) {
 		// Won't fire changelistener again if already removed
 		model.removeField(queryFieldModel);
+
 		for (final Component c : fieldPanel.getComponents()) {
 			if (c instanceof QueryFieldPanel) {
 				final QueryFieldPanel qfp = (QueryFieldPanel) c;
@@ -377,8 +318,24 @@ public class QueryGroupPanel extends JPanel
 					removeFieldDialog(qfp);
 					break;
 				}
+			} else if (queryFieldModel instanceof InvalidQueryFieldModel
+					&& c instanceof InvalidQueryFieldPanel) {
+				final InvalidQueryFieldPanel qfp = (InvalidQueryFieldPanel) c;
+				if (qfp.getQueryModel().equals(queryFieldModel)) {
+					removeFieldDialog(qfp);
+					break;
+				}
 			}
 		}
+	}
+
+	private void
+			removeFieldDialog(InvalidQueryFieldPanel invalidQueryFieldPanel) {
+		fieldPanel.remove(invalidQueryFieldPanel);
+		if (fieldPanel.getComponentCount() == 0) {
+			fieldPanel.setVisible(false);
+		}
+		fieldPanel.revalidate();
 	}
 
 	private void removeFieldDialog(QueryFieldPanel queryFieldPanel) {
@@ -405,9 +362,8 @@ public class QueryGroupPanel extends JPanel
 		return fieldPanel.getComponentCount() > 0
 				? fieldPanel.getComponent(0).getHeight()
 				: subQueryPanel.getComponentCount() > 0
-						? ((QueryGroupPanel) subQueryPanel.getComponent(0))
-								.getScrollableBlockIncrement(visibleRect,
-										orientation, direction)
+						? getSubqueryPanel(0).getScrollableBlockIncrement(
+								visibleRect, orientation, direction)
 						: 100;
 	}
 
@@ -417,12 +373,18 @@ public class QueryGroupPanel extends JPanel
 		final int rh = fieldPanel.getComponentCount() > 0
 				? fieldPanel.getComponent(0).getHeight()
 				: subQueryPanel.getComponentCount() > 0
-						? ((QueryGroupPanel) subQueryPanel.getComponent(0))
-								.getScrollableBlockIncrement(visibleRect,
-										orientation, direction)
+						? getSubqueryPanel(0).getScrollableBlockIncrement(
+								visibleRect, orientation, direction)
 						: 0;
 		return rh > 0 ? Math.max(rh, visibleRect.height / rh * rh)
 				: visibleRect.height;
+	}
+
+	/**
+	 * @return
+	 */
+	private QueryGroupPanel getSubqueryPanel(int idx) {
+		return (QueryGroupPanel) subQueryPanel.getComponent(idx);
 	}
 
 	@Override
@@ -486,21 +448,19 @@ public class QueryGroupPanel extends JPanel
 		return clearCountButtons;
 	}
 
-	private void resetBorder() {
-		setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createCompoundBorder(
-						new EtchedBorder(EtchedBorder.RAISED),
-						new EtchedBorder(EtchedBorder.LOWERED)),
-				new EmptyBorder(5, 5, 5, 5)));
+	@Override
+	public JComponent getComponent() {
+		return this;
 	}
 
-	private void highlightBorder(Color highlight) {
-		setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createCompoundBorder(
-						new EtchedBorder(EtchedBorder.RAISED, highlight,
-								highlight),
-						new EtchedBorder(EtchedBorder.LOWERED)),
-				new EmptyBorder(5, 5, 5, 5)));
+	@Override
+	public void removeMe() {
+		// ChangeListener on the parent model will
+		// remove the dialog component
+		if (!isRoot()) {
+			getParentGroup().getQueryModel().removeGroup(getQueryModel());
+		}
+
 	}
 
 }

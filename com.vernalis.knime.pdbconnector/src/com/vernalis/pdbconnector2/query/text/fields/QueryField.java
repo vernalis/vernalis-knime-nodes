@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vernalis.pdbconnector2.HtmlEncoder;
+import com.vernalis.pdbconnector2.RcsbJSONConstants;
 import com.vernalis.pdbconnector2.dialogcomponents.swing.NestedDropdownTextField.MenuAction;
 import com.vernalis.pdbconnector2.query.text.dialog.QueryFieldModel;
 import com.vernalis.pdbconnector2.query.text.dialog.QueryFieldOperator;
@@ -81,7 +82,7 @@ public abstract class QueryField implements Comparable<QueryField> {
 	 * definition
 	 * 
 	 * @author S.Roughley knime@vernalis.com
- * @since 1.28.0
+	 * @since 1.28.0
 	 *
 	 */
 	public static class QueryFieldFactory {
@@ -129,7 +130,8 @@ public abstract class QueryField implements Comparable<QueryField> {
 	protected static final String CFGKEY_QFIELD = "qField";
 	/** Priority counter for artificially injected fields */
 	protected static int priority = 10000;
-	private final String attribute, description, placeholder, searchGroupName;
+	private final String attribute, description, placeholder, searchGroupName,
+			serviceName;
 	private String displayName;// Not final so we can modify it later for nested
 								// contexts
 
@@ -156,8 +158,10 @@ public abstract class QueryField implements Comparable<QueryField> {
 				node.path(PLACEHOLDER).asText(null), canHaveMultipleFields,
 				node.path(SEARCH_GROUP_NAME).asText(EMPTY_STRING),
 				node.path(SEARCH_GROUP_PRIORITY).asInt(0),
-				nodeToStringArray(node), node.path(DEFAULT_OPERATOR).asText(
-						QueryFieldOperator.getDefault().getDisplayName()));
+				nodeToStringArray(node),
+				node.path(DEFAULT_OPERATOR).asText(
+						QueryFieldOperator.getDefault().getDisplayName()),
+				node.path("service_name").asText(SERVICE_TEXT));
 	}
 
 	private static String[] nodeToStringArray(JsonNode node) {
@@ -175,85 +179,7 @@ public abstract class QueryField implements Comparable<QueryField> {
 	}
 
 	/**
-	 * Overloaded constructor in top level of menu with prioity 0
-	 * 
-	 * @param attribute
-	 *            The field id
-	 * @param displayName
-	 *            The display name
-	 * @param description
-	 *            The optional description
-	 * @param placeholder
-	 *            The optional placeholder text
-	 * @param canHaveMultipleFields
-	 *            Whether it is possible to have multiple input values
-	 */
-	protected QueryField(String attribute, String displayName,
-			String description, String placeholder,
-			boolean canHaveMultipleFields) {
-		this(attribute, displayName, description, placeholder,
-				canHaveMultipleFields, EMPTY_STRING, 0);
-	}
-
-	/**
-	 * Overloaded constructor in top level of menu with prioity 0
-	 * 
-	 * @param attribute
-	 *            The field id
-	 * @param displayName
-	 *            The display name
-	 * @param description
-	 *            The optional description
-	 * @param placeholder
-	 *            The optional placeholder text
-	 * @param canHaveMultipleFields
-	 *            Whether it is possible to have multiple input values
-	 * @param searchGroupName
-	 *            The name of the group menu the field belongs to
-	 * @param searchGroupPriority
-	 *            the priority governing the position in the menu
-	 */
-	protected QueryField(String attribute, String displayName,
-			String description, String placeholder,
-			boolean canHaveMultipleFields, String searchGroupName,
-			int searchGroupPriority) {
-		this(attribute, displayName, description, placeholder,
-				canHaveMultipleFields, searchGroupName, searchGroupPriority,
-				null);
-	}
-
-	/**
-	 * Overloaded constructor in top level of menu with prioity 0
-	 * 
-	 * @param attribute
-	 *            The field id
-	 * @param displayName
-	 *            The display name
-	 * @param description
-	 *            The optional description
-	 * @param placeholder
-	 *            The optional placeholder text
-	 * @param canHaveMultipleFields
-	 *            Whether it is possible to have multiple input values
-	 * @param searchGroupName
-	 *            The name of the group menu the field belongs to
-	 * @param searchGroupPriority
-	 *            the priority governing the position in the menu
-	 * @param operators
-	 *            The possible operators - default is the first operator
-	 */
-	protected QueryField(String attribute, String displayName,
-			String description, String placeholder,
-			boolean canHaveMultipleFields, String searchGroupName,
-			int searchGroupPriority, String[] operators) {
-		this(attribute, displayName, description, placeholder,
-				canHaveMultipleFields, searchGroupName, searchGroupPriority,
-				operators, operators == null || operators.length == 0 ? null
-						: operators[0]);
-	}
-
-	/**
-	 * Overloaded constructor in top level of menu with prioity 0
+	 * Overloaded constructor in top level of menu with priority 0
 	 * 
 	 * @param attribute
 	 *            The field id
@@ -273,19 +199,25 @@ public abstract class QueryField implements Comparable<QueryField> {
 	 *            The possible operators
 	 * @param defaultOperator
 	 *            The default operator in a new query
+	 * @param serviceName
+	 *            The name of the search service for the request. If
+	 *            {@code null} the default
+	 *            {@link RcsbJSONConstants#SERVICE_TEXT} will be used
 	 */
 	protected QueryField(String attribute, String displayName,
 			String description, String placeholder,
 			boolean canHaveMultipleFields, String searchGroupName,
-			int searchGroupPriority, String[] operators,
-			String defaultOperator) {
+			int searchGroupPriority, String[] operators, String defaultOperator,
+			String serviceName) {
 		this.attribute = attribute;
-		this.displayName = HtmlEncoder.decode(displayName);
+		this.displayName =
+				displayName == null ? null : HtmlEncoder.decode(displayName);
 		this.description = description;
 		this.placeholder = placeholder;
 		this.canHaveMultipleFields = canHaveMultipleFields;
 		this.searchGroupName = searchGroupName;
 		this.searchGroupPriority = searchGroupPriority;
+		this.serviceName = serviceName == null ? SERVICE_TEXT : serviceName;
 		this.defaultOperator = defaultOperator == null ? null
 				: QueryFieldOperator.valueOf(defaultOperator);
 		this.operators =
@@ -582,7 +514,7 @@ public abstract class QueryField implements Comparable<QueryField> {
 			QueryFieldModel queryFieldModel, final ObjectNode node) {
 		node.put(TYPE_KEY, TYPE_TERMINAL);
 		node.put(NODE_ID, nodeIndex.getAndIncrement());
-		node.put(SERVICE_KEY, SERVICE_TEXT);
+		node.put(SERVICE_KEY, getServiceName());
 		final ObjectNode parameters =
 				node.putObject(PARAMETERS).put(ATTRIBUTE, getAttribute());
 		if (queryFieldModel.hasOperator()) {
@@ -593,6 +525,14 @@ public abstract class QueryField implements Comparable<QueryField> {
 							queryFieldModel.getOperator().getQueryString());
 		}
 		return parameters;
+	}
+
+	/**
+	 * @return the service name for the field
+	 * @since 1.30.3
+	 */
+	public String getServiceName() {
+		return serviceName;
 	}
 
 	/**
@@ -628,7 +568,8 @@ public abstract class QueryField implements Comparable<QueryField> {
 			nodes.add(superQuery);
 			// And the subquery type
 			final ObjectNode ddqfNode = nodes.addObject();
-			ddqfNode.put(TYPE_KEY, TYPE_TERMINAL).put(SERVICE_KEY, SERVICE_TEXT)
+			ddqfNode.put(TYPE_KEY, TYPE_TERMINAL)
+					.put(SERVICE_KEY, getServiceName())
 					.put(NODE_ID, nodeIndex.getAndIncrement())
 					.putObject(PARAMETERS).put(ATTRIBUTE, ddqf.getAttribute())
 					.put(OPERATOR,

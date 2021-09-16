@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -63,10 +63,10 @@ public class QueryFieldDateRange extends AbstractRangeQueryField<Date> {
 			String description, String placeholder,
 			boolean canHaveMultipleFields, String searchGroupName,
 			int searchGroupPriority, String[] operators, String defaultOperator,
-			Date min, Date max) {
+			String serviceName, Date min, Date max) {
 		super(attribute, displayName, description, placeholder,
 				canHaveMultipleFields, searchGroupName, searchGroupPriority,
-				operators, defaultOperator, min, max);
+				operators, defaultOperator, serviceName, min, max);
 	}
 
 	/**
@@ -178,8 +178,8 @@ public class QueryFieldDateRange extends AbstractRangeQueryField<Date> {
 				getSearchGroupPriority(),
 				getOperators().stream().map(op -> op.name())
 						.toArray(String[]::new),
-				getDefaultOperator().name(), getMin(), getMax())
-						.setSubqueryNode(optionName, ddqf);
+				getDefaultOperator().name(), getServiceName(), getMin(),
+				getMax()).setSubqueryNode(optionName, ddqf);
 
 	}
 

@@ -622,7 +622,8 @@
 			"has_desc": "y",
 			"description": "Use Full Text to search against multiple fields in the database. ",
 			"input_type": "text",
-			"ui": true
+			"ui": true,
+			"service_name": "full_text"  
 		},
 		"rcsb_entry_container_identifiers.entry_id": {
 			"attribute": "rcsb_entry_container_identifiers.entry_id",
@@ -1474,7 +1475,8 @@
 			"default_operator": "in",
 			"placeholder": "Example: ATP",
 			"useIn": true,
-			"ui": true
+			"ui": true,
+			"service_name": "text_chem"
 		},
 		"chem_comp.name": {
 			"attribute": "chem_comp.name",
@@ -1508,7 +1510,8 @@
 			"default_operator": "contains_phrase",
 			"placeholder": "Example: alanine",
 			"useIn": false,
-			"ui": true
+			"ui": true,
+			"service_name": "text_chem"
 		},
 		"rcsb_chem_comp_synonyms.name": {
 			"attribute": "rcsb_chem_comp_synonyms.name",
@@ -1540,7 +1543,8 @@
 			"default_operator": "contains_phrase",
 			"placeholder": "Example: Ursonic acid",
 			"useIn": false,
-			"ui": true
+			"ui": true,
+			"service_name": "text_chem"
 		},
 		"chem_comp.type": {
 			"attribute": "chem_comp.type",
@@ -1596,7 +1600,8 @@
 			],
 			"default_operator": "exact_match",
 			"useIn": true,
-			"ui": true
+			"ui": true,
+			"service_name": "text_chem"
 		},
 		"rcsb_chem_comp_target.name": {
 			"attribute": "rcsb_chem_comp_target.name",
@@ -1623,7 +1628,8 @@
 			"default_operator": "contains_phrase",
 			"placeholder": "Enter a word or phrase",
 			"useIn": false,
-			"ui": true
+			"ui": true,
+			"service_name": "text_chem"
 		},
 		"rcsb_chem_comp_descriptor.InChIKey": {
 			"attribute": "rcsb_chem_comp_descriptor.InChIKey",
@@ -1652,7 +1658,8 @@
 			"default_operator": "exact_match",
 			"placeholder": "Example: BNOCDEBUFVJMQI-REOHCLBHSA-N",
 			"useIn": true,
-			"ui": true
+			"ui": true,
+			"service_name": "text_chem"
 		},
 		"chem_comp.formula_weight": {
 			"attribute": "chem_comp.formula_weight",
@@ -1691,7 +1698,8 @@
 			"default_operator": "equals",
 			"placeholder": "Enter a number between 2.01 and 5496.51",
 			"useIn": true,
-			"ui": true
+			"ui": true,
+			"service_name": "text_chem"
 		},
 		"rcsb_chem_comp_info.atom_count_heavy": {
 			"attribute": "rcsb_chem_comp_info.atom_count_heavy",
@@ -1725,7 +1733,8 @@
 			"default_operator": "equals",
 			"placeholder": "Enter an integer between 0 and 352",
 			"useIn": true,
-			"ui": true
+			"ui": true,
+			"service_name": "text_chem"
 		},
 		"rcsb_chem_comp_info.atom_count_chiral": {
 			"attribute": "rcsb_chem_comp_info.atom_count_chiral",
@@ -1759,7 +1768,8 @@
 			"default_operator": "equals",
 			"placeholder": "Enter an integer between 0 and 48",
 			"useIn": true,
-			"ui": true
+			"ui": true,
+			"service_name": "text_chem"
 		},
 		"rcsb_chem_comp_info.bond_count": {
 			"attribute": "rcsb_chem_comp_info.bond_count",
@@ -1793,7 +1803,8 @@
 			"default_operator": "equals",
 			"placeholder": "Enter an integer between 0 and 727",
 			"useIn": true,
-			"ui": true
+			"ui": true,
+			"service_name": "text_chem"
 		},
 		"rcsb_chem_comp_info.bond_count_aromatic": {
 			"attribute": "rcsb_chem_comp_info.bond_count_aromatic",
@@ -1827,7 +1838,8 @@
 			"default_operator": "equals",
 			"placeholder": "Enter an integer between 0 and 97",
 			"useIn": true,
-			"ui": true
+			"ui": true,
+			"service_name": "text_chem"
 		},
 		"rcsb_chem_comp_related.resource_accession_code": {
 			"attribute": "rcsb_chem_comp_related.resource_accession_code",
@@ -1857,7 +1869,8 @@
 			"placeholder": "Example: 124832",
 			"useIn": true,
 			"nested_attribute": "rcsb_chem_comp_related.resource_name",
-			"ui": true
+			"ui": true,
+			"service_name": "text_chem"
 		},
 		"rcsb_chem_comp_annotation.name": {
 			"attribute": "rcsb_chem_comp_annotation.name",
@@ -1886,7 +1899,8 @@
 			"default_operator": "exact_match",
 			"useIn": true,
 			"nested_attribute": "rcsb_chem_comp_annotation.type",
-			"ui": true
+			"ui": true,
+			"service_name": "text_chem"
 		},
 		"rcsb_chem_comp_annotation.annotation_lineage.name": {
 			"attribute": "rcsb_chem_comp_annotation.annotation_lineage.name",
@@ -1915,7 +1929,8 @@
 			"default_operator": "exact_match",
 			"useIn": true,
 			"nested_attribute": "rcsb_chem_comp_annotation.type",
-			"ui": true
+			"ui": true,
+			"service_name": "text_chem"
 		},
 		"rcsb_chem_comp_annotation.annotation_lineage.id": {
 			"attribute": "rcsb_chem_comp_annotation.annotation_lineage.id",
@@ -1941,7 +1956,8 @@
 			"default_operator": "exact_match",
 			"useIn": true,
 			"nested_attribute": "rcsb_chem_comp_annotation.type",
-			"ui": true
+			"ui": true,
+			"service_name": "text_chem"
 		},
 		"rcsb_entry_info.selected_polymer_entity_types": {
 			"attribute": "rcsb_entry_info.selected_polymer_entity_types",

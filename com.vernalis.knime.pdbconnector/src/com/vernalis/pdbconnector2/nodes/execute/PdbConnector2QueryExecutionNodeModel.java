@@ -22,7 +22,6 @@ import java.util.Set;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
@@ -45,6 +44,7 @@ import com.vernalis.pdbconnector2.ports.MultiRCSBQueryModel;
 import com.vernalis.pdbconnector2.ports.RCSBQueryPortObject;
 import com.vernalis.pdbconnector2.query.QueryResultType;
 import com.vernalis.pdbconnector2.query.RCSBQueryRunner;
+import com.vernalis.pdbconnector2.query.RCSBQueryRunner.QueryException;
 import com.vernalis.pdbconnector2.query.ScoringType;
 
 import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createIncludeHitCountModel;
@@ -127,17 +127,13 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 							+ "' is not a valid Return Type");
 		}
 
-		return new PortObjectSpec[] {
-				createQueryRunner(model).getOutputTableSpec() };
-	}
-
-	/**
-	 * @param model
-	 * @return
-	 */
-	private DataTableSpec createOutputSpec(final MultiRCSBQueryModel model) {
-		return createQueryRunner(model).getOutputTableSpec();
-
+		try {
+			return new PortObjectSpec[] {
+					createQueryRunner(model).getOutputTableSpec() };
+		} catch (NullPointerException | IllegalArgumentException
+				| QueryException e) {
+			throw new InvalidSettingsException(e);
+		}
 	}
 
 	@Override
@@ -162,9 +158,11 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 	 * @return
 	 * @throws NullPointerException
 	 * @throws IllegalArgumentException
+	 * @throws QueryException
 	 */
 	private RCSBQueryRunner createQueryRunner(final MultiRCSBQueryModel model)
-			throws NullPointerException, IllegalArgumentException {
+			throws NullPointerException, IllegalArgumentException,
+			QueryException {
 		final RCSBQueryRunner runner = new RCSBQueryRunner(model);
 		runner.setQueryResultType(
 				QueryResultType.fromText(returnTypeMdl.getStringValue()));

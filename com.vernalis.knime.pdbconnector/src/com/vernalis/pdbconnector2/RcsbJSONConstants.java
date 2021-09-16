@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020, 2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -72,7 +72,11 @@ public class RcsbJSONConstants {
 	public static final String NEGATION = "negation";
 	public static final String ATTRIBUTE = "attribute";
 	public static final String PARAMETERS = "parameters";
+	/**@since 1.30.3*/
+	public static final String SERVICE_FULLTEXT = "full_text";
 	public static final String SERVICE_TEXT = "text";
+		/**@since 1.30.3*/
+	public static final String SERVICE_TEXT_CHEM = "text_chem";
 	public static final String SERVICE_KEY = "service";
 	public static final String NODE_ID = "node_id";
 	public static final String TYPE_TERMINAL = "terminal";

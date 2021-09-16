@@ -18,13 +18,10 @@ import java.awt.Dimension;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -52,6 +49,7 @@ public abstract class AbstractSequenceQueryPane<T extends AbstractSequenceQueryM
 	private final T model;
 	private final CountClearButtonBox ccButtons;
 	private final Box optsBox;
+	private final String borderTitle;
 
 	/**
 	 * Constructor
@@ -77,9 +75,8 @@ public abstract class AbstractSequenceQueryPane<T extends AbstractSequenceQueryM
 
 			}
 		});
-		setBorder(BorderFactory.createCompoundBorder(
-				new TitledBorder(new EtchedBorder(), borderTitle),
-				new EmptyBorder(5, 5, 5, 5)));
+		this.borderTitle = borderTitle;
+		resetBorder();
 
 		final Box seqBox = addNewRow();
 		seqBox.add(new DialogComponentLineWrappedStringInput(
@@ -99,6 +96,16 @@ public abstract class AbstractSequenceQueryPane<T extends AbstractSequenceQueryM
 		componentPanel.setMinimumSize(getPreferredSize());
 		componentPanel.setMaximumSize(getPreferredSize());
 		optsBox.add(componentPanel);
+	}
+
+	@Override
+	public String getBorderTitle() {
+		return borderTitle;
+	}
+
+	@Override
+	public JComponent getComponent() {
+		return this;
 	}
 
 	@Override

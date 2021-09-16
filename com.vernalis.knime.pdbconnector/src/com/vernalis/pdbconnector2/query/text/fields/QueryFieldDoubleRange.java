@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -51,10 +51,10 @@ public class QueryFieldDoubleRange extends AbstractRangeQueryField<Double> {
 			String description, String placeholder,
 			boolean canHaveMultipleFields, String searchGroupName,
 			int searchGroupPriority, String[] operators, String defaultOperator,
-			Double min, Double max) {
+			String serviceName, Double min, Double max) {
 		super(attribute, displayName, description, placeholder,
 				canHaveMultipleFields, searchGroupName, searchGroupPriority,
-				operators, defaultOperator, min, max);
+				operators, defaultOperator, serviceName, min, max);
 	}
 
 	@Override
@@ -145,8 +145,8 @@ public class QueryFieldDoubleRange extends AbstractRangeQueryField<Double> {
 				getSearchGroupPriority(),
 				getOperators().stream().map(op -> op.name())
 						.toArray(String[]::new),
-				getDefaultOperator().name(), getMin(), getMax())
-						.setSubqueryNode(optionName, ddqf);
+				getDefaultOperator().name(), getServiceName(), getMin(),
+				getMax()).setSubqueryNode(optionName, ddqf);
 
 	}
 

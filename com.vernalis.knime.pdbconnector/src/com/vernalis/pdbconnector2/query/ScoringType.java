@@ -26,42 +26,17 @@ import org.knime.core.node.util.ButtonGroupEnumInterface;
  *
  */
 public enum ScoringType implements ButtonGroupEnumInterface {
+
 	/**
 	 * Combined scoring
 	 */
-	Combined {
+	Combined,
 
-		@Override
-		public boolean isEnabled(boolean hasText, boolean hasSequence,
-				boolean hasSequenceMotif, boolean hasStructure) {
-			return true;
-		}
-
-		@Override
-		public boolean returnsScore(QueryResultType resultType, boolean hasText,
-				boolean hasSequence, boolean hasSequenceMotif,
-				boolean hasStructure) {
-			return false;
-		}
-	},
 	/**
 	 * Sequence scoring
 	 */
-	Sequence {
+	Sequence,
 
-		@Override
-		public boolean isEnabled(boolean hasText, boolean hasSequence,
-				boolean hasSequenceMotif, boolean hasStructure) {
-			return hasSequence;
-		}
-
-		@Override
-		public boolean returnsScore(QueryResultType resultType, boolean hasText,
-				boolean hasSequence, boolean hasSequenceMotif,
-				boolean hasStructure) {
-			return false;
-		}
-	},
 	/**
 	 * Sequence Motif scoring
 	 */
@@ -71,54 +46,41 @@ public enum ScoringType implements ButtonGroupEnumInterface {
 		public String getText() {
 			return "Sequence Motif";
 		}
-
-		@Override
-		public boolean isEnabled(boolean hasText, boolean hasSequence,
-				boolean hasSequenceMotif, boolean hasStructure) {
-			return hasSequenceMotif;
-		}
-
-		@Override
-		public boolean returnsScore(QueryResultType resultType, boolean hasText,
-				boolean hasSequence, boolean hasSequenceMotif,
-				boolean hasStructure) {
-			return false;
-		}
 	},
+
 	/**
 	 * Structural similarity scoring
 	 */
-	Structure {
+	Structure,
 
-		@Override
-		public boolean isEnabled(boolean hasText, boolean hasSequence,
-				boolean hasSequenceMotif, boolean hasStructure) {
-			return hasStructure;
-		}
-
-		@Override
-		public boolean returnsScore(QueryResultType resultType, boolean hasText,
-				boolean hasSequence, boolean hasSequenceMotif,
-				boolean hasStructure) {
-			return false;
-		}
-	},
 	/**
 	 * Text scoring
 	 */
-	Text {
+	Text,
+
+	strucmotif {
 
 		@Override
-		public boolean isEnabled(boolean hasText, boolean hasSequence,
-				boolean hasSequenceMotif, boolean hasStructure) {
-			return false;
+		public String getText() {
+			return "Structure Motif";
 		}
+	},
+
+	Chemical,
+
+	text_chem {
 
 		@Override
-		public boolean returnsScore(QueryResultType resultType, boolean hasText,
-				boolean hasSequence, boolean hasSequenceMotif,
-				boolean hasStructure) {
-			return false;
+		public String getText() {
+			return "Chemical Text";
+		}
+	},
+
+	full_text {
+
+		@Override
+		public String getText() {
+			return "Full Text";
 		}
 	};
 
@@ -148,9 +110,29 @@ public enum ScoringType implements ButtonGroupEnumInterface {
 	 *            Is there a structure query?
 	 * @return whether the return type is enabled, based on the content of the
 	 *         query
+	 * @deprecated See {@link #isEnabled(QueryModel)}
 	 */
-	public abstract boolean isEnabled(boolean hasText, boolean hasSequence,
-			boolean hasSequenceMotif, boolean hasStructure);
+	@Deprecated
+	public final boolean isEnabled(boolean hasText, boolean hasSequence,
+			boolean hasSequenceMotif, boolean hasStructure) {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Method to determine whether the scoring type is enabled for the given
+	 * query
+	 * 
+	 * @param query
+	 *            The query
+	 * @return the validity of the scoring type for the query
+	 */
+	public boolean isEnabled(QueryModel query) {
+		if (this == Combined) {
+			// Always valid
+			return true;
+		}
+		return query.isScoringTypeValid(this);
+	}
 
 	/**
 	 * @param resultType
@@ -164,10 +146,14 @@ public enum ScoringType implements ButtonGroupEnumInterface {
 	 * @param hasStructure
 	 *            Is there a structure query?
 	 * @return whether the return type will return a score in the query result
+	 * @deprecated See {@link #isEnabled(QueryModel)}
 	 */
-	public abstract boolean returnsScore(QueryResultType resultType,
+	@Deprecated
+	public final boolean returnsScore(QueryResultType resultType,
 			boolean hasText, boolean hasSequence, boolean hasSequenceMotif,
-			boolean hasStructure);
+			boolean hasStructure) {
+		throw new UnsupportedOperationException();
+	}
 
 	@Override
 	public boolean isDefault() {
@@ -199,5 +185,15 @@ public enum ScoringType implements ButtonGroupEnumInterface {
 		}
 		return Arrays.stream(values()).filter(x -> text.equals(x.getText()))
 				.findFirst().orElseThrow(IllegalArgumentException::new);
+	}
+
+	/**
+	 * @param query
+	 *            The query
+	 * @return The valid scoring types for the query
+	 */
+	public static ScoringType[] getAvailableScoringTypes(QueryModel query) {
+		return Arrays.stream(values()).filter(x -> x.isEnabled(query))
+				.toArray(ScoringType[]::new);
 	}
 }

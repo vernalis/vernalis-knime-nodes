@@ -20,6 +20,7 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.vernalis.pdbconnector2.query.ScoringType;
 
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.PATTERN_TYPE;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.SERVICE_SEQMOTIF;
@@ -119,6 +120,12 @@ public class SequenceMotifQueryModel extends AbstractSequenceQueryModel {
 	@Override
 	protected String getService() {
 		return SERVICE_SEQMOTIF;
+	}
+
+	@Override
+	public boolean isScoringTypeValid(ScoringType scoringType) {
+		return scoringType == ScoringType.seqmotif
+				|| scoringType == ScoringType.Combined;
 	}
 
 }

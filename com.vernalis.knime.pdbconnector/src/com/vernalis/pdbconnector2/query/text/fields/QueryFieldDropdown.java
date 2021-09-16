@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020,2021 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -67,10 +67,10 @@ public class QueryFieldDropdown extends QueryField {
 			String description, String placeholder,
 			boolean canHaveMultipleFields, String searchGroupName,
 			int searchGroupPriority, String[] operators, String defaultOperator,
-			Collection<String> dropdownValues) {
+			String serviceName, Collection<String> dropdownValues) {
 		super(attribute, displayName, description, placeholder,
 				canHaveMultipleFields, searchGroupName, searchGroupPriority,
-				operators, defaultOperator);
+				operators, defaultOperator, serviceName);
 		this.dropdownValues.addAll(dropdownValues);
 	}
 
@@ -162,8 +162,8 @@ public class QueryFieldDropdown extends QueryField {
 				getSearchGroupPriority(),
 				getOperators().stream().map(op -> op.name())
 						.toArray(String[]::new),
-				getDefaultOperator().name(), getDropdownValues())
-						.setSubqueryNode(optionName, ddqf);
+				getDefaultOperator().name(), getServiceName(),
+				getDropdownValues()).setSubqueryNode(optionName, ddqf);
 
 	}
 }

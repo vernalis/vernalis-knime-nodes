@@ -52,6 +52,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vernalis.pdbconnector2.query.QueryModel;
 import com.vernalis.pdbconnector2.query.RCSBQueryModel;
+import com.vernalis.pdbconnector2.query.ScoringType;
 import com.vernalis.pdbconnector2.query.text.dialog.QueryGroupConjunction;
 import com.vernalis.pdbconnector2.query.text.dialog.QueryGroupModel;
 
@@ -73,7 +74,7 @@ public class MultiRCSBQueryModel
 	 * The Serializer for the {@link MultiRCSBQueryModel}
 	 * 
 	 * @author S.Roughley knime@vernalis.com
- * @since 1.28.0
+	 * @since 1.28.0
 	 *
 	 */
 	public static final class Serializer
@@ -300,6 +301,12 @@ public class MultiRCSBQueryModel
 	}
 
 	@Override
+	public boolean hasInvalidQuery() {
+		return models.stream().anyMatch(m -> m.hasInvalidQuery())
+				|| subMultis.stream().anyMatch(m -> m.hasInvalidQuery());
+	}
+
+	@Override
 	public void clearQuery() {
 		while (!models.isEmpty()) {
 			removeModel(models.get(0));
@@ -393,6 +400,18 @@ public class MultiRCSBQueryModel
 		specFact.addColumns(new DataColumnSpecCreator("Score", DoubleCell.TYPE)
 				.createSpec());
 		return specFact.createSpec();
+	}
+
+	@Override
+	public boolean isScoringTypeValid(ScoringType scoringType) {
+		if (scoringType == ScoringType.Combined) {
+			return true;
+		}
+		if (models.stream().anyMatch(q -> q.isScoringTypeValid(scoringType))) {
+			return true;
+		}
+		return getSubMultiqueries().stream()
+				.anyMatch(q -> q.isScoringTypeValid(scoringType));
 	}
 
 }

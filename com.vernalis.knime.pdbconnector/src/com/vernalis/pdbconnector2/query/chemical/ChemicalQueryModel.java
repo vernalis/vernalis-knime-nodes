@@ -34,6 +34,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vernalis.pdbconnector2.InvalidSettingsExceptionCombiner;
 import com.vernalis.pdbconnector2.RcsbJSONConstants;
 import com.vernalis.pdbconnector2.query.QueryModel;
+import com.vernalis.pdbconnector2.query.ScoringType;
 
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.EMPTY_STRING;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.NODE_ID;
@@ -80,7 +81,7 @@ public class ChemicalQueryModel implements QueryModel {
 	 * An enum representing the possible model changes
 	 * 
 	 * @author S.Roughley knime@vernalis.com
- * @since 1.28.0
+	 * @since 1.28.0
 	 *
 	 */
 	enum EventType {
@@ -475,6 +476,12 @@ public class ChemicalQueryModel implements QueryModel {
 				throw new IllegalArgumentException(
 						"Unknown chemical query type");
 		}
+	}
+
+	@Override
+	public boolean isScoringTypeValid(ScoringType scoringType) {
+		return scoringType == ScoringType.Chemical
+				|| scoringType == ScoringType.Combined;
 	};
 
 }

@@ -54,7 +54,7 @@ public class PdbConnector2QueryNodeDialog extends NodeDialogPane {
 	public PdbConnector2QueryNodeDialog() {
 
 		final QueryGroupPanel comp = new QueryGroupPanel(model.getTextModel());
-		super.addTab("Attribute Query", comp, false);
+		super.addTab("Text / Attribute Query", comp, false);
 		comp.setMaximumSize(comp.getParent().getSize());
 
 		final JPanel sequenceTab = new JPanel();

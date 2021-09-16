@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020, 2021, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -53,7 +53,8 @@ import com.vernalis.pdbconnector2.query.text.dialog.QueryGroupModel;
  */
 public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 
-	private static String CFG_KEY_TEXT = "Text";
+	private static final String CFG_KEY_TEXT = "Text";
+	private static final String CFG_KEY_VERSION = "modelVersion";
 
 	private final QueryGroupModel textModel = new QueryGroupModel();
 	private final SequenceQueryModel seqModel = new SequenceQueryModel();
@@ -62,6 +63,8 @@ public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 	private final StructureSimilarityQueryModel structSimModel =
 			new StructureSimilarityQueryModel();
 	private final ChemicalQueryModel chemModel = new ChemicalQueryModel();
+
+	private static final int version = 2;
 	private final String configKey;
 	private final List<ChangeListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -174,8 +177,7 @@ public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
+	 * @see com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
 	 * saveSettingsTo(org.knime.core.node.NodeSettingsWO)
 	 */
 	@Override
@@ -194,6 +196,7 @@ public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 	 *            The {@link NodeSettingsWO} object to save the settings to
 	 */
 	private void save(NodeSettingsWO settings) {
+		settings.addInt(CFG_KEY_VERSION, version);
 		textModel.saveSettingsTo(settings.addNodeSettings(CFG_KEY_TEXT));
 		seqModel.saveSettingsTo(settings);
 		seqMotifModel.saveSettingsTo(settings);
@@ -204,8 +207,7 @@ public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
+	 * @see com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
 	 * validateSettings(org.knime.core.node.NodeSettingsRO)
 	 */
 	@Override
@@ -230,6 +232,10 @@ public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 			throws InvalidSettingsException {
 		final InvalidSettingsExceptionCombiner isec =
 				new InvalidSettingsExceptionCombiner();
+
+		// Legacy version without this property is v1
+		@SuppressWarnings("unused")
+		int savedVersion = settings.getInt(CFG_KEY_VERSION, 1);
 		try {
 			textModel.validateSettings(settings.getNodeSettings(CFG_KEY_TEXT));
 		} catch (final InvalidSettingsException e) {
@@ -275,6 +281,10 @@ public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 	 * @throws InvalidSettingsException
 	 */
 	private void load(NodeSettingsRO settings) throws InvalidSettingsException {
+		// Legacy version without this property is v1
+		@SuppressWarnings("unused")
+		int savedVersion = settings.getInt(CFG_KEY_VERSION, 1);
+
 		textModel.loadSettings(settings.getNodeSettings(CFG_KEY_TEXT));
 		seqModel.loadSettings(settings);
 		seqMotifModel.loadSettings(settings);
@@ -285,8 +295,7 @@ public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
+	 * @see com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
 	 * addChangeListener(javax.swing.event.ChangeListener)
 	 */
 	@Override
@@ -299,8 +308,7 @@ public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
+	 * @see com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
 	 * removeChangeListener(javax.swing.event.ChangeListener)
 	 */
 	@Override
@@ -341,14 +349,22 @@ public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
+	 * @see com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
 	 * hasQuery()
 	 */
 	@Override
 	public boolean hasQuery() {
 		return hasTextQuery() || hasSequenceQuery() || hasSequenceMotifQuery()
 				|| hasStructureSimilarityQuery() || hasChemicalQuery();
+	}
+
+	@Override
+	public boolean hasInvalidQuery() {
+		return getTextModel().hasInvalidQuery()
+				|| getSeqModel().hasInvalidQuery()
+				|| getSeqMotifModel().hasInvalidQuery()
+				|| getStructSimModel().hasInvalidQuery()
+				|| getChemicalQueryModel().hasInvalidQuery();
 	}
 
 	/**
@@ -389,8 +405,7 @@ public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
+	 * @see com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
 	 * clearQuery()
 	 */
 	@Override
@@ -405,8 +420,7 @@ public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
+	 * @see com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
 	 * getChangeListeners()
 	 */
 	@Override
@@ -442,8 +456,7 @@ public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
+	 * @see com.vernalis.pdbconnector2.dialogcomponents.swing.QueryModel#
 	 * getQueryNodes(java.util.concurrent.atomic.AtomicInteger)
 	 */
 	@Override
@@ -471,6 +484,33 @@ public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 			nodes.add(chemModel.getQueryNodes(nodeId));
 		}
 		return retVal;
+	}
+
+	@Override
+	public boolean isScoringTypeValid(ScoringType scoringType) {
+		if (scoringType == ScoringType.Combined) {
+			return true;
+		}
+		if (hasTextQuery() && getTextModel().isScoringTypeValid(scoringType)) {
+			return true;
+		}
+		if (hasChemicalQuery()
+				&& getChemicalQueryModel().isScoringTypeValid(scoringType)) {
+			return true;
+		}
+		if (hasSequenceMotifQuery()
+				&& getSeqMotifModel().isScoringTypeValid(scoringType)) {
+			return true;
+		}
+		if (hasSequenceQuery()
+				&& getSeqModel().isScoringTypeValid(scoringType)) {
+			return true;
+		}
+		if (hasStructureSimilarityQuery()
+				&& getStructSimModel().isScoringTypeValid(scoringType)) {
+			return true;
+		}
+		return false;
 	}
 
 }
