@@ -33,9 +33,14 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vernalis.pdbconnector2.InvalidSettingsExceptionCombiner;
 import com.vernalis.pdbconnector2.query.QueryModel;
+import com.vernalis.pdbconnector2.query.ScoringType;
 import com.vernalis.pdbconnector2.query.text.fields.InvalidQueryField;
 import com.vernalis.pdbconnector2.query.text.fields.QueryField;
 import com.vernalis.pdbconnector2.query.text.fields.QueryFieldRegistry;
+
+import static com.vernalis.pdbconnector2.RcsbJSONConstants.SERVICE_FULLTEXT;
+import static com.vernalis.pdbconnector2.RcsbJSONConstants.SERVICE_TEXT;
+import static com.vernalis.pdbconnector2.RcsbJSONConstants.SERVICE_TEXT_CHEM;
 
 /**
  * An implementation of {@link QueryModel} representing a single text query
@@ -589,5 +594,24 @@ public class QueryFieldModel implements QueryModel {
 	@Override
 	public JsonNode getQueryNodes(AtomicInteger nodeId) {
 		return getQueryField().getQuery(nodeId, this);
+	}
+
+	@Override
+	public boolean isScoringTypeValid(ScoringType scoringType) {
+		if (scoringType == ScoringType.Combined) {
+			return true;
+		}
+		switch (getQueryField().getServiceName()) {
+			case SERVICE_TEXT:
+				return scoringType == ScoringType.Text;
+			case SERVICE_TEXT_CHEM:
+				return scoringType == ScoringType.text_chem;
+			case SERVICE_FULLTEXT:
+				return scoringType == ScoringType.full_text;
+			default:
+				// We shouldnt be here!
+				return false;
+		}
+
 	}
 }

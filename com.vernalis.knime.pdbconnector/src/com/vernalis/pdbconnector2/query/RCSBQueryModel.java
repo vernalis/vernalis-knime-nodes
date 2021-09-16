@@ -53,7 +53,7 @@ import com.vernalis.pdbconnector2.query.text.dialog.QueryGroupModel;
  */
 public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 
-	private static String CFG_KEY_TEXT = "Text";
+	private static final String CFG_KEY_TEXT = "Text";
 	private static final String CFG_KEY_VERSION = "modelVersion";
 
 	private final QueryGroupModel textModel = new QueryGroupModel();
@@ -484,6 +484,33 @@ public class RCSBQueryModel implements QueryModel, PortObjectSpec {
 			nodes.add(chemModel.getQueryNodes(nodeId));
 		}
 		return retVal;
+	}
+
+	@Override
+	public boolean isScoringTypeValid(ScoringType scoringType) {
+		if (scoringType == ScoringType.Combined) {
+			return true;
+		}
+		if (hasTextQuery() && getTextModel().isScoringTypeValid(scoringType)) {
+			return true;
+		}
+		if (hasChemicalQuery()
+				&& getChemicalQueryModel().isScoringTypeValid(scoringType)) {
+			return true;
+		}
+		if (hasSequenceMotifQuery()
+				&& getSeqMotifModel().isScoringTypeValid(scoringType)) {
+			return true;
+		}
+		if (hasSequenceQuery()
+				&& getSeqModel().isScoringTypeValid(scoringType)) {
+			return true;
+		}
+		if (hasStructureSimilarityQuery()
+				&& getStructSimModel().isScoringTypeValid(scoringType)) {
+			return true;
+		}
+		return false;
 	}
 
 }

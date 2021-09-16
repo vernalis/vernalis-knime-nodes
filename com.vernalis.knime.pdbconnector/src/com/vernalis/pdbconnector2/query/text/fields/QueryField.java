@@ -531,7 +531,7 @@ public abstract class QueryField implements Comparable<QueryField> {
 	 * @return the service name for the field
 	 * @since 1.30.3
 	 */
-	protected String getServiceName() {
+	public String getServiceName() {
 		return serviceName;
 	}
 

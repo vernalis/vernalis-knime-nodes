@@ -34,6 +34,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vernalis.pdbconnector2.InvalidSettingsExceptionCombiner;
 import com.vernalis.pdbconnector2.query.QueryModel;
+import com.vernalis.pdbconnector2.query.ScoringType;
 
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.LOGICAL_OPERATOR;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.NODES;
@@ -542,6 +543,19 @@ public abstract class AbstractQueryGroupModel<T extends AbstractQueryGroupModel<
 	@Override
 	public List<ChangeListener> getChangeListeners() {
 		return Collections.unmodifiableList(changeListeners);
+	}
+
+	@Override
+	public boolean isScoringTypeValid(ScoringType scoringType) {
+		if (scoringType == ScoringType.Combined) {
+			return true;
+		}
+		if (getFields().stream()
+				.anyMatch(f -> f.isScoringTypeValid(scoringType))) {
+			return true;
+		}
+		return getSubgroups().stream()
+				.anyMatch(g -> g.isScoringTypeValid(scoringType));
 	}
 
 }
