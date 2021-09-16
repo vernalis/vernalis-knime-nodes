@@ -15,11 +15,14 @@
 package com.vernalis.pdbconnector2.nodes.execute;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
@@ -27,7 +30,9 @@ import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.port.PortObjectSpec;
 
+import com.vernalis.pdbconnector2.ports.MultiRCSBQueryModel;
 import com.vernalis.pdbconnector2.query.QueryResultType;
 import com.vernalis.pdbconnector2.query.ScoringType;
 
@@ -52,6 +57,16 @@ public class PdbConnector2QueryExecutionNodeDialog
 	private static final String RETURN_TYPE = "Return Type";
 	private static final String INCLUDE_HITCOUNT = "Include hit count";
 
+	private MultiRCSBQueryModel query;
+	private DialogComponentStringSelection scoringChooser =
+			new DialogComponentStringSelection(createScoringTypeModel(),
+					SCORING_STRATEGY, Arrays
+							.stream(query == null ? ScoringType.values()
+									: ScoringType
+											.getAvailableScoringTypes(query))
+							.map(x -> x.getText())
+							.collect(Collectors.toList()));
+
 	/**
 	 * Constructor
 	 */
@@ -61,11 +76,7 @@ public class PdbConnector2QueryExecutionNodeDialog
 				Arrays.stream(QueryResultType.values()).map(x -> x.getText())
 						.collect(Collectors.toList())));
 
-		// TODO: Only show scoring types allowed by incoming query
-		addDialogComponent(new DialogComponentStringSelection(
-				createScoringTypeModel(), SCORING_STRATEGY,
-				Arrays.stream(ScoringType.values()).map(x -> x.getText())
-						.collect(Collectors.toList())));
+		addDialogComponent(scoringChooser);
 
 		addDialogComponent(new DialogComponentNumber(createPageSizeModel(),
 				PAGE_SIZE, 10, 5));
@@ -96,9 +107,27 @@ public class PdbConnector2QueryExecutionNodeDialog
 
 	}
 
+	@Override
+	public void loadAdditionalSettingsFrom(NodeSettingsRO settings,
+			PortObjectSpec[] specs) throws NotConfigurableException {
+		List<String> scoringOptions;
+		if (specs[0] instanceof MultiRCSBQueryModel) {
+			query = (MultiRCSBQueryModel) specs[0];
+			scoringOptions =
+					Arrays.stream(ScoringType.getAvailableScoringTypes(query))
+							.map(x -> x.getText()).collect(Collectors.toList());
+		} else {
+			query = null;
+			scoringOptions = Arrays.stream(ScoringType.values())
+					.map(x -> x.getText()).collect(Collectors.toList());
+		}
+		scoringChooser.replaceListItems(scoringOptions, null);
+		super.loadAdditionalSettingsFrom(settings, specs);
+	}
+
 	/**
 	 * @return The model for the 'Include hitcount' setting
-     * @since 1.30.2
+	 * @since 1.30.2
 	 */
 	static SettingsModelBoolean createIncludeHitCountModel() {
 		return new SettingsModelBoolean(INCLUDE_HITCOUNT, false);

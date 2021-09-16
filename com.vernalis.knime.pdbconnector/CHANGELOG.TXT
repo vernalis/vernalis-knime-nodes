@@ -1,4 +1,4 @@
-v1.30.3 26-Aug-2021
+v1.30.3 16-Sep-2021
 -------------------
 * Updated for changes to remote query API
 * Centralised handling of QueryPanel borders
@@ -6,6 +6,7 @@ v1.30.3 26-Aug-2021
 * Only apply border highlights when mouse-over component is active
 * Added code to allow for removal of QueryFields from API and display of invalid fields
 * Added new chemical descriptor query types
+* Only display valid scoring types in Query Executor node when a query is available at the incoming port
 
 v1.30.2 11-May-2021
 -------------------

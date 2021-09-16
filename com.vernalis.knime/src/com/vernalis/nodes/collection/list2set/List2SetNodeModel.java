@@ -90,7 +90,7 @@ public class List2SetNodeModel
 							cells.add(sldv.get(j));
 						}
 					} else {
-						ldv.forEach(cells::add);
+						ldv.forEach(c -> cells.add(c));
 					}
 					retVal[colIdx++] =
 							CollectionCellFactory.createSetCell(cells);

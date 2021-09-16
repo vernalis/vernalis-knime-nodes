@@ -39,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vernalis.pdbconnector2.InvalidSettingsExceptionCombiner;
 import com.vernalis.pdbconnector2.query.QueryModel;
+import com.vernalis.pdbconnector2.query.ScoringType;
 
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.ASSEMBLY_IDS;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.ASYM_ID;
@@ -491,6 +492,12 @@ public class StructureSimilarityQueryModel implements QueryModel {
 		val.put(ENTRY_ID, getPdbID());
 		val.put(getMatchUnitType().getActionCommand(), getMatchUnitID());
 		return retVal;
+	}
+
+	@Override
+	public boolean isScoringTypeValid(ScoringType scoringType) {
+		return scoringType == ScoringType.Structure
+				|| scoringType == ScoringType.Combined;
 	}
 
 }

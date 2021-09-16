@@ -75,6 +75,8 @@ public class RcsbJSONConstants {
 	/**@since 1.30.3*/
 	public static final String SERVICE_FULLTEXT = "full_text";
 	public static final String SERVICE_TEXT = "text";
+		/**@since 1.30.3*/
+	public static final String SERVICE_TEXT_CHEM = "text_chem";
 	public static final String SERVICE_KEY = "service";
 	public static final String NODE_ID = "node_id";
 	public static final String TYPE_TERMINAL = "terminal";

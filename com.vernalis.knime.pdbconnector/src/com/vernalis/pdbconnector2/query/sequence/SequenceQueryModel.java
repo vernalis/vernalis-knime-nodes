@@ -23,6 +23,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelNumber;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vernalis.pdbconnector2.InvalidSettingsExceptionCombiner;
+import com.vernalis.pdbconnector2.query.ScoringType;
 
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.EVALUE_CUTOFF;
 import static com.vernalis.pdbconnector2.RcsbJSONConstants.IDENTITY_CUTOFF;
@@ -182,5 +183,11 @@ public class SequenceQueryModel extends AbstractSequenceQueryModel {
 	@Override
 	protected String getService() {
 		return SERVICE_SEQUENCE;
+	}
+
+	@Override
+	public boolean isScoringTypeValid(ScoringType scoringType) {
+		return scoringType == ScoringType.Sequence
+				|| scoringType == ScoringType.Combined;
 	}
 }

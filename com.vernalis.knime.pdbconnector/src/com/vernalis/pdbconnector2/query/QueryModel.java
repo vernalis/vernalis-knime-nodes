@@ -218,4 +218,14 @@ public interface QueryModel {
 	public default boolean hasInvalidQuery() {
 		return false;
 	}
+
+	/**
+	 * Method to check whether the query supports the given scoring type
+	 * 
+	 * @param scoringType
+	 *            The scoring type in question
+	 * @return {@code true} if the query supports the scoring type TODO: Provide
+	 *         default
+	 */
+	public boolean isScoringTypeValid(ScoringType scoringType);
 }
