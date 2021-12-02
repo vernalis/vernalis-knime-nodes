@@ -2,3 +2,4 @@
 **/bin/**
 **/target/**
 **/.m2/**
+.META-INF_MANIFEST.MF
