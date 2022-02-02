@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2022, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -20,8 +20,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.RDKit.Atom;
+import org.RDKit.Bond;
 import org.RDKit.Bond.BondStereo;
 import org.RDKit.Bond.BondType;
+import org.RDKit.Bond_Vect;
 import org.RDKit.ChemicalReaction;
 import org.RDKit.ChemicalReactionException;
 import org.RDKit.ChemicalReactionParserException;
@@ -32,6 +35,7 @@ import org.RDKit.Int_Vect;
 import org.RDKit.Match_Vect;
 import org.RDKit.Match_Vect_Vect;
 import org.RDKit.MolSanitizeException;
+import org.RDKit.PeriodicTable;
 import org.RDKit.RDKFuncs;
 import org.RDKit.ROMol;
 import org.RDKit.ROMol_Vect;
@@ -288,7 +292,6 @@ public class RWMolFragmentationUtilsFactory
 		}
 
 		if (matcher.getBondWithIdx(0).getBondType() != BondType.SINGLE) {
-			// qb.delete();
 			if (!(SMARTS.contains("!=") && SMARTS.contains("!#"))) {
 				// Allow for !=!# designations
 				return "Bond between atoms must be single; "
@@ -343,51 +346,233 @@ public class RWMolFragmentationUtilsFactory
 			boolean allowAdditionalSubstitutionPositions, long rowIndex)
 			throws ToolkitException {
 		ChemicalReaction rxn = null;
+		RDKitRuntimeExceptionHandler handler = null;
 		try {
-			try {
+			if (!allowAdditionalSubstitutionPositions) {
+				// We are going to have to dismantle the reactants and
+				// product 1
+				// by one, add Hs and re-assemble them
+				StringBuilder sb = new StringBuilder();
+				boolean isFirst = true;
+				final String[] split = rSMARTS.split(">>");
+				for (String component : split[0].split("\\.")) {
+					RWMol comp = RWMol.MolFromSmarts(component);
+					RDKFuncs.sanitizeMol(comp,
+							SanitizeFlags.SANITIZE_NONE.swigValue());
 
-				if (!allowAdditionalSubstitutionPositions) {
-					// We are going to have to dismantle the reactants and
-					// product 1
-					// by one, add Hs and re-assemble them
-					StringBuilder sb = new StringBuilder();
-					boolean isFirst = true;
-					for (String component : rSMARTS.split(">>")[0]
-							.split("\\.")) {
-						RWMol comp = RWMol.MolFromSmarts(component);
-						RDKFuncs.sanitizeMol(comp,
-								SanitizeFlags.SANITIZE_NONE.swigValue());
-						RDKFuncs.addHs(comp);
-						String component2 = RDKFuncs.MolToSmarts(comp, true);
-						comp.delete();
-						comp = RWMol.MolFromSmarts(component2, 0, true);
-						if (!isFirst) {
-							sb.append(".");
-						} else {
-							isFirst = false;
+					// We add any missing explicit hydrogens - RWMol#addHs
+					// doesnt act on query molecules
+					for (int i = 0; i < comp.getNumAtoms(); i++) {
+						final Atom atom = comp.getAtomWithIdx(i);
+						int missingHs = calculateImplicitHs(atom);
+						for (int j = 0; j < missingHs; j++) {
+							final Atom newAtom = new Atom(1);
+							long newAtomId = comp.addAtom(newAtom, false);
+							comp.addBond(atom.getIdx(), newAtomId,
+									BondType.SINGLE);
+							newAtom.delete();
 						}
-						sb.append(RDKFuncs.MolToSmarts(comp, true));
-						comp.delete();
+						atom.delete();
 					}
-					sb.append(">>").append(rSMARTS.split(">>")[1]);
-					rxn = ChemicalReaction.ReactionFromSmarts(sb.toString(),
-							false);
-					// rxn = new ChemicalReaction(sb.toString());
-				} else {
-					rxn = ChemicalReaction.ReactionFromSmarts(rSMARTS, false);
+					ROMol comp2 = comp.mergeQueryHs();
+					String component2 = RDKFuncs.MolToSmarts(comp2, true);
+					comp.delete();
+					comp2.delete();
+					if (!isFirst) {
+						sb.append(".");
+					} else {
+						isFirst = false;
+					}
+					sb.append(component2);
 				}
-			} catch (ChemicalReactionException e) {
-				throw new RDKitRuntimeExceptionHandler(e);
-			} catch (ChemicalReactionParserException e) {
-				throw new RDKitRuntimeExceptionHandler(e);
-			} catch (GenericRDKitException e) {
-				throw new RDKitRuntimeExceptionHandler(e);
+				sb.append(">>").append(split[1]);
+				rxn = ChemicalReaction.ReactionFromSmarts(sb.toString(), false);
+			} else {
+				rxn = ChemicalReaction.ReactionFromSmarts(rSMARTS, false);
 			}
-		} catch (RDKitRuntimeExceptionHandler e) {
-			throw new ToolkitException(e);
+		} catch (ChemicalReactionException e) {
+			handler = new RDKitRuntimeExceptionHandler(e);
+		} catch (ChemicalReactionParserException e) {
+			handler = new RDKitRuntimeExceptionHandler(e);
+		} catch (GenericRDKitException e) {
+			handler = new RDKitRuntimeExceptionHandler(e);
+		}
+		if (handler != null) {
+			throw new ToolkitException(handler);
 		}
 		return m_SWIGGC.markForCleanup(rxn, rowIndex);
 
+	}
+
+	/**
+	 * Method to count the number of explicit Hydrogens which need to be added.
+	 * This is based on
+	 * https://github.com/rdkit/rdkit/blob/9b99cacc0bfed1c618f1c5cf390edbbdcf2108b5/Code/GraphMol/Atom.cpp#L330-L505
+	 * and
+	 * https://github.com/rdkit/rdkit/blob/9b99cacc0bfed1c618f1c5cf390edbbdcf2108b5/Code/GraphMol/Atom.cpp#L219-L319
+	 * 
+	 * @param atom
+	 *            The atom to calculate for
+	 * 
+	 * @return the number of Hydrogens to add
+	 */
+	private int calculateImplicitHs(final Atom atom) {
+		if (atom.getAtomicNum() <= 1) {
+			// Dont add H's to 'H' or '*'
+			return 0;
+		}
+		if (atom.getNumExplicitHs() > 0) {
+			// Looks like we are already sorted for this atom (most likely an
+			// aromatic [nH])
+			return 0;
+		}
+
+		// Now look up default valence
+		int defaultValence =
+				PeriodicTable.getTable().getDefaultValence(atom.getAtomicNum());
+		if (defaultValence < 0) {
+			// -1 is things like d- and f-block... - we cant add H's...
+			return 0;
+		}
+
+		double bondContribs = 0.0;
+		Bond_Vect bv = atom.getBonds();
+		for (int j = 0; j < bv.size(); j++) {
+			Bond b = bv.get(j);
+			bondContribs += getBondValenceContribution(b, atom);
+			Atom bondedAtom = b.getOtherAtom(atom);
+			if (bondedAtom.getAtomicNum() == 1) {
+				// We already have a bonded 'H' so assume we are sorted
+				bondedAtom.delete();
+				b.delete();
+				bv.delete();
+				return 0;
+			}
+			b.delete();
+		}
+		bv.delete();
+
+		int chrge = atom.getFormalCharge();
+		// Apply a correction for early atoms or C
+		if (isEarlyAtom(atom)) {
+			chrge *= -1;
+		}
+		if (atom.getAtomicNum() == 6 && chrge > 0) {
+			chrge *= -1;
+		}
+
+		// Now handle aromatic atoms
+		if (bondContribs > (defaultValence + chrge) && atom.getIsAromatic()) {
+			// Assume no more H's can be added
+			// We try to set to the highest acceptable
+			// valency < bondContribs
+			int pVal = defaultValence + chrge;
+			Int_Vect allowedValencies = PeriodicTable.getTable()
+					.getValenceList(atom.getAtomicNum());
+			for (int j = 0; j < allowedValencies.size(); j++) {
+				if (allowedValencies.get(j) < 0) {
+					break;
+				}
+				int valence = allowedValencies.get(j) + chrge;
+				if (valence > bondContribs) {
+					break;
+				}
+				pVal = valence;
+			}
+			allowedValencies.delete();
+			// If with 1.5 accept it, which allows for
+			// some kekulisation strangeness (see
+			// https://github.com/rdkit/rdkit/blob/9b99cacc0bfed1c618f1c5cf390edbbdcf2108b5/Code/GraphMol/Atom.cpp#L265-L270)
+			if (bondContribs - pVal <= 1.5) {
+				bondContribs = pVal;
+			}
+		}
+
+		// Round up x.5 sums..
+		int explicitValence = (int) Math.round(bondContribs + 0.1);
+		int explicitValenceWithRadicalElectrons =
+				explicitValence + (int) atom.getNumRadicalElectrons();
+		int numMissingHs = 0;
+
+		if (atom.getIsAromatic()) {
+			if (explicitValenceWithRadicalElectrons <= (defaultValence
+					+ chrge)) {
+				numMissingHs = defaultValence + chrge - explicitValence;
+			}
+		} else {
+			Int_Vect allowedValencies = PeriodicTable.getTable()
+					.getValenceList(atom.getAtomicNum());
+			for (int i = 0; i < allowedValencies.size(); i++) {
+				int total = allowedValencies.get(i) + chrge;
+				if (explicitValenceWithRadicalElectrons <= total) {
+					numMissingHs = total - explicitValenceWithRadicalElectrons;
+					break;
+				}
+			}
+			allowedValencies.delete();
+		}
+		return numMissingHs;
+
+	}
+
+	/**
+	 * Test whether an atom should be treated as an early atom (see
+	 * https://github.com/rdkit/rdkit/blob/9b99cacc0bfed1c618f1c5cf390edbbdcf2108b5/Code/GraphMol/Atom.cpp#L41-L66
+	 * for details)
+	 * 
+	 * @param atom
+	 *            The atom to test
+	 * 
+	 * @return {@code true} if the atom is deemed to be an early atom
+	 */
+	private boolean isEarlyAtom(Atom atom) {
+		int atomicNo = atom.getAtomicNum();
+		if (atomicNo <= 1) {
+			return false;
+		}
+		switch (PeriodicTable.getTable().getNouterElecs(atomicNo)) {
+			case 1:
+			case 2:
+			case 3:
+				return true;
+			case 4:
+				return atomicNo > 14;
+			case 5:
+				return atomicNo > 33;
+			case 6:
+			case 7:
+			case 8:
+				return false;
+			default:
+				return false;
+		}
+	}
+
+	// Methods to modify the query molecule by adding explicit query hydrogens
+	/**
+	 * Base on
+	 * https://github.com/rdkit/rdkit/blob/9b99cacc0bfed1c618f1c5cf390edbbdcf2108b5/Code/GraphMol/Bond.cpp#L185-L198
+	 * 
+	 * @param bond
+	 *            The bond to calculate the contribution os
+	 * @param atom
+	 *            The atom to calculate the valence contribution to
+	 * 
+	 * @return An approximation of the valence contribution to the atom by the
+	 *         bond
+	 */
+	private static double getBondValenceContribution(Bond bond, Atom atom) {
+		if (bond.getBeginAtomIdx() != atom.getIdx()
+				&& bond.getEndAtomIdx() != atom.getIdx()) {
+			// Bond is not to atom
+			return 0.0;
+		}
+		if ((bond.getBondType() == BondType.DATIVE
+				|| bond.getBondType() == BondType.DATIVEONE)
+				&& atom.getIdx() != bond.getEndAtomIdx()) {
+			return 0.0;
+		}
+		return bond.getBondTypeAsDouble();
 	}
 
 	@Override
