@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2020 Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2022 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License, Version 3, as
  *  published by the Free Software Foundation.
@@ -13,8 +13,6 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
 package com.vernalis.knime.perfmon.nodes.timing.abstrct;
-
-import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingEndNodeDialog.createUseLegacyDateTimeFieldsModel;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,26 +70,32 @@ import org.knime.core.node.workflow.WorkflowManager;
 import com.vernalis.knime.perfmon.PerformanceMonitoringLoopEnd;
 import com.vernalis.knime.perfmon.PerformanceMonitoringLoopStart;
 
+import static com.vernalis.knime.perfmon.nodes.timing.abstrct.AbstractPerfMonTimingEndNodeDialog.createUseLegacyDateTimeFieldsModel;
+
 /**
  * This is the abstract Performance monitoring loop end node model class.
  *
  * v1.27.0 - Updated to allow optional use of new Date-Time types
- *
+ * v1.30.4 = Fixed bug #15
  * @author S. Roughley knime@vernalis.com
  */
 @SuppressWarnings("deprecation")
-public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements PerformanceMonitoringLoopEnd {
+public class AbstractPerfMonTimingEndNodeModel extends NodeModel
+		implements PerformanceMonitoringLoopEnd {
 
-	protected final SettingsModelBoolean useLegacyDateTimeMdl = createUseLegacyDateTimeFieldsModel();
+	protected final SettingsModelBoolean useLegacyDateTimeMdl =
+			createUseLegacyDateTimeFieldsModel();
 	/**
-	 * Separator for sub-nodes/metanodes in the optional loop body timings output
+	 * Separator for sub-nodes/metanodes in the optional loop body timings
+	 * output
 	 */
 	private static final String WORKFLOW_PATH_SEPARATOR = " --> ";
 
 	/**
 	 * The {@link NodeLogger} instance
 	 */
-	protected static NodeLogger m_logger = NodeLogger.getLogger(AbstractPerfMonTimingEndNodeModel.class);
+	protected static NodeLogger m_logger =
+			NodeLogger.getLogger(AbstractPerfMonTimingEndNodeModel.class);
 
 	/** The m_result container. */
 	protected BufferedDataContainer m_resultContainer = null;
@@ -108,15 +112,18 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements Perf
 	/**
 	 * Constructor for the node model.
 	 */
-	public AbstractPerfMonTimingEndNodeModel(PortType portType, Integer numPorts) {
-		super(createInputPortArray(portType, numPorts), createOutputPortArray(portType, numPorts));
+	public AbstractPerfMonTimingEndNodeModel(PortType portType,
+			Integer numPorts) {
+		super(createInputPortArray(portType, numPorts),
+				createOutputPortArray(portType, numPorts));
 
 	}
 
 	/**
 	 * Constructor for subtypes to supply their own port types
 	 */
-	protected AbstractPerfMonTimingEndNodeModel(PortType[] inTypes, PortType[] outTypes) {
+	protected AbstractPerfMonTimingEndNodeModel(PortType[] inTypes,
+			PortType[] outTypes) {
 		super(inTypes, outTypes);
 	}
 
@@ -124,17 +131,19 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements Perf
 	 * Create the input PortTypes Array. This is simple an array with the given
 	 * number of ports of the given type
 	 */
-	protected static PortType[] createInputPortArray(PortType portType, Integer numPorts) {
+	protected static PortType[] createInputPortArray(PortType portType,
+			Integer numPorts) {
 		final PortType[] retVal = new PortType[numPorts];
 		Arrays.fill(retVal, portType);
 		return retVal;
 	}
 
 	/**
-	 * Create the output {@link PortType}s Array. This is the input ports, prepended
-	 * with a flow variable port and a {@link BufferedDataTable} port
+	 * Create the output {@link PortType}s Array. This is the input ports,
+	 * prepended with a flow variable port and a {@link BufferedDataTable} port
 	 */
-	protected static PortType[] createOutputPortArray(PortType portType, Integer numPorts) {
+	protected static PortType[] createOutputPortArray(PortType portType,
+			Integer numPorts) {
 		final PortType[] retVal = new PortType[numPorts + 2];
 		Arrays.fill(retVal, portType);
 		retVal[0] = FlowVariablePortObject.TYPE;
@@ -184,18 +193,21 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements Perf
 	 * NodeSettingsRO)
 	 */
 	@Override
-	protected void validateSettings(NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		// Don't validate date-time format setting for backwards compatibility
 	}
 
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see org.knime.core.node.NodeModel#loadValidatedSettingsFrom(org.knime.core
+	 * @see
+	 * org.knime.core.node.NodeModel#loadValidatedSettingsFrom(org.knime.core
 	 * .node.NodeSettingsRO)
 	 */
 	@Override
-	protected void loadValidatedSettingsFrom(NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void loadValidatedSettingsFrom(NodeSettingsRO settings)
+			throws InvalidSettingsException {
 		try {
 			useLegacyDateTimeMdl.loadSettingsFrom(settings);
 		} catch (final InvalidSettingsException e) {
@@ -222,15 +234,17 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements Perf
 	 * (non-Javadoc)
 	 *
 	 * @see
-	 * org.knime.core.node.NodeModel#execute(org.knime.core.node.port.PortObject [],
-	 * org.knime.core.node.ExecutionContext)
+	 * org.knime.core.node.NodeModel#execute(org.knime.core.node.port.PortObject
+	 * [], org.knime.core.node.ExecutionContext)
 	 */
 	@Override
-	protected PortObject[] execute(PortObject[] inObjects, ExecutionContext exec) throws Exception {
+	protected PortObject[] execute(PortObject[] inObjects,
+			ExecutionContext exec) throws Exception {
 
 		// Get the loop start node - we've already checked the type in the
 		// configure method
-		final PerformanceMonitoringLoopStart loopStartNode = (PerformanceMonitoringLoopStart) this.getLoopStartNode();
+		final PerformanceMonitoringLoopStart loopStartNode =
+				(PerformanceMonitoringLoopStart) this.getLoopStartNode();
 
 		// Get the end time
 		final Date endTime = new Date();
@@ -238,7 +252,8 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements Perf
 		final Date startTime = loopStartNode.getStartDate();
 
 		// Process the current time
-		final Double durationSeconds = (endTime.getTime() - startTime.getTime()) / 1000.0;
+		final Double durationSeconds =
+				(endTime.getTime() - startTime.getTime()) / 1000.0;
 		m_runningTotal += durationSeconds;
 		m_bestTime = Math.min(m_bestTime, durationSeconds);
 		m_worstTime = Math.max(m_worstTime, durationSeconds);
@@ -248,49 +263,59 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements Perf
 		}
 
 		// Log progress
-		m_logger.info(
-				"Iteration " + m_currentIteration + " completed in " + String.format("%.3f secs.", durationSeconds));
-		m_logger.info("Cumulative total execution time (" + (++m_currentIteration) + " iterations): "
+		m_logger.info("Iteration " + m_currentIteration + " completed in "
+				+ String.format("%.3f secs.", durationSeconds));
+		m_logger.info("Cumulative total execution time ("
+				+ (++m_currentIteration) + " iterations): "
 				+ String.format("%.3f secs.", m_runningTotal));
-		m_logger.info("Current Mean execution time (" + m_currentIteration + " iterations): "
-				+ String.format("%.3f secs.", m_runningTotal / m_currentIteration));
+		m_logger.info("Current Mean execution time (" + m_currentIteration
+				+ " iterations): " + String.format("%.3f secs.",
+						m_runningTotal / m_currentIteration));
 
-		// pushFlowVariableInt("Iteration", m_currentIteration);
-		final DataRow newOutRow = createOutputRow(startTime, endTime, durationSeconds,
-				loopStartNode.getReportNodeTimes(), loopStartNode.getProbeSubnodeTimes());
+		final DataRow newOutRow = createOutputRow(startTime, endTime,
+				durationSeconds, loopStartNode.getReportNodeTimes(),
+				loopStartNode.getProbeSubnodeTimes());
 		m_resultContainer.addRowToTable(newOutRow);
-		pushFlowVariableDouble("Mean Execution Time (s)", m_runningTotal / m_currentIteration);
+		pushFlowVariableDouble("Mean Execution Time (s)",
+				m_runningTotal / m_currentIteration);
 
-		if (loopStartNode.terminateLoop()
-				|| loopStartNode.hasTimeoutEnabled() && loopStartNode.getTimeoutDuration() < m_runningTotal) {
+		if (loopStartNode.terminateLoop() || loopStartNode.hasTimeoutEnabled()
+				&& loopStartNode.getTimeoutDuration() < m_runningTotal) {
 			// Update the logger
 			if (!loopStartNode.terminateLoop()) {
-				m_logger.info("Loop terminated as cumulative running time (" + m_runningTotal + ") exceded timeout ("
+				m_logger.info("Loop terminated as cumulative running time ("
+						+ m_runningTotal + ") exceded timeout ("
 						+ loopStartNode.getTimeoutDuration() + ")");
 			}
 
 			// Only do these on the last iteration
 			pushFlowVariableString("Overall End Time", endTime.toString());
-			pushFlowVariableInt("Total number of iterations", m_currentIteration);
+			pushFlowVariableInt("Total number of iterations",
+					m_currentIteration);
 			// Pass on all the variables except the global constant types and
 			// the loop iteration counter
-			final Map<String, FlowVariable> inFlowVars = getAvailableInputFlowVariables();
-			for (final Entry<String, FlowVariable> flowVar : inFlowVars.entrySet()) {
+			final Map<String, FlowVariable> inFlowVars =
+					getAvailableInputFlowVariables();
+			for (final Entry<String, FlowVariable> flowVar : inFlowVars
+					.entrySet()) {
 				final FlowVariable fvar = flowVar.getValue();
 				final String fvName = flowVar.getKey();
-				if (fvar.getScope() == Scope.Flow && !fvName.equals("Iteration")) {
+				if (fvar.getScope() == Scope.Flow
+						&& !fvName.equals("Iteration")) {
 					switch (fvar.getType()) {
-					case DOUBLE:
-						pushFlowVariableDouble(fvName, fvar.getDoubleValue());
-						break;
-					case INTEGER:
-						pushFlowVariableInt(fvName, fvar.getIntValue());
-						break;
-					case STRING:
-						pushFlowVariableString(fvName, fvar.getStringValue());
-						break;
-					default:
-						break;
+						case DOUBLE:
+							pushFlowVariableDouble(fvName,
+									fvar.getDoubleValue());
+							break;
+						case INTEGER:
+							pushFlowVariableInt(fvName, fvar.getIntValue());
+							break;
+						case STRING:
+							pushFlowVariableString(fvName,
+									fvar.getStringValue());
+							break;
+						default:
+							break;
 					}
 				}
 			}
@@ -303,7 +328,8 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements Perf
 			pushFlowVariableDouble("Total Execution Time (s)", m_runningTotal);
 			pushFlowVariableDouble("Best Execution Time (s)", m_bestTime);
 			pushFlowVariableDouble("Worst Execution Time (s)", m_worstTime);
-			pushFlowVariableDouble("Mean Execution Time (s)", m_runningTotal / m_currentIteration);
+			pushFlowVariableDouble("Mean Execution Time (s)",
+					m_runningTotal / m_currentIteration);
 
 			m_resultContainer.close();
 			final BufferedDataTable table = m_resultContainer.getTable();
@@ -321,10 +347,13 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements Perf
 	/**
 	 * @param table
 	 * @param inObjects
+	 * 
 	 * @return
+	 * 
 	 * @throws Exception
 	 */
-	protected PortObject[] getOutputObjects(BufferedDataTable table, PortObject[] inObjects) throws Exception {
+	protected PortObject[] getOutputObjects(BufferedDataTable table,
+			PortObject[] inObjects) throws Exception {
 		final PortObject[] retVal = new PortObject[inObjects.length + 2];
 		int portIdx = 0;
 		// 1st port is a flow variable port
@@ -342,17 +371,23 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements Perf
 	/**
 	 * Method to generate the output row
 	 *
-	 * @param startTime       The start time of the current loop iteration
-	 * @param endTime         The end time of the current loop iteration
-	 * @param durationSeconds The duration of the loop iteration in seconds
-	 * @param reportNodeTimes Should individual node times in the loop body be
-	 *                        reported?
-	 * @param probeSubnodes   Should the node times within subnodes (i.e. wrapped
-	 *                        metanodes) be reported?
+	 * @param startTime
+	 *            The start time of the current loop iteration
+	 * @param endTime
+	 *            The end time of the current loop iteration
+	 * @param durationSeconds
+	 *            The duration of the loop iteration in seconds
+	 * @param reportNodeTimes
+	 *            Should individual node times in the loop body be reported?
+	 * @param probeSubnodes
+	 *            Should the node times within subnodes (i.e. wrapped metanodes)
+	 *            be reported?
+	 * 
 	 * @return The {@link DataRow} for the current loop iteration for the timing
 	 *         table
 	 */
-	protected DataRow createOutputRow(Date startTime, Date endTime, Double durationSeconds, boolean reportNodeTimes,
+	protected DataRow createOutputRow(Date startTime, Date endTime,
+			Double durationSeconds, boolean reportNodeTimes,
 			boolean probeSubnodes) {
 		final RowKey rKey = new RowKey("Row_" + m_currentIteration);
 		final DataCell[] rCells = new DataCell[4 + (reportNodeTimes ? 2 : 0)];
@@ -361,67 +396,82 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements Perf
 
 		rCells[colIdx++] = useLegacyDateTimeMdl.getBooleanValue()
 				? new DateAndTimeCell(startTime.getTime(), true, true, true)
-						: ZonedDateTimeCellFactory
-						.create(Instant.ofEpochMilli(startTime.getTime()).atZone(ZoneId.systemDefault()));
-				rCells[colIdx++] = useLegacyDateTimeMdl.getBooleanValue()
-						? new DateAndTimeCell(endTime.getTime(), true, true, true)
-								: ZonedDateTimeCellFactory
-								.create(Instant.ofEpochMilli(endTime.getTime()).atZone(ZoneId.systemDefault()));
-						rCells[colIdx++] = new DoubleCell(durationSeconds);
+				: ZonedDateTimeCellFactory
+						.create(Instant.ofEpochMilli(startTime.getTime())
+								.atZone(ZoneId.systemDefault()));
+		rCells[colIdx++] = useLegacyDateTimeMdl.getBooleanValue()
+				? new DateAndTimeCell(endTime.getTime(), true, true, true)
+				: ZonedDateTimeCellFactory
+						.create(Instant.ofEpochMilli(endTime.getTime())
+								.atZone(ZoneId.systemDefault()));
+		rCells[colIdx++] = new DoubleCell(durationSeconds);
 
-						if (reportNodeTimes) {
-							final NodeContext ctx = NodeContext.getContext();
-							final WorkflowManager wfm = ctx.getWorkflowManager();
-							List<NodeContainer> loop = wfm.getNodesInScope((SingleNodeContainer) ctx.getNodeContainer());
-							// Remove the loop start/end
-							loop = loop.subList(1, loop.size() - 1);
+		if (reportNodeTimes) {
+			final NodeContext ctx = NodeContext.getContext();
+			// NodeContext#getWorkflowManager() returns the root manager, so
+			// getNodesInScope fails when the loop is within a metanode or
+			// component
+			final NodeContainer nodeContainer = ctx.getNodeContainer();
+			final WorkflowManager wfm = nodeContainer.getParent();
+			List<NodeContainer> loop =
+					wfm.getNodesInScope((SingleNodeContainer) nodeContainer);
+			// Remove the loop start/end
+			loop = loop.subList(1, loop.size() - 1);
 
-							final Map<String, Long> times = new LinkedHashMap<>();
-							for (final NodeContainer cont : loop) {
-								// System.out.println(cont.getNameWithID() + ":\t"
-								// + cont.getClass().getCanonicalName());
-								if (cont instanceof WorkflowManager) {
-									// metanode
-									times(cont.getNameWithID(), (WorkflowManager) cont, probeSubnodes, times);
-								} else {
-									times.put(cont.getNameWithID(), cont.getNodeTimer().getLastExecutionDuration());
-									if (probeSubnodes && cont instanceof SubNodeContainer) {
-										times(cont.getNameWithID(), (SubNodeContainer) cont, probeSubnodes, times);
-									}
-								}
-							}
+			final Map<String, Long> times = new LinkedHashMap<>();
+			for (final NodeContainer cont : loop) {
+				if (cont instanceof WorkflowManager) {
+					// metanode
+					times(cont.getNameWithID(), (WorkflowManager) cont,
+							probeSubnodes, times);
+				} else {
+					times.put(cont.getNameWithID(),
+							cont.getNodeTimer().getLastExecutionDuration());
+					if (probeSubnodes && cont instanceof SubNodeContainer) {
+						times(cont.getNameWithID(), (SubNodeContainer) cont,
+								probeSubnodes, times);
+					}
+				}
+			}
 
-							rCells[colIdx++] = CollectionCellFactory
-									.createListCell(times.keySet().stream().map(x -> new StringCell(x)).collect(Collectors.toList()));
-							rCells[colIdx++] = CollectionCellFactory
-									.createListCell(times.values().stream().map(x -> new LongCell(x)).collect(Collectors.toList()));
-						}
-						return new DefaultRow(rKey, rCells);
+			rCells[colIdx++] = CollectionCellFactory.createListCell(
+					times.keySet().stream().map(x -> new StringCell(x))
+							.collect(Collectors.toList()));
+			rCells[colIdx++] = CollectionCellFactory.createListCell(
+					times.values().stream().map(x -> new LongCell(x))
+							.collect(Collectors.toList()));
+		}
+		return new DefaultRow(rKey, rCells);
 	}
 
 	/**
 	 * Get the times for a {@link WorkflowManager} (i.e. metanode)
 	 *
-	 * @param prefix        The path to the metanode
-	 * @param wfm           The {@link WorkflowManager} representing the metanode
-	 * @param probeSubnodes Should the contents of any contained wrapped metanode /
-	 *                      subnode be probed for detailed timings?
-	 * @param times         The map of node names - times
+	 * @param prefix
+	 *            The path to the metanode
+	 * @param wfm
+	 *            The {@link WorkflowManager} representing the metanode
+	 * @param probeSubnodes
+	 *            Should the contents of any contained wrapped metanode /
+	 *            subnode be probed for detailed timings?
+	 * @param times
+	 *            The map of node names - times
 	 */
-	protected void times(String prefix, WorkflowManager wfm, boolean probeSubnodes, Map<String, Long> times) {
+	protected void times(String prefix, WorkflowManager wfm,
+			boolean probeSubnodes, Map<String, Long> times) {
 		for (final NodeContainer cont : wfm.getNodeContainers()) {
 			if (cont instanceof WorkflowManager) {
 				// metanode - recurse
-				times(prefix + WORKFLOW_PATH_SEPARATOR + cont.getNameWithID(), (WorkflowManager) cont, probeSubnodes,
-						times);
+				times(prefix + WORKFLOW_PATH_SEPARATOR + cont.getNameWithID(),
+						(WorkflowManager) cont, probeSubnodes, times);
 			} else {
-				times.put(prefix + WORKFLOW_PATH_SEPARATOR + cont.getNameWithID(),
+				times.put(
+						prefix + WORKFLOW_PATH_SEPARATOR + cont.getNameWithID(),
 						cont.getNodeTimer().getLastExecutionDuration());
 				if (probeSubnodes && cont instanceof SubNodeContainer) {
 					final SubNodeContainer snc = (SubNodeContainer) cont;
-					// System.out.println(snc.getNameWithID() + "\t::\t"
-					// + snc.getNodeContainers());
-					times(prefix + WORKFLOW_PATH_SEPARATOR + snc.getNameWithID(), snc, probeSubnodes, times);
+					times(prefix + WORKFLOW_PATH_SEPARATOR
+							+ snc.getNameWithID(), snc, probeSubnodes, times);
 				}
 			}
 		}
@@ -431,29 +481,35 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements Perf
 	 * Get the times for a {@link SubNodeContainer} (i.e. wrapped metanode or
 	 * subnode)
 	 *
-	 * @param prefix        The path to the metanode
-	 * @param snc           The {@link SubNodeContainer} representing the metanode
-	 * @param probeSubnodes Should the contents of any contained wrapped metanode /
-	 *                      subnode be probed for detailed timings?
-	 * @param times         The map of node names - times
+	 * @param prefix
+	 *            The path to the metanode
+	 * @param snc
+	 *            The {@link SubNodeContainer} representing the metanode
+	 * @param probeSubnodes
+	 *            Should the contents of any contained wrapped metanode /
+	 *            subnode be probed for detailed timings?
+	 * @param times
+	 *            The map of node names - times
 	 */
-	protected void times(String prefix, SubNodeContainer snc, boolean probeSubnodes, Map<String, Long> times) {
+	protected void times(String prefix, SubNodeContainer snc,
+			boolean probeSubnodes, Map<String, Long> times) {
 		for (final NodeContainer cont : snc.getNodeContainers()) {
-			if (cont.getType() == NodeType.VirtualIn || cont.getType() == NodeType.VirtualOut) {
+			if (cont.getType() == NodeType.VirtualIn
+					|| cont.getType() == NodeType.VirtualOut) {
 				continue;
 			}
 			if (cont instanceof WorkflowManager) {
 				// metanode - recurse
-				times(prefix + WORKFLOW_PATH_SEPARATOR + cont.getNameWithID(), (WorkflowManager) cont, probeSubnodes,
-						times);
+				times(prefix + WORKFLOW_PATH_SEPARATOR + cont.getNameWithID(),
+						(WorkflowManager) cont, probeSubnodes, times);
 			} else {
-				times.put(prefix + WORKFLOW_PATH_SEPARATOR + cont.getNameWithID(),
+				times.put(
+						prefix + WORKFLOW_PATH_SEPARATOR + cont.getNameWithID(),
 						cont.getNodeTimer().getLastExecutionDuration());
 				if (probeSubnodes && cont instanceof SubNodeContainer) {
 					final SubNodeContainer snc1 = (SubNodeContainer) cont;
-					// System.out.println(snc.getNameWithID() + "\t::\t"
-					// + snc.getNodeContainers());
-					times(prefix + WORKFLOW_PATH_SEPARATOR + snc1.getNameWithID(), snc1, probeSubnodes, times);
+					times(prefix + WORKFLOW_PATH_SEPARATOR
+							+ snc1.getNameWithID(), snc1, probeSubnodes, times);
 				}
 			}
 		}
@@ -466,15 +522,18 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements Perf
 	 * PortObjectSpec[])
 	 */
 	@Override
-	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs) throws InvalidSettingsException {
+	protected PortObjectSpec[] configure(PortObjectSpec[] inSpecs)
+			throws InvalidSettingsException {
 		// Check that the loop start is valid
 		final NodeModel loopStart = (NodeModel) this.getLoopStartNode();
 		if (loopStart == null) {
 			throw new InvalidSettingsException(
 					"This loop needs a corresponding 'Performance monitoring loop start node' - non found!");
 		} else if (!(loopStart instanceof PerformanceMonitoringLoopStart)) {
-			throw new InvalidSettingsException("Loop Start must be a 'Performance monitoring Loop Start'; "
-					+ loopStart.getClass().getSimpleName() + " is not a valid loop start");
+			throw new InvalidSettingsException(
+					"Loop Start must be a 'Performance monitoring Loop Start'; "
+							+ loopStart.getClass().getSimpleName()
+							+ " is not a valid loop start");
 		}
 
 		// Initialise flowVar outputs
@@ -487,40 +546,54 @@ public class AbstractPerfMonTimingEndNodeModel extends NodeModel implements Perf
 		pushFlowVariableDouble("Mean Execution Time (s)", 0.0);
 		pushFlowVariableInt("Total number of iterations", -1);
 		// Just pass through
-		return getOutputSpecs(inSpecs, ((PerformanceMonitoringLoopStart) loopStart).getReportNodeTimes());
+		return getOutputSpecs(inSpecs,
+				((PerformanceMonitoringLoopStart) loopStart)
+						.getReportNodeTimes());
 	}
 
 	/**
 	 * Method to return the output port specs
 	 *
-	 * @param inSpecs         The incoming port specs
-	 * @param reportNodeTimes Should individual node execution times in the loop
-	 *                        body be reported?
+	 * @param inSpecs
+	 *            The incoming port specs
+	 * @param reportNodeTimes
+	 *            Should individual node execution times in the loop body be
+	 *            reported?
+	 * 
 	 * @return The output port specs
 	 */
-	protected PortObjectSpec[] getOutputSpecs(PortObjectSpec[] inSpecs, boolean reportNodeTimes) {
+	protected PortObjectSpec[] getOutputSpecs(PortObjectSpec[] inSpecs,
+			boolean reportNodeTimes) {
 		final PortObjectSpec[] retVal = new PortObjectSpec[inSpecs.length + 2];
 		int portIdx = 0;
 		// 1st port is a flow variable port
 		retVal[portIdx++] = FlowVariablePortObjectSpec.INSTANCE;
 
 		// 2nd port is a new BDT with 4 columns to summarise loop executions
-		final DataTableSpecCreator summarySpecCreator = new DataTableSpecCreator();
-		final DataColumnSpec[] colSpecs = new DataColumnSpec[4 + (reportNodeTimes ? 2 : 0)];
+		final DataTableSpecCreator summarySpecCreator =
+				new DataTableSpecCreator();
+		final DataColumnSpec[] colSpecs =
+				new DataColumnSpec[4 + (reportNodeTimes ? 2 : 0)];
 		int colIdx = 0;
-		colSpecs[colIdx++] = new DataColumnSpecCreator("Iteration", IntCell.TYPE).createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("Iteration", IntCell.TYPE)
+						.createSpec();
 		colSpecs[colIdx++] = new DataColumnSpecCreator("Start Time",
-				useLegacyDateTimeMdl.getBooleanValue() ? DateAndTimeCell.TYPE : ZonedDateTimeCellFactory.TYPE)
-				.createSpec();
+				useLegacyDateTimeMdl.getBooleanValue() ? DateAndTimeCell.TYPE
+						: ZonedDateTimeCellFactory.TYPE).createSpec();
 		colSpecs[colIdx++] = new DataColumnSpecCreator("End Time",
-				useLegacyDateTimeMdl.getBooleanValue() ? DateAndTimeCell.TYPE : ZonedDateTimeCellFactory.TYPE)
-				.createSpec();
-		colSpecs[colIdx++] = new DataColumnSpecCreator("Execution Time (s)", DoubleCell.TYPE).createSpec();
+				useLegacyDateTimeMdl.getBooleanValue() ? DateAndTimeCell.TYPE
+						: ZonedDateTimeCellFactory.TYPE).createSpec();
+		colSpecs[colIdx++] =
+				new DataColumnSpecCreator("Execution Time (s)", DoubleCell.TYPE)
+						.createSpec();
 		if (reportNodeTimes) {
 			colSpecs[colIdx++] = new DataColumnSpecCreator("Node name / ID",
 					ListCell.getCollectionType(StringCell.TYPE)).createSpec();
-			colSpecs[colIdx++] = new DataColumnSpecCreator("Node Execution time (ms)",
-					ListCell.getCollectionType(LongCell.TYPE)).createSpec();
+			colSpecs[colIdx++] =
+					new DataColumnSpecCreator("Node Execution time (ms)",
+							ListCell.getCollectionType(LongCell.TYPE))
+									.createSpec();
 		}
 		summarySpecCreator.addColumns(colSpecs);
 		m_resultSpec = summarySpecCreator.createSpec();
