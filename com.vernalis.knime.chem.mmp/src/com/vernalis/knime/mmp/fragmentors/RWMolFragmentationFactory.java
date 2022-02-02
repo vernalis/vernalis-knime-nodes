@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2021, Vernalis (R&D) Ltd
+ * Copyright (c) 2015, 2022, Vernalis (R&D) Ltd
  * This program is free software; you can redistribute it and/or modify it 
  * under the terms of the GNU General Public License, Version 3, as 
  * published by the Free Software Foundation.
@@ -126,6 +126,7 @@ public class RWMolFragmentationFactory
 	 *            Them minimum number of fixed heavy atoms
 	 * @param minCnstToVarAtmRatio
 	 *            The minumum ratio of constant to changing heavy atoms
+	 * 
 	 * @throws ClosedFactoryException
 	 * @throws ToolkitException
 	 */
@@ -581,6 +582,7 @@ public class RWMolFragmentationFactory
 	 * 
 	 * @param valueComponent
 	 *            The molecule to canonicalise
+	 * 
 	 * @return The canonical SMILES
 	 */
 	protected String canonicalizeAtomOrder(RWMol valueComponent) {
@@ -619,6 +621,7 @@ public class RWMolFragmentationFactory
 	 *            The attachment point index required
 	 * @param localGcWave
 	 *            The GC wave for cleanup
+	 * 
 	 * @return The index of the AP atom with the specified index
 	 */
 	protected long findIndexOfLabelledAtom(ROMol valueComponent, int apIndex,
@@ -644,6 +647,7 @@ public class RWMolFragmentationFactory
 	 *            the component to find the correct index
 	 * @param localGcWave
 	 *            The GC wave for cleanup
+	 * 
 	 * @return The index of the AP atom
 	 */
 	protected int getAPIndex(ROMol comp, long localGcWave) {
@@ -742,7 +746,9 @@ public class RWMolFragmentationFactory
 	 * 
 	 * @param bondColour
 	 *            The colour to use for the bonds
+	 * 
 	 * @return The SVG string
+	 * 
 	 * @throws ClosedFactoryException
 	 * @throws ToolkitException
 	 */
@@ -835,7 +841,9 @@ public class RWMolFragmentationFactory
 	 *            {@link BondIdentifierSelfpairSet} then this is treated as two
 	 *            cuts to a single bond, and the bond becomes the value and all
 	 *            other atoms/bonds the key
+	 * 
 	 * @return The SVG
+	 * 
 	 * @throws ClosedFactoryException
 	 * @throws ToolkitException
 	 * @throws MoleculeFragmentationException
@@ -982,44 +990,39 @@ public class RWMolFragmentationFactory
 					atomColourMap, bondColourMap);
 			drawer.finishDrawing();
 			svg = drawer.getDrawingText();
-			// NO LONGER NECESSARY due to improved RDKit rendering
-			// // This swaps the svg header to match the scaleable version in
-			// the
-			// // Renderer to Image node
-			// if (svg != null) {
-			// // Make it scaleable
-			// svg = svg.replaceAll("(?s)<svg:svg.*?>",
-			// "<svg:svg contentScriptType=\"text/ecmascript\"
-			// zoomAndPan=\"magnify\"\n "
-			// + "xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n
-			// xmlns:svg=\"http://www.w3.org/2000/svg\" baseProfile=\"full\"\n "
-			// + "contentStyleType=\"text/css\" version=\"1.1\" width=\""
-			// + RENDERER_WIDTH
-			// + "px\"\n preserveAspectRatio=\"xMidYMid meet\"\n "
-			// + "xmlns:rdkit=\"http://www.rdkit.org/xml\" height=\""
-			// + RENDERER_HEIGHT
-			// + "px\"\n xmlns=\"http://www.w3.org/2000/svg\">");
-			// // Make the highlights have nice rounded ends
-			// svg = svg.replaceAll(
-			// "(<(svg:)?path.*?stroke-width:[\\d]+px;stroke-linecap:).*?;",
-			// "$1round;");
-			// // Lazy qualifier before <svg:path gets us first matching which
-			// // is in the highlights as they come before the bonds
-			// // Locale.ROOT keeps '.' as decimal as required by SVG standard
-			// // - see
-			// //
-			// https://forum.knime.com/t/mmp-molecule-fragment-node-output-svg-cells-and-system-locale/10315
-			// String radius = String.format(Locale.ROOT, "%.4f",
-			// BREAK_ATOM_END_RADIUS_SCALE
-			// * Integer.parseInt(svg.replaceAll(
-			// "(?s).*?<(?:svg:)?path.*?;stroke:#(?!000000)[0-9A-F]{6};stroke-width:(\\d+)px;.*",
-			// "$1"))
-			// / 2.0);
-			// svg = svg.replaceAll(
-			// "(<svg:ellipse cx='.*?' cy='.*?' rx=').*?' ry='.*?'",
-			// "$1" + radius + "' ry='" + radius + "'");
-			//
-			// }
+			// This swaps the svg header to match the scaleable version in the
+			// Renderer to Image node
+			if (svg != null) {
+				// Make it scaleable
+				svg = svg.replaceAll("(?s)<svg:svg.*?>",
+						"<svg:svg contentScriptType=\"text/ecmascript\" zoomAndPan=\"magnify\"\n "
+								+ "xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n xmlns:svg=\"http://www.w3.org/2000/svg\" baseProfile=\"full\"\n "
+								+ "contentStyleType=\"text/css\" version=\"1.1\" width=\""
+								+ RENDERER_WIDTH
+								+ "px\"\n preserveAspectRatio=\"xMidYMid meet\"\n "
+								+ "xmlns:rdkit=\"http://www.rdkit.org/xml\" height=\""
+								+ RENDERER_HEIGHT
+								+ "px\"\n xmlns=\"http://www.w3.org/2000/svg\">");
+				// Make the highlights have nice rounded ends
+				svg = svg.replaceAll(
+						"(<(svg:)?path.*?stroke-width:[\\d]+px;stroke-linecap:).*?;",
+						"$1round;");
+				// Lazy qualifier before <svg:path gets us first matching which
+				// is in the highlights as they come before the bonds
+				// Locale.ROOT keeps '.' as decimal as required by SVG standard
+				// - see
+				// https://forum.knime.com/t/mmp-molecule-fragment-node-output-svg-cells-and-system-locale/10315
+				String radius = String.format(Locale.ROOT, "%.4f",
+						BREAK_ATOM_END_RADIUS_SCALE
+								* Double.parseDouble(svg.replaceAll(
+										"(?s).*?<(?:svg:)?path.*?;stroke:#(?!000000)[0-9A-F]{6};stroke-width:(\\d+(\\.\\d+)?)px;.*",
+										"$1"))
+								/ 2.0);
+				svg = svg.replaceAll(
+						"(<svg:ellipse cx='.*?' cy='.*?' rx=').*?' ry='.*?'",
+						"$1" + radius + "' ry='" + radius + "'");
+
+			}
 		} catch (ConformerException e) {
 			throw new ToolkitException(new RDKitRuntimeExceptionHandler(e));
 		} finally {
@@ -1035,6 +1038,7 @@ public class RWMolFragmentationFactory
 	 *            The AWT {@link Color}
 	 * @param localGcWave
 	 *            The GC wave for cleanup
+	 * 
 	 * @return The RDKit {@link DrawColour}
 	 */
 	protected DrawColour convertColorToRdkitColor(Color colour,
