@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, Vernalis (R&D) Ltd
+ * Copyright (c) 2018, 2022, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,15 +14,21 @@
  ******************************************************************************/
 package com.vernalis.knime.nodes;
 
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
+import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
+import org.knime.core.node.util.ColumnFilter;
 
 /**
  * A subclass of {@link SimpleStreamableFunctionNodeModel} for 1 -> 1 nodes.
@@ -40,15 +46,145 @@ import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 public abstract class AbstractSimpleStreamableFunctionNodeModel extends
 		SimpleStreamableFunctionNodeModel implements SettingsModelRegistry {
 
-	private final Set<SettingsModel> models = new LinkedHashSet<>();
+	private SettingsModelRegistryImpl smr;
 
 	public AbstractSimpleStreamableFunctionNodeModel() {
-		super();
+		this(1);
+	}
+
+	/**
+	 * @param nodeSettingsVersion
+	 *            the version of the current node settings implementation
+	 *
+	 * @since 29-Mar-2022
+	 */
+	protected AbstractSimpleStreamableFunctionNodeModel(
+			int nodeSettingsVersion) {
+		smr = new SettingsModelRegistryImpl(nodeSettingsVersion, getLogger()) {
+
+			@Override
+			public void doSetWarningMessage(String message) {
+				setWarningMessage(message);
+
+			}
+		};
 	}
 
 	@Override
 	public Set<SettingsModel> getModels() {
-		return models;
+		return smr.getModels();
+	}
+
+	@Override
+	public int getSettingsVersion() {
+		return smr.getSettingsVersion();
+	}
+
+	@Override
+	public NodeLogger getNodeLogger() {
+		return smr.getNodeLogger();
+	}
+
+	@Override
+	public <T extends SettingsModel> T registerSettingsModel(T model,
+			int sinceVersion, Consumer<T> defaultSetter, String successMessage)
+			throws UnsupportedOperationException, IllegalArgumentException {
+		return smr.registerSettingsModel(model, sinceVersion, defaultSetter,
+				successMessage);
+	}
+
+	@Override
+	public <T extends SettingsModel> T registerSettingsModel(T model,
+			int sinceVersion, BiConsumer<T, NodeSettingsRO> defaultSetter) {
+		return smr.registerSettingsModel(model, sinceVersion, defaultSetter);
+	}
+
+	@Override
+	public <T extends SettingsModel> T registerSettingsModel(T model,
+			int sinceVersion, BiConsumer<T, NodeSettingsRO> defaultSetter,
+			String successMessage)
+			throws UnsupportedOperationException, IllegalArgumentException {
+		return smr.registerSettingsModel(model, sinceVersion, defaultSetter,
+				successMessage);
+	}
+
+	@Override
+	public Map<SettingsModel, SettingsModelWrapper<?>> getModelWrappers() {
+		return smr.getModelWrappers();
+	}
+
+	@Override
+	public void setNodeWarningMessage(String message) {
+		smr.setNodeWarningMessage(message);
+	}
+
+	public void doSetWarningMessage(String message) {
+		smr.doSetWarningMessage(message);
+	}
+
+	@Override
+	public <T extends SettingsModel> T registerSettingsModel(T model) {
+		return smr.registerSettingsModel(model);
+	}
+
+	@Override
+	public <T extends Iterable<U>, U extends SettingsModel> T
+			registerModels(T models) {
+		return smr.registerModels(models);
+	}
+
+	@Override
+	public <T extends Map<?, V>, V extends SettingsModel> T
+			registerMapValuesModels(T models) {
+		return smr.registerMapValuesModels(models);
+	}
+
+	@Override
+	public <T extends Map<K, ?>, K extends SettingsModel> T
+			registerMapKeysModels(T models) {
+		return smr.registerMapKeysModels(models);
+	}
+
+	@Override
+	public int getValidatedColumnSelectionModelColumnIndex(
+			SettingsModelString model, ColumnFilter filter, DataTableSpec spec,
+			Pattern preferredPattern, boolean matchWholeName, NodeLogger logger,
+			boolean dontAllowDuplicatesWithAvoid,
+			SettingsModelString... modelsToAvoid)
+			throws InvalidSettingsException {
+		return smr.getValidatedColumnSelectionModelColumnIndex(model, filter,
+				spec, preferredPattern, matchWholeName, logger,
+				dontAllowDuplicatesWithAvoid, modelsToAvoid);
+	}
+
+	@Override
+	public int getValidatedColumnSelectionModelColumnIndex(
+			SettingsModelString model, ColumnFilter filter, DataTableSpec spec,
+			NodeLogger logger, SettingsModelString... modelsToAvoid)
+			throws InvalidSettingsException {
+		return smr.getValidatedColumnSelectionModelColumnIndex(model, filter,
+				spec, logger, modelsToAvoid);
+	}
+
+	@Override
+	public String toString() {
+		return smr.toString();
+	}
+
+	@Override
+	public boolean isStringModelFilled(SettingsModelString stringModel) {
+		return smr.isStringModelFilled(stringModel);
+	}
+
+	@Override
+	public int getSavedSettingsVersion(NodeSettingsRO settings) {
+		return smr.getSavedSettingsVersion(settings);
+	}
+
+	@Override
+	public <T extends SettingsModel> T registerSettingsModel(T model,
+			int sinceVersion, Consumer<T> defaultSetter) {
+		return smr.registerSettingsModel(model, sinceVersion, defaultSetter);
 	}
 
 	@Override
