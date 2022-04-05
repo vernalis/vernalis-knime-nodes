@@ -51,10 +51,13 @@ public interface QueryModel {
 	 *            the type of results to return
 	 * @param pageSize
 	 *            The number of results to return in each paged query
+	 * @param verboseOutput
+	 *            Should the JSON returned include verbose details
+	 * 
 	 * @return The query JSON
 	 */
 	public default ObjectNode getQuery(boolean isCount, ScoringType scoringType,
-			QueryResultType resultType, int pageSize) {
+			QueryResultType resultType, int pageSize, boolean verboseOutput) {
 
 		final ObjectNode retVal = new ObjectMapper().createObjectNode();
 
@@ -62,12 +65,15 @@ public interface QueryModel {
 				.put("src", "ui");
 
 		final ObjectNode reqOpt = retVal.putObject("request_options")
-				.put("return_counts", isCount);
+				.put("return_counts", isCount)
+				.put("results_verbosity",
+						verboseOutput ? "verbose" : "minimal");
 
 		if (!isCount) {
 			reqOpt.putArray("sort").addObject().put("sort_by", "score")
 					.put("direction", "desc");
-			reqOpt.putObject("pager").put("rows", pageSize).put("start", 0);
+			reqOpt.putObject(RCSBQueryRunner.getPaginationKey())
+					.put("rows", pageSize).put("start", 0);
 			reqOpt.put("scoring_strategy", scoringType.getActionCommand());
 		}
 
@@ -89,12 +95,14 @@ public interface QueryModel {
 	 *            the type of scoring to use when running the query
 	 * @param resultType
 	 *            the type of results to return
+	 * 
 	 * @return The query JSON
-	 * @see #getQuery(boolean, ScoringType, QueryResultType, int)
+	 * 
+	 * @see #getQuery(boolean, ScoringType, QueryResultType, int, boolean)
 	 */
 	public default ObjectNode getQuery(boolean isCount, ScoringType scoringType,
 			QueryResultType resultType) {
-		return getQuery(isCount, scoringType, resultType, 10);
+		return getQuery(isCount, scoringType, resultType, 10, true);
 
 	}
 
@@ -106,7 +114,9 @@ public interface QueryModel {
 	 *            the type of scoring to use when running the query
 	 * @param resultType
 	 *            the type of results to return
+	 * 
 	 * @return The query JSON
+	 * 
 	 * @see #getQuery(boolean, ScoringType, QueryResultType)
 	 */
 	public default ObjectNode getCountQuery(ScoringType scoringType,
@@ -119,6 +129,7 @@ public interface QueryModel {
 	 * 
 	 * @param nodeId
 	 *            The incremental node id counter
+	 * 
 	 * @return The JSON tree of query nodes for the current query
 	 */
 	public JsonNode getQueryNodes(AtomicInteger nodeId);
@@ -178,6 +189,7 @@ public interface QueryModel {
 	 * 
 	 * @param settings
 	 *            The settings object to load from
+	 * 
 	 * @throws InvalidSettingsException
 	 *             if there was an error reading or parsing the stored settings
 	 *             into the query
@@ -191,6 +203,7 @@ public interface QueryModel {
 	 * 
 	 * @param settings
 	 *            The settings object to validate
+	 * 
 	 * @throws InvalidSettingsException
 	 *             If there was an error or errors in the settings
 	 */
