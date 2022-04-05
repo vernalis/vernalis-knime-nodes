@@ -47,6 +47,12 @@ import com.vernalis.pdbconnector2.query.ScoringType;
 public class PdbConnector2QueryExecutionNodeDialog
 		extends DefaultNodeSettingsPane {
 
+	/**
+	 * Key for the Verbose output model
+	 *
+	 * @since 1.31.0
+	 */
+	private static final String VERBOSE_OUTPUT = "Verbose Output";
 	private static final String MAXIMUM_HITS_TO_RETURN =
 			"Maximum hits to return";
 	private static final String LIMIT_HITS = "Limit Hits";
@@ -100,8 +106,26 @@ public class PdbConnector2QueryExecutionNodeDialog
 				MAXIMUM_HITS_TO_RETURN, 100));
 		setHorizontalPlacement(false);
 
-		addDialogComponent(new DialogComponentBoolean(createIncludeJsonModel(),
+		setHorizontalPlacement(true);
+		final SettingsModelBoolean includeJsonMdl = createIncludeJsonModel();
+		addDialogComponent(new DialogComponentBoolean(includeJsonMdl,
 				INCLUDE_JSON_IN_OUTPUT));
+		// Since 1.31.0
+		final SettingsModelBoolean verboseOutputMdl =
+				createVerboseOutputModel();
+		includeJsonMdl.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				verboseOutputMdl.setEnabled(includeJsonMdl.getBooleanValue());
+
+			}
+		});
+		verboseOutputMdl.setEnabled(includeJsonMdl.getBooleanValue());
+		addDialogComponent(
+				new DialogComponentBoolean(verboseOutputMdl, VERBOSE_OUTPUT));
+
+		setHorizontalPlacement(false);
 		addDialogComponent(new DialogComponentBoolean(
 				createIncludeHitCountModel(), INCLUDE_HITCOUNT));
 
@@ -135,6 +159,7 @@ public class PdbConnector2QueryExecutionNodeDialog
 
 	/**
 	 * @return The model for the 'Maximum Hits' setting
+	 * 
 	 * @since 1.28.3
 	 */
 	static SettingsModelIntegerBounded createMaxHitsModel() {
@@ -144,6 +169,7 @@ public class PdbConnector2QueryExecutionNodeDialog
 
 	/**
 	 * @return The model for the 'Limit Hits' setting
+	 * 
 	 * @since 1.28.3
 	 */
 	static SettingsModelBoolean createLimitHitsModel() {
@@ -178,6 +204,15 @@ public class PdbConnector2QueryExecutionNodeDialog
 	static SettingsModelString createReturnTypeModel() {
 		return new SettingsModelString(RETURN_TYPE,
 				QueryResultType.getDefault().getText());
+	}
+
+	/**
+	 * @return model for the Verbose Output setting
+	 *
+	 * @since 1.31.0
+	 */
+	static SettingsModelBoolean createVerboseOutputModel() {
+		return new SettingsModelBoolean(VERBOSE_OUTPUT, false);
 	}
 
 }

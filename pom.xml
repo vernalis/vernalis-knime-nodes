@@ -35,6 +35,7 @@
 		<module>com.vernalis.knime.pdbconnector</module>
 		<module>com.vernalis.knime.perfmon</module>
 		<module>com.vernalis.knime.plot.jfreechart</module>
+		<module>com.vernalis.knime.ui</module>
 
 		<!-- Features -->
 		<module>com.vernalis.knime.feature</module>
