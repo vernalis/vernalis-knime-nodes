@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.editorActions">
+      <editorContribution
+            id="com.vernalis.knime.ui.editorContribution"
+            targetID="org.knime.workbench.editor.WorkflowEditor">
+         <action
+               class="com.vernalis.knime.ui.actions.delegates.SelectNextNodeEditorAction"
+               definitionId="com.vernalis.knime.ui.selectnext"
+               disabledIcon="icons/select_next_disabled.png"
+               icon="icons/select_next.png"
+               id="com.vernalis.knime.ui.actions.selectnext"
+               label="Select Downstream Nodes"
+               style="push"
+               toolbarPath="org.knime.workbench.editor.menu/group1"
+               tooltip="Select following nodes">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.delegates.MoveNextNodeEditorAction"
+               definitionId="com.vernalis.knime.ui.movenext"
+               disabledIcon="icons/move_next_disabled.png"
+               icon="icons/move_next.png"
+               id="com.vernalis.knime.ui.actions.movenext"
+               label="Move Selection Downstream"
+               style="push"
+               toolbarPath="org.knime.workbench.editor.menu/group1"
+               tooltip="Move selection to following nodes">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.delegates.SelectPreviousNodeEditorAction"
+               definitionId="com.vernalis.knime.ui.selectprev"
+               disabledIcon="icons/select_prev_disabled.png"
+               icon="icons/select_prev.png"
+               id="com.vernalis.knime.ui.actions.selectprev"
+               label="Select Upstream Nodes"
+               style="push"
+               toolbarPath="org.knime.workbench.editor.menu/group1"
+               tooltip="Select preceding nodes">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.delegates.MovePreviousNodeEditorAction"
+               definitionId="com.vernalis.knime.ui.moveprev"
+               disabledIcon="icons/move_prev_disabled.png"
+               icon="icons/move_prev.png"
+               id="com.vernalis.knime.ui.actions.moveprev"
+               label="Move Selection Upstream"
+               style="push"
+               toolbarPath="org.knime.workbench.editor.menu/group1"
+               tooltip="Move selection to preceding nodes">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.delegates.SelectAllDownstreamNodesEditorAction"
+               definitionId="com.vernalis.knime.ui.selectallnext"
+               disabledIcon="icons/select_all_next_disabled.png"
+               icon="icons/select_all_next.png"
+               id="com.vernalis.knime.ui.actions.selectallnext"
+               label="Select All Downstream Nodes"
+               style="push"
+               toolbarPath="org.knime.workbench.editor.menu/group1"
+               tooltip="Select all downstream nodes">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.delegates.SelectAllUpstreamNodesEditorAction"
+               definitionId="com.vernalis.knime.ui.selectallprev"
+               disabledIcon="icons/select_all_prev_disabled.png"
+               icon="icons/select_all_prev.png"
+               id="com.vernalis.knime.ui.actions.selectallprev"
+               label="Select All Upstream Nodes"
+               style="push"
+               toolbarPath="org.knime.workbench.editor.menu/group1"
+               tooltip="Select all upstream nodes">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.delegates.SelectConnectingNodesEditorAction"
+               definitionId="com.vernalis.knime.ui.selectconn"
+               disabledIcon="icons/select_conn_disabled.png"
+               icon="icons/select_conn.png"
+               id="com.vernalis.knime.ui.actions.selectconn"
+               label="Select Connecting Nodes"
+               style="push"
+               toolbarPath="org.knime.workbench.editor.menu/group1"
+               tooltip="Select all connecting nodes">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.delegates.InvertNodeSelectionEditorAction"
+               definitionId="com.vernalis.knime.ui.invertselection"
+               disabledIcon="icons/select_invert_disabled.png"
+               icon="icons/select_invert.png"
+               id="com.vernalis.knime.ui.actions.invertselection"
+               label="Invert Selection"
+               style="push"
+               toolbarPath="org.knime.workbench.editor.menu/group1"
+               tooltip="Invert node selection">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.delegates.DeselectAllNodesEditorAction"
+               definitionId="com.vernalis.knime.ui.selectnone"
+               disabledIcon="icons/select_none_disabled.png"
+               icon="icons/select_none.png"
+               id="com.vernalis.knime.ui.actions.selectnone"
+               label="Clear Node Selection"
+               style="push"
+               toolbarPath="org.knime.workbench.editor.menu/group1"
+               tooltip="Clear node selection">
+         </action>
+      </editorContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.knime.workbench.ui.ModellerPerspective">
+         <actionSet
+               id="com.vernalis.knime.ui.actionSet1">
+         </actionSet>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="com.vernalis.knime.ui.commands"
+            name="Commands for UI">
+      </category>
+      <command
+            categoryId="com.vernalis.knime.ui.commands"
+            id="com.vernalis.knime.ui.selectnext"
+            name="Select Next Node">
+      </command>
+      <command
+            categoryId="com.vernalis.knime.ui.commands"
+            id="com.vernalis.knime.ui.movenext"
+            name="Move to Next Node">
+      </command>
+      <command
+            categoryId="com.vernalis.knime.ui.commands"
+            id="com.vernalis.knime.ui.selectallnext"
+            name="Select all Downstream Nodes">
+      </command>
+      <command
+            categoryId="com.vernalis.knime.ui.commands"
+            id="com.vernalis.knime.ui.selectprev"
+            name="Select Previous Node">
+      </command>
+      <command
+            categoryId="com.vernalis.knime.ui.commands"
+            id="com.vernalis.knime.ui.moveprev"
+            name="Move to Previous Node">
+      </command>
+      <command
+            categoryId="com.vernalis.knime.ui.commands"
+            id="com.vernalis.knime.ui.selectallprev"
+            name="Select All Upstream Nodes">
+      </command>
+      <command
+            categoryId="com.vernalis.knime.ui.commands"
+            id="com.vernalis.knime.ui.selectconnecting"
+            name="Select All Connecting Nodes">
+      </command>
+      <command
+            categoryId="com.vernalis.knime.ui.commands"
+            id="com.vernalis.knime.ui.invertselection"
+            name="Invert Node Selection">
+      </command>
+      <command
+            categoryId="com.vernalis.knime.ui.commands"
+            id="com.vernalis.knime.ui.selectnone"
+            name="Clear Node Selection">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+         <!-- Extend Selection... submenu in the KNIME Node menu -->
+      <actionSet
+            description="KNIME UI Actions from Vernalis"
+            id="com.vernalis.knime.ui.actionSet1"
+            label="UIActionset.label">
+         <menu
+               id="org.knime.workbench.editor.menu"
+               label="Node">
+            <groupMarker
+                  name="group2">
+            </groupMarker>
+         </menu>
+         <menu
+               id="extendSelectionSubmenu"
+               label="Extend selection..."
+               path="org.knime.workbench.editor.menu/group2">
+            <groupMarker
+                  name="group1">
+            </groupMarker>
+         </menu>
+         <action
+               class="com.vernalis.knime.ui.actions.window.SelectNextNodeWindowAction"
+               definitionId="com.vernalis.knime.ui.selectnext"
+               disabledIcon="icons/select_next_disabled.png"
+               icon="icons/select_next.png"
+               id="com.vernalis.knime.ui.selectNextNode"
+               label="Select Next Node"
+               menubarPath="org.knime.workbench.editor.menu/extendSelectionSubmenu/group1"
+               retarget="false"
+               style="push">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.window.MoveNextNodeWindowAction"
+               definitionId="com.vernalis.knime.ui.movenext"
+               disabledIcon="icons/move_next_disabled.png"
+               icon="icons/move_next.png"
+               id="com.vernalis.knime.ui.moveNextNode"
+               label="Move to Next Node"
+               menubarPath="org.knime.workbench.editor.menu/extendSelectionSubmenu/group1"
+               retarget="false"
+               style="push">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.window.SelectAllDownstreamNodesWindowAction"
+               definitionId="com.vernalis.knime.ui.selectallnext"
+               disabledIcon="icons/select_all_next_disabled.png"
+               icon="icons/select_all_next.png"
+               id="com.vernalis.knime.ui.selectAllNextNode"
+               label="Select All Downstream Nodes"
+               menubarPath="org.knime.workbench.editor.menu/extendSelectionSubmenu/group1"
+               retarget="false"
+               style="push">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.window.SelectPreviousNodeWindowAction"
+               definitionId="com.vernalis.knime.ui.selectprev"
+               disabledIcon="icons/select_prev_disabled.png"
+               icon="icons/select_prev.png"
+               id="com.vernalis.knime.ui.selectPrevNode"
+               label="Select Previous Node"
+               menubarPath="org.knime.workbench.editor.menu/extendSelectionSubmenu/group1"
+               retarget="false"
+               style="push">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.window.MovePreviousNodeWindowAction"
+               definitionId="com.vernalis.knime.ui.moveprev"
+               disabledIcon="icons/move_prev_disabled.png"
+               icon="icons/move_prev.png"
+               id="com.vernalis.knime.ui.movePrevNode"
+               label="Move to Previous Node"
+               menubarPath="org.knime.workbench.editor.menu/extendSelectionSubmenu/group1"
+               retarget="false"
+               style="push">
+         </action> 
+         <action
+               class="com.vernalis.knime.ui.actions.window.SelectAllUpstreamNodesWindowAction"
+               definitionId="com.vernalis.knime.ui.selectallprev"
+               disabledIcon="icons/select_all_prev_disabled.png"
+               icon="icons/select_all_prev.png"
+               id="com.vernalis.knime.ui.selectAllPrevNode"
+               label="Select All Upstream Nodes"
+               menubarPath="org.knime.workbench.editor.menu/extendSelectionSubmenu/group1"
+               retarget="false"
+               style="push">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.window.SelectConnectingNodesWindowAction"
+               definitionId="com.vernalis.knime.ui.selectconnecting"
+               disabledIcon="icons/select_conn_disabled.png"
+               icon="icons/select_conn.png"
+               id="com.vernalis.knime.ui.selectConnecting"
+               label="Select Connecting Nodes"
+               menubarPath="org.knime.workbench.editor.menu/extendSelectionSubmenu/group1"
+               retarget="false"
+               style="push">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.window.InvertNodeSelectionWindowAction"
+               definitionId="com.vernalis.knime.ui.invertselection"
+               disabledIcon="icons/select_invert_disabled.png"
+               icon="icons/select_invert.png"
+               id="com.vernalis.knime.ui.selectInverse"
+               label="Invert Node Selection"
+               menubarPath="org.knime.workbench.editor.menu/extendSelectionSubmenu/group1"
+               retarget="false"
+               style="push">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.window.DeselectAllNodesWindowAction"
+               definitionId="com.vernalis.knime.ui.selectnone"
+               disabledIcon="icons/select_none_disabled.png"
+               icon="icons/select_none.png"
+               id="com.vernalis.knime.ui.action2"
+               label="Clear Node Selection"
+               menubarPath="org.knime.workbench.editor.menu/extendSelectionSubmenu/group1"
+               style="push">
+         </action>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+         <!-- Extend Selection... submenu in the KNIME Node pop-up menu -->
+      <objectContribution
+            adaptable="false"
+            id="com.vernalis.knime.ui.objectContribution1"
+            objectClass="org.knime.workbench.editor2.editparts.NodeContainerEditPart">
+         <menu
+               id="extendSelectionSubmenu"
+               label="Extend Selection...">
+            <groupMarker
+                  name="additions">
+            </groupMarker>
+         </menu>
+         <action
+               class="com.vernalis.knime.ui.actions.objct.SelectNextNodeObjectAction"
+               definitionId="com.vernalis.knime.ui.selectnext"
+               enablesFor="+"
+               icon="icons/select_next.png"
+               id="com.vernalis.knime.ui.action.selectnext"
+               label="Select Next Node"
+               menubarPath="extendSelectionSubmenu/additions">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.objct.MoveNextNodeObjectAction"
+               definitionId="com.vernalis.knime.ui.movenext"
+               enablesFor="+"
+               icon="icons/move_next.png"
+               id="com.vernalis.knime.ui.action.movenext"
+               label="Move to Next Node"
+               menubarPath="extendSelectionSubmenu/additions">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.objct.SelectAllDownstreamNodesObjectAction"
+               definitionId="com.vernalis.knime.ui.selectallnext"
+               enablesFor="+"
+               icon="icons/select_all_next.png"
+               id="com.vernalis.knime.ui.action.selectallnext"
+               label="Select All Downstream Nodes"
+               menubarPath="extendSelectionSubmenu/additions">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.objct.SelectPreviousNodeObjectAction"
+               definitionId="com.vernalis.knime.ui.selectprev"
+               enablesFor="+"
+               icon="icons/select_prev.png"
+               id="com.vernalis.knime.ui.action3"
+               label="Select Previous Node"
+               menubarPath="extendSelectionSubmenu/additions">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.objct.MovePreviousNodeObjectAction"
+               definitionId="com.vernalis.knime.ui.moveprev"
+               enablesFor="+"
+               icon="icons/move_prev.png"
+               id="com.vernalis.knime.ui.action.moveprev"
+               label="Move to Previous Node"
+               menubarPath="extendSelectionSubmenu/additions">
+         </action>               
+         <action
+               class="com.vernalis.knime.ui.actions.objct.SelectAllUpstreamNodesObjectAction"
+               definitionId="com.vernalis.knime.ui.selectallprev"
+               enablesFor="+"
+               icon="icons/select_all_prev.png"
+   			   id="com.vernalis.knime.ui.action.selectallprev"
+               label="Select All Upstream Nodes"
+               menubarPath="extendSelectionSubmenu/additions">
+         </action>          
+         <action
+               class="com.vernalis.knime.ui.actions.objct.InvertNodeSelectionObjectAction"
+               definitionId="com.vernalis.knime.ui.invertselection"
+               icon="icons/select_invert.png"
+               id="com.vernalis.knime.ui.action.selectinvert"
+               label="Invert Node Selection"
+               menubarPath="extendSelectionSubmenu/additions">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.objct.SelectConnectingNodesObjectAction"
+               definitionId="com.vernalis.knime.ui.selectconnecting"
+               enablesFor="2+"
+               icon="icons/select_conn.png"
+               id="com.vernalis.knime.ui.action.selectallprev"
+               label="Select Connecting Nodes"
+               menubarPath="extendSelectionSubmenu/additions">
+         </action>
+         <action
+               class="com.vernalis.knime.ui.actions.objct.DeselectAllNodesObjectAction"
+               definitionId="com.vernalis.knime.ui.selectnone"
+               icon="icons/select_none.png"
+               id="com.vernalis.knime.ui.action4"
+               label="Clear Node Selection"
+               menubarPath="extendSelectionSubmenu/additions">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+         <!-- Key bindings -->
+      <key
+            commandId="com.vernalis.knime.ui.selectprev"
+            contextId="org.knime.workbench.editor.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="ALT+ARROW_LEFT">
+      </key>
+      <key
+            commandId="com.vernalis.knime.ui.moveprev"
+            contextId="org.knime.workbench.editor.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+ALT+ARROW_LEFT">
+      </key>
+      <key
+            commandId="com.vernalis.knime.ui.selectnext"
+            contextId="org.knime.workbench.editor.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="ALT+ARROW_RIGHT">
+      </key>
+      <key
+            commandId="com.vernalis.knime.ui.movenext"
+            contextId="org.knime.workbench.editor.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+ALT+ARROW_RIGHT">
+      </key>
+      <key
+            commandId="com.vernalis.knime.ui.selectallnext"
+            contextId="org.knime.workbench.editor.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="ALT+SHIFT+ARROW_RIGHT">
+      </key>
+      <key
+            commandId="com.vernalis.knime.ui.selectallprev"
+            contextId="org.knime.workbench.editor.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="ALT+SHIFT+ARROW_LEFT">
+      </key>
+      <key
+            commandId="com.vernalis.knime.ui.selectconnecting"
+            contextId="org.knime.workbench.editor.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+K">
+      </key>
+      <key
+            commandId="com.vernalis.knime.ui.invertselection"
+            contextId="org.knime.workbench.editor.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+I">
+      </key>
+      <key
+            commandId="com.vernalis.knime.ui.selectnone"
+            contextId="org.knime.workbench.editor.context"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+SHIFT+X">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+         <!-- This is the Edit menu provide be the Eclipse Framework -->
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:edit?after=selectAll">
+         <separator name="selectionModifiersStart"
+               visible="true">
+         </separator>
+         <command
+               commandId="com.vernalis.knime.ui.selectnext"
+               disabledIcon="icons/select_next_disabled.png"
+               icon="icons/select_next.png"
+               label="Select Next Node"
+               style="push"
+               tooltip="Select next (downstream) connected node(s)">
+         </command>
+         <command
+               commandId="com.vernalis.knime.ui.movenext"
+               disabledIcon="icons/move_next_disabled.png"
+               icon="icons/move_next.png"
+               label="Move to Next Node"
+               style="push"
+               tooltip="Move selection to next (downstream) connected node(s)">
+         </command>
+         <command
+               commandId="com.vernalis.knime.ui.selectallnext"
+               disabledIcon="icons/select_all_next_disabled.png"
+               icon="icons/select_all_next.png"
+               label="Select All Downstream Nodes"
+               style="push"
+               tooltip="Select all downstream connected nodes">
+         </command>
+         
+         <command
+               commandId="com.vernalis.knime.ui.selectprev"
+               disabledIcon="icons/select_prev_disabled.png"
+               icon="icons/select_prev.png"
+               label="Select Previous Node"
+               style="push"
+               tooltip="Select previous (upstream) connected node(s)">
+         </command>
+         <command
+               commandId="com.vernalis.knime.ui.moveprev"
+               disabledIcon="icons/move_prev_disabled.png"
+               icon="icons/move_prev.png"
+               label="Move to Previous Node"
+               style="push"
+               tooltip="Move selection to previous (upstream) connected node(s)">
+         </command>
+         <command
+               commandId="com.vernalis.knime.ui.selectallprev"
+               disabledIcon="icons/select_all_prev_disabled.png"
+               icon="icons/select_all_prev.png"
+               label="Select All Upstream Nodes"
+               style="push"
+               tooltip="Select all upstream connected nodes">
+         </command>
+         <command
+               commandId="com.vernalis.knime.ui.selectconnecting"
+               disabledIcon="icons/select_conn_disabled.png"
+               icon="icons/select_conn.png"
+               label="Select All Connecting Nodes"
+               style="push"
+               tooltip="Select all intermediate connecting nodes">
+         </command>
+         <command
+               commandId="com.vernalis.knime.ui.invertselection"
+               disabledIcon="icons/select_invert_disabled.png"
+               icon="icons/select_invert.png"
+               label="Invert Selection"
+               style="push"
+               tooltip="Invert the node selection">
+         </command>
+         <command
+               commandId="com.vernalis.knime.ui.selectnone"
+               disabledIcon="icons/select_none_disabled.png"
+               icon="icons/select_none.png"
+               label="Clear Node Selection"
+               style="push">
+         </command>
+         <separator
+               name="selectionModifiersEnd"
+               visible="true">
+         </separator>
+      </menuContribution>
+   </extension>
+   
+</plugin>

@@ -16,15 +16,19 @@ package com.vernalis.pdbconnector2.query.text.dialog;
 
 import java.util.Arrays;
 
+import com.vernalis.pdbconnector2.query.RCSBQueryRunner;
+
 /**
  * An enum listing all possible query field operators. Not all operators are
  * valid for all fields
  * 
  * @author S.Roughley knime@vernalis.com
+ * 
  * @since 1.28.0
  *
  */
 public enum QueryFieldOperator {
+
 	@SuppressWarnings("javadoc")
 	equals, @SuppressWarnings("javadoc")
 	contains_phrase, @SuppressWarnings("javadoc")
@@ -70,7 +74,11 @@ public enum QueryFieldOperator {
 	 * @return The text to use in the JSON query
 	 */
 	public String getQueryString() {
-		return name();
+		if (RCSBQueryRunner.getQueryAPIVersion() < 2) {
+			return name();
+		}
+		// v2.0 of API uses 'range' for all range-query types
+		return this == range_closed ? range.getQueryString() : name();
 	}
 
 	/**
@@ -87,7 +95,9 @@ public enum QueryFieldOperator {
 	 * 
 	 * @param displayName
 	 *            The display name
+	 * 
 	 * @return the matching {@link QueryFieldOperator}
+	 * 
 	 * @throws IllegalArgumentException
 	 *             if no match is found
 	 */

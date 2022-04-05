@@ -16,5 +16,8 @@ If you spot and bugs or enhancements you would like please contact us via our pa
 ### Citing this work
 If you use our nodes in your published work, please cite us using the above review article and stating the version number in the form `major.minor.patch`, e.g. 1.27.0
 
+### Current supported versions
+We currently support versions 4.4 and 4.5 of the KNIME desktop Analytics Platform. A full [changelog](CHANGELOG.md) is available.
+
 ### Contacting us
 If you want to ask us questions about how to use one of our nodes, suggestions for new features in our nodes, bugs, or just to tell us you are using our code, we can be contacted via our page on the [KNIME Community Forum](https://forum.knime.com/c/community-extensions/vernalis). We cannot take 'orders' or commissions for new nodes, but if you would like a node which you think has functionality related to our existing public nodes, please do get in touch - it's possible that we already have a node to do what you want which has not been released publicly, and we may be able to get it released for you.
