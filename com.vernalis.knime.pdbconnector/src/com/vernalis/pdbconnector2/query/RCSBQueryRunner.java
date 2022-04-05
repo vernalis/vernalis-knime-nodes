@@ -16,6 +16,7 @@ package com.vernalis.pdbconnector2.query;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Objects;
@@ -120,8 +121,20 @@ public class RCSBQueryRunner {
 
 	private static final NodeLogger logger =
 			NodeLogger.getLogger(RCSBQueryRunner.class);
-	private static final String SEARCH_LOCATION =
-			"https://search.rcsb.org/rcsbsearch/v1/query";
+	private static final String SEARCH_LOCATION_FMT =
+			"https://search.rcsb.org/rcsbsearch/v%d/query";
+	private static final Calendar SEARCH_API_V2_START;
+	static {
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, 2022);
+		cal.set(Calendar.MONTH, Calendar.APRIL);
+		cal.set(Calendar.DAY_OF_MONTH, 13);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		SEARCH_API_V2_START = cal;
+	}
 	private static final int[] RETRY_DELAYS =
 			new int[] { 1, 2, 5, 10, 30, 60, 120, 300, 600 };
 	private final QueryModel model;
@@ -131,12 +144,14 @@ public class RCSBQueryRunner {
 	private boolean includeJson = false;
 	private Integer maxRowsToReturn = null;
 	private boolean includeHitCount = false;
+	private boolean verboseOutput = true;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param model
 	 *            the {@link QueryModel} containing the query to execute
+	 * 
 	 * @throws QueryException
 	 *             If the model has an invalid component
 	 */
@@ -189,10 +204,15 @@ public class RCSBQueryRunner {
 	 * 
 	 * @param hitLimit
 	 *            The maximum number of hits to return
+	 * 
 	 * @since 1.28.3
 	 */
 	public final void setReturnedHitsLimit(int hitLimit) {
 		this.maxRowsToReturn = hitLimit;
+	}
+
+	public final void setVerboseOutput(boolean verboseOutput) {
+		this.verboseOutput = verboseOutput;
 	}
 
 	/**
@@ -251,6 +271,7 @@ public class RCSBQueryRunner {
 
 	/**
 	 * @return The number of hits for the query
+	 * 
 	 * @throws QueryException
 	 *             If there was an error running the query
 	 * @throws CanceledExecutionException
@@ -264,6 +285,34 @@ public class RCSBQueryRunner {
 	}
 
 	/**
+	 * @return the current search api version
+	 *
+	 * @since 04-Apr-2022
+	 */
+	public static int getQueryAPIVersion() {
+		return Calendar.getInstance().compareTo(SEARCH_API_V2_START) < 0 ? 1
+				: 2;
+	}
+
+	/**
+	 * @return the key for pagination in the JSON object
+	 *
+	 * @since 04-Apr-2022
+	 */
+	public static String getPaginationKey() {
+		return getQueryAPIVersion() < 2 ? "pager" : "paginate";
+	}
+
+	/**
+	 * @return the search location
+	 *
+	 * @since 04-Apr-2022
+	 */
+	public static String getSearchLocation() {
+		return String.format(SEARCH_LOCATION_FMT, getQueryAPIVersion());
+	}
+
+	/**
 	 * Method to run the query, adding the resulting rows to the an output table
 	 * 
 	 * @param bdc
@@ -271,8 +320,10 @@ public class RCSBQueryRunner {
 	 * @param exec
 	 *            The {@link ExecutionContext} to allow cancelling and progress
 	 *            reporting. Maybe {@code null}
+	 * 
 	 * @return {@code true} if all hits were returned to the table, or
 	 *         {@code false} if the output was truncated (Since 1.28.3)
+	 * 
 	 * @throws QueryException
 	 *             If there was an error running the query
 	 * @throws CanceledExecutionException
@@ -282,14 +333,15 @@ public class RCSBQueryRunner {
 			ExecutionContext exec)
 			throws QueryException, CanceledExecutionException {
 		// query_id appears to be retained for each page in web UI
-		final ObjectNode q =
-				model.getQuery(false, scoringType, queryResultType, pageSize);
+		final ObjectNode q = model.getQuery(false, scoringType, queryResultType,
+				pageSize, verboseOutput);
 		int pageStart = 0;
 		long hits = -1;
 		double progPerRow = 0;
 		long rowCnt = 0;
 		while (hits < 0 || pageStart < hits) {
-			q.with("request_options").with("pager").put("start", pageStart);
+			q.with("request_options").with(getPaginationKey()).put("start",
+					pageStart);
 			final JsonNode r = runQuery(q, exec);
 			if (r == null) {
 				// response 204 - No Hits returned
@@ -365,6 +417,7 @@ public class RCSBQueryRunner {
 	 * @param r
 	 *            The {@link JsonNode} containing the service result (may be
 	 *            {@code null})
+	 * 
 	 * @return whether the full hitset was added to the table
      * @since 1.30.2
 	 */
@@ -406,7 +459,9 @@ public class RCSBQueryRunner {
 	 * @param exec
 	 *            The {@link ExecutionContext} to allow cancellation. Maybe
 	 *            {@code null}
+	 * 
 	 * @return The query result JSON
+	 * 
 	 * @throws QueryException
 	 *             If there was an error running the query
 	 * @throws CanceledExecutionException
@@ -414,19 +469,19 @@ public class RCSBQueryRunner {
 	 */
 	public static JsonNode runQuery(JsonNode query, ExecutionContext exec)
 			throws QueryException, CanceledExecutionException {
-
+		String searchLocation = getSearchLocation();
 		try {
 			logger.infoWithFormat("Sending query:%n %s%nto '%s",
 					new ObjectMapper().writerWithDefaultPrettyPrinter()
 							.writeValueAsString(query),
-					SEARCH_LOCATION);
+					searchLocation);
 		} catch (final JsonProcessingException e1) {
 			// Ignore
 		}
 		QueryException lastException = null;
 		for (int delay : RETRY_DELAYS) {
 			try {
-				final URL url = new URL(SEARCH_LOCATION);
+				final URL url = new URL(searchLocation);
 				// Now send the request in a separate thread, waiting for it to
 				// complete
 				final ExecutorService pool =

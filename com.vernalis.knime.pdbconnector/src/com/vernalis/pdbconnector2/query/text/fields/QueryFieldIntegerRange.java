@@ -22,6 +22,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vernalis.pdbconnector2.dialogcomponents.DialogComponentIntRangeBounded;
 import com.vernalis.pdbconnector2.dialogcomponents.SettingsModelIntegerRangeBounded;
+import com.vernalis.pdbconnector2.query.RCSBQueryRunner;
 import com.vernalis.pdbconnector2.query.text.dialog.QueryFieldModel;
 import com.vernalis.pdbconnector2.query.text.dialog.QueryFieldOperator;
 
@@ -32,6 +33,7 @@ import static com.vernalis.pdbconnector2.RcsbJSONConstants.MIN;
  * Query field for an {@link Integer} range
  * 
  * @author S.Roughley knime@vernalis.com
+ * 
  * @since 1.28.0
  *
  */
@@ -111,6 +113,7 @@ public class QueryFieldIntegerRange extends AbstractRangeQueryField<Integer> {
 
 	@Override
 	protected Object getFieldValue(QueryFieldModel queryFieldModel) {
+		boolean includeUpper = true;
 		switch (queryFieldModel.getOperator()) {
 
 			case less:
@@ -122,12 +125,19 @@ public class QueryFieldIntegerRange extends AbstractRangeQueryField<Integer> {
 						.getQueryFieldValueModel()).getIntValue();
 
 			case range:
+				includeUpper = false;
 			case range_closed:
 				final SettingsModelIntegerRangeBounded model =
 						(SettingsModelIntegerRangeBounded) queryFieldModel
 								.getQueryFieldValueModel();
-				return new int[] { model.getLowerValue(),
-						model.getUpperValue() };
+				// As of query API v2 we return a JSON object
+				final Integer from = model.getLowerValue();
+				final Integer to = model.getUpperValue();
+				if (RCSBQueryRunner.getQueryAPIVersion() < 2) {
+					return new int[] { from, to };
+				}
+				return createRangeJSONObject(includeUpper).put(FROM, from)
+						.put(TO, to);
 
 			case exists:
 			default:

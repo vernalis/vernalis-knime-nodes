@@ -15,18 +15,46 @@
 package com.vernalis.pdbconnector2.query.text.fields;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vernalis.pdbconnector2.RcsbJSONConstants;
 
 /**
  * An abstract {@link QueryField} for range values
  * 
  * @author S.Roughley knime@vernalis.com
+ * 
  * @since 1.28.0
  *
  * @param <T>
  *            The type of value for the range
  */
 public abstract class AbstractRangeQueryField<T> extends QueryField {
+
+	/**
+	 * JSON Range key for including the upper bound of the range
+	 *
+	 * @since 1.31.0
+	 */
+	protected static final String INCLUDE_UPPER = "include_upper";
+	/**
+	 * JSON Range key for the upper bound of the range
+	 *
+	 * @since 1.31.0
+	 */
+	protected static final String TO = "to";
+	/**
+	 * JSON Range key for including the lower bound of the range
+	 *
+	 * @since 1.31.0
+	 */
+	protected static final String INCLUDE_LOWER = "include_lower";
+	/**
+	 * JSON Range key for the lower bound of the range
+	 *
+	 * @since 1.31.0
+	 */
+	protected static final String FROM = "from";
 
 	private final T min, max;
 
@@ -71,6 +99,7 @@ public abstract class AbstractRangeQueryField<T> extends QueryField {
 	 *            The minimum value
 	 * @param max
 	 *            The maximum value
+	 * 
 	 * @deprecated Use new full constructor with service name
 	 */
 	@Deprecated
@@ -138,5 +167,22 @@ public abstract class AbstractRangeQueryField<T> extends QueryField {
 	 */
 	public T getMax() {
 		return max;
+	}
+
+	/**
+	 * @param includeUpper
+	 *            should the upper bound be included in the range (i.e. formerly
+	 *            'range_closed' queries)
+	 * 
+	 * @return an {@link ObjectNode} with the include upper / lower fields set.
+	 *         Implementations need to add to/from fields
+	 *
+	 * @since 1.31.0
+	 */
+	protected final ObjectNode createRangeJSONObject(boolean includeUpper) {
+		final ObjectNode retVal = new ObjectMapper().createObjectNode();
+		retVal.put(INCLUDE_LOWER, true);
+		retVal.put(INCLUDE_UPPER, includeUpper);
+		return retVal;
 	}
 }

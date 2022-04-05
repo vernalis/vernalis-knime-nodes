@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.chem.speedysmiles;singleton:=true
-Bundle-Version: 1.30.4.qualifier
+Bundle-Version: 1.31.0.qualifier
 Bundle-ClassPath: smileshaclargestcomponentdesalt.jar
 Bundle-Activator: com.vernalis.knime.chem.speedysmiles.SpeedySmilesNodePlugin
 Bundle-Vendor: %Bundle-Vendor
