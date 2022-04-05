@@ -93,7 +93,9 @@ public abstract class QueryField implements Comparable<QueryField> {
 		 * 
 		 * @param node
 		 *            the JSON definition
+		 * 
 		 * @return the field
+		 * 
 		 * @throws ParseException
 		 *             is there is an error parsing the JSON to a field
 		 */
@@ -307,6 +309,7 @@ public abstract class QueryField implements Comparable<QueryField> {
 	 *            The actual subquery - this is not displayed, but required for
 	 *            building the query, and provides the complete name of this
 	 *            parent field from one of it's values
+	 * 
 	 * @return this field, for method call daisy-chaining
 	 */
 	protected QueryField setSubqueryNode(String optionName,
@@ -326,6 +329,7 @@ public abstract class QueryField implements Comparable<QueryField> {
 	 * @param model
 	 *            The model from
 	 *            {@link #getValueSettingsModel(QueryFieldOperator)}
+	 * 
 	 * @return The {@link DialogComponent} for field value(s) entry
 	 */
 	public abstract DialogComponent getDialogComponent(
@@ -336,6 +340,7 @@ public abstract class QueryField implements Comparable<QueryField> {
 	 * 
 	 * @param queryOperator
 	 *            The operator
+	 * 
 	 * @return the appropriate SettingsModel
 	 */
 	public abstract SettingsModel
@@ -424,6 +429,7 @@ public abstract class QueryField implements Comparable<QueryField> {
 	 *            uniquely sequentially numbered
 	 * @param queryFieldModel
 	 *            The field model representing a query state for this field
+	 * 
 	 * @return the JSON representation of the query field
 	 */
 	public JsonNode getQuery(AtomicInteger nodeIndex,
@@ -451,6 +457,8 @@ public abstract class QueryField implements Comparable<QueryField> {
 							queryFieldModel, node);
 					if (valObj instanceof String) {
 						parameters.put(VALUE, (String) valObj);
+					} else if (valObj instanceof JsonNode) {
+						parameters.set(VALUE, (JsonNode) valObj);
 					} else {
 						parameters.putPOJO(VALUE, valObj);
 					}
@@ -478,11 +486,18 @@ public abstract class QueryField implements Comparable<QueryField> {
 						for (final String str : (String[]) val) {
 							valArr.add(str);
 						}
+					} else if (val instanceof JsonNode[]) {
+						for (JsonNode jsn : (JsonNode[]) val) {
+							valArr.add(jsn);
+						}
 					} else {
 						for (int i = 0; i < Array.getLength(val); i++) {
 							valArr.addPOJO(Array.get(val, i));
 						}
 					}
+				} else if (val instanceof JsonNode) {
+					// The query returns a JSON object as value
+					parameters.set(VALUE, (JsonNode) val);
 				} else {
 					if (val instanceof String) {
 						parameters.put(VALUE, (String) val);
@@ -507,6 +522,7 @@ public abstract class QueryField implements Comparable<QueryField> {
 	 * @param node
 	 *            The JSON node which will become the required query terminal
 	 *            node
+	 * 
 	 * @return The {@code 'parameters'} JSON node which will need the
 	 *         {@code 'value'} field added
 	 */
@@ -538,6 +554,7 @@ public abstract class QueryField implements Comparable<QueryField> {
 	/**
 	 * @param queryFieldModel
 	 *            the field model for a query
+	 * 
 	 * @return the value stored in the model for the field
 	 */
 	protected abstract Object getFieldValue(QueryFieldModel queryFieldModel);
@@ -550,6 +567,7 @@ public abstract class QueryField implements Comparable<QueryField> {
 	 *            The node index of counter
 	 * @param superQuery
 	 *            The query for the field value
+	 * 
 	 * @return the nested query if required, otherwise the unchanged
 	 *         {@code superQuery}
 	 */
@@ -586,6 +604,7 @@ public abstract class QueryField implements Comparable<QueryField> {
 	 *            the option name for the subquery in the new clone
 	 * @param ddqf
 	 *            The subquery field
+	 * 
 	 * @return a clone with subquery set
 	 */
 	protected abstract QueryField createCloneWithSubquery(String optionName,

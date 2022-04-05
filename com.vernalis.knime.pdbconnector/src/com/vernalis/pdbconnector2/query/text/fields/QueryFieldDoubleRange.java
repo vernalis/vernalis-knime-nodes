@@ -22,6 +22,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelDoubleBounded;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vernalis.pdbconnector2.dialogcomponents.DialogComponentDoubleRangeBounded;
 import com.vernalis.pdbconnector2.dialogcomponents.SettingsModelDoubleRangeBounded;
+import com.vernalis.pdbconnector2.query.RCSBQueryRunner;
 import com.vernalis.pdbconnector2.query.text.dialog.QueryFieldModel;
 import com.vernalis.pdbconnector2.query.text.dialog.QueryFieldOperator;
 
@@ -32,6 +33,7 @@ import static com.vernalis.pdbconnector2.RcsbJSONConstants.MIN;
  * Query field for a {@link Double} range
  * 
  * @author S.Roughley knime@vernalis.com
+ * 
  * @since 1.28.0
  *
  */
@@ -111,6 +113,7 @@ public class QueryFieldDoubleRange extends AbstractRangeQueryField<Double> {
 
 	@Override
 	protected Object getFieldValue(QueryFieldModel queryFieldModel) {
+		boolean includeUpper = true;
 		switch (queryFieldModel.getOperator()) {
 
 			case less:
@@ -122,12 +125,19 @@ public class QueryFieldDoubleRange extends AbstractRangeQueryField<Double> {
 						.getQueryFieldValueModel()).getDoubleValue();
 
 			case range:
+				includeUpper = false;
 			case range_closed:
 				final SettingsModelDoubleRangeBounded model =
 						(SettingsModelDoubleRangeBounded) queryFieldModel
 								.getQueryFieldValueModel();
-				return new double[] { model.getLowerValue(),
-						model.getUpperValue() };
+				// As of query API v2 we return a JSON object
+				final Double from = model.getLowerValue();
+				final Double to = model.getUpperValue();
+				if (RCSBQueryRunner.getQueryAPIVersion() < 2) {
+					return new double[] { from, to };
+				}
+				return createRangeJSONObject(includeUpper).put(FROM, from)
+						.put(TO, to);
 
 			case exists:
 			default:
