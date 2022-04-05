@@ -26,6 +26,7 @@ import com.vernalis.pdbconnector2.dialogcomponents.DialogComponentDateInput;
 import com.vernalis.pdbconnector2.dialogcomponents.DialogComponentDateRangeInput;
 import com.vernalis.pdbconnector2.dialogcomponents.SettingsModelDateBounded;
 import com.vernalis.pdbconnector2.dialogcomponents.SettingsModelDateRangeBounded;
+import com.vernalis.pdbconnector2.query.RCSBQueryRunner;
 import com.vernalis.pdbconnector2.query.text.dialog.QueryFieldModel;
 import com.vernalis.pdbconnector2.query.text.dialog.QueryFieldOperator;
 
@@ -37,6 +38,7 @@ import static com.vernalis.pdbconnector2.RcsbJSONConstants.MIN;
  * A query field for a date range
  * 
  * @author S.Roughley knime@vernalis.com
+ * 
  * @since 1.28.0
  *
  */
@@ -51,6 +53,7 @@ public class QueryFieldDateRange extends AbstractRangeQueryField<Date> {
 	 * 
 	 * @param node
 	 *            The JSON definition
+	 * 
 	 * @throws ParseException
 	 *             If there is an error parsing the JSON
 	 */
@@ -75,7 +78,9 @@ public class QueryFieldDateRange extends AbstractRangeQueryField<Date> {
 	 * 
 	 * @param node
 	 *            The JSON
+	 * 
 	 * @return the Date
+	 * 
 	 * @throws ParseException
 	 *             if the date could not be parsed
 	 */
@@ -141,6 +146,7 @@ public class QueryFieldDateRange extends AbstractRangeQueryField<Date> {
 
 	@Override
 	protected Object getFieldValue(QueryFieldModel queryFieldModel) {
+		boolean includeUpper = true;
 		switch (queryFieldModel.getOperator()) {
 
 			case less:
@@ -153,14 +159,21 @@ public class QueryFieldDateRange extends AbstractRangeQueryField<Date> {
 								.getQueryFieldValueModel()).getDate());
 
 			case range:
+				includeUpper = false;
 			case range_closed:
 				final SettingsModelDateRangeBounded model =
 						(SettingsModelDateRangeBounded) queryFieldModel
 								.getQueryFieldValueModel();
-				return new String[] {
-						String.format(MIDNIGHT_FORMAT, model.getLowerValue()),
-						String.format(LAST_SECOND_FORMAT,
-								model.getUpperValue()) };
+				String from =
+						String.format(MIDNIGHT_FORMAT, model.getLowerValue());
+				String to = String.format(LAST_SECOND_FORMAT,
+						model.getUpperValue());
+				if (RCSBQueryRunner.getQueryAPIVersion() < 2) {
+					return new String[] { from, to };
+				}
+				// As of query API v2 we return a JSON object
+				return createRangeJSONObject(includeUpper).put(FROM, from)
+						.put(TO, to);
 
 			case exists:
 			default:

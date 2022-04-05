@@ -2,7 +2,7 @@
 <feature
       id="com.vernalis.knime.feature"
       label="Vernalis KNIME Nodes"
-      version="1.30.4.qualifier"
+      version="1.31.0.qualifier"
       provider-name="Vernalis Research Ltd, Cambridge, UK"
       plugin="com.vernalis.knime.core">
 
@@ -793,5 +793,12 @@ Public License instead of this License.  But first, please read
          download-size="0"
          install-size="0"
          version="0.0.0"/>
+
+   <plugin
+         id="com.vernalis.knime.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>

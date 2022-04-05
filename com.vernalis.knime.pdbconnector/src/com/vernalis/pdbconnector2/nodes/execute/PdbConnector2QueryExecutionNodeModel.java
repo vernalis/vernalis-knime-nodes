@@ -16,18 +16,23 @@ package com.vernalis.pdbconnector2.nodes.execute;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.knime.core.data.DataTableSpec;
 import org.knime.core.node.BufferedDataContainer;
 import org.knime.core.node.BufferedDataTable;
 import org.knime.core.node.CanceledExecutionException;
 import org.knime.core.node.ExecutionContext;
 import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeLogger;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
@@ -38,8 +43,11 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
+import org.knime.core.node.util.ColumnFilter;
 
 import com.vernalis.knime.nodes.SettingsModelRegistry;
+import com.vernalis.knime.nodes.SettingsModelRegistryImpl;
+import com.vernalis.knime.nodes.SettingsModelWrapper;
 import com.vernalis.pdbconnector2.ports.MultiRCSBQueryModel;
 import com.vernalis.pdbconnector2.ports.RCSBQueryPortObject;
 import com.vernalis.pdbconnector2.query.QueryResultType;
@@ -54,11 +62,13 @@ import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecuti
 import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createPageSizeModel;
 import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createReturnTypeModel;
 import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createScoringTypeModel;
+import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createVerboseOutputModel;
 
 /**
  * {@link NodeModel} implementation for the PDB Connector Query Executer node
  * 
- * Changes v.1.28.3 - Added support for limiting returned hits
+ * Changes v.1.28.3 - Added support for limiting returned hits Changes 1.31.0 -
+ * Added backwards compatibility to SMR implementation and verbose output option
  * 
  * @author S.Roughley knime@vernalis.com
  *
@@ -66,7 +76,15 @@ import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecuti
 public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 		implements SettingsModelRegistry {
 
-	private final Set<SettingsModel> models = new LinkedHashSet<>();
+	private final SettingsModelRegistry smr =
+			new SettingsModelRegistryImpl(3, getLogger()) {
+
+				@Override
+				public void doSetWarningMessage(String message) {
+					setWarningMessage(message);
+
+				}
+			};
 
 	private final SettingsModelString scoringTypeMdl =
 			registerSettingsModel(createScoringTypeModel());
@@ -76,10 +94,19 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 			registerSettingsModel(createPageSizeModel());
 	private final SettingsModelBoolean includeJsonMdl =
 			registerSettingsModel(createIncludeJsonModel());
-	private final SettingsModelBoolean limitHitsMdl = createLimitHitsModel();
-	private final SettingsModelIntegerBounded maxHitsMdl = createMaxHitsModel();
+	// From v2
+	private final SettingsModelBoolean limitHitsMdl = registerSettingsModel(
+			createLimitHitsModel(), 2, mdl -> mdl.setBooleanValue(false));
+	private final SettingsModelIntegerBounded maxHitsMdl =
+			registerSettingsModel(createMaxHitsModel(), 2,
+					mdl -> mdl.setIntValue(1000));
 	private final SettingsModelBoolean includeHitCountMdl =
-			createIncludeHitCountModel();
+			registerSettingsModel(createIncludeHitCountModel(), 2,
+					mdl -> mdl.setBooleanValue(false));
+	// Since 1.31.0
+	// From v3
+	private final SettingsModelBoolean verboseOutputMdl = registerSettingsModel(
+			createVerboseOutputModel(), 3, mdl -> mdl.setBooleanValue(true));
 
 	/**
 	 * Constructor
@@ -96,6 +123,15 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 			}
 		});
 		maxHitsMdl.setEnabled(limitHitsMdl.getBooleanValue());
+		includeJsonMdl.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				verboseOutputMdl.setEnabled(includeJsonMdl.getBooleanValue());
+
+			}
+		});
+		verboseOutputMdl.setEnabled(includeJsonMdl.getBooleanValue());
 	}
 
 	@Override
@@ -112,7 +148,12 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 		}
 
 		try {
-			ScoringType.fromText(scoringTypeMdl.getStringValue());
+			ScoringType scoring =
+					ScoringType.fromText(scoringTypeMdl.getStringValue());
+			if (!scoring.isEnabled(model)) {
+				throw new InvalidSettingsException(
+						"The current scoring method is not valid for the query");
+			}
 		} catch (IllegalArgumentException | NullPointerException e) {
 			throw new InvalidSettingsException(
 					"'" + scoringTypeMdl.getStringValue()
@@ -155,7 +196,10 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 
 	/**
 	 * @param model
-	 * @return
+	 *            the query model
+	 * 
+	 * @return a runner to run the query on the server
+	 * 
 	 * @throws NullPointerException
 	 * @throws IllegalArgumentException
 	 * @throws QueryException
@@ -171,6 +215,8 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 		runner.setPageSize(pageSizeMdl.getIntValue());
 		runner.setIncludeJson(includeJsonMdl.getBooleanValue());
 		runner.setIncludeHitCount(includeHitCountMdl.getBooleanValue());
+		runner.setVerboseOutput(includeJsonMdl.getBooleanValue()
+				&& verboseOutputMdl.getBooleanValue());
 		if (limitHitsMdl.getBooleanValue()) {
 			runner.setReturnedHitsLimit(maxHitsMdl.getIntValue());
 		} else {
@@ -181,58 +227,147 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 
 	@Override
 	public Set<SettingsModel> getModels() {
-		return models;
+		return smr.getModels();
+	}
+
+	@Override
+	public <T extends SettingsModel> T registerSettingsModel(T model) {
+		return smr.registerSettingsModel(model);
+	}
+
+	@Override
+	public <T extends Iterable<U>, U extends SettingsModel> T
+			registerModels(T models) {
+		return smr.registerModels(models);
+	}
+
+	@Override
+	public <T extends Map<?, V>, V extends SettingsModel> T
+			registerMapValuesModels(T models) {
+		return smr.registerMapValuesModels(models);
+	}
+
+	@Override
+	public <T extends Map<K, ?>, K extends SettingsModel> T
+			registerMapKeysModels(T models) {
+		return smr.registerMapKeysModels(models);
+	}
+
+	@Override
+	public int getValidatedColumnSelectionModelColumnIndex(
+			SettingsModelString model, ColumnFilter filter, DataTableSpec spec,
+			Pattern preferredPattern, boolean matchWholeName, NodeLogger logger,
+			boolean dontAllowDuplicatesWithAvoid,
+			SettingsModelString... modelsToAvoid)
+			throws InvalidSettingsException {
+		return smr.getValidatedColumnSelectionModelColumnIndex(model, filter,
+				spec, preferredPattern, matchWholeName, logger,
+				dontAllowDuplicatesWithAvoid, modelsToAvoid);
+	}
+
+	@Override
+	public int getValidatedColumnSelectionModelColumnIndex(
+			SettingsModelString model, ColumnFilter filter, DataTableSpec spec,
+			NodeLogger logger, SettingsModelString... modelsToAvoid)
+			throws InvalidSettingsException {
+		return smr.getValidatedColumnSelectionModelColumnIndex(model, filter,
+				spec, logger, modelsToAvoid);
+	}
+
+	@Override
+	public boolean isStringModelFilled(SettingsModelString stringModel) {
+		return smr.isStringModelFilled(stringModel);
+	}
+
+	@Override
+	public int getSavedSettingsVersion(NodeSettingsRO settings) {
+		return smr.getSavedSettingsVersion(settings);
+	}
+
+	@Override
+	public int getSettingsVersion() {
+		return smr.getSettingsVersion();
+	}
+
+	@Override
+	public Map<SettingsModel, SettingsModelWrapper<?>> getModelWrappers() {
+		return smr.getModelWrappers();
+	}
+
+	@Override
+	public void setNodeWarningMessage(String message) {
+		smr.setNodeWarningMessage(message);
+	}
+
+	@Override
+	public NodeLogger getNodeLogger() {
+		return smr.getNodeLogger();
+	}
+
+	@Override
+	public <T extends SettingsModel> T registerSettingsModel(T model,
+			int sinceVersion, Consumer<T> defaultSetter) {
+		return smr.registerSettingsModel(model, sinceVersion, defaultSetter);
+	}
+
+	@Override
+	public <T extends SettingsModel> T registerSettingsModel(T model,
+			int sinceVersion, Consumer<T> defaultSetter, String successMessage)
+			throws UnsupportedOperationException, IllegalArgumentException {
+		return smr.registerSettingsModel(model, sinceVersion, defaultSetter,
+				successMessage);
+	}
+
+	@Override
+	public <T extends SettingsModel> T registerSettingsModel(T model,
+			int sinceVersion, BiConsumer<T, NodeSettingsRO> defaultSetter) {
+		return smr.registerSettingsModel(model, sinceVersion, defaultSetter);
+	}
+
+	@Override
+	public <T extends SettingsModel> T registerSettingsModel(T model,
+			int sinceVersion, BiConsumer<T, NodeSettingsRO> defaultSetter,
+			String successMessage)
+			throws UnsupportedOperationException, IllegalArgumentException {
+		return smr.registerSettingsModel(model, sinceVersion, defaultSetter,
+				successMessage);
 	}
 
 	@Override
 	protected void loadInternals(File nodeInternDir, ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
-
+		//
 	}
 
 	@Override
 	protected void saveInternals(File nodeInternDir, ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
-
+		//
 	}
 
 	@Override
 	public void saveSettingsTo(NodeSettingsWO settings) {
-		SettingsModelRegistry.super.saveSettingsTo(settings);
-		limitHitsMdl.saveSettingsTo(settings);
-		maxHitsMdl.saveSettingsTo(settings);
-		includeHitCountMdl.saveSettingsTo(settings);
+		smr.saveSettingsTo(settings);
+
 	}
 
 	@Override
 	public void validateSettings(NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		SettingsModelRegistry.super.validateSettings(settings);
+		smr.validateSettings(settings);
 
 	}
 
 	@Override
 	public void loadValidatedSettingsFrom(NodeSettingsRO settings)
 			throws InvalidSettingsException {
-		SettingsModelRegistry.super.loadValidatedSettingsFrom(settings);
-		try {
-			limitHitsMdl.loadSettingsFrom(settings);
-			maxHitsMdl.loadSettingsFrom(settings);
-		} catch (InvalidSettingsException e) {
-			setWarningMessage(
-					"Using default legacy values for limit hits settings");
-		}
-		try {
-			includeHitCountMdl.loadSettingsFrom(settings);
-		} catch (InvalidSettingsException e) {
-			setWarningMessage(
-					"Using legacy value for include hit counts setting");
-		}
+		smr.loadValidatedSettingsFrom(settings);
+
 	}
 
 	@Override
 	protected void reset() {
-
+		//
 	}
 
 }
