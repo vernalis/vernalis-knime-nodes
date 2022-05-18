@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019,2022, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -113,19 +113,24 @@ public class DialogComponentGroup {
 	}
 
 	/**
-	 * Private Full constructor for creation from any of the public constructors
+	 * Full constructor for creation from any of the public constructors
 	 * 
 	 * @param nodeSettingsPane
 	 *            The {@link DefaultNodeSettingsPane} to add the components to
 	 * @param title
-	 *            The optional title of the bounding box
+	 *            The optional title of the bounding box. {@code null} means no
+	 *            border, {@link Optional#empty()} or
+	 *            {@link Optional#ofNullable(Object)} with argument {@code null}
+	 *            means an etched border with no title
 	 * @param axis
 	 *            The axis(e.g. {@code BoxLayout.X_AXIS} or
 	 *            {@code BoxLayour.Y_AXIS}
 	 * @param firstDiaC
 	 *            The first {@link DialogComponent} to go in the grouping
+	 * 
+	 * @since v1.32.0 Made public in this version
 	 */
-	private DialogComponentGroup(DefaultNodeSettingsPane nodeSettingsPane,
+	public DialogComponentGroup(DefaultNodeSettingsPane nodeSettingsPane,
 			Optional<String> title, OptionalInt axis,
 			DialogComponent firstDiaC) {
 		if (firstDiaC == null) {
@@ -153,14 +158,16 @@ public class DialogComponentGroup {
 			}
 		}
 
-		// And create the border
-		Border border = BorderFactory.createEtchedBorder();
-		if (title.isPresent()) {
-			border = BorderFactory.createTitledBorder(border, title.get());
-		}
 		panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, layoutAxis));
-		panel.setBorder(border);
+		if (title != null) {
+			// And create the border
+			Border border = BorderFactory.createEtchedBorder();
+			if (title.isPresent()) {
+				border = BorderFactory.createTitledBorder(border, title.get());
+			}
+			panel.setBorder(border);
+		}
 
 		// Add the panel to the dialog
 		parent.add(panel);
@@ -171,7 +178,7 @@ public class DialogComponentGroup {
 
 	/**
 	 * Private constructor for creation from the
-	 * {@link #addSubGroup(DialogComponent, Optional, OptionalInt) method
+	 * {@link #addSubGroup(DialogComponent, Optional, OptionalInt)} method
 	 * 
 	 * @param pane
 	 *            The node settings pane
@@ -192,6 +199,7 @@ public class DialogComponentGroup {
 	 * 
 	 * @param diaC
 	 *            The {@link DialogComponent} to add
+	 * 
 	 * @return This group
 	 */
 	public final DialogComponentGroup addComponent(DialogComponent diaC) {
@@ -209,6 +217,7 @@ public class DialogComponentGroup {
 	 * 
 	 * @param diaC
 	 *            The {@link DialogComponent}s to add
+	 * 
 	 * @return This group
 	 */
 	public final DialogComponentGroup addComponents(DialogComponent... diaC) {
@@ -228,6 +237,7 @@ public class DialogComponentGroup {
 	 * 
 	 * @param diaC
 	 *            The {@link DialogComponent} to initialised the new group with
+	 * 
 	 * @return The new {@link DialogComponentGroup} subgroup
 	 */
 	public final DialogComponentGroup addSubGroup(DialogComponent diaC) {
@@ -242,6 +252,7 @@ public class DialogComponentGroup {
 	 *            The {@link DialogComponent} to initialised the new group with
 	 * @param title
 	 *            The title
+	 * 
 	 * @return The new {@link DialogComponentGroup} subgroup
 	 */
 	public final DialogComponentGroup addSubGroup(DialogComponent diaC,
@@ -258,6 +269,7 @@ public class DialogComponentGroup {
 	 *            The {@link DialogComponent} to initialised the new group with
 	 * @param horizontal
 	 *            The layout orientation
+	 * 
 	 * @return The new {@link DialogComponentGroup} subgroup
 	 */
 	public final DialogComponentGroup addSubGroup(DialogComponent diaC,
@@ -276,6 +288,7 @@ public class DialogComponentGroup {
 	 *            The title
 	 * @param horizontal
 	 *            The layout orientation
+	 * 
 	 * @return The new {@link DialogComponentGroup} subgroup
 	 */
 	public final DialogComponentGroup addSubGroup(DialogComponent diaC,

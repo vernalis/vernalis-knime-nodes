@@ -1,3 +1,8 @@
+v1.32.0 18-May-2022
+-------------------
+* Added PortTypeCombiner for RCSBQueryPortObject
+
+
 v1.31.0 05-Apr-2022
 -------------------
 * Updated to switch to v2 of RCSB Query API automatically on 13-Apr-2022

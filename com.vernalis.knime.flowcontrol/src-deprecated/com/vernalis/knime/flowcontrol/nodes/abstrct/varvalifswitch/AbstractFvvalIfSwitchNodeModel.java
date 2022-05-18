@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, Vernalis (R&D) Ltd
+ * Copyright (c) 2014,2022, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -35,11 +35,11 @@ import org.knime.core.node.workflow.FlowVariable;
 
 import com.vernalis.knime.flowcontrol.FlowControlHelpers;
 
-// TODO: Auto-generated Javadoc
 /**
  * This is shared NodeModel implementation of the if switch flow var value nodes
  * 
  * @author "Stephen Roughley knime@vernalis.com"
+ * 
  * @deprecated Due to incorrect string comparison
  */
 @Deprecated
@@ -93,15 +93,16 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected PortObject[] execute(final PortObject[] inData, final ExecutionContext exec)
-			throws Exception {
+	protected PortObject[] execute(final PortObject[] inData,
+			final ExecutionContext exec) throws Exception {
 		// The validity of performing the comparison has already been checked in
 		// the #configure method, so now we just need to pass the input port to
 		// the active output port based on the comparison
 		// If the comparison is true the top port is active
 		int activeOutPort = (compareVariableValue(m_fvname1.getStringValue(),
 				m_Comp.getStringValue(), m_property.getStringValue())) ? 0 : 1;
-		return FlowControlHelpers.createStartOutputPortObject(inData, m_outPorts, activeOutPort);
+		return FlowControlHelpers.createStartOutputPortObject(inData,
+				m_outPorts, activeOutPort);
 	}
 
 	/**
@@ -113,44 +114,46 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 	 *            The comparison operation
 	 * @param compValue
 	 *            The value to be used in the comparison
+	 * 
 	 * @return The {@link boolean} result of the comparison
 	 */
 	// Selector does not allow missing case
 	@SuppressWarnings("incomplete-switch")
-	private boolean compareVariableValue(String varName, String comparitor, String compValue) {
+	private boolean compareVariableValue(String varName, String comparitor,
+			String compValue) {
 		FlowVariable fvar = getAvailableFlowVariables().get(varName);
 		Double comparisonValue = null;
 		Integer comparisonIntValue = null;
 
 		switch (fvar.getType()) {
-		case STRING:
-			// Do string comparison
-			String fvarStringVal = fvar.getStringValue();
-			if (m_ignCase.getBooleanValue()) {
-				fvarStringVal = fvarStringVal.toLowerCase();
-				compValue = compValue.toLowerCase();
-			}
-			if (m_ignWhiteSpace.getBooleanValue()) {
-				fvarStringVal = fvarStringVal.trim();
-				compValue = compValue.trim();
-			}
-			// Lexicographical comparison - > 0 means compValue is
-			// lexicographically first (i.e. compValue > fvarStringVal)
-			comparisonIntValue = fvarStringVal.compareTo(compValue);
-			break;
+			case STRING:
+				// Do string comparison
+				String fvarStringVal = fvar.getStringValue();
+				if (m_ignCase.getBooleanValue()) {
+					fvarStringVal = fvarStringVal.toLowerCase();
+					compValue = compValue.toLowerCase();
+				}
+				if (m_ignWhiteSpace.getBooleanValue()) {
+					fvarStringVal = fvarStringVal.trim();
+					compValue = compValue.trim();
+				}
+				// Lexicographical comparison - > 0 means compValue is
+				// lexicographically first (i.e. compValue > fvarStringVal)
+				comparisonIntValue = fvarStringVal.compareTo(compValue);
+				break;
 
-		case DOUBLE:
-			// Do Double comparison
-			double fvarDblVal = fvar.getDoubleValue();
-			double compDblVal = Double.parseDouble(compValue.trim());
-			comparisonValue = compDblVal - fvarDblVal;
-			break;
+			case DOUBLE:
+				// Do Double comparison
+				double fvarDblVal = fvar.getDoubleValue();
+				double compDblVal = Double.parseDouble(compValue.trim());
+				comparisonValue = compDblVal - fvarDblVal;
+				break;
 
-		case INTEGER:
-			// Do integer comparison
-			int fvarIntVal = fvar.getIntValue();
-			int compIntVal = Integer.parseInt(compValue.trim());
-			comparisonIntValue = compIntVal - fvarIntVal;
+			case INTEGER:
+				// Do integer comparison
+				int fvarIntVal = fvar.getIntValue();
+				int compIntVal = Integer.parseInt(compValue.trim());
+				comparisonIntValue = compIntVal - fvarIntVal;
 		}
 		// Now parse the comparisonValue appropriately for the operator
 		if (comparisonValue == null && comparisonIntValue == null) {
@@ -179,24 +182,26 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 		} else {
 			// Do the Double comparison, accounting for the tolerance
 			double tolerance = m_dblTol.getDoubleValue();
-			if ("=".equals(comparitor) && Math.abs(comparisonValue) <= tolerance) {
+			if ("=".equals(comparitor)
+					&& Math.abs(comparisonValue) <= tolerance) {
 				return true;
 			}
 			if (">".equals(comparitor) && comparisonValue < 0.0) {
 				return true;
 			}
-			if (">=".equals(comparitor)
-					&& (comparisonValue <= 0.0 || Math.abs(comparisonValue) <= tolerance)) {
+			if (">=".equals(comparitor) && (comparisonValue <= 0.0
+					|| Math.abs(comparisonValue) <= tolerance)) {
 				return true;
 			}
-			if ("!=".equals(comparitor) && Math.abs(comparisonValue) > tolerance) {
+			if ("!=".equals(comparitor)
+					&& Math.abs(comparisonValue) > tolerance) {
 				return true;
 			}
 			if ("<".equals(comparitor) && comparisonValue > 0.0) {
 				return true;
 			}
-			if ("<=".equals(comparitor)
-					&& (comparisonValue >= 0.0 || Math.abs(comparisonValue) <= tolerance)) {
+			if ("<=".equals(comparitor) && (comparisonValue >= 0.0
+					|| Math.abs(comparisonValue) <= tolerance)) {
 				return true;
 			}
 		}
@@ -219,7 +224,8 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 			throws InvalidSettingsException {
 
 		// Start by checking a variable has been selected
-		if (getAvailableFlowVariables().get(m_fvname1.getStringValue()) == null) {
+		if (getAvailableFlowVariables()
+				.get(m_fvname1.getStringValue()) == null) {
 			logger.warn("No valid variable selected");
 			throw new InvalidSettingsException("No valid variable selected");
 		}
@@ -230,7 +236,8 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 
 			if ("".equals(m_Comp.getStringValue())) {
 				// First up, we cannot compare an empty string to a number...
-				logger.warn("Cannot compare a numeric variable with an empty string");
+				logger.warn(
+						"Cannot compare a numeric variable with an empty string");
 				throw new InvalidSettingsException(
 						"Cannot compare a numeric variable with an empty string");
 			}
@@ -240,7 +247,8 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 				// '1', '1.0'
 				Double.parseDouble(m_property.getStringValue().trim());
 			} catch (Exception e) {
-				logger.warn("Cannot convert comparison value to numeric value for comparison");
+				logger.warn(
+						"Cannot convert comparison value to numeric value for comparison");
 				throw new InvalidSettingsException(
 						"Cannot convert comparison value to numeric value for comparison");
 			}
@@ -274,8 +282,8 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 		// If the comparison is true the top port is active
 		int activeOutPort = (compareVariableValue(m_fvname1.getStringValue(),
 				m_Comp.getStringValue(), m_property.getStringValue())) ? 0 : 1;
-		return FlowControlHelpers.createStartOutputPortObjectSpec(inSpecs, m_outPorts,
-				activeOutPort);
+		return FlowControlHelpers.createStartOutputPortObjectSpec(inSpecs,
+				m_outPorts, activeOutPort);
 	}
 
 	/**
@@ -310,7 +318,8 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
+	protected void validateSettings(final NodeSettingsRO settings)
+			throws InvalidSettingsException {
 
 		m_Comp.validateSettings(settings);
 		m_fvname1.validateSettings(settings);
@@ -324,7 +333,8 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void loadInternals(final File internDir, final ExecutionMonitor exec)
+	protected void loadInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 
 	}
@@ -333,7 +343,8 @@ public class AbstractFvvalIfSwitchNodeModel extends NodeModel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void saveInternals(final File internDir, final ExecutionMonitor exec)
+	protected void saveInternals(final File internDir,
+			final ExecutionMonitor exec)
 			throws IOException, CanceledExecutionException {
 
 	}
