@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2021 Vernalis (R&D) Ltd
+ * Copyright (c) 2022, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
  *  
- *   This program is distributed in the hope that it will be useful, but 
+ *  This program is distributed in the hope that it will be useful, but 
  *  WITHOUT ANY WARRANTY; without even the implied warranty of 
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  *  See the GNU General Public License for more details.
@@ -55,6 +55,8 @@ import com.vernalis.knime.core.collections.FixedLengthQueue;
  * org.knime.base.meta.looper.ConcatenateTableFactory
  * 
  * @version 1.29.0 Added preview table capability
+ * @version 1.32.0 Added option to change row prefix
+ * 
  * @author S.Roughley knime@vernalis.com
  */
 public class ConcatenatingTablesCollector {
@@ -111,6 +113,8 @@ public class ConcatenatingTablesCollector {
 	 */
 	private static final int NUM_PREVIEW_ROWS = 50;
 
+	private String appendSuffixPrefix = "Iter";
+
 	/**
 	 * Creates a new factory that allows to create a {@link ConcatenateTable}.
 	 *
@@ -145,7 +149,8 @@ public class ConcatenatingTablesCollector {
 				case APPEND_SUFFIX:
 					m_rowKeyCreator = k -> {
 						return new RowKey(
-								k.toString() + "_Iter#" + (m_iterationCount));
+								String.format("%s_%s#%d", k.toString(),
+										appendSuffixPrefix, m_iterationCount));
 					};
 					break;
 				case GENERATE_NEW:
@@ -193,7 +198,7 @@ public class ConcatenatingTablesCollector {
 			IOException, CanceledExecutionException, IllegalStateException,
 			IllegalArgumentException {
 		// check if last container has been closed (i.e. createTable was called)
-		if (m_tables.size() > 0
+		if (!m_tables.isEmpty()
 				&& m_tables.get(m_tables.size() - 1).isClosed()) {
 			throw new IllegalStateException(
 					"No more tables can be added! ConcatenateTable has already been created.");
@@ -202,11 +207,11 @@ public class ConcatenatingTablesCollector {
 		// Handle empty tables
 		boolean newTableEmpty = table.size() == 0;
 		if (newTableEmpty) {
-			if (m_ignoreEmptyTables && m_tables.size() > 0) {
+			if (m_ignoreEmptyTables && !m_tables.isEmpty()) {
 				// Just ignore this one
 				m_iterationCount++;
 				return;
-			} else if (m_tables.size() == 0) {
+			} else if (m_tables.isEmpty()) {
 				// if this is the first table we receive and its empty, create
 				// an empty one and keep it
 				m_emptyTable = exec.createDataContainer(createSpec(
@@ -219,7 +224,7 @@ public class ConcatenatingTablesCollector {
 		// compare spec of the current table with the spec of the first table if
 		// changing specs are not tolerated
 		if (!m_tolerateChangingSpecs
-				&& (m_tables.size() > 0 || m_emptyTable != null)) {
+				&& (!m_tables.isEmpty() || m_emptyTable != null)) {
 			// don't fail if table is empty and to be ignored
 			if (!(m_ignoreEmptyTables
 					&& (newTableEmpty || m_emptyTable != null))) {
@@ -227,7 +232,7 @@ public class ConcatenatingTablesCollector {
 				// type for both table spec, if altered column types
 				// are to be tolerated
 				DataTableSpec tmpSpec1;
-				if (m_tables.size() == 0 && m_emptyTable != null) {
+				if (m_tables.isEmpty() && m_emptyTable != null) {
 					// false as these already have the iteration column!
 					tmpSpec1 = createSpec(m_emptyTable.getTableSpec(), false);
 				} else {
@@ -267,10 +272,10 @@ public class ConcatenatingTablesCollector {
 
 		DataTableSpec newTableSpec =
 				createSpec(table.getDataTableSpec(), m_addIterationColumn);
-		if (m_tables.size() == 0) {
+		if (m_tables.isEmpty()) {
 			// No containers - create one!
 			m_tables.add(exec.createDataContainer(newTableSpec));
-		} else if (m_tables.size() > 0 && !newTableSpec.equalStructure(
+		} else if (!m_tables.isEmpty() && !newTableSpec.equalStructure(
 				m_tables.get(m_tables.size() - 1).getTableSpec())) {
 			// Different spec - close last container and create new one
 			m_tables.get(m_tables.size() - 1).close();
@@ -425,6 +430,28 @@ public class ConcatenatingTablesCollector {
 		}
 		// don't check for duplicates since this already has been done
 		return exec.createConcatenateTable(exec, Optional.empty(), false, res);
+	}
+
+	/**
+	 * Method to set a new prefix for the suffix appended if the row key policy
+	 * is 'APPEND'.
+	 * <p>
+	 * The default value is 'Iter'. Ignored if the policy is other than APPEND
+	 * or if the value supplied is {@code null}. For example, a value of 'Iter'
+	 * with an incoming row ID of 'Row0' and an iteration counter of 3 will
+	 * result in 'Row0_Iter#3'
+	 * </p>
+	 * 
+	 * @param prefix
+	 *            The new prefix for the RowID suffix
+	 * 
+	 * @since 1.32.0
+	 */
+	public void setAppendSuffixPrefix(String prefix) {
+		if (prefix == null) {
+			return;
+		}
+		this.appendSuffixPrefix = prefix;
 	}
 
 	/**
@@ -669,10 +696,10 @@ public class ConcatenatingTablesCollector {
 	 * @return The current Table Spec
 	 */
 	public DataTableSpec getTableSpec() {
-		if (m_tables.size() == 0 && m_emptyTable != null) {
+		if (m_tables.isEmpty() && m_emptyTable != null) {
 			// false as these already have the iteration column!
 			return createSpec(m_emptyTable.getTableSpec(), false);
-		} else if (m_tables.size() > 0) {
+		} else if (!m_tables.isEmpty()) {
 			return createSpec(m_tables.get(0).getTableSpec(), false);
 		} else {
 			return null;

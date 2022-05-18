@@ -1,3 +1,21 @@
+v1.32.0 18-May-2022
+-------------------
+* Deprecated all IF Switch / Case Switch, End IF and End Case nodes
+* Added new nodes:
+  * Configurable Empty Table Switch
+  * Configurable IF/Case Switch (Flow Variable Value)
+  * Configurable IF/Case Switch
+  * Configurable Crossover (Flow Variable Value)
+  * Configurable End IF/Case
+* New flow variable conditions for String, String Array, Integer, Integer Array,
+	Long, Long Array, Double, Double Array, Boolean, Boolean Array and Path variables
+* API - Added 2 new extension points:
+  * com.vernalis.knime.flowcontrol.variablecondition (Variable Condition) - Used to 
+  		provide conditions to the Flow Variable value based nodes
+  * com.vernalis.knime.flowcontrolporttypecombiner - Used to allow merging of multiple active
+  		ports in Configurable End IF/Case nodes 
+  
+
 v1.29.0 19-Feb-2021
 -------------------
 

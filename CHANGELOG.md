@@ -5,29 +5,55 @@ The table shows the latest version of the nodes available in each update site fo
 
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
-| Nightly | [v1.31.0](#v1310--05apr2022) |
-| 4.5* | [v1.31.0](#v1310--05apr2022) |
-| 4.4* | [v1.31.0](#v1310--05apr2022) |
-| 4.3 | [v1.31.0](#v1310--05apr2022) |
-| 4.2 | [v1.31.0](#v1310--05apr2022) |
-| 4.1 | [v1.30.1](#v1301--30mar2021) |
-| 4.0 | [v1.27.0](#v1270--18aug2020) |
-| 3.7 | [v1.27.0](#v1270--18aug2020) |
-| 3.6 | [v1.18.1](#v1181--20dec2018) |
-| 3.5 | [v1.15.0](#v1150--31may2018) |
-| 3.4 | [v1.12.1](#v1121--20oct2017) |
-| 3.3 | [v1.12.0](#v1120--21jul2017) |
-| 3.2 | [v1.12.0](#v1120--21jul2017) |
-| 3.1 | [v1.8.2](#v182--16nov2016) |
-| 3.0 | [v1.6.5](#v165--30jun2016) |
-| 2.12 | [v1.5.0](#v150--11nov2015) |
-| 2.11 | [v1.5.0](#v150--11nov2015) |
-| 2.10 | [v1.4.0](#v140--12may2015) |
-| 2.9 | [v1.1.5](#v115--04nov2014) |
-| 2.8 | [v1.1.4](#v114--05aug2014) |
-| 2.7 | [v1.0.4](#v104--30jan2014) |
+| Nightly | [v1.32.0](#v1320---18-may-2022) |
+| 4.5* | [v1.32.0](#v1320---18-may-2022) |
+| 4.4* | [v1.32.0](#v1320---18-may-2022) |
+| 4.3 | [v1.31.0](#v1310---05-apr-2022) |
+| 4.2 | [v1.31.0](#v1310---05-apr-2022) |
+| 4.1 | [v1.30.1](#v1301---30-mar-2021) |
+| 4.0 | [v1.27.0](#v1270---18-aug-2020) |
+| 3.7 | [v1.27.0](#v1270---18-aug-2020) |
+| 3.6 | [v1.18.1](#v1181---20-dec-2018) |
+| 3.5 | [v1.15.0](#v1150---31-may-2018) |
+| 3.4 | [v1.12.1](#v1121---20-oct-2017) |
+| 3.3 | [v1.12.0](#v1120---21-jul-2017) |
+| 3.2 | [v1.12.0](#v1120---21-jul-2017) |
+| 3.1 | [v1.8.2](#v182---16-nov-2016) |
+| 3.0 | [v1.6.5](#v165---30-jun-2016) |
+| 2.12 | [v1.5.0](#v150---11-nov-2015) |
+| 2.11 | [v1.5.0](#v150---11-nov-2015) |
+| 2.10 | [v1.4.0](#v140---12-may-2015) |
+| 2.9 | [v1.1.5](#v115---04-nov-2014) |
+| 2.8 | [v1.1.4](#v114---05-aug-2014) |
+| 2.7 | [v1.0.4](#v104---30-jan-2014) |
 
 \* Currently supported versions
+
+## v1.32.0 - 18-May-2022
+* New Nodes 
+  * Configurable Empty Table Switch
+  * Configurable IF/Case Switch (Flow Variable Value)
+  * Configurable IF/Case Switch
+  * Configurable Crossover (Flow Variable Value)
+  * Configurable End IF/Case
+
+* New Features (See also API section)
+  * New flow variable conditions for String, String Array, Integer, Integer Array,
+	Long, Long Array, Double, Double Array, Boolean, Boolean Array and Path variable types
+  * New Port Combiners for Buffered Data Table, Flow Variable and RCSB Advanced Query port types
+  
+* Deprecated Nodes
+  * Deprecated all IF Switch / Case Switch, End IF and End Case nodes
+  
+* API - Added 2 new extension points:
+  * `com.vernalis.knime.flowcontrol.variablecondition` (Variable Condition) - Used to 
+  		provide conditions to the Flow Variable value based nodes
+  * `com.vernalis.knime.flowcontrolporttypecombiner` (Port Type Combiner) - Used to allow merging of multiple active
+  		ports in Configurable End IF/Case nodes 
+  
+* Enhancements
+  * Fixed links in main CHANGELOG.md summary table
+
 ## v1.31.0 - 05-Apr-2022
 * New Nodes / Features
   * Added UI Selection modifier tools

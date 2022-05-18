@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2022, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="./FlowControlfvselectcase_16x16.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v4.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v4.1 http://knime.org/node/v4.1.xsd">
+
+
+	<name>Configurable IF/CASE Switch</name>
+
+	<shortDescription>
+		A configurable IF/CASE switch with changeable port
+		types and varying number of outputs
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			A configurable IF/CASE switch with changeable port types and varying
+			number of output ports. Output
+			ports can be replaced with Flow
+			Variable ports where required.
+
+			The active port is determined by the
+			value of the selected integer variable with behaviour according to
+			the node settings when the value is out of range, as follows:
+
+			<p>
+				<i>All</i>
+				- All outputs will be active if the value is outside the range
+			</p>
+			<p>
+				<i>Fail</i>
+				- The node execution will fail if the value is outside the range
+			</p>
+			<p>
+				<i>Modulo Reduction</i>
+				- the value range is the remainder after dividing by the number of
+				ports
+			</p>
+			<p>
+				<i>Nearest in Range</i>
+				The first or last port is used if the value is beyond those limits
+			</p>
+			<p>In all cases, the range is either 0 - (number of output ports -
+				1), or, if the 'Count negative values from end' option is selected,
+				-(number of output ports) - (number of output ports -
+				1)
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+		<option name="Variable">The variable to use</option>
+		<option name="Count negative values from end">If selected, this option means negative variables
+			will be used to count from the last port downwards, e.g. -1 is the
+			last port, -2 the second last etc
+		</option>
+		<option name="Out-of-bounds behaviour">The behaviour of the node if the variable value is
+			out of the range of the number of ports. See above for details
+		</option>
+		<option name="Variable output at port [n]">Whether the output port with the given index [n]
+			is replaced with a flow variable port
+		</option>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="Input">The input port, which can have its type changed</inPort>
+
+		<outPort
+			index="0"
+			name="Out-Port 0">The first output port. The type can be changed between 'data'
+			(which corresponds to the same as the input) and 'flow variable'
+		</outPort>
+		<outPort
+			index="1"
+			name="Out-Port 1">The second output port. The type can be either 'data' or 'flow variable' as above
+		</outPort>
+		<dynOutPort
+			insert-before="1"
+			name="Additional output ports"
+			group-identifier="More Outputs">Additional output ports. The type can be either
+			'data' or 'flow variable' as above (this can be changed in the
+			node dialog)
+		</dynOutPort>
+
+	</ports>
+
+
+</knimeNode>
