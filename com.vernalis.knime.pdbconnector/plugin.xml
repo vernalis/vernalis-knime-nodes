@@ -125,4 +125,11 @@
 			classMapper="com.vernalis.rcsb.io.helpers.RCSBIONodeFactoryClassMapper">
 		</NodeFactoryClassMapper>
 	</extension>
+ <extension
+       point="com.vernalis.knime.flowcontrol.porttypecombiner">
+    <combiner
+          combiner-class="com.vernalis.pdbconnector2.ports.RCSBQueryPortCombiner"
+          portType="com.vernalis.pdbconnector2.ports.RCSBQueryPortObject">
+    </combiner>
+ </extension>
 </plugin>

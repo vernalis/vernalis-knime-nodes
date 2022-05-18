@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2022, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="./EmptyTableIfSwitch.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Configurable Empty Table Switch</name>
+
+	<shortDescription>
+        This node provides an IF switch which passes the 1st input port as an active if it has 
+        rows, and the second if the first table is empty
+    </shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>If the first input table has one or more rows, then this is passed
+				out to the first, active output port, and the second port is
+				inactive.
+			</p>
+			<p>If, however, the first input port contains an empty table, then
+				the second port is passed to the second, active output port, and
+				the
+				first output port is in active.
+			</p>
+			<p>The type of the second port can be changed</p>
+
+
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+
+
+
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="First input port">Test table
+		</inPort>
+		<inPort
+			index="1"
+			name="Second input port">Port to pass if first table is empty
+		</inPort>
+		<outPort
+			index="0"
+			name="First output port">Active port containing 1st input
+			table, if that table is not
+			empty, or inactive if empty
+		</outPort>
+		<outPort
+			index="1"
+			name="Second output port">Active port containing 2nd input
+			port contents, if 1st input
+			table is empty, or inactive if the 1st table has
+			rows
+		</outPort>
+	</ports>
+
+</knimeNode>

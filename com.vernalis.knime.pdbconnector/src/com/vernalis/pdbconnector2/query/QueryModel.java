@@ -237,6 +237,7 @@ public interface QueryModel {
 	 * 
 	 * @param scoringType
 	 *            The scoring type in question
+	 *            
 	 * @return {@code true} if the query supports the scoring type TODO: Provide
 	 *         default
 	 */

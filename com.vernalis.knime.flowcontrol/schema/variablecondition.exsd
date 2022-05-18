@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="com.vernalis.knime.flowcontrol" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="com.vernalis.knime.flowcontrol" id="com.vernalis.knime.flowcontrol.variablecondition" name="Flow Variable Condition"/>
+      </appInfo>
+      <documentation>
+         The extension point provides flow variable value comparison conditions for the Configurable If Switch node.  Implementations of this extension point for non-Array variable types will automatically be wrapped in &apos;All&apos; and &apos;Any&apos; implementations for the corresponding array type.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+         <documentation>
+            The extension point
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice minOccurs="1" maxOccurs="unbounded">
+            <element ref="condition"/>
+         </choice>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The extension point
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  The extension point id (ignored)
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  The extension point name (ignored)
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="condition">
+      <annotation>
+         <documentation>
+            One or more flow variable conditions can be defined here
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The class implementing the FlowVarCondition interface for the variable value comparison
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn=":com.vernalis.knime.flowcontrol.nodes.abstrct.varvalifswitch.FlowVarCondition"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         v1.32.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         An example implementation:
+
+&lt;pre&gt;
+  &lt;extension
+       point=&quot;com.vernalis.knime.flowcontrol.variablecondition&quot;&gt;
+     &lt;condition
+          class=&quot;com.vernalis.knime.flowcontrol.flowvarcond.impl.simple.EmptyStringFlowVarCondition&quot;&gt;
+    &lt;/condition&gt;
+ &lt;/extension&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiinfo"/>
+      </appInfo>
+      <documentation>
+         Implementations of this extension point should implement the FlowVarCondition Interface
+      </documentation>
+   </annotation>
+
+
+
+</schema>
