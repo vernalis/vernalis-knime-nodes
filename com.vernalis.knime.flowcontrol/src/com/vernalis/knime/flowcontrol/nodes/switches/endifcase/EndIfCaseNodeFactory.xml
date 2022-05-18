@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2022, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="./dbEndCase.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v4.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v4.1 http://knime.org/node/v4.1.xsd">
+
+
+	<name>Configurable End IF/CASE</name>
+
+	<shortDescription>
+		End IF / Case to collect 2 or more inactive branches
+		depending on port type
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			An 'Inactive Branch Consumer' which will collect 2 or more inactive
+			branches and provide an active branch if there was an active incoming
+			branch. Additional incoming ports can be added, and the port type
+			changed via the configuration menu on the node. Depending on the port
+			type, different options will be available in the node dialog
+			<p>
+				<i>Flow Variables</i>
+				- there are no options in this case. The output will always be the
+				first connected branch
+			</p>
+			<p>
+				<i>Data Table</i>
+				It is possible to combine multiple active inputs, depending on the
+				table specs and node settings
+			</p>
+			<p>
+				<i>Other port types</i>
+				It is not possible to combine multiple ports. In this case if
+				multiple active inputs are present, only one will be passed through
+				or the node execution will fail depending on the node settings
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+		<tab name="Port combining options">
+			<description>
+				This tab contains options for combining multiple active
+				ports
+			</description>
+			<option name="Row key policy">How row keys should be handled</option>
+			<option name="Add port index column">Should a column containing the active incoming
+				port index be appended
+			</option>
+			<option name="Ignore empty input tables">Should empty active input tables be ignored
+			</option>
+			<option name="Allow changing column types">Should columns with the same name but differing
+				types be allowed in the active ports?
+			</option>
+			<option name="Allow changing table specs">Should the table specs be allowed more major
+				changes between active ports
+			</option>
+		</tab>
+		<tab name="Multiple active port options">
+			<description>This tab contains options when ports cannot be combined
+			</description>
+			<option name="Multiple-active behaviour">How the node should behave if multiple active
+				ports are encountered
+			</option>
+		</tab>
+
+
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="First input">The first input port</inPort>
+		<inPort
+			index="1"
+			name="Second input">The second input port</inPort>
+		<dynInPort
+			insert-before="2"
+			name="Additional input ports"
+			group-identifier="More Inputs">
+			Additional input ports
+		</dynInPort>
+
+
+		<outPort
+			index="0"
+			name="Output">The output port</outPort>
+
+	</ports>
+
+
+</knimeNode>

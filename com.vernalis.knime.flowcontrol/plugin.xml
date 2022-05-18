@@ -1,50 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?eclipse version="3.0"?>
 <plugin>
+   <!-- New in v 1.32.0 -->
+   <extension-point id="variablecondition" name="Flow Variable Condition" schema="schema/variablecondition.exsd"/>
+   <extension-point id="porttypecombiner" name="Port Type Combiner" schema="schema/porttypecombiner.exsd"/>
 	
+	<!-- New in v1.32.0 -->
+	<extension point="com.vernalis.knime.flowcontrol.variablecondition">
+	    <condition
+	          class="com.vernalis.knime.flowcontrol.flowvarcond.impl.simple.EmptyStringFlowVarCondition" />
+	    <condition
+	          class="com.vernalis.knime.flowcontrol.flowvarcond.impl.simple.RegexMatchesStringFlowVarCondition" />
+	    <condition
+	          class="com.vernalis.knime.flowcontrol.flowvarcond.impl.simple.WildcardMatchesStringFlowVarCondition" />
+	 </extension>
+	
+	<!-- NODES -->
 	<extension point="org.knime.workbench.repository.nodes">
-		<node
-			category-path="/community/vernalis/flowcontrol/fvflowcontrol"
-			factory-class="com.vernalis.knime.flowcontrol.nodes.fv.ifswitch.FVarFVIfSwitchNodeFactory" />	
-		
-		<node
-			after="FlowVarFvvalIfSwitchNodeFactory" 
-			category-path="/community/vernalis/flowcontrol/fvflowcontrol"
-			factory-class="com.vernalis.knime.flowcontrol.nodes.fv.endif.FlowVarEndIfNodeFactory"/>
-	
-		<node
-			after="FVarFVIfSwitchNodeFactory" 
-			category-path="/community/vernalis/flowcontrol/fvflowcontrol"
-			factory-class="com.vernalis.knime.flowcontrol.nodes.fv.varvalifswitch.FlowVarFvvalIfSwitchNodeFactory2" />
 
-		<node
-			category-path="/community/vernalis/flowcontrol" 
-			factory-class="com.vernalis.knime.flowcontrol.nodes.bdt.varvalifswitch.FvvalIfSwitchNodeFactory2" />
-			
-		<node
-			after="DatabaseIfSwitchNodeFactory"
-			category-path="/community/vernalis/flowcontrol/dbflowcontrol"
-			factory-class="com.vernalis.knime.flowcontrol.nodes.db.varvalifswitch.DataBaseFvvalIfSwitchNodeFactory2" />
-			
-		<node
-			after="DatabaseEndIfNodeFactory"
-			category-path="/community/vernalis/flowcontrol/dbflowcontrol"
-			factory-class="com.vernalis.knime.flowcontrol.nodes.db.caseselect.DatabaseCaseSelectNodeFactory" />
-		
-		<node
-			category-path="/community/vernalis/flowcontrol/dbflowcontrol" 
-			factory-class="com.vernalis.knime.flowcontrol.nodes.db.ifswitch.DatabaseIfSwitchNodeFactory" />
-	
-		<node
-			after="DataBaseFvvalIfSwitchNodeFactory"
-			category-path="/community/vernalis/flowcontrol/dbflowcontrol"
-			factory-class="com.vernalis.knime.flowcontrol.nodes.db.endif.DatabaseEndIfNodeFactory" />
-	
-		<node
-			after="DatabaseCaseSelectNodeFactory"
-			category-path="/community/vernalis/flowcontrol/dbflowcontrol"
-			factory-class="com.vernalis.knime.flowcontrol.nodes.db.endcase.DatabaseEndCaseNodeFactory" />
-	
 		<node 
 			category-path="/community/vernalis/flowcontrol/loops/timed" 
 			factory-class="com.vernalis.knime.flowcontrol.nodes.timedloops.chunktotime.LoopStartChunkToTimeNodeFactory"/>
@@ -100,6 +73,24 @@
 			category-path="/community/vernalis/flowcontrol/loops"
 			factory-class="com.vernalis.knime.flowcontrol.nodes.loops.abstrct.multiportloopend.ConfigurableMultiPortLoopEndNodeFactory" />
 		
+		
+		<!-- v1.32.0 -->
+		<node
+			category-path="/community/vernalis/flowcontrol/switches"
+			factory-class="com.vernalis.knime.flowcontrol.nodes.switches.emptytable.EmptyTableSwitchNodeFactory" />
+		<node
+        	category-path="/community/vernalis/flowcontrol/switches"
+        	factory-class="com.vernalis.knime.flowcontrol.nodes.switches.conditional.ifswitch.ConfigurableFvvalIfSwitchNodeFactory" />
+  		<node
+        	category-path="/community/vernalis/flowcontrol/switches"
+        	factory-class="com.vernalis.knime.flowcontrol.nodes.switches.endifcase.EndIfCaseNodeFactory" />
+  		<node
+        	category-path="/community/vernalis/flowcontrol/switches"
+        	factory-class="com.vernalis.knime.flowcontrol.nodes.switches.ifcaseswitch.ConfigurableIfCaseSwitchNodeFactory" />>
+  		<node
+        	category-path="/community/vernalis/flowcontrol/switches"
+        	factory-class="com.vernalis.knime.flowcontrol.nodes.switches.crossover.ConfigurableCrossoverNodeFactory" />
+		>
 		<!-- Deprecated Nodes -->
 		<node
 			after="FlowVarEndIfNodeFactory"
@@ -146,6 +137,58 @@
         deprecated="true"
         factory-class="com.vernalis.knime.flowcontrol.nodes.loops.loopendupto6ports.UptoSixPortLoopEndNodeFactory"/>
 
+		<!-- Flow Control nodes deprecated in v1.32.0 -->
+		<node
+			category-path="/community/vernalis/flowcontrol/fvflowcontrol"
+			factory-class="com.vernalis.knime.flowcontrol.nodes.fv.ifswitch.FVarFVIfSwitchNodeFactory" 
+			deprecated="true"/>	
+		
+		<node
+			after="FlowVarFvvalIfSwitchNodeFactory" 
+			category-path="/community/vernalis/flowcontrol/fvflowcontrol"
+			factory-class="com.vernalis.knime.flowcontrol.nodes.fv.endif.FlowVarEndIfNodeFactory"
+			deprecated="true"/>
+	
+		<node
+			after="FVarFVIfSwitchNodeFactory" 
+			category-path="/community/vernalis/flowcontrol/fvflowcontrol"
+			factory-class="com.vernalis.knime.flowcontrol.nodes.fv.varvalifswitch.FlowVarFvvalIfSwitchNodeFactory2"
+			deprecated="true" />
+
+		<node
+			category-path="/community/vernalis/flowcontrol" 
+			factory-class="com.vernalis.knime.flowcontrol.nodes.bdt.varvalifswitch.FvvalIfSwitchNodeFactory2" 
+			deprecated="true"/>
+			
+		<node
+			after="DatabaseIfSwitchNodeFactory"
+			category-path="/community/vernalis/flowcontrol/dbflowcontrol"
+			factory-class="com.vernalis.knime.flowcontrol.nodes.db.varvalifswitch.DataBaseFvvalIfSwitchNodeFactory2" 
+			deprecated="true"/>
+			
+		<node
+			after="DatabaseEndIfNodeFactory"
+			category-path="/community/vernalis/flowcontrol/dbflowcontrol"
+			factory-class="com.vernalis.knime.flowcontrol.nodes.db.caseselect.DatabaseCaseSelectNodeFactory" 
+			deprecated="true"/>
+		
+		<node
+			category-path="/community/vernalis/flowcontrol/dbflowcontrol" 
+			factory-class="com.vernalis.knime.flowcontrol.nodes.db.ifswitch.DatabaseIfSwitchNodeFactory" 
+			deprecated="true"/>
+	
+		<node
+			after="DataBaseFvvalIfSwitchNodeFactory"
+			category-path="/community/vernalis/flowcontrol/dbflowcontrol"
+			factory-class="com.vernalis.knime.flowcontrol.nodes.db.endif.DatabaseEndIfNodeFactory" 
+			deprecated="true"/>
+	
+		<node
+			after="DatabaseCaseSelectNodeFactory"
+			category-path="/community/vernalis/flowcontrol/dbflowcontrol"
+			factory-class="com.vernalis.knime.flowcontrol.nodes.db.endcase.DatabaseEndCaseNodeFactory" 
+			deprecated="true"/>
+	
 	</extension>
 	<extension point="org.knime.workbench.repository.categories">
 		<category
@@ -154,18 +197,6 @@
 			level-id="flowcontrol" 
 			name="Flow Control" 
 			path="/community/vernalis/" />
-		<category 
-			icon="icons/FlowControlGroupFlowVars_16x16.png" 
-			level-id="fvflowcontrol" 
-			name="Flow Variable" 
-			path="/community/vernalis/flowcontrol/" />
-		<category 
-			after="fvflowcontrol" 
-			description="Flow control nodes for database ports" 
-			icon="icons/FlowControlGroupDataBase.png" 
-			level-id="dbflowcontrol" 
-			name="Database" 
-			path="/community/vernalis/flowcontrol/" />
 		<category 
 			icon="icons/LoopCategory.png" 
 			level-id="loops" 
@@ -187,6 +218,13 @@
 			level-id="io"
 			name="IO"
 			path="/community/vernalis/" />
+  <category
+        icon="icons/FlowControlGroupFlowVars_16x16.png"
+        level-id="switches"
+        locked="true"
+        name="Switches"
+        path="/community/vernalis/flowcontrol">
+  </category>
 	</extension>
 	<extension point="org.knime.workbench.repository.registeredFileExtensions">
 		<FileExtensionMapping

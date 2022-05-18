@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2022, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="./crossover.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v4.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v4.1 http://knime.org/node/v4.1.xsd">
+
+
+	<name>Configurable Crossover (Flow Variable Value)</name>
+
+	<shortDescription>
+		This node optionally swaps the two input ports,
+		depending on the the result of a flow variable value comparison
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			This node either returns the input ports unchanged, if the result of
+			the flow variable value comparison is 'true', or swaps them ('crosses
+			over') if the comparison result is
+			'false'. The port type of the node
+			can be changed from the '...' menu on the node
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="First Input">The first input port</inPort>
+		<inPort
+			index="1"
+			name="Second Input">The second input port</inPort>
+
+		<outPort
+			index="0"
+			name="First Output">The first output port
+		</outPort>
+		<outPort
+			index="1"
+			name="Second Output">The second output port
+		</outPort>
+		
+
+	</ports>
+
+
+</knimeNode>

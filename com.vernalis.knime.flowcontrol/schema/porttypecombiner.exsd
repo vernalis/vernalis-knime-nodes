@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="com.vernalis.knime.flowcontrol" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="com.vernalis.knime.flowcontrol" id="porttypecombiner" name="Port Type Combiner"/>
+      </appInfo>
+      <documentation>
+         This extension point defines an API to add Port Type Combiners to the Configurable End IF/Case node
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appInfo>
+            <meta.element />
+         </appInfo>
+      </annotation>
+      <complexType>
+         <choice minOccurs="1" maxOccurs="unbounded">
+            <element ref="combiner"/>
+         </choice>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="combiner">
+      <annotation>
+         <documentation>
+            This represents a PortTypeCombiner, which must specify the port type to which it applies and a combiner implementation
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="combiner-class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  This should point to a PortTypeCombiner implementation.  The implementation must have a public no arguments constructor
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn=":com.vernalis.knime.flowcontrol.portcombiner.api.PortTypeCombiner"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+         <attribute name="portType" type="string" use="required">
+            <annotation>
+               <documentation>
+                  This should ideally be the fully qualified class name of the class for the PortObject, e.g. &lt;tt&gt;org.knime.core.node.BufferedDataTable&lt;/tt&gt;.  Failing this, then it will be checked to see if it is the class name for  a class implementing PortObjectSpec, and finally to see if it corresponds to the PortType name.  These latter two methods have no quarantee of returning the correct PortType!
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         v1.32.0
+      </documentation>
+   </annotation>
+
+
+
+
+
+</schema>

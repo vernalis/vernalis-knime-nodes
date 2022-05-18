@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.flowcontrol;singleton:=true
-Bundle-Version: 1.31.0.qualifier
+Bundle-Version: 1.32.0.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.vernalis.knime.flowcontrol.FlowControlNodePlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -10,9 +10,16 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.13.0,4.0.0)",
  org.knime.workbench.core;bundle-version="[3.0.0,5.0.0)",
  org.knime.workbench.repository;bundle-version="[3.0.0,5.0.0)",
  org.knime.base;bundle-version="[3.0.0,5.0.0)",
- com.vernalis.knime.core;bundle-version="[1.5.0,2.0.0)"
+ com.vernalis.knime.core;bundle-version="[1.5.0,2.0.0)",
+ org.knime.filehandling.core;bundle-version="[4.2.3,5.0.0)",
+ org.eclipse.e4.core.di;bundle-version="[1.7.500,2.0.0)"
 Bundle-ActivationPolicy: lazy
 Export-Package: com.vernalis.knime.flowcontrol,
+ com.vernalis.knime.flowcontrol.flowvarcond,
+ com.vernalis.knime.flowcontrol.flowvarcond.compwrapper,
+ com.vernalis.knime.flowcontrol.flowvarcond.impl.array,
+ com.vernalis.knime.flowcontrol.flowvarcond.impl.path,
+ com.vernalis.knime.flowcontrol.flowvarcond.impl.simple,
  com.vernalis.knime.flowcontrol.nodes.abstrct.caseselect,
  com.vernalis.knime.flowcontrol.nodes.abstrct.endswitch,
  com.vernalis.knime.flowcontrol.nodes.abstrct.fvendswitch,
@@ -45,6 +52,7 @@ Export-Package: com.vernalis.knime.flowcontrol,
  com.vernalis.knime.flowcontrol.nodes.wait.abstrct,
  com.vernalis.knime.flowcontrol.nodes.wait.fortime,
  com.vernalis.knime.flowcontrol.nodes.wait.totime,
+ com.vernalis.knime.flowcontrol.portcombiner.api,
  com.vernalis.knime.flowvar.nodes.io.read,
  com.vernalis.knime.flowvar.nodes.io.write
 Bundle-RequiredExecutionEnvironment: JavaSE-11
