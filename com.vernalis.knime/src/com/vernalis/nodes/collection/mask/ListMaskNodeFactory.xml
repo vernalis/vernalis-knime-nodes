@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2022, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="./ListMask.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Mask Lists</name>
+
+	<shortDescription>
+		This node applies a mask (from a List column) to one or more list columns
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				This node creates a mask from a selected column, and only keeps
+				the 'masked' subset of members of any selected lists. If the mask
+				column is a collection of boolean cells or a BitVector cell, then the kept cells are
+				those whose corresponding positions in the mask are 'true' (set bits in the case of a BitVector). If it is
+				a list of integers, the mask is either those positions where the
+				mask value > 0, or the list of indices within the list represented
+				by the numerical values in the mask cell
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+
+		</intro>
+
+
+		<option name="Mask Column">Select the incoming List column or BitVector containing the
+			mask
+		</option>
+		<option name="Use values as indices">If the mask is a list of integers, then use those
+			values as the indices. If this option is not set, then those
+			positions where the value > 0 will be used
+		</option>
+		<option name="Treat missing masks as empty collections">If this option is set, a missing cell in the mask
+			column will be treated as an empty collection, otherwise the row will
+			be left unmasked
+		</option>
+		<option name="List Columns to Mask">The list columns to apply the mask to</option>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="Input Table">Incoming data table</inPort>
+		<outPort
+			index="0"
+			name="Output Table">The input table with the masked lists
+		</outPort>
+	</ports>
+
+</knimeNode>

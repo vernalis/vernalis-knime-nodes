@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2021, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="./ungzip.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>GZip Decompress (Un-gzip) Binary Object</name>
+
+	<shortDescription>
+		This node decompresses a binary object column using the gzip compression algorithm
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				This node compresses a binary object column using the gzip
+				compression algorithm
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+
+		</intro>
+
+
+		<option name="Binary Object Column">Select the incoming binary object column
+		</option>
+		<option name="Replace Input Column">Should the input column be replaced? If not, the
+			new column will have the suffix ' (Un-GZip'd)' appended
+		</option>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="Input Table">Incoming data table</inPort>
+		<outPort
+			index="0"
+			name="Output Table">The input table with the decompressed binary objects
+		</outPort>
+	</ports>
+
+</knimeNode>

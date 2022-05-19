@@ -3,11 +3,12 @@
 ## Latest Versions by KNIME Analytics Platform (Desktop) Version
 The table shows the latest version of the nodes available in each update site for the KNIME Analytics Platform
 
+
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
-| Nightly | [v1.32.0](#v1320---18-may-2022) |
-| 4.5* | [v1.32.0](#v1320---18-may-2022) |
-| 4.4* | [v1.32.0](#v1320---18-may-2022) |
+| Nightly | [v1.33.0](#v1330---19-may-2022) |
+| 4.5* | [v1.33.0](#v1330---19-may-2022) |
+| 4.4* | [v1.33.0](#v1330---19-may-2022) |
 | 4.3 | [v1.31.0](#v1310---05-apr-2022) |
 | 4.2 | [v1.31.0](#v1310---05-apr-2022) |
 | 4.1 | [v1.30.1](#v1301---30-mar-2021) |
@@ -29,47 +30,72 @@ The table shows the latest version of the nodes available in each update site fo
 
 \* Currently supported versions
 
-## v1.32.0 - 18-May-2022
-* New Nodes 
-  * Configurable Empty Table Switch
-  * Configurable IF/Case Switch (Flow Variable Value)
-  * Configurable IF/Case Switch
-  * Configurable Crossover (Flow Variable Value)
-  * Configurable End IF/Case
+Back to [ReadMe](README.md)
 
-* New Features (See also API section)
-  * New flow variable conditions for String, String Array, Integer, Integer Array,
-	Long, Long Array, Double, Double Array, Boolean, Boolean Array and Path variable types
-  * New Port Combiners for Buffered Data Table, Flow Variable and RCSB Advanced Query port types
+## v1.33.0 - 19-May-2022
+* New Nodes
+  * Added Column to Singleton Collection node
+  * Added Mask Lists Node
+  * Added GZip Compress Binary Object node
+  * Added GZip Decompress (Un-gzip) Binary Object node
+  * Added Zip Binary Object node
+  * Added UnZip Binary Object node
   
-* Deprecated Nodes
-  * Deprecated all IF Switch / Case Switch, End IF and End Case nodes
+* Enhancements
+  * Added RemoveColumnsDataRow class to core plugin
+
+Back to [top](#changelog)
+
+
+## v1.32.0 - 18-May-2022
+_New Nodes_ 
+* Configurable Empty Table Switch
+* Configurable IF/Case Switch (Flow Variable Value)
+* Configurable IF/Case Switch
+* Configurable Crossover (Flow Variable Value)
+* Configurable End IF/Case
+
+_New Features (See also API section)_
+* New flow variable conditions for String, String Array, Integer, Integer Array, Long, Long Array, Double, Double Array, Boolean, Boolean Array and Path variable types
+* New Port Combiners for Buffered Data Table, Flow Variable and RCSB Advanced Query port types
   
-* API - Added 2 new extension points:
+_Deprecated Nodes_
+* Deprecated all IF Switch / Case Switch, End IF and End Case nodes
+  
+_API_
+* Added 2 new extension points:
   * `com.vernalis.knime.flowcontrol.variablecondition` (Variable Condition) - Used to 
   		provide conditions to the Flow Variable value based nodes
-  * `com.vernalis.knime.flowcontrolporttypecombiner` (Port Type Combiner) - Used to allow merging of multiple active
+  * `com.vernalis.knime.flowcontrol.porttypecombiner` (Port Type Combiner) - Used to allow merging of multiple active
   		ports in Configurable End IF/Case nodes 
   
-* Enhancements
-  * Fixed links in main CHANGELOG.md summary table
+_Enhancements_
+* Fixed links in main CHANGELOG.md summary table
+
+Back to [top](#changelog)
+
 
 ## v1.31.0 - 05-Apr-2022
-* New Nodes / Features
-  * Added UI Selection modifier tools
+_New Nodes / Features_
+* Added UI Selection modifier tools
 
-* Enhancements
-  * Updated to switch to v2 of RCSB Query API automatically on 13-Apr-2022
-  * Made verbose JSON output optional in Query Executor node
-  * Modified SettingsModelRegistry implementation of QueryExecutorNodeModel to allow saved model versioning
-  * SettingsModelRegistry has new methods to allow saving of model versions, and adding backwards compatible new versions (Changes made backwards compatible)
-  * AbstractSimpleStreamableFunctionNodeModel updated to match new SettingsModelRegistry
-  * Added SettingsModelRegistryImpl class and SettingsModelWrapper class
+_Enhancements_
+* Updated to switch to v2 of RCSB Query API automatically on 13-Apr-2022
+* Made verbose JSON output optional in Query Executor node
+* Modified SettingsModelRegistry implementation of QueryExecutorNodeModel to allow saved model versioning
+* SettingsModelRegistry has new methods to allow saving of model versions, and adding backwards compatible new versions (Changes made backwards compatible)
+* AbstractSimpleStreamableFunctionNodeModel updated to match new SettingsModelRegistry
+* Added SettingsModelRegistryImpl class and SettingsModelWrapper class
+
+Back to [top](#changelog)
 
 
 ## v1.30.4 - 04-Feb-2022
 * Updates for changes in RDKit v4.5.0 ([#14](https://github.com/vernalis/vernalis-knime-nodes/issues/14))
 * Fixes bug when show loop body node timings option is checked for benchmark nodes not at root level of workflow ([#15](https://github.com/vernalis/vernalis-knime-nodes/issues/15))
+
+Back to [top](#changelog)
+
 
 ## v1.30.3 - 02-Dec-2021
 * Bug fixes and feature enhancements to PDB Connector
@@ -81,6 +107,9 @@ The table shows the latest version of the nodes available in each update site fo
   * Added new chemical descriptor query types
   * Only display valid scoring types in Query Executor node when a query is available at the incoming port
 
+Back to [top](#changelog)
+
+
 ## v1.30.2 - 11-May-2021
 * Made all `NodeFactoryClassMapper`s subclass `MapNodeFactoryClassMapper`
 * Fixed bug whereby `MolSanitizeException` thrown in fragment canonicalisation throws MMP Fragment nodes over
@@ -88,13 +117,22 @@ The table shows the latest version of the nodes available in each update site fo
 * Moved some of the query execution control from the node model to the query executor
 * Made all RCSB.org service calls point to `https://` rather than `http://`
 
+Back to [top](#changelog)
+
+
 ## v1.30.1 - 30-Mar-2021
 * Fixed various bugs in RDKit Templated conformer generation node
+
+Back to [top](#changelog)
+
 
 ## v1.30.0 - 04-Mar-2021
 _New Nodes_
 * KNIME URI Resolver
 * KNIME URI Resolver (Variable)
+
+Back to [top](#changelog)
+
 
 ## v1.29.0 - 19-Feb-2021
 _New Nodes_
@@ -111,6 +149,9 @@ _Deprecated Nodes_
 _Other_
 * Added `FixedLengthQueue` to collections package in core plugin
 
+Back to [top](#changelog)
+
+
 ## v1.28.3 - 15-Feb-2021
 * Added retries to failed download in Query Execution (Fixes [#9](https://github.com/vernalis/vernalis-knime-nodes/issues/9))
 * Added optional limit to returned hits in Query Execution Node (Closes [#10](https://github.com/vernalis/vernalis-knime-nodes/issues/10))
@@ -118,9 +159,15 @@ _Other_
 * PDB Saver node now correctly handles `knime://` URL protocol in both full paths in columns and in parent folder settings ([#12](https://github.com/vernalis/vernalis-knime-nodes/issues/12))
 * Save File Locally node now correctly handles `knime://` URL protocol in both full paths in columns and in parent folder settings (Fixes [#12](https://github.com/vernalis/vernalis-knime-nodes/issues/12))
 
+Back to [top](#changelog)
+
+
 ## v1.28.2 - 28-Jan-2021
 * Fixes [#8](https://github.com/vernalis/vernalis-knime-nodes/issues/8) (Over-zealous sequence query validation)
 * Removes unused dependency in SpeedySMILES
+
+Back to [top](#changelog)
+
 
 ## v1.28.1 - 22-Jan-2021
 Minor enhancements and bug fixes to MMP plugin:
@@ -128,22 +175,40 @@ Minor enhancements and bug fixes to MMP plugin:
 * Corrected bug in key HAC calculation
 * Added Filter for minimum key HAC
 
+Back to [top](#changelog)
+
+
 ## v1.28.0 - 18-Dec-2020
 * Retired original PDB Connector family
 * New PDB Connector query nodes
 
+Back to [top](#changelog)
+
+
 ## v1.27.4 - 01-Dec-2020
 * Add `RDKitRuntimeExceptionHandler` class to allow RDKit version before 4.1 or after 4.1 to work seemlessly
+
+Back to [top](#changelog)
+
 
 ## v1.27.3 - 30-Oct-2020
 * Requires RDKit Types plugin v4.1.0 or higher
 * RDKit exception handling updated to use `#what()` method in place of removed `#message()` method
 
+Back to [top](#changelog)
+
+
 ## v1.27.2 - 19-Oct-2020
 * Complete fix of PDB Connector issue (v1.27.1 did not fully fix)
 
+Back to [top](#changelog)
+
+
 ## v1.27.1 - 16-Oct-2020
 * Added optional 'new' attribute to query option and ignored settings exceptions for query options so tagged (Fixes [#2](https://github.com/vernalis/vernalis-knime-nodes/issues/2))
+
+Back to [top](#changelog)
+
 
 ## v1.27.0 - 18-Aug-2020
 _New Nodes_
@@ -160,11 +225,17 @@ _Bux Fixes / Enhancements_
 * `SettingsModelIntegerRange#createClone()` now returns correct type
 * Added all missing version constraints in `MANIFEST.MF`
 
+Back to [top](#changelog)
+
+
 ## v1.26.0 - 16-Mar-2020
 * Bug-fixes and minor enhancements to PDB Connector family of nodes
   * Fixed broken date query fields (Deposition Date, Release Date, Revision Date)
   * Added searches for Entity IDs, Chain IDs, Uniprot Gene Names
   * Fixed mouse scroll speed
+
+Back to [top](#changelog)
+
 
 ## v1.25.0 - 09-Mar-2020
 _New Nodes_
@@ -181,22 +252,37 @@ _Bug Fixes_
 * Fixed bug in inject column properties node causing `IndexOutOfBoundsException` to be thrown if < 3 input columns present in the 2nd table
 * Fixed bug in which PDB Connector Custom Report node overwrites xmlQuery flow variable. This bug causes crashes in KNIME 4.1 due to changes in flow variable handling
 
+Back to [top](#changelog)
+
+
 ## v1.24.4 - 27-Nov-2019
 * Fixed bug in Random Numbers Generator node in range of doubles returned
 * Added optional random seed in Random Numbers Generator node
 * Added summary flow variables to Random Numbers Generator node output
 
+Back to [top](#changelog)
+
+
 ## v1.24.3 - 26-Nov-2019
 * Updates RDKit Dependencies to include RDKit version 4.x.x
+
+Back to [top](#changelog)
+
 
 ## v1.24.2 - 13-Nov-2019
 * Corrected bug in Plate Nodes resulting in Well ID columns returning Row IDs
 * Fixed bug in file reader nodes resulting in loss of final newline combination if no characters follow it
 * Fixed bug in file reader nodes resulting in conversion of all newlines to unix-style '\n'
 
+Back to [top](#changelog)
+
+
 ## v1.24.1 - 04-Nov-2019
 * Read / Write variables nodes now support `knime:` URL protocol
 * Fixed bug in Read Variables node resulting in file chooser showing 'Save' chooser and errors rather than 'Open'
+
+Back to [top](#changelog)
+
 
 ## v1.24.0 - 21-Oct-2019
 _New Nodes_
@@ -208,6 +294,9 @@ _Bug Fixes_
 * Thread safety issue parsing dates in Bruker Amix Peaklist reader and SD-file reader nodes
 * ePMC Advanced Query node updated to v6.2 of webservice API
 
+Back to [top](#changelog)
+
+
 ## v1.23.0 - 20-Sep-2019
 _New Nodes_
 * 1D Kernel Density Plot
@@ -216,11 +305,17 @@ _New Nodes_
 * Notched Boxplot
 * PMI Kernel Density Plot
 
+Back to [top](#changelog)
+
+
 ## v1.22.0 - 06-Sep-2019
 _New Nodes_
 * New PMI-Derived Properties Calculation node (accepts more column input formats, e.g. CTab and PDB), and many more properties
 * PMI Scatter Plot
 * PMI Convex Hull Plot
+
+Back to [top](#changelog)
+
 
 ## v1.21.0 - 03-Sep-2019
 _New Nodes_
@@ -229,21 +324,39 @@ _New Nodes_
 _Enhancements_
 * MMP Node Icons restored
 
+Back to [top](#changelog)
+
+
 ## v1.20.5 - 12-Aug-2019
 * Minor enhancement allow File Encoding Guess to work with non-markable InputStreams (see https://forum.knime.com/t/get-fails-if-the-response-does-not-have-content-type-set/17295/10 for original issue)
 
+Back to [top](#changelog)
+
+
 ## v1.20.4 - 09-Jul-2019
 * Changed RDKit dependency to v3.8.0 to force non-RDKit node users with Vernalis nodes to update past the RDKit 3.7.0 version which is broken on some platforms.
+
+Back to [top](#changelog)
+
 
 ## v1.20.3 - 19-Jun-2019
 * Update version constraints to `[3.0.0,5.0.0)` to accommodate update to KNIME v4.0.0
 * Standardised licence text in feature.xml (defunct URL removed and linebreaks/indents standardised)
 
+Back to [top](#changelog)
+
+
 ## v1.20.2 - 17-Jun-2019
 * Fixes MMP bug https://forum.knime.com/t/mmp-molecule-fragment-rdkit-node-indexoutofboundsexception/15469/3
 
+Back to [top](#changelog)
+
+
 ## v1.20.1 - 09-May-2019
 * Minor bug fix to `Load text-based files` and `PDB Loader` nodes, which means that the removed input column names is not de-dupicated in the output table (e.g. 'File' as input column would be rendered 'File(#1)' in the out table, even when the 'Remove input column' option was checked)
+
+Back to [top](#changelog)
+
 
 ## v1.20.0 - 02-May-2019
 _New Nodes_
@@ -259,6 +372,9 @@ _New Features_
 
 _Bug fixes_
 * 'PDB Saver' / 'Save File Locally' nodes now handle directory creation correctly when using multiple threads, preventing some files from being saved
+
+Back to [top](#changelog)
+
 
 ## v1.19.0 - 28-Mar-2019
 _New Nodes_
@@ -278,16 +394,28 @@ _Bug fixes / Enhancements_
 * Allowed unix-style dates in 'Load Bruker AMIX Peaklist Files' node
 * Added createTab method to `NodeDescriptionUtils`
 
+Back to [top](#changelog)
+
+
 ## v1.18.3 - 08-Feb-2019
 * Performance improvement in MMP Calculate Maximum Cuts (RDKit) node
 * Removed unused imports in other MMP classes and fixed typos in javadoc
+
+Back to [top](#changelog)
+
 
 ## v1.18.2 - 08-Jan-2019
 * Fixes bug in international support for memory usage nodes
 * Fixes bug in Mac OS support for memory usage nodes
 
+Back to [top](#changelog)
+
+
 ## v1.18.1 - 20-Dec-2018
 * Fixes compatibility issue in `NodeDescriptionUtils` class introduced in v 3.7.0 of KNIME Core
+
+Back to [top](#changelog)
+
 
 ## v1.18.0 - 30-Nov-2018
 _New Nodes_
@@ -321,20 +449,35 @@ _Bug Fixes_
 * Random Numbers Generator bug fixed (2 instances of node shared output table spec causing errors at execution if they were producing different types)
 * Fixed node dialog bug leading to settings not being displayed correctly in node dialog on load
 
+Back to [top](#changelog)
+
+
 ## v1.17.3 - 01-Aug-2018
 * Fixes further bugs in FASTA sequence extractor when '>' occurs other than at start of header line
 * Updates RDKit changes in v3.4.0
 
+Back to [top](#changelog)
+
+
 ## v1.17.2 - 23-Jul-2018
 * Fixes bug in FASTA sequence extractor when '>' occurs other than at start of header line
+
+Back to [top](#changelog)
+
 
 ## v1.17.1 - 23-Jul-2018
 * Adds optional Flow variable input ports to all Load XXX files
 * Adds Mol Block to output from Load SD-File (SDF) node
 * Adds Output properties selection for the Multiline Text-Based Object nodes (SDF and Amix Peak List)
 
+Back to [top](#changelog)
+
+
 ## v1.17.0 - 16-Jul-2018
 * Added SDF file reader with charset detection/choice
+
+Back to [top](#changelog)
+
 
 ## v1.16.0 - 08-Jun-2018
 _New Nodes_
@@ -343,18 +486,29 @@ _New Nodes_
 * 1D, 2D, 3D, nD Vector distance nodes
 * Plate Well ID Nodes (Source and Manipulator)
 
+Back to [top](#changelog)
+
+
 ## v1.15.0 - 31-May-2018
 _New Nodes_
 * Added Geometric Distance nodes (1D, 2D, 3D and nD)
 
+Back to [top](#changelog)
+
+
 ## v1.14.1 - 31-May-2018
 * Fixes minor bug in Database Table Selector node resulting loss of table name during node dialog reload
+
+Back to [top](#changelog)
+
 
 ## v1.14.0 - 25-May-2018
 _New Nodes_
 * Adds Database plugin with database table chooser and table exists switches
 * Adds Bruker Amix Peaklist reader
 * Adds 'Include filename in output table' option in all 'Load ... files' nodes
+
+Back to [top](#changelog)
 
 ## v1.13.0 - 18-May-2018
 _New Nodes_
@@ -365,18 +519,30 @@ _Enhancements_
 * Column name retained unchanged when input column is removed
 * New `AbstractStreamableParallelisedFilterSplitterNodeModel` base class added to core plugin
 
+Back to [top](#changelog)
+
+
 ## v1.12.10 - 17-May-2018
 * Fixes bug in 'Load Local...' files node dialogue resulting in `NullPointerException` during initial configuration
 * Fixes bug in 'Load Local...' files node dialogue meaning file selector buttons remained disabled once a flow variable had been used as file source, even after removing flow variable setting
+
+Back to [top](#changelog)
+
 
 ## v1.12.9 - 20-Apr-2018
 * Updates to RDKit 3.3.1 compatibility
   * Changed `RWMol#AddAtom()` and `RWMol#AddBond()` method signatures in deprecated nodes
 
+Back to [top](#changelog)
+
+
 ## v1.12.8 - 16-Mar-2018
 * Fixes MMP XML generation bug (https://forum.knime.com/t/mmp-molecule-fragment-node-output-svg-cells-and-system-locale/10315)
 * Code clean-up removing many compiler warnings
 * Corrected deprecation of FVVal IF Switch node missed previously to plugin.xml deprecation method
+
+Back to [top](#changelog)
+
 
 ## v1.12.7 - 02-Mar-2018
 * Efficiency improvements in RCSB Heterogen Details and SMILES Query nodes
@@ -387,15 +553,27 @@ _Enhancements_
   * Field 'Specimen Type' removed in line with its removal at RCSB
   * Optional parameter 'new' added in report field XML definition DTD, which is parsed in class `ReportField2`.  If this flag is set, `InvalidSettingsExceptions` during node settings load/validate are ignored
 
+Back to [top](#changelog)
+
+
 ## v1.12.6 - 28-Feb-2018
 * Fixed version constraint and resolved code issues for RDKit drawing API change
+
+Back to [top](#changelog)
+
 
 ## v1.12.5 - 28-Feb-2018
 * Fixed bug in PDB Heterogen details webservice causing failure when molecular formula XML tag is empty
 * Improved efficiency by making webservice result lazy-parse most fields
 
+Back to [top](#changelog)
+
+
 ## v1.12.4 - 01-Dec-2017
 * Fixed error in rendering of 1-cut 'reverse' fragmentations which flipped the key/value colours
+
+Back to [top](#changelog)
+
 
 ## v1.12.3 - 24-Nov-2017
 * Fixes bug in MMP Pair generation resulting in non-canonical transform generation (https://www.knime.com/forum/vernalis/mmpa-reverse-direction-transform-issue)
@@ -404,38 +582,54 @@ _Enhancements_
 * Fixes bug in SpeedySMILES HAC Count in which attachment point (SMILES `*`) atoms where counted as heavy atoms
 * Enhances SpeedySMILES HAC count to correctly handle isotopically labelled and charged explicit H atoms
 
+Back to [top](#changelog)
+
 ## v1.12.2 - 21-Nov-2017
 * Updated SMARTSviewer node to point to new URL
 * Fixed bugs in PMI calculations leading to symmetrical Discs being categorised as Spheres, and then in incorrect position
   * Incorporated a tolerance in Cubic for comparison of D with 0
   * Corrected error in D=0 roots
 
+Back to [top](#changelog)
+
+
 ## v1.12.1 - 20-Oct-2017
 * Fixed bug in string comparison of Flow Variable Value If Switch nodes
+
+Back to [top](#changelog)
+
 
 ## v1.12.0 - 21-Jul-2017
 * Added 29 new fingerprint manipulation nodes
 * Added new Aggregation operators for fingerprint manipulations in GroupBy and related nodes
 * Deprecated original Vernalis Fingerprint Properties node
 
+Back to [top](#changelog)
+
+
 ## v1.11.2 - 12-Jul-2017
-### Minor bug fixes:
+_Minor bug fixes_
 * Output Smiles Adapter Cells for all molecule outputs
 * Output Types set to SmilesAdapterCell.RAW_TYPE via new constants in MMPConstants for all molecule outputs (makes compatible with Molecule Type Cast output)
 * All nodes now recognise either SmilesValue or SmilesAdapterCells for SMILES input columns
 
-## v1.11.1 - 11-Jul-2017
+Back to [top](#changelog)
 
-### Minor bug fixes:
+
+## v1.11.1 - 11-Jul-2017
+_Minor bug fixes_
 * Require JavaSE1.8 RTE for all plugins
 * MMP ProgressTableModel made threadsafe
 * Apply Transform node has correct regex for selecting the 'Left' AP fingerprint column
 * Apply Transform node handles, via warning, the situation when no fingerprint column properties are present (uses default settings and shows node warning)
 
+Back to [top](#changelog)
+
+
 ## v1.11.0 - 07-Jul-2017
 This is a major overhaul of the MMP Nodes which has been described at recent Cheminformatics SIGs and the Berlin Spring 2017 UGM.  Many of the original nodes have been deprecated, a number of new nodes and features added, and many of the new nodes are now streamable.
 
-### All Nodes
+_All Nodes_
 * Performance improvements
 * New predefined fragmentation patterns ('MATSY', 'Peptide Sidechains', 'Nucleic Acid Sidechains')
 * Improved rSMARTS validation
@@ -444,12 +638,12 @@ This is a major overhaul of the MMP Nodes which has been described at recent Che
   * No longer requires the SMARTS to be provided as an rSMARTS - although this is still supported for backwards compatibility
   * No longer requires atoms to be numbers in the SMARTS match
 
-### Filtering (Updated)
+_Filtering (Updated)_
 * Updated faster implementation
 * Streamable
 * Previous versions deprecated
 
-### Fragmentation nodes (UPDATED)
+_Fragmentation nodes (UPDATED)_
 * Performance improvements
 * Memory leaks fixed
 * AP Fingerprint columns have properties describing creation settings to avoid mismatch
@@ -465,7 +659,7 @@ This is a major overhaul of the MMP Nodes which has been described at recent Che
 * Streamable
 * '3rd Gen' version deprecated
 
-### Pair Generation (UPDATED & NEW)
+_Pair Generation (UPDATED & NEW)_
 * Performance improvements including parallelisation
 * HiLite mapping optionally implemented
 * Transforms can be filtered by
@@ -477,21 +671,27 @@ This is a major overhaul of the MMP Nodes which has been described at recent Che
 * New 'Reference Table' version of pair generation node implemented, only returning transforms between the rows of the two input tables
 * Deprecated older version
 
-### Apply Transforms (NEW)
+_Apply Transforms (NEW)_
 * New node to apply table of rSMARTS transforms
 * Allows AP-fingerprint environment filtering
 * Node Views showing progress, including currently processed transform(s)
 * Limited stereochemistry generation handling at present time
 
-### Rendering Nodes (NEW)
+_Rendering Nodes (NEW)_
 * Show matching bonds (also calculates number of matching bonds)
 * Show cuttable bonds (also calculates number of cuttable bonds)
 * Streamable
+
+Back to [top](#changelog)
+
 
 ## v1.10.0 - 23-Jun-2017
 * Added new Generic Run-for/to-time Loop Start nodes
 * Fixed Timed Loop End nodes to show correct last iteration count in flow variables
 * Added possibility for user cancellation during all Timed Loop Start nodes
+
+Back to [top](#changelog)
+
 
 ## v1.9.0 - 22-Jun-2017
 * Existing PDB Downloader nodes deprecated
@@ -502,27 +702,45 @@ This is a major overhaul of the MMP Nodes which has been described at recent Che
 * FileHelper readURLToString method attempts to follow 301 return type redirects (i.e. any of the nodes loading text files from remote urls will now act in this manner)
 * https: protocol now accepted for URLs in any of the downloader nodes (in addition to file:, knime:, http:, ftp:)
 
+Back to [top](#changelog)
+
+
 ## v1.8.5 - 06-Jun-2017
 * Fixed undesired node execution failure when SpeedySMILES de-salt node encounters empty or missing input cell
+
+Back to [top](#changelog)
+
 
 ## v1.8.4 - 01-Jun-2017
 * Fixed bugs introduced into Matched Molecular Pairs plugin double bond stereochemistry handling by latest updates to RDKit
 
+Back to [top](#changelog)
+
+
 ## v1.8.3 - 25-Jan-2017
 * Fixed bug in Speedy SMILES row filter/splitters which cause missing cells to throw NullPointerException
 
+Back to [top](#changelog)
+
+
 ## v1.8.2 - 16-Nov-2016
-* Addreses loop end feature request from forum  for the multiple port loop ends (3 port, upto 4 port, upto 6 ports) and the timed loop ends (1 port, 2 port, 3 port, upto 4 ports)
+* Addresses loop end feature request from forum  for the multiple port loop ends (3 port, upto 4 port, upto 6 ports) and the timed loop ends (1 port, 2 port, 3 port, upto 4 ports)
 * All settings are now applied on a per-port basis
 * Added options to allow changing column types and changing table specs, in line with the KNIME core loop end nodes
 * Implemented the 'Row Key Policy' option (this was a bug in which the change from the 'Generate unique row IDs' check box meant that this was unimplemented)
 * Settings for non-connected optional input ports are disabled in the node configuration dialog
+
+Back to [top](#changelog)
+
 
 ## v1.8.1 - 02-Nov-2016
 * Fixed change in behaviour of European PMC Advanced query node due to remote webservice changes
 * Added options for page size and email address to register to remote service
 * Made further existing nodes streamable
 * Fixed dependency issues preventing installation to KNIME 3.1
+
+Back to [top](#changelog)
+
 
 ## v1.8.0 - 31-Oct-2016
 * 'Speedy SMILES' nodes (16 nodes) added for fast high-throughput pre-processing of SMILES strings (see slidesfrom 5th Cheminformatics SIG for details)
@@ -531,6 +749,9 @@ This is a major overhaul of the MMP Nodes which has been described at recent Che
 * Empty Column Checker node added to Testing - node ensures table columns have at least one non-missing cell in test cases
 * Multi-file reader source nodes added to IO folder (Load Local ... Files - currently 7 nodes - CDXML, Mol, Mol2, PDB, RXN XML and text)  NB These nodes will accept a single flow variable for multiple files. From the node documentation, "Alternatively, a flow variable can be specified, containing one or more filenames separated by ';'"
 * Many existing nodes are now streamable (more will become streamable in due course)
+
+Back to [top](#changelog)
+
 
 ## v1.7.0 - 09-Aug-2016
 * New versions of PDB Connector / PDB Connector (XML Query) nodes
@@ -552,12 +773,21 @@ This is a major overhaul of the MMP Nodes which has been described at recent Che
 * New manipulator node to access the PDB 'Describe Heterogens' webservice
 * New source node to access the PDB SMILES Query webservice
 
+Back to [top](#changelog)
+
+
 ## v1.6.5 - 30-Jun-2016
 * Fixed bug introduced to PDB Connector nodes due to changes in RCSB webservices
+
+Back to [top](#changelog)
+
 
 ## v1.6.4 - 13-Apr-2016
 * Added PMI Nodes plugin - nodes for calculating Principal Moments of Inertia, and aligning molecules to Inertial Reference Framge
 * Added support for `knime://` protocol to List Folders node
+
+Back to [top](#changelog)
+
 
 ## v1.6.3 - 17-Feb-2016
 * Moved filtering of fragmentations forwards in process, resulting in significant performance improvements for filtered fragmentations (Unchanging HAC and Changing/Unchanging HAC ratio)
@@ -570,10 +800,16 @@ This is a major overhaul of the MMP Nodes which has been described at recent Che
 * Fixed bug causing multi-fragment node to only perform two cuts to a bond (`[2*]-[1*]` value) when the maximum number of cuts was 2
 * Improved garbage collector class to remove possible references to deleted native objects
 
+Back to [top](#changelog)
+
+
 ## v1.6.2 - 12-Feb-2016
 * Fixed loss of stereointegrity issue in MMP fragmentation
 * Fixed canonicalisation issue resulting from above fix (NB 'Values' will not be differently canonicalised to previously)
 * Fixed graceless failures for some salted forms and apparent successful failures of other salted forms
+
+Back to [top](#changelog)
+
 
 ## v1.6.1 - 02-Feb-2016
 * RCSB PDB Loader nodes make 5 attempts to load each file before failing if unable to load (previously only a single attempt was made, resulting in a missing value in the output)
@@ -581,15 +817,18 @@ This is a major overhaul of the MMP Nodes which has been described at recent Che
 * Bug fixes to MMP nodes which resulted in loss of double bond geometry (Change in RDKit toolkit behaviour), scrambling of attachment point labels and node failures in certain circumstances
 * Nodes transferred to the KNIME core product (Wait for time, Wait to time, Flow variable Case switch) deprecated
 
+Back to [top](#changelog)
+
+
 ## v1.6.0 - 23-Nov-2015
 This is a significant update.  No new functionality is provided, but the contribution is fully KNIME 3.0-ready
-### General
+_General_
 * All nodes are now parallelised wherever possible
 * All plugins manifests were updated to bind KNIME component versions into range `[3.0.0, 4.0.0)`
 * All plugin.xml's had deprecated nodes re-added, and the deprecation flag set
 * All plugin.xml's had disused expert-mode property of node extensions removed
 
-### Main Vernalis Plugin
+_Main Vernalis Plugin_
 #### Fingerprint properties Node
 * Parallelised execution
 * Fingerprint type names no longer end 'Cell', so are `SparseBitVector`, `DenseBitVector`, `SparseByteVector`, `DenseByteVector`
@@ -645,33 +884,47 @@ This is a significant update.  No new functionality is provided, but the contrib
 * Updated to allow long tables at both outputs
 
 
-### MMPs Plugin
+_MMPs Plugin_
 * Modified canonicalisation during fragmentation to resolve duplicate leaves canonically (results in possible changes to canonicalisation)
 * Converted to `SmilesCellFactory`
 * MMP canonicalisation is modified to deal with duplicate components in the 'Key'
 
-### Flow Control Plugin
+_Flow Control Plugin_
 * All PortType constructors replaced with `PortTypeRegistry.getInstance().getPortType()` constructors
 * Now all use `#size()` in place of `#getRowCount()`
 * Iteration counters now all `long` (flow variables for iteration counters may therefore behave strangely)
 
-### Performance Monitoring Plugin
+_Performance Monitoring Plugin_
 * Iteration counters now `long` (flow variables for iteration counters may therefore behave strangely)
 * Iteration column in timing table now `LongCell` (previously `IntCell`)
+
+Back to [top](#changelog)
 
 
 ## v1.5.0 - 11-Nov-2015
 * Major re-release of the MMP nodes.  The first generation nodes have been retired, and a new faster, more efficient implementation released
 
+Back to [top](#changelog)
+
+
 ## v1.4.1 - 07-Sep-2015
-* Fixed intermittant problem with nodes ending in uncategorised folder
+* Fixed intermittent problem with nodes ending in uncategorised folder
+
+Back to [top](#changelog)
+
 
 ## v1.4.0 - 12-May-2015
 * Added benchmarking nodes
 
+Back to [top](#changelog)
+
+
 ## v1.3.5 - 30-Mar-2015
 * Fixed issues with RDKit conversion errors causing MMP node execution to fail
 * Added optional Attachment point context fingerprints to the MMP Node and MMP Molecule Fragment Node
+
+Back to [top](#changelog)
+
 
 ## v1.3.4 - 12-Mar-2015
 * Added Jameed Hussain's MMP Fragmentation rSMARTS from original JCIM paper
@@ -681,17 +934,32 @@ This is a significant update.  No new functionality is provided, but the contrib
 * Improved memory management (Explicit deleting or RDKit objects)
 * Enhanced node-cancelling capabIlity during fragmentation process
 
+Back to [top](#changelog)
+
+
 ## v1.3.3 - 10-Mar-2015
 * Added `knime:` protocol support to Load Text-based files and Load local PDB files nodes
+
+Back to [top](#changelog)
+
 
 ## v1.3.2 - 22-Jan-2015
 * Corrected bug in Load Text-Based files node for non-'Guess' options
 
+Back to [top](#changelog)
+
+
 ## v1.3.1 - 05-Jan-2015
 Removed erroneous reference to SMILES in MMP node dialogues
 
+Back to [top](#changelog)
+
+
 ## v1.3.0 - 22-Dec-2014
 Added Matched Molecular Pairs nodes
+
+Back to [top](#changelog)
+
 
 ## v1.2.0 - 10-Dec-2014
 * Upgraded existing If/Case flow variable switch nodes
@@ -701,29 +969,50 @@ Added Matched Molecular Pairs nodes
 * Added delay nodes
 * Added Read/Write flow variable nodes
 
+Back to [top](#changelog)
+
+
 ## v1.1.5 - 04-Nov-2014
 * Added dialog option to set file encoding in load local text files node
 * Provided enhanced file encoding detection in the load local text/pdb files nodes (UTF-8, UTF-16 BE/LE, UTF-32 BE/LE)
 
+Back to [top](#changelog)
+
+
 ## v1.1.4 - 05-Aug-2014
 * Fixed bug which had prevented SMARTSViewer node from working
+
+Back to [top](#changelog)
+
 
 ## v1.1.3 - 26-Mar-2014
 * Added optional new columns to List Folders node
 * Re-worked Fingerprint Properties node to use `ColumnRearranger` (should improve performance for large input tables and reduce datatable filesize)
 * Removed redundant `NodeView` Classes
 
+Back to [top](#changelog)
+
+
 ## v1.1.2 - 17-Mar-2014
 * PDB Connector node updated to provide options to use new POST or old GET service.  Existing workflows will default to the new POST service
 * PDB Connector (XML Query) node added
 
+Back to [top](#changelog)
+
+
 ## v1.1.1 - 28-Feb-2014
 * Added Fingerprint Properties node
+
+Back to [top](#changelog)
+
 
 ## v1.1.0 - 26-Feb-2014
 * 5 New flow control nodes for flow variables added, emulating IF/CASE nodes in core KNIME product
 * European PubMed Central Advanced Search node added
 * PDB Sequence Extractor node added
+
+Back to [top](#changelog)
+
 
 ## v1.0.4 - 30-Jan-2014
 Updates between 25-Jun-2013 and v1.0.4 on 30-Jan-2014 are a little unclear, and where never assigned individual version IDs
@@ -733,5 +1022,10 @@ Updates between 25-Jun-2013 and v1.0.4 on 30-Jan-2014 are a little unclear, and 
 * SMARTSViewer node updated in nightly build to require SMARTS-typed datacell.  The original version also accepted SMILES and String types, which allowed nonsense to be sent to the remote server too easily.
 * Local text file load and save nodes added to the nightly build
 
+Back to [top](#changelog)
+
+
 ## v1.0.0 - 25-Jun-2013
 * Vernalis Community Contribution released
+
+Back to [top](#changelog)
