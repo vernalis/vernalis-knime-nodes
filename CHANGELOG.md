@@ -5,9 +5,9 @@ The table shows the latest version of the nodes available in each update site fo
 
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
-| Nightly | [v1.32.0](#v1320---18-may-2022) |
-| 4.5* | [v1.32.0](#v1320---18-may-2022) |
-| 4.4* | [v1.32.0](#v1320---18-may-2022) |
+| Nightly | [v1.33.0](#v1330---19-may-2022) |
+| 4.5* | [v1.33.0](#v1330---19-may-2022) |
+| 4.4* | [v1.33.0](#v1330---19-may-2022) |
 | 4.3 | [v1.31.0](#v1310---05-apr-2022) |
 | 4.2 | [v1.31.0](#v1310---05-apr-2022) |
 | 4.1 | [v1.30.1](#v1301---30-mar-2021) |
@@ -28,6 +28,19 @@ The table shows the latest version of the nodes available in each update site fo
 | 2.7 | [v1.0.4](#v104---30-jan-2014) |
 
 \* Currently supported versions
+
+## v1.33.0 19-May-2022
+* New Nodes
+  * Added Column to Singleton Collection node
+  * Added Mask Lists Node
+  * Added GZip Compress Binary Object node
+  * Added GZip Decompress (Un-gzip) Binary Object node
+  * Added Zip Binary Object node
+  * Added UnZip Binary Object node
+  
+* Enhancements
+  * Added RemoveColumnsDataRow class to core plugin
+
 
 ## v1.32.0 - 18-May-2022
 * New Nodes 

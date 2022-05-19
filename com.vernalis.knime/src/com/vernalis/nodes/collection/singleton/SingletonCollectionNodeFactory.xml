@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) 2022, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode
+	icon="singletoncoll.png"
+	type="Manipulator">
+	<name>Column to Singleton Collection</name>
+
+	<shortDescription>
+		Converts columns into collection columns containing a
+		single cell
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>The node converts columns into collection column, with each
+				collection cell wrapping a single cell
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis.com/">Vernalis (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+		</intro>
+
+		<option name="Select Columns">Select the column(s) to wrap</option>
+		<option name="Wrap Missing Cells">Should a missing cell be wrapped into a
+			collection, or left as a missing cell?
+		</option>
+		<option name="Collection Type">Should the output columns be List or Set
+			collections?</option>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="Input Table">Table containing one or more non-collection columns
+		</inPort>
+		<outPort
+			index="0"
+			name="Singleton Collection column(s)">Table containing the input table with selected columns wrapped
+			into singleton collections
+		</outPort>
+	</ports>
+
+</knimeNode>

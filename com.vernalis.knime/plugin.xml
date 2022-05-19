@@ -178,6 +178,43 @@
             deprecated="false"
             factory-class="com.vernalis.nodes.collection.size.CollectionSizeNodeFactory">
       </node>
+      <node
+            category-path="/community/vernalis/collections/"
+            deprecated="false"
+            factory-class="com.vernalis.nodes.collection.mask.ListMaskNodeFactory"
+            hidden="false">
+      </node>
+      <node
+            category-path="/community/vernalis/collections/"
+            deprecated="false"
+            factory-class="com.vernalis.nodes.collection.singleton.SingletonCollectionNodeFactory"
+            hidden="false">
+      </node>
+      <node
+            category-path="/community/vernalis/blob"
+            deprecated="false"
+            factory-class="com.vernalis.nodes.blob.gzip.GzipBlobNodeFactory"
+            hidden="false">
+      </node>
+      <node
+            category-path="/community/vernalis/blob"
+            deprecated="false"
+            factory-class="com.vernalis.nodes.blob.gzip.UnGzipBlobNodeFactory"
+            hidden="false">
+      </node>
+      <node
+            category-path="/community/vernalis/blob"
+            deprecated="false"
+            factory-class="com.vernalis.nodes.blob.zip.ZipBlobNodeFactory"
+            hidden="false">
+      </node>
+      <node
+            after="com.vernalis.nodes.blob.zip.ZipBlobNodeFactory"
+            category-path="/community/vernalis/blob"
+            deprecated="false"
+            factory-class="com.vernalis.nodes.blob.zip.UnZipBlobNodeFactory"
+            hidden="false">
+      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">
@@ -249,6 +286,13 @@
             level-id="collections"
             locked="true"
             name="Collections"
+            path="/community/vernalis">
+      </category>
+      <category
+            icon="icons/blob.png"
+            level-id="blob"
+            locked="true"
+            name="Binary Objects"
             path="/community/vernalis">
       </category>
    </extension>
