@@ -29,7 +29,7 @@ The table shows the latest version of the nodes available in each update site fo
 
 \* Currently supported versions
 
-## v1.33.0 19-May-2022
+## v1.33.0 - 19-May-2022
 * New Nodes
   * Added Column to Singleton Collection node
   * Added Mask Lists Node
