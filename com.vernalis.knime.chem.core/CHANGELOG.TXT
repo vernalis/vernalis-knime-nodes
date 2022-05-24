@@ -1,3 +1,7 @@
+v1.34.0 23-May-2022
+-------------------
+* Added `getRDKitObjectFromCell(DataCell cell, boolean sanitizeMol, boolean removeHs` static method to RdkitCompatibleColumnFormats enum
+
 v1.24.0 21-Oct-2019
 -------------------
 

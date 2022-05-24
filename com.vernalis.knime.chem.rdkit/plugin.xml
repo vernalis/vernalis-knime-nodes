@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+  <extension
+      point="org.knime.workbench.repository.categories">
+    <category
+		icon="icons/ScaffKeys.png"
+		level-id="keys"
+		name="Scaffold Keys"
+		path="/community/vernalis/chem/" />
+  </extension>
+  <extension
+      point="org.knime.workbench.repository.nodes">
+     <node
+           category-path="/community/vernalis/chem/keys"
+           deprecated="false"
+           factory-class="com.vernalis.knime.chem.rdkit.nodes.scaffoldkeys.ScaffoldKeysNodeFactory"
+           hidden="false">
+     </node>
+  </extension>
+</plugin>

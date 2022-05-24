@@ -32,8 +32,23 @@ The table shows the latest version of the nodes available in each update site fo
 
 Back to [ReadMe](README.md)
 
+## v1.34.0 - 23-May-2022
+_New Nodes_
+* Added `Ertl Scaffold Keys` node
+
+_Enhancements_
+* Added new 'streams' package in core plugin
+	* Added `DataCellCollectors` class to streams package
+	* Added `ArrayOfListCellCollector` class to streams package
+	* Added `ToListCellCollector` class to streams package
+	* Added `BitSetCollectors` class to streams package
+	* Added `NonOverlappingBitSetCollector` class to streams package
+	* Added `OverlappingBitSetGroupingCollector` class to streams package
+* Added `getRDKitObjectFromCell(DataCell cell, boolean sanitizeMol, boolean removeHs` static method to RdkitCompatibleColumnFormats enum in chem.core plugin
+* Added new `com.vernalis.knime.chem.rdkit` plugin
+
 ## v1.33.0 - 19-May-2022
-* New Nodes
+_New Nodes_
   * Added Column to Singleton Collection node
   * Added Mask Lists Node
   * Added GZip Compress Binary Object node
@@ -41,7 +56,7 @@ Back to [ReadMe](README.md)
   * Added Zip Binary Object node
   * Added UnZip Binary Object node
   
-* Enhancements
+_Enhancements_
   * Added RemoveColumnsDataRow class to core plugin
 
 Back to [top](#changelog)
