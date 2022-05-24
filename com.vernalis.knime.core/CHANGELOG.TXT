@@ -1,3 +1,13 @@
+v1.34.0 23-May-2022
+-------------------
+* Added new 'streams' package
+* Added `DataCellCollectors` class to streams package
+* Added `ArrayOfListCellCollector` class to streams package
+* Added `ToListCellCollector` class to streams package
+* Added `BitSetCollectors` class to streams package
+* Added `NonOverlappingBitSetCollector` class to streams package
+* Added `OverlappingBitSetGroupingCollector` class to streams package
+
 v1.33.0 19-May-2022
 -------------------
 * Added RemoveColumnsDataRow class

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019, 2022, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -18,9 +18,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import org.RDKit.RDKFuncs;
 import org.RDKit.ROMol;
 import org.RDKit.RWMol;
 import org.knime.bio.types.PdbValue;
@@ -49,31 +49,36 @@ import com.vernalis.exceptions.RowExecutionException;
  * 
  */
 public enum RdkitCompatibleColumnFormats implements ColumnFilter {
-	@SuppressWarnings("unchecked")
+
+	@SuppressWarnings({ "unchecked", "javadoc" })
 	MOL_WITH_COORDS(RDKitMolValue.class, MolValue.class, SdfValue.class),
 
-	@SuppressWarnings("unchecked")
-	MOL_WITH_COORDS_INCL_PDB(RDKitMolValue.class, MolValue.class, SdfValue.class, PdbValue.class),
+	@SuppressWarnings({ "unchecked", "javadoc" })
+	MOL_WITH_COORDS_INCL_PDB(RDKitMolValue.class, MolValue.class,
+			SdfValue.class, PdbValue.class),
 
-	@SuppressWarnings("unchecked")
-	MOL_ANY(RDKitMolValue.class, MolValue.class, SmilesValue.class, SdfValue.class),
+	@SuppressWarnings({ "unchecked", "javadoc" })
+	MOL_ANY(RDKitMolValue.class, MolValue.class, SmilesValue.class,
+			SdfValue.class),
 
-	@SuppressWarnings("unchecked")
-	MOL_ANY_INCL_QUERY(RDKitMolValue.class, MolValue.class, SmilesValue.class, SdfValue.class, SmartsValue.class),
+	@SuppressWarnings({ "unchecked", "javadoc" })
+	MOL_ANY_INCL_QUERY(RDKitMolValue.class, MolValue.class, SmilesValue.class,
+			SdfValue.class, SmartsValue.class),
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "javadoc" })
 	MOL_FROM_MOLBLOCK(MolValue.class, SdfValue.class),
 
-	@SuppressWarnings("unchecked")
-	RXN_ANY(RDKitReactionValue.class, SmilesValue.class, RxnValue.class, SmartsValue.class),
+	@SuppressWarnings({ "unchecked", "javadoc" })
+	RXN_ANY(RDKitReactionValue.class, SmilesValue.class, RxnValue.class,
+			SmartsValue.class),
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "javadoc" })
 	RXN_Non_RDKit(SmilesValue.class, SmartsValue.class, RxnValue.class),
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "javadoc" })
 	RXN_Non_RDKit_QUERY(SmartsValue.class, RxnValue.class),
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "javadoc" })
 	PDB(PdbValue.class);
 
 	private RdkitCompatibleColumnFormats(
@@ -88,14 +93,14 @@ public enum RdkitCompatibleColumnFormats implements ColumnFilter {
 	}
 
 	/** The acceptable molecule input formats */
-	private ArrayList<Class<? extends DataValue>> m_colFormats;
+	private List<Class<? extends DataValue>> m_colFormats;
 
-	/** Get the acceptable column types */
-	public ArrayList<Class<? extends DataValue>> getTypes() {
+	/** @return the acceptable column types */
+	public List<Class<? extends DataValue>> getTypes() {
 		return m_colFormats;
 	}
 
-	/** Get the acceptable column types as an array */
+	/** @return the acceptable column types as an array */
 	public Class<? extends DataValue>[] getTypesArray() {
 		return getTypes().toArray(new Class[0]);
 	}
@@ -109,6 +114,7 @@ public enum RdkitCompatibleColumnFormats implements ColumnFilter {
 	/**
 	 * @param colType
 	 *            The column type
+	 * 
 	 * @return true of a column of the given type should be included
 	 */
 	public boolean includeColumn(DataType colType) {
@@ -124,9 +130,9 @@ public enum RdkitCompatibleColumnFormats implements ColumnFilter {
 	@Override
 	public String allFilteredMsg() {
 		return "No columns of the appropriate type"
-				+ (m_colFormats.size() > 1 ? "s" : "")
-				+ " (" + m_colFormats.stream().map(clz -> clz.getSimpleName())
-						.collect(Collectors.joining(", "))
+				+ (m_colFormats.size() > 1 ? "s" : "") + " ("
+				+ m_colFormats.stream().map(clz -> clz.getSimpleName()).collect(
+						Collectors.joining(", "))
 				+ ") found in input table";
 	}
 
@@ -135,11 +141,32 @@ public enum RdkitCompatibleColumnFormats implements ColumnFilter {
 	 * 
 	 * @param cell
 	 *            The data cell
+	 * 
 	 * @return Molecule, or {@code null} if the molecule could not be created
+	 * 
 	 * @throws RowExecutionException
 	 *             If an exception was thrown during molecule creation
 	 */
 	public static final ROMol getRDKitObjectFromCell(DataCell cell)
+			throws RowExecutionException {
+		return getRDKitObjectFromCell(cell, true, false);
+	}
+
+	/**
+	 * Utility method to get an RDKit molecule from a DataCell
+	 * 
+	 * @param cell
+	 *            The data cell
+	 * 
+	 * @return Molecule, or {@code null} if the molecule could not be created
+	 * 
+	 * @throws RowExecutionException
+	 *             If an exception was thrown during molecule creation
+	 * 
+	 * @since v1.34.0
+	 */
+	public static final ROMol getRDKitObjectFromCell(DataCell cell,
+			boolean sanitizeMol, boolean removeHs)
 			throws RowExecutionException {
 		ROMol mol = null;
 		if (cell.isMissing()) {
@@ -150,22 +177,25 @@ public enum RdkitCompatibleColumnFormats implements ColumnFilter {
 			if (type.isCompatible(RDKitMolValue.class)) {
 				mol = ((RDKitMolValue) cell).readMoleculeValue();
 			} else if (type.isCompatible(SmilesValue.class)) {
+
 				RWMol rwMol = RWMol.MolFromSmiles(
-						((SmilesValue) cell).getSmilesValue(), 0, false);
+						((SmilesValue) cell).getSmilesValue(), 0, sanitizeMol);
 				if (rwMol == null) {
 					return null;
 				}
-				RDKFuncs.sanitizeMol(rwMol);
+				if (removeHs) {
+					rwMol.removeHs(false, sanitizeMol);
+				}
 				mol = rwMol;
 			} else if (type.isCompatible(MolValue.class)) {
 				mol = RWMol.MolFromMolBlock(((MolValue) cell).getMolValue(),
-						true, false);
+						sanitizeMol, removeHs);
 			} else if (type.isCompatible(SdfValue.class)) {
 				mol = RWMol.MolFromMolBlock(((SdfValue) cell).getSdfValue(),
-						true, false);
+						sanitizeMol, removeHs);
 			} else if (type.isCompatible(PdbValue.class)) {
 				mol = RWMol.MolFromPDBBlock(((PdbValue) cell).getPdbValue(),
-						true, false);
+						sanitizeMol, removeHs);
 			} else {
 				throw new RowExecutionException(
 						"Cell is not a recognised molecule type");

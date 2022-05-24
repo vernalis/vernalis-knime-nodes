@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Copyright (c) 2022, Vernalis (R&D) Ltd
+	This program is free software; you can redistribute it and/or modify it
+	under the terms of the GNU General Public License, Version 3, as
+	published by the Free Software Foundation.
+
+	This program is distributed in the hope that it will be useful, but
+	WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="./ScaffKeys.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Ertl Scaffold Keys</name>
+
+	<shortDescription>
+        Node to generate Peter Ertl's Scaffold Fingerprints
+    </shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				This node generates the 32 scaffold keys described by Peter Ertl ("
+				<a href="http://dx.doi.org/10.1021/ci5001983">Intuitive Ordering of Scaffolds and Scaffold Similarity
+					Searching Using Scaffold Keys
+				</a>
+				", Peter Ertl,
+				<i>J. Chem. Inf. Model.</i>
+				2014,
+				<b>54</b>
+				, 1617-1622 and "
+				<a href="https://doi.org/10.26434/chemrxiv.13525457.v2">Identification of Bioisosteric Scaffolds using Scaffold
+					Keys
+				</a>
+				", Peter Ertl,
+				<i>ChemRxiv</i>
+				, 2021)
+			</p>
+			<p>The molecules are converted to Murcko-Beamis scaffolds, and
+				descriptors are calculated. The algorithm is implemented using
+				RDKit.
+			</p>
+			<p>
+				The column properties for the keys show:
+				<ul>
+					<li>The key index</li>
+					<li>A description of the key</li>
+				</ul>
+
+			</p>
+			<p>
+				We thank
+				<a href="https://www.peter-ertl.com/">Peter Ertl</a>
+				for helpful comments with this node
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+
+		</intro>
+
+
+		<option name="Select molecule column">Select the molecule column (RDKit, SDF, MOL or
+			SMILES format)
+		</option>
+		<option name="Remove input column">Optionally remove the input column</option>
+
+		<option name="Inputs are Murcko Scaffolds">Check this box if the molecules are already
+			Murcko-Beamis Scaffolds
+		</option>
+		<option name="Depict Keys">If this option is selected then for most keys a
+			depiction column will follow the counts column. Depending on the key,
+			this will be either a single SVG cell for each input row, or a List
+			of SVG cells for each input row
+		</option>
+		<option name="Highlight Colour">The colour to highlight the atoms/bonds
+			contributing to the key. WARNING: Choosing colours with transparency
+			may cause undesired rendering artefacts in the KNIME table
+		</option>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="Molecules">An input table, containing molecules in
+			RDKit, SDF, MOL or SMILES
+			formats
+		</inPort>
+		<outPort
+			index="0"
+			name="Scaffold Keys">The molecules with the selected
+			scaffold keys appended. The
+			Murcko-Beamis scaffold is also appended
+			if appropriate.
+		</outPort>
+	</ports>
+
+</knimeNode>
