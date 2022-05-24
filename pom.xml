@@ -25,6 +25,7 @@
 		<module>com.vernalis.knime.chem.mmp</module>
 		<module>com.vernalis.knime.chem.pmi</module>
 		<module>com.vernalis.knime.chem.speedysmiles</module>
+		<module>com.vernalis.knime.chem.rdkit</module>
 		<module>com.vernalis.knime.core</module>
 		<module>com.vernalis.knime.database</module>
 		<module>com.vernalis.knime.fingerprint</module>

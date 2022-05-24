@@ -1,0 +1,4 @@
+v1.34.0 - 23-May-2022
+=====================
+* Plugin created by S.Roughley
+* 'Ertl Scaffold Keys' node added
