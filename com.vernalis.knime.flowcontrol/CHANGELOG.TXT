@@ -1,3 +1,9 @@
+v1.34.1 07-Jun-2022
+-------------------
+* Minor bug fix to Regex String Match flow variable condition reference value box
+* Minor bug fix to Wildcard String Match flow variable condition reference value box
+
+
 v1.32.0 18-May-2022
 -------------------
 * Deprecated all IF Switch / Case Switch, End IF and End Case nodes
