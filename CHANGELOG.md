@@ -6,9 +6,9 @@ The table shows the latest version of the nodes available in each update site fo
 
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
-| Nightly | [v1.34.0](#v1340---23-may-2022) |
-| 4.5* | [v1.34.0](#v1340---23-may-2022) |
-| 4.4* | [v1.34.0](#v1340---23-may-2022) |
+| Nightly | [v1.34.0](#v1341---07-jun-2022) |
+| 4.5* | [v1.34.0](#v1341---07-jun-2022) |
+| 4.4* | [v1.34.0](#v1341---07-jun-2022) |
 | 4.3 | [v1.31.0](#v1310---05-apr-2022) |
 | 4.2 | [v1.31.0](#v1310---05-apr-2022) |
 | 4.1 | [v1.30.1](#v1301---30-mar-2021) |
@@ -31,6 +31,14 @@ The table shows the latest version of the nodes available in each update site fo
 \* Currently supported versions
 
 Back to [ReadMe](README.md)
+
+## v1.34.1 - 07-Jun-2022
+_Bug Fixes_
+* Minor bug fix to Regex String Match flow variable condition reference value box
+* Minor bug fix to Wildcard String Match flow variable condition reference value box
+
+Back to [top](#changelog)
+
 
 ## v1.34.0 - 23-May-2022
 _New Nodes_

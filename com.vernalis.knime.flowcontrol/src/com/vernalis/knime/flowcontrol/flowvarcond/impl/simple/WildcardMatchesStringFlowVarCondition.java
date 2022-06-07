@@ -97,7 +97,7 @@ public class WildcardMatchesStringFlowVarCondition
 	@Override
 	public List<ComponentWrapper<?, ?, ?>> getReferenceComponents() {
 		List<ComponentWrapper<?, ?, ?>> retVal = new ArrayList<>();
-		retVal.add(new ComponentWrapperStringEntry(new JTextField(),
+		retVal.add(new ComponentWrapperStringEntry(new JTextField(20),
 				"Reference Value"));
 		for (Entry<String, Integer> cb : FLAGS.entrySet()) {
 			retVal.add(new ComponentWrapperCheckbox(cb.getKey(), true));
