@@ -14,6 +14,8 @@
  ******************************************************************************/
 package com.vernalis.knime.jfcplot.core.nodes;
 
+import java.util.Optional;
+
 import org.apache.xmlbeans.XmlCursor;
 import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeFactory;
@@ -136,7 +138,7 @@ public abstract class AbstractDrawableSeriesPlotNodeDescription
 		node.setIcon(getIconPath());
 		node.setName(getNodeName());
 		node.setType(KnimeNode.Type.VISUALIZER);
-		node.setShortDescription(getShortDescription());
+		node.setShortDescription(getShortDescriptionImpl());
 		FullDescription fullDesc = node.addNewFullDescription();
 		Intro intro = fullDesc.addNewIntro();
 
@@ -201,10 +203,15 @@ public abstract class AbstractDrawableSeriesPlotNodeDescription
 		return (Element) node.getDomNode();
 	}
 
+	@Override
+	public Optional<String> getShortDescription() {
+		return Optional.ofNullable(getShortDescriptionImpl());
+	}
+
 	/**
 	 * @return The short description text
 	 */
-	protected abstract String getShortDescription();
+	protected abstract String getShortDescriptionImpl();
 
 	/*
 	 * (non-Javadoc)
@@ -229,6 +236,7 @@ public abstract class AbstractDrawableSeriesPlotNodeDescription
 	 * 
 	 * @param fullDesc
 	 *            The node {@link FullDescription}
+	 * 
 	 * @return The last tab added, so subclasses can add to the tab
 	 */
 	protected Tab prependAdditionalTabbedOptions(FullDescription fullDesc) {
