@@ -21,8 +21,6 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
-import com.vernalis.pdbconnector.config.PdbConnectorConfig2;
-
 /**
  * Abstract Node Factory class for the PDB Connector node family. Nodes which
  * build or execute a query have views for the XML query and a logical
@@ -56,26 +54,19 @@ public abstract class AbstractPdbConnectorNodeFactory
 
 	@Override
 	public AbstractPdbConnectorNodeModel createNodeModel() {
-		return new AbstractPdbConnectorNodeModel(
-				PdbConnectorConfig2.getInstance(), m_hasQueryBuilder,
+		return new AbstractPdbConnectorNodeModel(null, m_hasQueryBuilder,
 				m_runQuery, m_runReport);
 	}
 
 	@Override
 	protected int getNrNodeViews() {
-		return m_hasQueryBuilder || m_runQuery ? 2 : 0;
+		return 0;
 	}
 
 	@Override
 	public NodeView<AbstractPdbConnectorNodeModel> createNodeView(int viewIndex,
 			AbstractPdbConnectorNodeModel nodeModel) {
-		if (m_hasQueryBuilder || m_runQuery) {
-			if (viewIndex == 0) {
-				return new AbstractXMLAdvancedQueryNodeView<>(nodeModel);
-			} else if (viewIndex == 1) {
-				return new AbstractXMLAdvancedQueryLogicalNodeView<>(nodeModel);
-			}
-		}
+
 		return null;
 	}
 
@@ -86,8 +77,7 @@ public abstract class AbstractPdbConnectorNodeFactory
 
 	@Override
 	protected NodeDialogPane createNodeDialogPane() {
-		return new AbstractPdbConnectorNodeDialog(
-				PdbConnectorConfig2.getInstance(), m_hasQueryBuilder,
+		return new AbstractPdbConnectorNodeDialog(null, m_hasQueryBuilder,
 				m_runQuery, m_runReport);
 	}
 

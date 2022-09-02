@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2022, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="./SpeedySequence_Analysis.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Speedy Sequence Analysis</name>
+
+	<shortDescription>
+		Note to perform analysis of sequences
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>The node performs count and / or %age analysis of sequence residue
+				types
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+		<tab name="Options">
+			<option name="Sequence Column">The String column containing the sequences
+			</option>
+			<option name="Sequence Alphabet">The sequence type. A warning will be set if this
+				differs from that expected based on the column properties of the
+				sequence column
+			</option>
+			<option name="Alphabet Subset">The subset of the alphabet to use. A warning will be set if this
+				differs from that expected based on the column properties of the
+				sequence column
+			</option>
+			<option name="Case sensitive parsing">If set, upper and lower case residues will be counted separately
+			</option>
+			<option name="Report Counts">The counts of each residue type are reported
+			</option>
+			<option name="Report Percentages">The percentages of each residue type are reported
+			</option>
+			
+		</tab>
+	</fullDescription>
+
+	<ports>
+
+		<inPort
+			index="0"
+			name="Sequences">Incoming table of sequences</inPort>
+		<outPort
+			index="0"
+			name="Sequence compositions">The compositions of the sequences by residue
+		</outPort>
+	</ports>
+
+</knimeNode>
