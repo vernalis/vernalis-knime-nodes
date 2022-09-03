@@ -6,9 +6,9 @@ The table shows the latest version of the nodes available in each update site fo
 
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
-| Nightly | [v1.34.2](#v1342---17-jun-2022) |
-| 4.6* | [v1.34.2](#v1342---17-jun-2022) |
-| 4.5* | [v1.34.1](#v1341---07-jun-2022) |
+| Nightly | [v1.35.0](#v1350---02-sep-2022) |
+| 4.6* | [v1.35.0](#v1350---02-sep-2022) |
+| 4.5* | [v1.35.0](#v1350---02-sep-2022) |
 | 4.4 | [v1.34.1](#v1341---07-jun-2022) |
 | 4.3 | [v1.31.0](#v1310---05-apr-2022) |
 | 4.2 | [v1.31.0](#v1310---05-apr-2022) |
@@ -32,6 +32,19 @@ The table shows the latest version of the nodes available in each update site fo
 \* Currently supported versions
 
 Back to [ReadMe](README.md)
+
+## v1.35.0 - 02-Sep-2022
+_New Nodes_
+* Speedy Sequence to SMILES node
+* Speedy Sequence Analysis node
+* Speedy Sequence Alignment Visualisation node
+
+_Bug Fixes_
+* PDB Connector dynamic 'suggester' dropdowns fixed following remote API change
+* Removed much unused code from original PDB Connector implementation
+
+Back to [top](#changelog)
+
 
 ## v1.34.2 - 17-Jun-2022
 _Minor Updates_
