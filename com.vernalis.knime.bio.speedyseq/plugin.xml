@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>  
+   <extension
+         point="org.knime.workbench.repository.nodes">
+      <node
+            category-path="/community/vernalis/bio/seq"
+            deprecated="false"
+            factory-class="com.vernalis.knime.bio.speedyseq.nodes.seq2smi.Seq2SmiNodeFactory" />
+       <node
+            category-path="/community/vernalis/bio/seq"
+            deprecated="false"
+            factory-class="com.vernalis.knime.bio.speedyseq.nodes.seqanal.SeqAnalNodeFactory" />
+      <node
+            category-path="/community/vernalis/bio/seq"
+            deprecated="false"
+            factory-class="com.vernalis.knime.bio.speedyseq.nodes.seqalign.SeqAlignVisualisationNodeFactory">
+      </node>
+   </extension>
+   <extension
+         point="org.knime.workbench.repository.categories">
+    <category
+            icon="icons/SpeedySequence.png"
+            level-id="seq"
+            locked="false"
+            name="Speedy Sequence"
+            path="/community/vernalis/bio/">
+      </category>
+      </extension>
+</plugin>

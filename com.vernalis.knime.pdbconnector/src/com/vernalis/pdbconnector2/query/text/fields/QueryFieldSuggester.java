@@ -40,7 +40,7 @@ import static com.vernalis.pdbconnector2.RcsbJSONConstants.EMPTY_STRING;
 public class QueryFieldSuggester extends QueryFieldString {
 
 	private static final String SUGGESTER_SERVICE_URL_FORMAT =
-			"https://www.rcsb.org/search/suggester/%s/%%s";
+			"https://www.rcsb.org/search/suggester/%s/true/%%s";
 	private String suggesterUrlFmt;
 	private Suggester suggester;
 

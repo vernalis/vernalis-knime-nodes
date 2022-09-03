@@ -59,11 +59,4 @@
 		<outPort index="0" name="PDB IDs">One-column table of PDB IDs that match
 			query</outPort>
 	</ports>
-	
-	<views>
-		<view name="XML Query" index="0">A view of the combined XML Query
-		</view>
-		<view name="Logical Query" index="1">A 'logical' view of the combined Query
-		</view>
-	</views>
 </knimeNode>

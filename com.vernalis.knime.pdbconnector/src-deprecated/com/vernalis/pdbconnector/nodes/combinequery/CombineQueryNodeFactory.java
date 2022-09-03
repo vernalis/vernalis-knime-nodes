@@ -18,9 +18,6 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
-import com.vernalis.pdbconnector.nodes.pdbconnector.AbstractXMLAdvancedQueryLogicalNodeView;
-import com.vernalis.pdbconnector.nodes.pdbconnector.AbstractXMLAdvancedQueryNodeView;
-
 /**
  * Factory Class for the Combine Query Node
  */
@@ -42,18 +39,7 @@ public class CombineQueryNodeFactory
 
 	@Override
 	protected int getNrNodeViews() {
-		return 2;
-	}
-
-	@Override
-	public NodeView<CombineQueryNodeModel> createNodeView(int viewIndex,
-			CombineQueryNodeModel nodeModel) {
-		if (viewIndex == 0) {
-			return new AbstractXMLAdvancedQueryNodeView<>(nodeModel);
-		} else if (viewIndex == 1) {
-			return new AbstractXMLAdvancedQueryLogicalNodeView<>(nodeModel);
-		}
-		return null;
+		return 0;
 	}
 
 	@Override
@@ -64,6 +50,12 @@ public class CombineQueryNodeFactory
 	@Override
 	protected NodeDialogPane createNodeDialogPane() {
 		return new CombineQueryNodeDialog();
+	}
+
+	@Override
+	public NodeView<CombineQueryNodeModel> createNodeView(int viewIndex,
+			CombineQueryNodeModel nodeModel) {
+		return null;
 	}
 
 }

@@ -74,10 +74,10 @@ public class PMIKernelDensityPlotNodeFactory extends
 			@Override
 			public String getViewDescription(int index) {
 				switch (index) {
-				case 0:
-					return "View showing the " + getInteractiveViewName();
-				default:
-					return null;
+					case 0:
+						return "View showing the " + getInteractiveViewName();
+					default:
+						return null;
 				}
 
 			}
@@ -126,10 +126,10 @@ public class PMIKernelDensityPlotNodeFactory extends
 			@Override
 			public String getOutportName(int index) {
 				switch (index) {
-				case 0:
-					return getInteractiveViewName();
-				default:
-					return null;
+					case 0:
+						return getInteractiveViewName();
+					default:
+						return null;
 				}
 			}
 
@@ -140,7 +140,7 @@ public class PMIKernelDensityPlotNodeFactory extends
 			 * AbstractKernelDensityPlotNodeDescription#getShortDescription()
 			 */
 			@Override
-			protected String getShortDescription() {
+			protected String getShortDescriptionImpl() {
 				return "Node to generate a PMI Triangle Kernel Density Plot";
 			}
 
@@ -153,8 +153,8 @@ public class PMIKernelDensityPlotNodeFactory extends
 			 * FullDescriptionDocument.FullDescription)
 			 */
 			@Override
-			protected Tab prependAdditionalTabbedOptions(
-					FullDescription fullDesc) {
+			protected Tab
+					prependAdditionalTabbedOptions(FullDescription fullDesc) {
 				// Here we start by adding the superclass options
 				Tab tab = super.prependAdditionalTabbedOptions(fullDesc);
 				// And now add the PMI specifics

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2022, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="./SpeedySequence_seqvis.png"
+	type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Speedy Sequence Alignment Visualisation</name>
+
+	<shortDescription>
+		Note to create an SVG rendering of a pairs of aligned
+		sequences
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>The node generates an SVG rendering of pairs of aligned sequences.
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+
+		<tab name="Options">
+			<option name="First Sequence Column">The String column containing the first aligned
+				sequence
+			</option>
+			<option name="Second Sequence Column">The String column containing the second aligned
+				sequence
+			</option>
+			<option name="Space every n residues">The aligned sequences should have a space
+				character inserted every 'n' residues. If this value is 0, no spaces
+				are inserted
+			</option>
+			<option name="Residues per line">The number of residues to be included on a line
+				of the view
+			</option>
+			<option name="Match Colour">The colour to be used for matching (i.e.
+				identical in both sequences) residues
+			</option>
+			<option name="Mismatch Colour">The colour to be used for mismatching (i.e.
+				different, non-gap residues ) residues
+			</option>
+			<option name="Gap Colour">The colour to be used for sequence gaps</option>
+			<option name="Bold">Whether the corresponding residue type (match,
+				mismatch, gap) should be emboldened in the depiction
+			</option>
+		</tab>
+	</fullDescription>
+
+	<ports>
+
+		<inPort
+			index="0"
+			name="Aligned Sequences">Incoming table containing aligned sequences</inPort>
+		<outPort
+			index="0"
+			name="Rendered Alignments">The SVG renderings of the aligned sequences
+		</outPort>
+	</ports>
+
+</knimeNode>

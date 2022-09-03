@@ -52,10 +52,10 @@ public class RcsbUrlSuggester extends UrlTemplateSuggester {
 		}
 
 		public synchronized RcsbUrlSuggester get(String urlTemplate) {
-			if (!suggestors.containsKey(urlTemplate)) {
-				suggestors.put(urlTemplate, new RcsbUrlSuggester(urlTemplate));
-			}
-			return suggestors.get(urlTemplate);
+
+			return suggestors.computeIfAbsent(urlTemplate,
+					k -> new RcsbUrlSuggester(k));
+
 		}
 
 	}
@@ -73,6 +73,7 @@ public class RcsbUrlSuggester extends UrlTemplateSuggester {
 	 * @param urlFormatString
 	 *            The format string for the URL - '%s' will be replaced with the
 	 *            text value from the dialog
+	 * 
 	 * @return The {@link Suggester} for the URL. Instances are effective
 	 *         singletons
 	 */

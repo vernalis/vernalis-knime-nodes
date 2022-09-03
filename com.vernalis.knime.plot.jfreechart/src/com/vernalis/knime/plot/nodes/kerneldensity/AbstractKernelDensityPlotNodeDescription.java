@@ -125,7 +125,7 @@ public class AbstractKernelDensityPlotNodeDescription
 	}
 
 	@Override
-	protected String getShortDescription() {
+	protected String getShortDescriptionImpl() {
 		return "Node to generate and draw a " + (is2D ? "2D" : "1D")
 				+ " Kernel Density Function";
 	}
@@ -316,13 +316,13 @@ public class AbstractKernelDensityPlotNodeDescription
 						"The manual axis range");
 			}
 		}
-		addOptionToTab(tab, SHOW_LEGEND,
-				is2D ? ("The colour spectrum or contour colours")
-						: ("If a grouping column is selected, this option "
-								+ "shows a legend for the colours of the individual kernels on the plot.  "
-								+ "The colours will be derived from a color manager applied to the "
-								+ "grouping column, or generated dynamically if there isnt an "
-								+ "appropriate color manager"));
+		addOptionToTab(tab, SHOW_LEGEND, is2D
+				? ("The colour spectrum or contour colours")
+				: ("If a grouping column is selected, this option "
+						+ "shows a legend for the colours of the individual kernels on the plot.  "
+						+ "The colours will be derived from a color manager applied to the "
+						+ "grouping column, or generated dynamically if there isnt an "
+						+ "appropriate color manager"));
 		addOptionToTab(tab, getDialogShowBandwidthName(is2D),
 				"Should the bandwidth be shown on the axis label "
 						+ "(or in the legend if a grouping column is selected)?");

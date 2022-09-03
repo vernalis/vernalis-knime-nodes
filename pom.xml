@@ -21,6 +21,8 @@
 	<modules>
 		<!-- Plugins -->
 		<module>com.vernalis.knime</module>
+		<module>com.vernalis.knime.bio.core</module>
+		<module>com.vernalis.knime.bio.speedyseq</module>
 		<module>com.vernalis.knime.chem.core</module>
 		<module>com.vernalis.knime.chem.mmp</module>
 		<module>com.vernalis.knime.chem.pmi</module>

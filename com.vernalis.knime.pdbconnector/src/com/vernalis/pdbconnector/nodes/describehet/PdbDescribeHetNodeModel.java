@@ -177,6 +177,7 @@ public class PdbDescribeHetNodeModel extends NodeModel {
 	 * 
 	 * @param exec
 	 *            The execution context to allow cancellation
+	 * 
 	 * @throws CanceledExecutionException
 	 *             If the user cancelled during execution
 	 * @throws IOException
