@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright (c) 2018, Vernalis (R&D) Ltd
+  Copyright (c) 2018, 2022, Vernalis (R&D) Ltd
    This program is free software; you can redistribute it and/or modify it 
    under the terms of the GNU General Public License, Version 3, as 
    published by the Free Software Foundation.
@@ -19,7 +19,7 @@
 	xmlns="http://knime.org/node/v3.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
-	<name>Database List Tables</name>
+	<name>Database List Tables (Legacy)</name>
 
 	<shortDescription>
 		This node lists the available tables for a database

@@ -78,11 +78,6 @@
              factory-class="com.vernalis.knime.perfmon.nodes.loopend.timing.memory.FlowVarPerfMemMonTimingEndNodeFactory">
        </node>
       <node
-            category-path="/community/vernalis/testing"
-            deprecated="false"
-            factory-class="com.vernalis.knime.perfmon.nodes.testing.missingvals.EmptyColumnTestNodeFactory">
-      </node>
-      <node
             category-path="/community/vernalis/testing/benchmarking"
             factory-class="com.vernalis.knime.perfmon.nodes.loopstart.timing.FlowVarPerfMonTimingStartNodeFactory"/>
       <node

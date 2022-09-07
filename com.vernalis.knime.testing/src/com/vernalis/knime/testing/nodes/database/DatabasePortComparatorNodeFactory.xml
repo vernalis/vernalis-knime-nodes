@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2022, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode icon="Tools_cat.png" type="Other"
+	xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Database Connection Comparator (Legacy)</name>
+
+	<shortDescription>
+		Node to test equality of database connections
+	</shortDescription>
+
+	<fullDescription>
+		<intro>This node provides options to test database connection ports
+			for equality
+		</intro>
+
+
+		<option name="Both ports of same type">Are both ports of the same type? (The node accepts
+			both database port types)
+		</option>
+		<option name="Compare Drivers">Check whether the same drivers are being used
+		</option>
+		<option name="Compare URL">Check the database connection URLs are the same
+		</option>
+		<option name="Compare Username">Check the same usernames are being used</option>
+		<option name="Compare Database Type">Check the database types (e.g. Postgres, Oracle
+			etc) are the same
+		</option>
+		<option name="Compare SQL">Check the SQL is the same. Only applicable to
+			DatabasePortObjects (the brown DB ports!)</option>
+		<option name="Ignore comments in SQL">An attempt will be made to ignore comments in the
+			SQL when performing SQL comparison. Only available when SQL
+			comparison is being performed
+		</option>
+		<option name="Compare Table Specs">Check the table specs of the port the same. Only applicable to
+			DatabasePortObjects (the brown DB ports!)</option>
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Test Table">The test table</inPort>
+		<inPort index="1" name="Golden table">The golden table</inPort>
+	</ports>
+
+</knimeNode>

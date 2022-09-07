@@ -6,9 +6,9 @@ The table shows the latest version of the nodes available in each update site fo
 
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
-| Nightly | [v1.35.0](#v1350---02-sep-2022) |
-| 4.6* | [v1.35.0](#v1350---02-sep-2022) |
-| 4.5* | [v1.35.0](#v1350---02-sep-2022) |
+| Nightly | [v1.36.0](#v1360---07-sep-2022) |
+| 4.6* | [v1.36.0](#v1360---07-sep-2022) |
+| 4.5* | [v1.36.0](#v1360---07-sep-2022) |
 | 4.4 | [v1.34.1](#v1341---07-jun-2022) |
 | 4.3 | [v1.31.0](#v1310---05-apr-2022) |
 | 4.2 | [v1.31.0](#v1310---05-apr-2022) |
@@ -32,6 +32,51 @@ The table shows the latest version of the nodes available in each update site fo
 \* Currently supported versions
 
 Back to [ReadMe](README.md)
+
+## v1.36.0 - 07-Sep-2022
+
+_New Nodes_
+* See also under _Bug Fixes_
+* DB Port Comparator
+* DB DISTINCT
+* DB Extract Table Dimension
+* DB List Catalogues
+* DB Insert Column Header
+* DB List Foreign Keys
+* DB List Primary Keys
+* DB List Schemas
+* DB List Table Types
+* DB List Tables
+* DB Numeric Range
+* DB Remove SQL from connection
+* DB Select Table (Interactive)
+* DB Table Exists IF Switch
+* DB To Empty Table
+* DB To Variable
+* Reference DB Table Exists IF Switch
+
+_Enhancements_
+* Node Migration Rules added for all database 'Legacy' / 'DB' node pairs to allow workflow migration
+* DB Table Exists IF Switch is configurable - either or both output ports can be swapped between flow variable and DB Session port types
+* Reference DB Table Exists IF Switch is configurable - the table input/outputs can be swapped for any other port type
+
+_Other Changes_
+* All database nodes have been renamed with the suffix '(Legacy)' following the KNIME core database style
+* New `com.vernalis.database.core` plugin
+* New `com.vernalis.knime.testing.core` plugin for maven-execution of test cases
+* New annotations in `com.vernalis.knime.core` plugin (`@NoTest`, `@NodeTestFlow`, `@NodeTestFlows`)
+* New `.tests` fragment for JUnit tests and Workflow Tests for the corresponding plugin for the plugins `com.vernalis.knime.database.core`, `com.vernalis.knime.testing` and `com.vernalis.knime.db`
+* New `com.vernalis.knime.testing` plugin with nodes for test flows
+* Moved `Empty Column Checker` node from flow control plugin to testing plugin (and NodeFactoryClassMapper supplied)
+* Updated builds to use Tycho v 2.7.5
+
+_Bug Fixes_
+* Fixed missing node icons for various 'database' nodes
+* Added missing 'Database replace table header' node to plugin.xml
+* Added missing 'Database Remove SQL' node to plugin.xml
+
+Back to [top](#changelog)
+
 
 ## v1.35.0 - 02-Sep-2022
 _New Nodes_

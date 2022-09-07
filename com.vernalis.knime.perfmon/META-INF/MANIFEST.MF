@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.perfmon;singleton:=true
-Bundle-Version: 1.35.0.qualifier
+Bundle-Version: 1.36.0.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.vernalis.knime.perfmon.TimingStartNodePlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -20,7 +20,6 @@ Export-Package:
  com.vernalis.knime.perfmon.nodes.loopstart.timing,
  com.vernalis.knime.perfmon.nodes.loopstart.timing.memory,
  com.vernalis.knime.perfmon.nodes.memoryuse,
- com.vernalis.knime.perfmon.nodes.testing.missingvals,
  com.vernalis.knime.perfmon.nodes.timing.abstrct
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: com.vernalis.knime.perfmon
