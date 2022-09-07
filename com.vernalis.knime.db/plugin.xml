@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<!--
+    Copyright (c) 2020, Vernalis (R&D) Ltd
+     This program is free software; you can redistribute it and/or modify it 
+     under the terms of the GNU General Public License, Version 3, as 
+     published by the Free Software Foundation.
+     
+     This program is distributed in the hope that it will be useful, but 
+     WITHOUT ANY WARRANTY; without even the implied warranty of 
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+     See the GNU General Public License for more details.
+     
+     You should have received a copy of the GNU General Public License
+     along with this program; if not, see <http://www.gnu.org/licenses>
+ -->
+
+<plugin>
+      <extension
+            point="org.knime.workbench.repository.categories">
+         <category
+               icon="icons/DBnew_cat.png"
+               level-id="newdb"
+               locked="true"
+               name="DB"
+               path="/community/vernalis/db">
+         </category>
+         <category
+               icon="icons/DBConn_cat.png"
+               level-id="connectors"
+               locked="false"
+               name="Connectors"
+               path="/community/vernalis/db/newdb">
+         </category>
+         <category
+               icon="icons/DBConn_cat.png"
+               level-id="selectors"
+               locked="false"
+               name="Tablelike Selectors"
+               path="/community/vernalis/db/newdb">
+         </category>
+      </extension>
+   
+   <extension
+         point="org.knime.workbench.repository.nodes">
+          <node
+            category-path="/community/vernalis/db/newdb"
+            deprecated="false"
+            factory-class="com.vernalis.knime.db.nodes.switches.DBTableExistsNodeFactory" />
+     <node
+            category-path="/community/vernalis/db/newdb"
+            hidden="true"
+            factory-class="com.vernalis.knime.db.nodes.switches.DBTableExistsFlowVarNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/newdb"
+            deprecated="false"
+            factory-class="com.vernalis.knime.db.nodes.switches.ReferenceDBTableExistsNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/newdb"
+            deprecated="false"
+            factory-class="com.vernalis.knime.db.nodes.extractbdt.DBQueryToEmptyTableNodeFactory">
+      </node>
+<!-- The following node is hidden  as NodeMigrationRule cannot set the configuration of a ConfigurableNodeFactory
+This slightly ugly approach is used in the core KNIME DB for the DB Table Creator node during migration  -->
+     <node
+            category-path="/community/vernalis/db/newdb"
+            hidden="true"
+            factory-class="com.vernalis.knime.db.nodes.tovar.DBDataToVariableNodeFactory">
+      </node>
+     <node
+           category-path="/community/vernalis/db/newdb"
+           deprecated="false"
+           factory-class="com.vernalis.knime.db.nodes.rsettobdt.DBListCatalogsNodeFactory">
+     </node>
+     <node
+           category-path="/community/vernalis/db/newdb"
+           deprecated="false"
+           factory-class="com.vernalis.knime.db.nodes.rsettobdt.DBListSchemasNodeFactory">
+     </node>
+     <node
+           category-path="/community/vernalis/db/newdb"
+           deprecated="false"
+           factory-class="com.vernalis.knime.db.nodes.rsettobdt.DBListTableTypesNodeFactory">
+     </node>
+     <node
+           category-path="/community/vernalis/db/newdb"
+           deprecated="false"
+           factory-class="com.vernalis.knime.db.nodes.rsettobdt.DBListTablesNodeFactory">
+     </node>
+     <node
+           category-path="/community/vernalis/db/newdb"
+           deprecated="false"
+           factory-class="com.vernalis.knime.db.nodes.rsettobdt.DBListPrimaryKeysNodeFactory">
+     </node>
+     <node
+           category-path="/community/vernalis/db/newdb"
+           deprecated="false"
+           factory-class="com.vernalis.knime.db.nodes.rsettobdt.DBListForeignKeysNodeFactory">
+     </node>
+     <node
+           category-path="/community/vernalis/db/newdb"
+           deprecated="false"
+           factory-class="com.vernalis.knime.db.nodes.removesql.DBRemoveSQLNodeFactory">
+     </node>
+     <node
+           category-path="/community/vernalis/db/newdb"
+           deprecated="false"
+           factory-class="com.vernalis.knime.db.nodes.selector.DBSelectTablelikeNodeFactory">
+     </node>
+     <node
+           category-path="/community/vernalis/db/newdb"
+           deprecated="false"
+           factory-class="com.vernalis.knime.db.nodes.range.DBRangeNodeFactory">
+     </node>
+     <node
+           category-path="/community/vernalis/db/newdb"
+           deprecated="false"
+           factory-class="com.vernalis.knime.db.nodes.distinct.DBDistinctNodeFactory">
+     </node>
+     <node
+           category-path="/community/vernalis/db/newdb"
+           deprecated="false"
+           factory-class="com.vernalis.knime.db.nodes.replaceheader.DBReplaceColumnHeaderNodeFactory">
+     </node>
+      <node
+           category-path="/community/vernalis/db/newdb"
+           deprecated="false"
+           factory-class="com.vernalis.knime.db.nodes.dimensions.DBDimensionNodeFactory">
+     </node>
+      <node
+            category-path="/community/vernalis/db/newdb"
+            deprecated="false"
+            factory-class="com.vernalis.knime.db.nodes.tovar.DBToVariableNodeFactory">
+      </node>
+     </extension>
+     
+      <extension
+         point="org.knime.workflow.migration.NodeMigrationRule">
+         <Rule class="com.vernalis.knime.db.nodes.switches.DBTableExistsNodeMigrationRule"/>
+         <Rule class="com.vernalis.knime.db.nodes.switches.DBTableExistsFlowVarNodeMigrationRule"/>
+         <Rule class="com.vernalis.knime.db.nodes.switches.ReferenceDBTableExistsNodeMigrationRule"/>
+         <Rule class="com.vernalis.knime.db.nodes.extractbdt.DBQueryToEmptyTableNodeMigrationRule" />
+         <Rule class="com.vernalis.knime.db.nodes.tovar.DBToVariableNodeMigrationRule" />
+         <Rule class="com.vernalis.knime.db.nodes.rsettobdt.DBListCatalogsNodeMigrationRule" />
+         <Rule class="com.vernalis.knime.db.nodes.rsettobdt.DBListSchemasNodeMigrationRule" />
+         <Rule class="com.vernalis.knime.db.nodes.rsettobdt.DBListTableTypesNodeMigrationRule" />
+         <Rule class="com.vernalis.knime.db.nodes.rsettobdt.DBListTablesNodeMigrationRule" />
+         <Rule class="com.vernalis.knime.db.nodes.rsettobdt.DBListPrimaryKeysNodeMigrationRule" />
+         <Rule class="com.vernalis.knime.db.nodes.rsettobdt.DBListForeignKeysNodeMigrationRule" />
+         <Rule class="com.vernalis.knime.db.nodes.removesql.DBRemoveSQLNodeMigrationRule" />
+         <Rule class="com.vernalis.knime.db.nodes.selector.DBSelectTablelikeNodeMigrationRule" />
+         <Rule class="com.vernalis.knime.db.nodes.range.DBRangeNodeMigrationRule" />
+         <Rule class="com.vernalis.knime.db.nodes.distinct.DBDistinctNodeMigrationRule" />
+         <Rule class="com.vernalis.knime.db.nodes.replaceheader.DBReplaceColumnHeaderNodeMigrationRule" />
+         <Rule class="com.vernalis.knime.db.nodes.dimensions.DBDimensionNodeMigrationRule" />
+   </extension>
+   
+</plugin>

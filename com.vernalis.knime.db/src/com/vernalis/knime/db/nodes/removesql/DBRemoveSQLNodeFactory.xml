@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2022, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode icon="removeSQL.png" type="Source"
+	xmlns="http://knime.org/node/v3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>DB Remove SQL From connection</name>
+
+	<shortDescription>
+		Node to Remove SQL From Database connection
+	</shortDescription>
+
+	<fullDescription>
+		<intro>The node strips the empbedded SQL statement(s) out of a
+			database connection, leaving only the authenticated database
+			connection
+			
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+			
+			</intro>
+
+
+
+	</fullDescription>
+
+	<ports>
+		<!-- possibly more input ports here -->
+		<inPort index="0" name="Database connection (with SQL)">Database connection with embedded SQL
+		</inPort>
+		<outPort index="0" name="Database connection">Database connection without SQL
+		</outPort>
+		<!-- possibly more output ports here -->
+	</ports>
+
+</knimeNode>
