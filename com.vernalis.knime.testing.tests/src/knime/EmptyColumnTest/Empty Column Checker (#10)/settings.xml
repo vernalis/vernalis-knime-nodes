@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2022, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+<entry key="node_file" type="xstring" value="settings.xml"/>
+<config key="flow_stack"/>
+<config key="internal_node_subsettings">
+<entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+</config>
+<config key="model">
+<config key="columns_Internals">
+<entry key="SettingsModelID" type="xstring" value="SMID_columnfilter"/>
+<entry key="EnabledStatus" type="xboolean" value="true"/>
+</config>
+<config key="columns">
+<entry key="filter-type" type="xstring" value="STANDARD"/>
+<config key="included_names">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="column2"/>
+</config>
+<config key="excluded_names">
+<entry key="array-size" type="xint" value="1"/>
+<entry key="0" type="xstring" value="column1"/>
+</config>
+<entry key="enforce_option" type="xstring" value="EnforceExclusion"/>
+<config key="name_pattern">
+<entry key="pattern" type="xstring" value=""/>
+<entry key="type" type="xstring" value="Wildcard"/>
+<entry key="caseSensitive" type="xboolean" value="true"/>
+</config>
+<config key="datatype">
+<config key="typelist">
+<entry key="org.knime.core.data.StringValue" type="xboolean" value="false"/>
+<entry key="org.knime.core.data.BooleanValue" type="xboolean" value="false"/>
+<entry key="org.knime.core.data.IntValue" type="xboolean" value="false"/>
+<entry key="org.knime.core.data.DoubleValue" type="xboolean" value="false"/>
+<entry key="org.knime.core.data.LongValue" type="xboolean" value="false"/>
+<entry key="org.knime.core.data.date.DateAndTimeValue" type="xboolean" value="false"/>
+</config>
+</config>
+</config>
+</config>
+<entry key="customDescription" type="xstring" isnull="true" value=""/>
+<entry key="state" type="xstring" value="CONFIGURED"/>
+<entry key="factory" type="xstring" value="com.vernalis.knime.testing.nodes.missingvals.EmptyColumnTestNodeFactory"/>
+<entry key="node-name" type="xstring" value="Empty Column Checker"/>
+<entry key="node-bundle-name" type="xstring" value="Vernalis Testing Nodes Plugin for KNIME Workbench"/>
+<entry key="node-bundle-symbolic-name" type="xstring" value="com.vernalis.knime.testing"/>
+<entry key="node-bundle-vendor" type="xstring" value="Internal Vernalis (R&amp;D), UK"/>
+<entry key="node-bundle-version" type="xstring" value="1.0.0.qualifier"/>
+<entry key="node-feature-name" type="xstring" isnull="true" value=""/>
+<entry key="node-feature-symbolic-name" type="xstring" isnull="true" value=""/>
+<entry key="node-feature-vendor" type="xstring" isnull="true" value=""/>
+<entry key="node-feature-version" type="xstring" value="0.0.0"/>
+<config key="factory_settings"/>
+<entry key="name" type="xstring" value="Empty Column Checker"/>
+<entry key="hasContent" type="xboolean" value="false"/>
+<entry key="isInactive" type="xboolean" value="false"/>
+<config key="ports"/>
+<config key="filestores">
+<entry key="file_store_location" type="xstring" isnull="true" value=""/>
+<entry key="file_store_id" type="xstring" isnull="true" value=""/>
+</config>
+</config>

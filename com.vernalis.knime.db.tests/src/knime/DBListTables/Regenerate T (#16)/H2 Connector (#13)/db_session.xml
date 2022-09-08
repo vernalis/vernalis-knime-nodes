@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="db_session">
+    <config key="Session Info">
+        <entry key="version" type="xint" value="3"/>
+        <entry key="sessionID" type="xstring" value="491d87ec-1132-4669-b290-84937e3bcd19"/>
+        <entry key="dbTypeId" type="xstring" value="h2"/>
+        <entry key="dialectId" type="xstring" value="h2"/>
+        <entry key="dbURL" type="xstring" value="jdbc:h2:C:\git\knime.internal.testflows\4_5\New Internal Testcases\applied\database\ListTables (migrated)\test.h2"/>
+    </config>
+    <config key="Driver Definition">
+        <entry key="driverId" type="xstring" value="H2"/>
+        <entry key="driverName" type="xstring" value="H2"/>
+        <entry key="driverVersion" type="xstring" value="1.4.0"/>
+        <entry key="driverClass" type="xstring" value="org.h2.Driver"/>
+        <entry key="driverDescription" type="xstring" value=""/>
+        <entry key="driverOrigin" type="xstring" value="EXTENSION"/>
+    </config>
+    <config key="Attributes"/>
+</config>

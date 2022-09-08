@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2022, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+    <entry key="node_file" type="xstring" value="settings.xml"/>
+    <config key="flow_stack"/>
+    <config key="internal_node_subsettings">
+        <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+    </config>
+    <config key="model">
+        <entry key="driver" type="xstring" value="org.sqlite.JDBC"/>
+        <entry key="database" type="xstring" value="jdbc:sqlite:C:\git\knime.testflows\4_2\New Internal testcases\applied\testing\DatabasePortComparator\test0.db"/>
+        <entry key="user" type="xstring" value="[Workflows edited with 3.4.1, will not work in older versions]"/>
+        <entry key="userName" type="xstring" value=""/>
+        <entry key="passwordEncrypted" type="xpassword" value="0168F07456E2496FA29F15BC7D3BC09E95"/>
+        <entry key="password" type="xstring" isnull="true" value=""/>
+        <entry key="timezone" type="xstring" value="current"/>
+        <entry key="validateConnection" type="xboolean" value="false"/>
+        <entry key="retrieveMetadataInConfigure" type="xboolean" value="true"/>
+        <entry key="allowSpacesInColumnNames" type="xboolean" value="true"/>
+        <entry key="rowIdsStartWithZero" type="xboolean" value="true"/>
+        <entry key="databaseIdentifier" type="xstring" value="sqlite"/>
+        <entry key="kerberos" type="xboolean" value="false"/>
+        <entry key="knimeVersion" type="xstring" value="4.2.5"/>
+        <config key="sqlite-connection">
+            <entry key="path" type="xstring" value="knime://knime.workflow/test0.db"/>
+        </config>
+    </config>
+    <entry key="customDescription" type="xstring" isnull="true" value=""/>
+    <entry key="state" type="xstring" value="CONFIGURED"/>
+    <entry key="factory" type="xstring" value="org.knime.database.connectors.sqlite.SQLiteConnectorNodeFactory"/>
+    <entry key="node-name" type="xstring" value="SQLite Connector (legacy)"/>
+    <entry key="node-bundle-name" type="xstring" value="KNIME connectors to common databases"/>
+    <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.database.connectors"/>
+    <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
+    <entry key="node-bundle-version" type="xstring" value="4.4.0.v202105170904"/>
+    <entry key="node-feature-name" type="xstring" isnull="true" value=""/>
+    <entry key="node-feature-symbolic-name" type="xstring" isnull="true" value=""/>
+    <entry key="node-feature-vendor" type="xstring" isnull="true" value=""/>
+    <entry key="node-feature-version" type="xstring" value="0.0.0"/>
+    <config key="factory_settings"/>
+    <entry key="name" type="xstring" value="SQLite Connector (legacy)"/>
+    <entry key="hasContent" type="xboolean" value="false"/>
+    <entry key="isInactive" type="xboolean" value="false"/>
+    <config key="ports">
+        <config key="port_1">
+            <entry key="index" type="xint" value="1"/>
+            <entry key="port_dir_location" type="xstring" isnull="true" value=""/>
+        </config>
+    </config>
+    <config key="filestores">
+        <entry key="file_store_location" type="xstring" isnull="true" value=""/>
+        <entry key="file_store_id" type="xstring" isnull="true" value=""/>
+    </config>
+</config>
