@@ -1,25 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Copyright (c) 2022, Vernalis (R&D) Ltd
-   This program is free software; you can redistribute it and/or modify it 
-   under the terms of the GNU General Public License, Version 3, as 
-   published by the Free Software Foundation.
-   
-   This program is distributed in the hope that it will be useful, but 
-   WITHOUT ANY WARRANTY; without even the implied warranty of 
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-   See the GNU General Public License for more details.
-    
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, see <http://www.gnu.org/licenses>
--->
 <config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="db_session">
     <config key="Session Info">
         <entry key="version" type="xint" value="3"/>
         <entry key="sessionID" type="xstring" value="bc20ad6a-87bf-4eec-915c-47e05a90d0fc"/>
         <entry key="dbTypeId" type="xstring" value="sqlite"/>
         <entry key="dialectId" type="xstring" value="sqlite"/>
-        <entry key="dbURL" type="xstring" value="jdbc:sqlite:C:\git\knime.testflows\4_5\New Internal Testcases\applied\database\SelectTablelike (migrated)\test.db"/>
+        <entry key="dbURL" type="xstring" value="jdbc:sqlite:C:\git\knime.internal.testflows\4_5\New Internal Testcases\applied\database\SelectTablelike (migrated)\test.db"/>
     </config>
     <config key="Driver Definition">
         <entry key="driverId" type="xstring" value="SQLite"/>

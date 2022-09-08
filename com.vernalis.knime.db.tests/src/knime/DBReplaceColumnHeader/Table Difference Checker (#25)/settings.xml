@@ -7,7 +7,7 @@
     </config>
     <config key="model">
         <config key="columnConfig_4-letter code">
-            <entry key="checkerFactory" type="xstring" value="org.knime.testing.diffcheckers.EqualityChecker$Factory"/>
+            <entry key="checkerFactory" type="xstring" value="org.knime.testing.internal.diffcheckers.EqualityChecker$Factory"/>
             <config key="internals">
                 <config key="ignoreColumnProperties_Internals">
                     <entry key="SettingsModelID" type="xstring" value="SMID_boolean"/>
@@ -32,7 +32,7 @@
             </config>
         </config>
         <config key="columnConfig_PDB">
-            <entry key="checkerFactory" type="xstring" value="org.knime.testing.diffcheckers.EqualityChecker$Factory"/>
+            <entry key="checkerFactory" type="xstring" value="org.knime.testing.internal.diffcheckers.EqualityChecker$Factory"/>
             <config key="internals">
                 <config key="ignoreColumnProperties_Internals">
                     <entry key="SettingsModelID" type="xstring" value="SMID_boolean"/>
@@ -60,7 +60,7 @@
     </config>
     <entry key="customDescription" type="xstring" isnull="true" value=""/>
     <entry key="state" type="xstring" value="IDLE"/>
-    <entry key="factory" type="xstring" value="org.knime.testing.nodes.differ.DifferenceCheckerNodeFactory"/>
+    <entry key="factory" type="xstring" value="org.knime.testing.internal.nodes.differ.DifferenceCheckerNodeFactory"/>
     <entry key="node-name" type="xstring" value="Table Difference Checker"/>
     <entry key="node-bundle-name" type="xstring" value="Test-Node extension for KNIME Workbench"/>
     <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.testing"/>

@@ -8,10 +8,6 @@
 	<artifactId>com.vernalis.knime.database.core.tests</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
 
-	<properties>
-		<revision>1.0.0</revision>
-	</properties>
-
 	<build>
 		<plugins>
 			<plugin>

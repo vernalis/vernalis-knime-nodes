@@ -12,7 +12,7 @@
             <entry key="type" type="xstring" value="variable"/>
             <entry key="name" type="xstring" value="Database URL"/>
             <entry key="class" type="xstring" value="STRING"/>
-            <entry key="value" type="xstring" value="jdbc:sqlite:C:\git\knime.testflows\4_5\New Internal Testcases\applied\database\DBToVariable\test.db"/>
+            <entry key="value" type="xstring" value="jdbc:sqlite:C:\git\knime.internal.testflows\4_5\New Internal Testcases\applied\database\DBToVariable\test.db"/>
         </config>
         <config key="Variable_2">
             <entry key="type" type="xstring" value="variable"/>
@@ -36,7 +36,7 @@
             <entry key="type" type="xstring" value="variable"/>
             <entry key="name" type="xstring" value="Database URL"/>
             <entry key="class" type="xstring" value="STRING"/>
-            <entry key="value" type="xstring" value="jdbc:sqlite:C:\git\knime.testflows\4_5\New Internal Testcases\applied\database\DBToVariable\test.db"/>
+            <entry key="value" type="xstring" value="jdbc:sqlite:C:\git\knime.internal.testflows\4_5\New Internal Testcases\applied\database\DBToVariable\test.db"/>
         </config>
         <config key="Variable_6">
             <entry key="type" type="xstring" value="variable"/>
