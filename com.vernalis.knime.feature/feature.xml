@@ -2,7 +2,7 @@
 <feature
       id="com.vernalis.knime.feature"
       label="Vernalis KNIME Nodes"
-      version="1.35.0.qualifier"
+      version="1.36.0.qualifier"
       provider-name="Vernalis Research Ltd, Cambridge, UK"
       plugin="com.vernalis.knime.core">
 
@@ -817,6 +817,27 @@ Public License instead of this License.  But first, please read
 
    <plugin
          id="com.vernalis.knime.bio.speedyseq"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.vernalis.knime.database.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.vernalis.knime.testing"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.vernalis.knime.db"
          download-size="0"
          install-size="0"
          version="0.0.0"

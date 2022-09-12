@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+>
+   <extension
+         point="org.knime.workbench.repository.nodes">
+      <node
+            category-path="/community/vernalis/testing"
+            deprecated="false"
+            factory-class="com.vernalis.knime.testing.nodes.database.DatabasePortComparatorNodeFactory"/>
+      <node
+            category-path="/community/vernalis/testing/"
+            deprecated="false"
+            factory-class="com.vernalis.knime.testing.nodes.missingvals.EmptyColumnTestNodeFactory"/>
+      <node
+            category-path="/community/vernalis/testing"
+            deprecated="false"
+            factory-class="com.vernalis.knime.testing.nodes.db.DBPortComparatorNodeFactory" />
+      <node
+            category-path="/community/vernalis/testing"
+            hidden="true"
+            factory-class="com.vernalis.knime.testing.nodes.db.DBDataPortComparatorNodeFactory" />
+   </extension>
+   <extension
+         point="org.knime.workflow.migration.NodeMigrationRule">
+         <Rule class="com.vernalis.knime.testing.nodes.db.DBPortComparatorNodeMigrationRule"/>
+   </extension>
+   <extension
+         point="org.knime.core.NodeFactoryClassMapper">
+      <NodeFactoryClassMapper
+            classMapper="com.vernalis.knime.testing.TestingNodeFactoryClassMapper">
+      </NodeFactoryClassMapper>
+   </extension>
+</plugin>

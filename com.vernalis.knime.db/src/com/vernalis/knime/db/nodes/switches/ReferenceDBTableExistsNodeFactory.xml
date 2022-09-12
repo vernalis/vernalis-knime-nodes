@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2022, Vernalis (R&D) Ltd
+   This program is free software; you can redistribute it and/or modify it 
+   under the terms of the GNU General Public License, Version 3, as 
+   published by the Free Software Foundation.
+   
+   This program is distributed in the hope that it will be useful, but 
+   WITHOUT ANY WARRANTY; without even the implied warranty of 
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+   See the GNU General Public License for more details.
+    
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses>
+-->
+<knimeNode
+	icon="dbifswitch_ref.png"
+	type="Source"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Reference DB Table Exists IF Switch</name>
+
+	<shortDescription>
+		IF Switch node with active branch based on whether
+		the database connection contains the specified table
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			IF Switch node with active branch based on whether
+			the database
+			connection contains the specified table. The output is switched
+			between two active ports which contain the data supplied to the node
+			at the first input port
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">
+					knime@vernalis.com
+				</a>
+			</p>
+		</intro>
+		<option name="Table Name">the name of the table to check, which may include
+			the namespace. If no namespace is included then the namespace will
+			not be checked
+		</option>
+		<option name="Ignore Case">If this option is selected, then the check will be
+			performed in a case-insensitive manner. Otherwise the check is
+			subject to the case sensitivity rules implemented in the JDBC
+			connector for the database
+		</option>
+		<option name="Table Type(s)">The table types to check for the table. By
+			default, this is restricted to tables and views
+		</option>
+		<option name="Check availability at Configure">If this option is selected, then the output ports
+			are enabled/disabled during configure as well as during node
+			execution (the result may be different between those times),
+			otherwise the setting is only applied during node execution phase,
+			and both ports remain active on the unexecuted node
+		</option>
+	</fullDescription>
+
+	<ports>
+		<inPort
+			index="0"
+			name="Port">Incoming port to be passed through unchanged</inPort>
+		<inPort
+			index="1"
+			name="Database connection">Database connection
+		</inPort>
+		<outPort
+			index="0"
+			name="Table Exists">Active port if table exists in database
+			connection
+		</outPort>
+		<outPort
+			index="1"
+			name="Table Does Not Exist">Active port if table does not exist in
+			database
+			connection
+		</outPort>
+	</ports>
+
+</knimeNode>

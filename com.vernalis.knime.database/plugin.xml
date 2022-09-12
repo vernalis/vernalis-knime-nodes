@@ -3,84 +3,84 @@
 <plugin>
    
    <extension
-         point="org.knime.workbench.repository.nodes">
-      <node
-            category-path="/community/vernalis/db"
-            factory-class="com.vernalis.knime.database.nodes.switches.DatabaseTableExistsFlowVarNodeFactory" />
-      <node
-            category-path="/community/vernalis/db"
-            factory-class="com.vernalis.knime.database.nodes.switches.DatabaseTableExistsNodeFactory" />
-      <node
-            category-path="/community/vernalis/db"
-            factory-class="com.vernalis.knime.database.nodes.switches.ReferenceDatabaseTableExistsNodeFactory" />
-      <node
-            category-path="/community/vernalis/db"
-            factory-class="com.vernalis.knime.database.nodes.selector.SelectTablelikeNodeFactory" />
-      <node
-            category-path="/community/vernalis/db"
-            deprecated="false"
-            factory-class="com.vernalis.knime.database.nodes.dimensions.DatabaseDimensionNodeFactory">
-      </node>
-      <node
-            category-path="/community/vernalis/db"
-            deprecated="false"
-            factory-class="com.vernalis.knime.database.nodes.distinct.DbDistinctNodeFactory">
-      </node>
-      <node
-            category-path="/community/vernalis/db"
-            deprecated="false"
-            factory-class="com.vernalis.knime.database.nodes.extractbdt.DbQueryToEmptyTableNodeFactory">
-      </node>
-      <node
-            category-path="/community/vernalis/db"
-            deprecated="false"
-            factory-class="com.vernalis.knime.database.nodes.range.DbRangeNodeFactory">
-      </node>
-      <node
-            category-path="/community/vernalis/db"
-            deprecated="false"
-            factory-class="com.vernalis.knime.database.nodes.rsettobdt.ListCatalogsNodeFactory">
-      </node>
-      <node
-            category-path="/community/vernalis/db"
-            deprecated="false"
-            factory-class="com.vernalis.knime.database.nodes.rsettobdt.ListForeignKeysNodeFactory">
-      </node>
-      <node
-            category-path="/community/vernalis/db"
-            deprecated="false"
-            factory-class="com.vernalis.knime.database.nodes.rsettobdt.ListPrimaryKeysNodeFactory">
-      </node>
-      <node
-            category-path="/community/vernalis/db"
-            deprecated="false"
-            factory-class="com.vernalis.knime.database.nodes.rsettobdt.ListSchemasNodeFactory">
-      </node>
-      <node
-            category-path="/community/vernalis/db"
-            deprecated="false"
-            factory-class="com.vernalis.knime.database.nodes.rsettobdt.ListTablesNodeFactory">
-      </node>
-      <node
-            category-path="/community/vernalis/db"
-            deprecated="false"
-            factory-class="com.vernalis.knime.database.nodes.rsettobdt.ListTableTypesNodeFactory">
-      </node>
-      <node
-            category-path="/community/vernalis/db"
-            deprecated="false"
-            factory-class="com.vernalis.knime.database.nodes.tovar.DatabaseToVariableNodeFactory">
-      </node>
-   </extension>
-   <extension
          point="org.knime.workbench.repository.categories">
       <category
-            description="Database nodes from Vernalis"
-            icon="icons/DB_cat.png"
-            level-id="db"
+            icon="icons/DBConn_cat.png"
+            level-id="legacy"
             locked="false"
-            name="Databases"
-            path="/community/vernalis" />
+            name="Legacy"
+            path="/community/vernalis/db" />
+   </extension>
+   <extension
+         point="org.knime.workbench.repository.nodes">
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.removesql.RemoveSQLNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.switches.DatabaseTableExistsFlowVarNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.switches.DatabaseTableExistsNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.switches.ReferenceDatabaseTableExistsNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.selector.SelectTablelikeNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.rsettobdt.ListPrimaryKeysNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.rsettobdt.ListForeignKeysNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.rsettobdt.ListSchemasNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.rsettobdt.ListTablesNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.rsettobdt.ListTableTypesNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.rsettobdt.ListCatalogsNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.distinct.DbDistinctNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.range.DbRangeNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.extractbdt.DbQueryToEmptyTableNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.dimensions.DatabaseDimensionNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.tovar.DatabaseToVariableNodeFactory" />
+      <node
+            category-path="/community/vernalis/db/legacy"
+            deprecated="false"
+            factory-class="com.vernalis.knime.database.nodes.replaceheader.DbReplaceColumnHeaderNodeFactory" />
    </extension>
    
 </plugin>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, Vernalis (R&D) Ltd
+ * Copyright (c) 2018, 2020, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -87,8 +87,7 @@ public class ListForeignKeysNodeModel extends ListPrimaryKeysNodeModel {
 	 * (non-Javadoc)
 	 * 
 	 * @see com.vernalis.knime.database.nodes.rsettobdt.
-	 * ListPrimaryKeysNodeModel#getResultSetFromMetaData(java.sql.
-	 * DatabaseMetaData)
+	 * ListPrimaryKeysNodeModel#getResultSetFromMetaData(java.sql.DatabaseMetaData)
 	 */
 	@Override
 	protected ResultSet getResultSetFromMetaData(DatabaseMetaData dbMetaData)

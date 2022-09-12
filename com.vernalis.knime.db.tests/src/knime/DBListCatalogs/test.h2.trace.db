@@ -1,0 +1,12 @@
+2022-09-01 14:41:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "test" not found; SQL statement:
+SELECT 0 FROM "test" WHERE 1 = 0 [42102-196]
+2022-09-01 14:41:36 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "test" not found; SQL statement:
+SELECT 0 FROM "test" WHERE 1 = 0 [42102-196]
+2022-09-01 14:41:36 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "test" not found; SQL statement:
+SELECT 0 FROM "test" WHERE 1 = 0 [42102-196]
+2022-09-01 14:41:36 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "test" not found; SQL statement:
+SELECT 0 FROM "test" WHERE 1 = 0 [42102-196]
