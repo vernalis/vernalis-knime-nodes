@@ -17,7 +17,7 @@
  <extension
          point="org.knime.workbench.repository.categories">
       <category
-            description="Internal Database nodes"
+            description="Vernalis Database nodes"
             icon="icons/DB_cat.png"
             level-id="db"
             name="Databases"

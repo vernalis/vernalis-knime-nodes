@@ -25,20 +25,6 @@
                name="DB"
                path="/community/vernalis/db">
          </category>
-         <category
-               icon="icons/DBConn_cat.png"
-               level-id="connectors"
-               locked="false"
-               name="Connectors"
-               path="/community/vernalis/db/newdb">
-         </category>
-         <category
-               icon="icons/DBConn_cat.png"
-               level-id="selectors"
-               locked="false"
-               name="Tablelike Selectors"
-               path="/community/vernalis/db/newdb">
-         </category>
       </extension>
    
    <extension
