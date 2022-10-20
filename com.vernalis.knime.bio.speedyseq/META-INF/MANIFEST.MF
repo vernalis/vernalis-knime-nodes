@@ -15,5 +15,4 @@ Require-Bundle: org.knime.workbench.core;bundle-version="[3.0.0,5.0.0)",
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: com.vernalis.knime.bio.speedyseq
-Import-Package: org.w3c.dom.events;version="3.0.0"
 

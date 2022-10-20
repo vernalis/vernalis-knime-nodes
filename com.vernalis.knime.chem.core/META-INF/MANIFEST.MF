@@ -22,5 +22,4 @@ Export-Package: com.vernalis.knime.chem.core,
  com.vernalis.knime.core.nodes.props.abstrct
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: com.vernalis.knime.chem.core
-Import-Package: org.w3c.dom.events;version="3.0.0"
 

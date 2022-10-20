@@ -20,4 +20,3 @@ Require-Bundle:  org.eclipse.core.runtime;bundle-version="[3.13.0,4.0.0)",
  org.knime.ext.svg;bundle-version="[4.2.2,5.0.0)"
 Bundle-Activator: com.vernalis.knime.chem.rdkit.VernalisKnimeChemRdkitNodePlugin
 Bundle-ActivationPolicy: lazy
-Import-Package: org.w3c.dom.events;version="3.0.0"

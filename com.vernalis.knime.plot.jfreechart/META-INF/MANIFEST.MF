@@ -19,5 +19,4 @@ Export-Package: com.vernalis.knime.plot.jfreechart,
  com.vernalis.knime.plot.nodes.kerneldensity
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: com.vernalis.knime.plot.jfreechart
-Import-Package: org.w3c.dom.events;version="3.0.0"
 

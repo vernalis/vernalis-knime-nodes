@@ -25,5 +25,4 @@ Export-Package: com.vernalis.knime.mmp,
  com.vernalis.knime.mmp.nodes.rdkit.abstrct,
  com.vernalis.knime.mmp.nodes.rdkit.fragment,
  com.vernalis.knime.mmp.nodes.rdkit.multicut
-Import-Package: org.w3c.dom.events;version="3.0.0"
 Automatic-Module-Name: com.vernalis.knime.chem.mmp
