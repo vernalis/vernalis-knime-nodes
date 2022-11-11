@@ -6,9 +6,9 @@ The table shows the latest version of the nodes available in each update site fo
 
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
-| Nightly | [v1.36.0](#v1360---07-sep-2022) |
-| 4.6* | [v1.36.0](#v1360---07-sep-2022) |
-| 4.5* | [v1.36.0](#v1360---07-sep-2022) |
+| Nightly | [v1.36.1](#v1361---11-nov-2022) |
+| 4.6* | [v1.36.1](#v1361---11-nov-2022) |
+| 4.5* | [v1.36.1](#v1361---11-nov-2022) |
 | 4.4 | [v1.34.1](#v1341---07-jun-2022) |
 | 4.3 | [v1.31.0](#v1310---05-apr-2022) |
 | 4.2 | [v1.31.0](#v1310---05-apr-2022) |
@@ -32,6 +32,13 @@ The table shows the latest version of the nodes available in each update site fo
 \* Currently supported versions
 
 Back to [ReadMe](README.md)
+
+## v1.36.1 - 11-Nov-2022
+
+_Bug Fixes_
+* Fixed 2020 upper bounds on PDB Connector Date query fields (See #16)
+
+Back to [top](#changelog)
 
 ## v1.36.0 - 07-Sep-2022
 
