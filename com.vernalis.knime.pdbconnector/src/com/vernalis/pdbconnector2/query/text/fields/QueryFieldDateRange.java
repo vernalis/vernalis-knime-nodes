@@ -16,6 +16,8 @@ package com.vernalis.pdbconnector2.query.text.fields;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 import org.knime.core.node.defaultnodesettings.DialogComponent;
@@ -85,6 +87,12 @@ public class QueryFieldDateRange extends AbstractRangeQueryField<Date> {
 	 *             if the date could not be parsed
 	 */
 	public static Date getDateFromNode(JsonNode node) throws ParseException {
+		// See #16 - we remove max from json config
+		if (node == null || node.isNull()) {
+			// Use today id no date set
+			return Date.from(LocalDate.now()
+					.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		}
 		if (node.isLong()) {
 			return new Date(node.asLong());
 		}
