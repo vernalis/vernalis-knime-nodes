@@ -1147,9 +1147,9 @@
 			"has_desc": "y",
 			"search_group_name": "Deposition",
 			"search_group_priority": 30,
-			"selector": true
+			"selector": true,
+			"type": "string",
 			"min": "11/7/2000",
-			"max": "11/3/2020",
 			"input_type": "date",
 			"display_name": "Revision Date",
 			"is_iterable": false,
