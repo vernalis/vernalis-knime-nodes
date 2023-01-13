@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019,2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -23,61 +23,52 @@ import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.data.collection.CollectionDataValue;
-import org.knime.core.data.container.AbstractCellFactory;
-import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.def.IntCell;
-import org.knime.core.node.InvalidSettingsException;
-import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 
-import com.vernalis.knime.nodes.AbstractSimpleStreamableFunctionNodeModel;
-
-import static com.vernalis.nodes.collection.size.CollectionSizeNodeDialog.createColumnsModel;
+import com.vernalis.nodes.collection.abstrct.AbstractMultiCollectionNodeModel;
 
 /**
- * Node model implementation for the Collection Size node
+ * NodeModel for the Collection Size node
  * 
  * @author S.Roughley knime@vernalis.com
  *
  */
-public class CollectionSizeNodeModel
-		extends AbstractSimpleStreamableFunctionNodeModel {
+public class CollectionSizeNodeModel extends AbstractMultiCollectionNodeModel {
 
-	private final SettingsModelColumnFilter2 colsMdl =
-			registerSettingsModel(createColumnsModel());
-
-	public CollectionSizeNodeModel() {
+	/**
+	 * Constructor
+	 *
+	 * @since 1.36.2
+	 */
+	protected CollectionSizeNodeModel() {
+		super(false);
 	}
 
 	@Override
-	protected ColumnRearranger createColumnRearranger(DataTableSpec spec)
-			throws InvalidSettingsException {
-		int[] idx = spec.columnsToIndices(colsMdl.applyTo(spec).getIncludes());
-		if (idx.length == 0) {
-			throw new InvalidSettingsException("No columns selected");
-		}
-		DataColumnSpec[] newColSpecs = new DataColumnSpec[idx.length];
-		for (int i = 0; i < newColSpecs.length; i++) {
-			newColSpecs[i] = new DataColumnSpecCreator(
-					DataTableSpec.getUniqueColumnName(spec,
-							spec.getColumnSpec(idx[i]).getName() + " Size"),
-					IntCell.TYPE).createSpec();
-		}
-		ColumnRearranger rearranger = new ColumnRearranger(spec);
-		rearranger.append(new AbstractCellFactory(newColSpecs) {
+	protected DataCell[] getCells(int[] idx, DataRow row,
+			DataColumnSpec[] newColSpecs) throws RuntimeException {
+		return Arrays.stream(idx).mapToObj(row::getCell)
+				.map(cell -> cell.isMissing() ? DataType.getMissingCell()
+						: new IntCell(((CollectionDataValue) cell).size()))
+				.toArray(DataCell[]::new);
+	}
 
-			@Override
-			public DataCell[] getCells(DataRow row) {
+	@Override
+	protected DataColumnSpec[] createNewColumnSpecs(DataTableSpec spec,
+			int[] idx) {
 
-				return Arrays.stream(idx)
-						.mapToObj(colIdx -> row.getCell(colIdx))
-						.map(cell -> cell.isMissing()
-								? DataType.getMissingCell()
-								: new IntCell(
-										((CollectionDataValue) cell).size()))
-						.toArray(DataCell[]::new);
-			}
-		});
-		return rearranger;
+		return Arrays.stream(idx)
+				.mapToObj(i -> new DataColumnSpecCreator(
+						DataTableSpec.getUniqueColumnName(spec,
+								spec.getColumnSpec(i).getName() + " Size"),
+						IntCell.TYPE).createSpec())
+				.toArray(DataColumnSpec[]::new);
+	}
+
+	@Override
+	protected boolean isReplaceInputCols() {
+		// We never replace the input columns for this node
+		return false;
 	}
 
 }

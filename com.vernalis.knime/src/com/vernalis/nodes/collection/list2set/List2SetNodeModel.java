@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, Vernalis (R&D) Ltd
+ * Copyright (c) 2018,2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -29,76 +29,76 @@ import org.knime.core.data.collection.CollectionCellFactory;
 import org.knime.core.data.collection.ListDataValue;
 import org.knime.core.data.collection.SetCell;
 import org.knime.core.data.collection.SparseListDataValue;
-import org.knime.core.data.container.AbstractCellFactory;
-import org.knime.core.data.container.ColumnRearranger;
-import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 
 import com.vernalis.knime.misc.ArrayUtils;
-import com.vernalis.knime.nodes.AbstractSimpleStreamableFunctionNodeModel;
+import com.vernalis.nodes.collection.abstrct.AbstractMultiCollectionNodeModel;
 
-import static com.vernalis.nodes.collection.list2set.List2SetNodeDialog.createColumnFilterModel;
 import static com.vernalis.nodes.collection.list2set.List2SetNodeDialog.createSortedModel;
 
-public class List2SetNodeModel
-		extends AbstractSimpleStreamableFunctionNodeModel {
+/**
+ * Node Model for the List to Set node
+ * 
+ * @author S.Roughley knime@vernalis.com
+ *
+ */
+public class List2SetNodeModel extends AbstractMultiCollectionNodeModel {
 
-	private final SettingsModelColumnFilter2 colFiltMdl =
-			registerSettingsModel(createColumnFilterModel());
 	private final SettingsModelBoolean sortedMdl =
 			registerSettingsModel(createSortedModel());
 
+	/**
+	 * Constructor
+	 *
+	 * @since 1.36.2
+	 */
+	protected List2SetNodeModel() {
+		super("List Columns", false, true, false);
+	}
+
 	@Override
-	protected ColumnRearranger createColumnRearranger(DataTableSpec spec)
-			throws InvalidSettingsException {
-		String[] colNames = colFiltMdl.applyTo(spec).getIncludes();
-		int[] colIdxs = Arrays.stream(colNames)
-				.mapToInt(x -> spec.findColumnIndex(x)).toArray();
-		DataColumnSpec[] newColSpecs = Arrays.stream(colNames)
-				.map(x -> spec.getColumnSpec(x))
+	protected DataColumnSpec[] createNewColumnSpecs(DataTableSpec spec,
+			int[] idx) {
+		return Arrays.stream(idx).mapToObj(spec::getColumnSpec)
 				.map(cSpec -> new DataColumnSpecCreator(cSpec.getName(),
 						SetCell.getCollectionType(
 								cSpec.getType().getCollectionElementType()))
 										.createSpec())
 				.toArray(DataColumnSpec[]::new);
-		ColumnRearranger rearranger = new ColumnRearranger(spec);
-		rearranger.replace(new AbstractCellFactory(newColSpecs) {
+	}
 
-			@Override
-			public DataCell[] getCells(DataRow row) {
-				DataCell[] retVal =
-						ArrayUtils.fill(new DataCell[colNames.length],
-								DataType.getMissingCell());
-				int colIdx = 0;
-				for (int i : colIdxs) {
-					DataCell collCell = row.getCell(i);
-					if (collCell.isMissing()) {
-						colIdx++;
-						continue;
-					}
-					ListDataValue ldv = (ListDataValue) collCell;
-					Set<DataCell> cells = sortedMdl.getBooleanValue()
-							? new TreeSet<>(
-									ldv.getElementType().getComparator())
-							: new LinkedHashSet<>();
-					if (ldv instanceof SparseListDataValue) {
-						// Short-cut...
-						SparseListDataValue sldv = (SparseListDataValue) ldv;
-						cells.add(sldv.getDefaultElement());
-						for (int j : sldv.getAllIndices()) {
-							cells.add(sldv.get(j));
-						}
-					} else {
-						ldv.forEach(c -> cells.add(c));
-					}
-					retVal[colIdx++] =
-							CollectionCellFactory.createSetCell(cells);
-				}
-				return retVal;
+	@Override
+	protected DataCell[] getCells(int[] idx, DataRow row,
+			DataColumnSpec[] newColSpecs) throws RuntimeException {
+		DataCell[] retVal = ArrayUtils.fill(new DataCell[newColSpecs.length],
+				DataType.getMissingCell());
+		int colIdx = 0;
+		for (int i : idx) {
+			DataCell collCell = row.getCell(i);
+			if (collCell.isMissing()) {
+				colIdx++;
+				continue;
 			}
-		}, colIdxs);
-		return rearranger;
+			ListDataValue ldv = (ListDataValue) collCell;
+			Set<DataCell> cells = sortedMdl.getBooleanValue()
+					? new TreeSet<>(ldv.getElementType().getComparator())
+					: new LinkedHashSet<>();
+			if (ldv instanceof SparseListDataValue) {
+				// Short-cut...
+				SparseListDataValue sldv = (SparseListDataValue) ldv;
+				if (sldv.getAllIndices().length < sldv.size()) {
+					// Only add the default if it appears in the collection
+					cells.add(sldv.getDefaultElement());
+				}
+				for (int j : sldv.getAllIndices()) {
+					cells.add(sldv.get(j));
+				}
+			} else {
+				ldv.forEach(cells::add);
+			}
+			retVal[colIdx++] = CollectionCellFactory.createSetCell(cells);
+		}
+		return retVal;
 	}
 
 }

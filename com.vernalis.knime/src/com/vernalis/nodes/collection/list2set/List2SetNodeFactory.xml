@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright (c) 2018, Vernalis (R&D) Ltd
+  Copyright (c) 2018,2023, Vernalis (R&D) Ltd
    This program is free software; you can redistribute it and/or modify it 
    under the terms of the GNU General Public License, Version 3, as 
    published by the Free Software Foundation.
@@ -19,10 +19,10 @@
 	xmlns="http://knime.org/node/v3.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
-	<name>List To Set Convertor</name>
+	<name>List To Set</name>
 
 	<shortDescription>
-		This node replaces any selected List Collection sells with Set Collection cells
+		This node replaces any selected List Collection cells with Set Collection cells
 	</shortDescription>
 
 	<fullDescription>
@@ -48,9 +48,11 @@
 			sets
 		</option>
 		<option name="Sort Set Members">If this option is checked, then the cells will be
-			sorted in ascending oder of their comparator, otherwise they will be
+			sorted in ascending order of their comparator, otherwise they will be
 			in order of first occurrence in the list
 		</option>
+		<option name="Fail if no matching columns">Should the node execution fail if there are no
+			matching collection columns?</option>
 	</fullDescription>
 
 	<ports>

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019,2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -18,6 +18,12 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 
+/**
+ * {@link NodeFactory} for the Set to List node
+ * 
+ * @author S.Roughley knime@vernalis.com
+ *
+ */
 public class Set2ListNodeFactory extends NodeFactory<Set2ListNodeModel> {
 
 	@Override

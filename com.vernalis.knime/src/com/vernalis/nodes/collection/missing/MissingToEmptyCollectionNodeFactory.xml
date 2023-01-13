@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright (c) 2019, Vernalis (R&D) Ltd
-   This program is free software; you can redistribute it and/or modify it 
-   under the terms of the GNU General Public License, Version 3, as 
-   published by the Free Software Foundation.
-   
-   This program is distributed in the hope that it will be useful, but 
-   WITHOUT ANY WARRANTY; without even the implied warranty of 
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-   See the GNU General Public License for more details.
-    
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, see <http://www.gnu.org/licenses>
+	Copyright (c) 2021,2023, Vernalis (R&D) Ltd
+	This program is free software; you can redistribute it and/or modify it
+	under the terms of the GNU General Public License, Version 3, as
+	published by the Free Software Foundation.
+
+	This program is distributed in the hope that it will be useful, but
+	WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, see <http://www.gnu.org/licenses>
 -->
 <!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
 <knimeNode
@@ -39,12 +39,15 @@
 		</intro>
 
 		<option name="Collection Columns">The List or Set column(s)
-</option>
-	<option name="Replace input columns?">Should the input columns be replaced in situ? If
-		not, new columns will be appended to the table, with the
-		suffix '
-		(Missing -> Empty)' added to their name(s)
-	</option>
+		</option>
+		<option name="Replace input columns?">Should the input columns be replaced in situ? If
+			not, new columns will be appended to the table, with the
+			suffix '
+			(Missing -> Empty)' added to their name(s)
+		</option>
+		<option name="Fail if no matching columns">Should the node execution fail if there are no
+			matching collection columns?
+		</option>
 	</fullDescription>
 
 	<ports>

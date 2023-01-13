@@ -7,8 +7,13 @@ The table shows the latest version of the nodes available in each update site fo
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
 | Nightly | [v1.36.1](#v1361---11-nov-2022) |
+| 4.7* | [v1.36.1](#v1361---11-nov-2022) |
 | 4.6* | [v1.36.1](#v1361---11-nov-2022) |
-| 4.5* | [v1.36.1](#v1361---11-nov-2022) |
+| 4.5 | [v1.36.1](#v1361---11-nov-2022) |
+| Nightly* | [v1.36.2](#v1362---13-jan-2023) |
+| 4.7* | [v1.36.2](#v1362---13-jan-2023) |
+| 4.6* | [v1.36.2](#v1362---13-jan-2023) |
+| 4.5 | [v1.36.1](#v1361---11-nov-2022) |
 | 4.4 | [v1.34.1](#v1341---07-jun-2022) |
 | 4.3 | [v1.31.0](#v1310---05-apr-2022) |
 | 4.2 | [v1.31.0](#v1310---05-apr-2022) |
@@ -32,6 +37,23 @@ The table shows the latest version of the nodes available in each update site fo
 \* Currently supported versions
 
 Back to [ReadMe](README.md)
+
+## v1.36.2 - 13-Jan-2023
+
+_Enhancements_
+* Add option to fail if no collection columns selected in Collection multi-selection-based Collection nodes with default behaviour to mimic legacy (#18)
+* Abstracted common code from all multi-selection-based Collection nodes to abstract Node Dialog and Node Model classes
+* Node Dialog layout improvements to Collection nodes
+
+_Bug Fixes_
+* Added feature dependency to RDKit Binaries feature to enforce installation (#17)
+* Fixes addition of default value in Sparse List representation in List to Set node when that value is not actually present in the collection (#19)
+
+_Other Changes_
+* Updated to build as JDK17
+* Updated to require RDKit v 4.6.1 or higher
+
+Back to [top](#changelog)
 
 ## v1.36.1 - 11-Nov-2022
 

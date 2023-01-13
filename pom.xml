@@ -10,9 +10,9 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>1.36.1</revision>
+        <revision>1.36.2</revision>
         <changelist>-SNAPSHOT</changelist>
-        <knime.version>4.6</knime.version>
+        <knime.version>4.7</knime.version>
         <tycho.version>2.7.5</tycho.version>
         <tycho.extras.version>${tycho.version}</tycho.extras.version>
         <tycho.test.jvmArgs>-Xmx512m</tycho.test.jvmArgs>
