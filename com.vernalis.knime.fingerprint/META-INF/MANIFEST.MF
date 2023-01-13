@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.fingerprint;singleton:=true
-Bundle-Version: 1.36.1.qualifier
+Bundle-Version: 1.36.2.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.vernalis.knime.fingerprint.SparseToDenseNodePlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -14,6 +14,6 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.13.0,4.0.0)",
  com.vernalis.knime.core;bundle-version="[1.12.0,2.0.0)"
 Bundle-ActivationPolicy: lazy
 Export-Package: com.vernalis.knime.fingerprint
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: com.vernalis.knime.fingerprint
 

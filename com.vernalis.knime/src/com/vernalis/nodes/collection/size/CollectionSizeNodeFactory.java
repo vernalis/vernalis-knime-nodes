@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019,2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -26,9 +26,6 @@ import org.knime.core.node.NodeView;
  */
 public class CollectionSizeNodeFactory
 		extends NodeFactory<CollectionSizeNodeModel> {
-
-	public CollectionSizeNodeFactory() {
-	}
 
 	@Override
 	public CollectionSizeNodeModel createNodeModel() {

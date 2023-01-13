@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright (c) 2019, Vernalis (R&D) Ltd
+  Copyright (c) 2019,2023, Vernalis (R&D) Ltd
    This program is free software; you can redistribute it and/or modify it 
    under the terms of the GNU General Public License, Version 3, as 
    published by the Free Software Foundation.
@@ -44,6 +44,8 @@
 		<option name="Collection Columns">Select the incoming collection column(s) to convert to
 			lists
 		</option>
+		<option name="Fail if no matching columns">Should the node execution fail if there are no
+			matching collection columns?</option>
 	</fullDescription>
 
 	<ports>
