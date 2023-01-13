@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.bio.speedyseq;singleton:=true
-Bundle-Version: 1.36.1.qualifier
+Bundle-Version: 1.36.2.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.vernalis.knime.bio.speedyseq.SpeedySeqNodePlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -13,7 +13,7 @@ Require-Bundle: org.knime.workbench.core;bundle-version="[3.0.0,5.0.0)",
  com.vernalis.knime.core;bundle-version="[1.0.0,2.0.0)",
  org.knime.ext.svg;bundle-version="[3.0.0,5.0.0)"
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: com.vernalis.knime.bio.speedyseq
 Import-Package: org.w3c.dom.events;version="3.0.0"
 

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.core;singleton:=true
-Bundle-Version: 1.36.1.qualifier
+Bundle-Version: 1.36.2.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.vernalis.knime.core.VernalisCoreNodePlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -39,6 +39,6 @@ Export-Package: com.vernalis.exceptions,
  com.vernalis.knime.wildcardfilter,
  com.vernalis.rest,
  com.vernalis.testing
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: com.vernalis.knime.core
 

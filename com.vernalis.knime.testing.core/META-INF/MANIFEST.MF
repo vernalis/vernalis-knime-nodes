@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.testing.core;singleton:=true
-Bundle-Version: 1.36.1.qualifier
+Bundle-Version: 1.36.2.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.vernalis.testing.VernalisTestingCoreNodePlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -12,6 +12,6 @@ Require-Bundle: org.knime.workbench.core;bundle-version="[4.4.0,5.0.0)",
  nl.esciencecenter.e3dchem.knime.testing.plugin;bundle-version="[1.0.3,2.0.0)"
 Bundle-ActivationPolicy: lazy
 Export-Package: com.vernalis.testing
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: com.vernalis.knime.testing.core
 

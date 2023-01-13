@@ -2,7 +2,7 @@
 <feature
       id="com.vernalis.knime.feature"
       label="Vernalis KNIME Nodes"
-      version="1.36.1.qualifier"
+      version="1.36.2.qualifier"
       provider-name="Vernalis Research Ltd, Cambridge, UK"
       plugin="com.vernalis.knime.core">
 
@@ -703,6 +703,10 @@ the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 &lt;https://www.gnu.org/licenses/why-not-lgpl.html&gt;.
    </license>
+
+   <requires>
+      <import feature="org.rdkit.knime.binaries.feature" version="0.0.0"/>
+   </requires>
 
    <plugin
          id="com.vernalis.knime"

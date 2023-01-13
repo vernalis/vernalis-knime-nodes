@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, Vernalis (R&D) Ltd
+ * Copyright (c) 2018,2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,33 +14,36 @@
  ******************************************************************************/
 package com.vernalis.nodes.collection.list2set;
 
-import org.knime.core.data.collection.ListDataValue;
-import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
-import org.knime.core.node.defaultnodesettings.DialogComponentColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 
-public class List2SetNodeDialog extends DefaultNodeSettingsPane {
+import com.vernalis.nodes.collection.abstrct.AbstractMultiCollectionNodeDialog;
+
+/**
+ * Node dialog for the List to Set node
+ * 
+ * @author S.Roughley knime@vernalis.com
+ *
+ */
+public class List2SetNodeDialog extends AbstractMultiCollectionNodeDialog {
 
 	private static final String SORT_SET_MEMBERS = "Sort set members";
 
+	/**
+	 * Constructor
+	 */
 	List2SetNodeDialog() {
-		createNewGroup("Select List Columns");
-		addDialogComponent(
-				new DialogComponentColumnFilter2(createColumnFilterModel(), 0));
-		closeCurrentGroup();
+		super("List Columns", false, true, false);
+
 		addDialogComponent(new DialogComponentBoolean(createSortedModel(),
 				SORT_SET_MEMBERS));
 	}
 
+	/**
+	 * @return The settings model for the sort set members option
+	 */
 	static SettingsModelBoolean createSortedModel() {
 		return new SettingsModelBoolean(SORT_SET_MEMBERS, false);
 	}
 
-	@SuppressWarnings("unchecked")
-	static SettingsModelColumnFilter2 createColumnFilterModel() {
-		return new SettingsModelColumnFilter2("List Columns",
-				ListDataValue.class);
-	}
 }

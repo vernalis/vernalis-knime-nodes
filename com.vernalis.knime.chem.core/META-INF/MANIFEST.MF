@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.chem.core; singleton:=true
-Bundle-Version: 1.36.1.qualifier
+Bundle-Version: 1.36.2.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.vernalis.knime.chem.core.VernalisChemCoreNodePlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.13.0,4.0.0)",
  org.knime.workbench.core;bundle-version="[3.0.0,5.0.0)",
  org.knime.workbench.repository;bundle-version="[3.0.0,5.0.0)",
  org.knime.base;bundle-version="[3.0.0,5.0.0)",
- org.rdkit.knime.types;bundle-version="[4.0.0,5.0.0)",
+ org.rdkit.knime.types;bundle-version="[4.6.1,5.0.0)",
  org.knime.chem.types;bundle-version="[3.0.0,5.0.0)",
  org.knime.bio.types;bundle-version="[3.0.0,5.0.0)",
  com.vernalis.knime.core;bundle-version="[1.22.0,2.0.0)"
@@ -20,7 +20,7 @@ Export-Package: com.vernalis.knime.chem.core,
  com.vernalis.knime.chem.util.elements,
  com.vernalis.knime.chem.util.points,
  com.vernalis.knime.core.nodes.props.abstrct
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: com.vernalis.knime.chem.core
 Import-Package: org.w3c.dom.events;version="3.0.0"
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019,2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -15,35 +15,34 @@
 package com.vernalis.nodes.collection.collection2string;
 
 import org.knime.core.data.DataColumnSpec;
-import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
-import org.knime.core.node.defaultnodesettings.DialogComponentColumnFilter2;
 import org.knime.core.node.defaultnodesettings.DialogComponentString;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.util.filter.InputFilter;
-import org.knime.core.node.util.filter.column.DataColumnSpecFilterConfiguration;
+
+import com.vernalis.nodes.collection.abstrct.AbstractMultiCollectionNodeDialog;
 
 /**
- * @author steve
+ * Node Dialog for the Collection to String node
+ * 
+ * @author S.Roughley knime@vernalis.com
  *
  */
-public class ColToStringNodeDialog extends DefaultNodeSettingsPane {
+public class ColToStringNodeDialog extends AbstractMultiCollectionNodeDialog {
 
 	private static final String CELL = "Cell ";
 
-	static final String PREFIX = "Prefix";
+	private static final String PREFIX = "Prefix";
 
-	static final String SKIP_MISSING_VALUES_IN_COLLECTIONS =
+	private static final String SKIP_MISSING_VALUES_IN_COLLECTIONS =
 			"Skip missing values in collections?";
 
-	static final String REPLACE_INPUT_COLUMNS = "Replace input columns?";
-
-	static final String COLLECTION_COLUMNS = "Collection Columns";
-
+	/**
+	 * InputFilter for collection columns
+	 */
 	static final InputFilter<DataColumnSpec> COLLECTION_FILTER =
-			new InputFilter<DataColumnSpec>() {
+			new InputFilter<>() {
 
 				@Override
 				public boolean include(DataColumnSpec spec) {
@@ -61,18 +60,19 @@ public class ColToStringNodeDialog extends DefaultNodeSettingsPane {
 	private static final String CELL_SUFFIX = CELL + SUFFIX;
 
 	/**
-	 * 
+	 * Constructor
 	 */
 	public ColToStringNodeDialog() {
-		createNewGroup(COLLECTION_COLUMNS);
-		addDialogComponent(
-				new DialogComponentColumnFilter2(createColumnsModel(), 0));
-		closeCurrentGroup();
-		addDialogComponent(new DialogComponentBoolean(
-				createReplaceInputColumnsModel(), REPLACE_INPUT_COLUMNS));
+		super(true);
+
+	}
+
+	@Override
+	protected void postpendDialogComponents() {
 		addDialogComponent(
 				new DialogComponentBoolean(createSkipMissingValuesModel(),
 						SKIP_MISSING_VALUES_IN_COLLECTIONS));
+		setHorizontalPlacement(true);
 		addDialogComponent(new DialogComponentString(createPrefixModel(),
 				PREFIX, false, 5));
 		addDialogComponent(new DialogComponentString(createCellPrefixModel(),
@@ -83,42 +83,50 @@ public class ColToStringNodeDialog extends DefaultNodeSettingsPane {
 				CELL_SUFFIX, false, 5));
 		addDialogComponent(new DialogComponentString(createSuffixModel(),
 				SUFFIX, false, 5));
-
+		setHorizontalPlacement(false);
 	}
 
+	/**
+	 * @return the model for the cell suffix
+	 */
 	static SettingsModelString createCellSuffixModel() {
 		return new SettingsModelString(CELL_SUFFIX, "");
 	}
 
+	/**
+	 * @return the model for the cell prefix
+	 */
 	static SettingsModelString createCellPrefixModel() {
 		return new SettingsModelString(CELL_PREFIX, "");
 	}
 
+	/**
+	 * @return the model for the collection suffix
+	 */
 	static SettingsModelString createSuffixModel() {
 		return new SettingsModelString(SUFFIX, "]");
 	}
 
+	/**
+	 * @return the model for the collection joiner
+	 */
 	static SettingsModelString createJoinerModel() {
 		return new SettingsModelString(JOINER, ",");
 	}
 
+	/**
+	 * @return the model for the collection prefix
+	 */
 	static SettingsModelString createPrefixModel() {
 		return new SettingsModelString(PREFIX, "[");
 	}
 
+	/**
+	 * @return the model for the skip missing values option
+	 */
 	static SettingsModelBoolean createSkipMissingValuesModel() {
 		return new SettingsModelBoolean(SKIP_MISSING_VALUES_IN_COLLECTIONS,
 				false);
-	}
-
-	static SettingsModelBoolean createReplaceInputColumnsModel() {
-		return new SettingsModelBoolean(REPLACE_INPUT_COLUMNS, true);
-	}
-
-	static SettingsModelColumnFilter2 createColumnsModel() {
-		return new SettingsModelColumnFilter2(COLLECTION_COLUMNS,
-				COLLECTION_FILTER,
-				DataColumnSpecFilterConfiguration.FILTER_BY_NAMEPATTERN);
 	}
 
 }

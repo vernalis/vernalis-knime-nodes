@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022, Vernalis (R&D) Ltd
+ * Copyright (c) 2022,2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -27,14 +27,13 @@ import org.knime.core.data.collection.ListDataValue;
 import org.knime.core.data.vector.bitvector.BitVectorValue;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NotConfigurableException;
-import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
-import org.knime.core.node.defaultnodesettings.DialogComponentColumnFilter2;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.util.ColumnFilter;
+
+import com.vernalis.nodes.collection.abstrct.AbstractMultiCollectionNodeDialog;
 
 /**
  * Node Dialog for the mask list node
@@ -42,12 +41,13 @@ import org.knime.core.node.util.ColumnFilter;
  * @author S.Roughley knime@vernalis.com
  *
  */
-public class ListMaskNodeDialog extends DefaultNodeSettingsPane {
+public class ListMaskNodeDialog extends AbstractMultiCollectionNodeDialog {
 
 	private static final String USE_VALUES_AS_INDICES = "Use values as indices";
 	private static final String TREAT_MISSING_MASKS_AS_EMPTY_COLLECTIONS =
 			"Treat missing masks as empty collections";
-	private static final String LIST_COLUMNS_TO_MASK = "List Columns to Mask";
+	/** The column filter name */
+	static final String LIST_COLUMNS_TO_MASK = "List Columns to Mask";
 	private static final String MASK_COLUMN = "Mask Column";
 	/**
 	 * {@link ColumnFilter} for a column which is a list of integers or booleans
@@ -72,13 +72,19 @@ public class ListMaskNodeDialog extends DefaultNodeSettingsPane {
 	};
 
 	private DataTableSpec lastSpec = null;
-	private final SettingsModelString maskColNameMdl;
-	private final SettingsModelBoolean intsAsIndicesMdl;
+	private SettingsModelString maskColNameMdl;
+	private SettingsModelBoolean intsAsIndicesMdl;
 
 	/**
 	 * Constructor
 	 */
 	ListMaskNodeDialog() {
+		super(LIST_COLUMNS_TO_MASK, false, true, false);
+
+	}
+
+	@Override
+	protected void prependDialogComponents() {
 		maskColNameMdl = createMaskColumnNameModel();
 		intsAsIndicesMdl = createUseIntMaskAsIndicesModel();
 		maskColNameMdl.addChangeListener(new ChangeListener() {
@@ -91,6 +97,8 @@ public class ListMaskNodeDialog extends DefaultNodeSettingsPane {
 		});
 		setState(maskColNameMdl, intsAsIndicesMdl);
 
+		createNewGroup("Mask Settings");
+		setHorizontalPlacement(true);
 		addDialogComponent(new DialogComponentColumnNameSelection(
 				maskColNameMdl, MASK_COLUMN, 0, MASK_COLUMN_FILTER));
 		addDialogComponent(new DialogComponentBoolean(intsAsIndicesMdl,
@@ -99,11 +107,8 @@ public class ListMaskNodeDialog extends DefaultNodeSettingsPane {
 		addDialogComponent(
 				new DialogComponentBoolean(createMissingMasksEmptyModel(),
 						TREAT_MISSING_MASKS_AS_EMPTY_COLLECTIONS));
-		createNewGroup(LIST_COLUMNS_TO_MASK);
-		addDialogComponent(
-				new DialogComponentColumnFilter2(createColumnFilterModel(), 0));
+		setHorizontalPlacement(false);
 		closeCurrentGroup();
-
 	}
 
 	/**
@@ -131,13 +136,6 @@ public class ListMaskNodeDialog extends DefaultNodeSettingsPane {
 
 	}
 
-	/**
-	 * @return the settings model for the use ints as indices option
-	 */
-	static SettingsModelBoolean createUseIntMaskAsIndicesModel() {
-		return new SettingsModelBoolean(USE_VALUES_AS_INDICES, false);
-	}
-
 	@Override
 	public void loadAdditionalSettingsFrom(NodeSettingsRO settings,
 			DataTableSpec[] specs) throws NotConfigurableException {
@@ -145,6 +143,13 @@ public class ListMaskNodeDialog extends DefaultNodeSettingsPane {
 		super.loadAdditionalSettingsFrom(settings, specs);
 		setState(maskColNameMdl, intsAsIndicesMdl);
 
+	}
+
+	/**
+	 * @return the settings model for the use ints as indices option
+	 */
+	static SettingsModelBoolean createUseIntMaskAsIndicesModel() {
+		return new SettingsModelBoolean(USE_VALUES_AS_INDICES, false);
 	}
 
 	/**
@@ -163,13 +168,4 @@ public class ListMaskNodeDialog extends DefaultNodeSettingsPane {
 		return new SettingsModelString(MASK_COLUMN, null);
 	}
 
-	/**
-	 * @return The settings model for the list columns to apply mask to names
-	 *         option
-	 */
-	@SuppressWarnings("unchecked")
-	static SettingsModelColumnFilter2 createColumnFilterModel() {
-		return new SettingsModelColumnFilter2(LIST_COLUMNS_TO_MASK,
-				ListDataValue.class);
-	}
 }

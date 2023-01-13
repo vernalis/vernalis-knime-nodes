@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.flowcontrol;singleton:=true
-Bundle-Version: 1.36.1.qualifier
+Bundle-Version: 1.36.2.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.vernalis.knime.flowcontrol.FlowControlNodePlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -55,6 +55,6 @@ Export-Package: com.vernalis.knime.flowcontrol,
  com.vernalis.knime.flowcontrol.portcombiner.api,
  com.vernalis.knime.flowvar.nodes.io.read,
  com.vernalis.knime.flowvar.nodes.io.write
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: com.vernalis.knime.flowcontrol
 
