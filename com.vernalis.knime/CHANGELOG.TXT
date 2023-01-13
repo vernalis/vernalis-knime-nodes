@@ -1,3 +1,8 @@
+v1.36.2 13-Jan-2023
+===================
+* Abstracted Multi-Collection node base Node Model and Node Dialog classes
+* Added option to fail if no input columns selected
+
 v1.33.0 19-May-2022
 ===================
 * Added Column to Singleton Collection node

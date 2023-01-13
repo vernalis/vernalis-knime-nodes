@@ -1111,7 +1111,7 @@
 			"search_group_priority": 25,
 			"selector": true,
 			"type": "string",
-			"max": "11/3/2020",
+			"min": "5/18/1976",
 			"input_type": "date",
 			"display_name": "Release Date",
 			"is_iterable": false,

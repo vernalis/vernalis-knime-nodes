@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019,2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,7 +14,6 @@
  ******************************************************************************/
 package com.vernalis.nodes.collection.collection2string;
 
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.knime.core.data.DataCell;
@@ -24,35 +23,29 @@ import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DataType;
 import org.knime.core.data.collection.CollectionDataValue;
-import org.knime.core.data.container.AbstractCellFactory;
-import org.knime.core.data.container.CellFactory;
-import org.knime.core.data.container.ColumnRearranger;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
-import org.knime.core.node.defaultnodesettings.SettingsModelColumnFilter2;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 import com.vernalis.knime.misc.ArrayUtils;
-import com.vernalis.knime.nodes.AbstractSimpleStreamableFunctionNodeModel;
+import com.vernalis.nodes.collection.abstrct.AbstractMultiCollectionNodeModel;
 
-import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.COLLECTION_FILTER;
 import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createCellPrefixModel;
 import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createCellSuffixModel;
-import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createColumnsModel;
 import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createJoinerModel;
 import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createPrefixModel;
-import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createReplaceInputColumnsModel;
 import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createSkipMissingValuesModel;
 import static com.vernalis.nodes.collection.collection2string.ColToStringNodeDialog.createSuffixModel;
 
-public class ColToStringNodeModel
-		extends AbstractSimpleStreamableFunctionNodeModel {
+/**
+ * Node model for the Collection to String node
+ * 
+ * @author S.Roughley knime@vernalis.com
+ *
+ */
+public class ColToStringNodeModel extends AbstractMultiCollectionNodeModel {
 
-	private final SettingsModelColumnFilter2 collColsMdl =
-			registerSettingsModel(createColumnsModel());
-	private final SettingsModelBoolean replaceInputsMdl =
-			registerSettingsModel(createReplaceInputColumnsModel());
 	private final SettingsModelBoolean skipMissingsMdl =
 			registerSettingsModel(createSkipMissingValuesModel());
 	private final SettingsModelString prefixMdl =
@@ -65,38 +58,57 @@ public class ColToStringNodeModel
 			registerSettingsModel(createCellSuffixModel());
 	private final SettingsModelString suffixMdl =
 			registerSettingsModel(createSuffixModel());
+	private String cellPrefix;
+	private String cellSuffix;
+	private String joiner;
+	private String prefix;
+	private String suffix;
 
-	public ColToStringNodeModel() {
-
+	/**
+	 * Constructor
+	 *
+	 * @since 1.36.2
+	 */
+	protected ColToStringNodeModel() {
+		super(true);
 	}
 
 	@Override
-	protected ColumnRearranger createColumnRearranger(DataTableSpec spec)
+	protected void doConfigure(DataTableSpec spec)
 			throws InvalidSettingsException {
+		cellPrefix = cellPrefixMdl.getJavaUnescapedStringValue() == null ? ""
+				: cellPrefixMdl.getJavaUnescapedStringValue();
+		cellSuffix = cellSuffixMdl.getJavaUnescapedStringValue() == null ? ""
+				: cellSuffixMdl.getJavaUnescapedStringValue();
+		joiner = joinerMdl.getJavaUnescapedStringValue() == null ? ""
+				: joinerMdl.getJavaUnescapedStringValue();
+		prefix = prefixMdl.getJavaUnescapedStringValue() == null ? ""
+				: prefixMdl.getJavaUnescapedStringValue();
+		suffix = suffixMdl.getJavaUnescapedStringValue() == null ? ""
+				: suffixMdl.getJavaUnescapedStringValue();
+	}
 
-		// Firstly check we have any columns, and any selected
-		if (!spec.stream().filter(colSpec -> COLLECTION_FILTER.include(colSpec))
-				.findAny().isPresent()) {
-			throw new InvalidSettingsException(
-					"No collection columns in the incoming table");
-		}
+	@Override
+	protected void reset() {
+		super.reset();
+		// Clean up
+		cellPrefix = null;
+		cellSuffix = null;
+		joiner = null;
+		prefix = null;
+		suffix = null;
+	}
 
-		final int[] colIdx =
-				Arrays.stream(collColsMdl.applyTo(spec).getIncludes())
-						.mapToInt(name -> spec.findColumnIndex(name)).toArray();
-		if (colIdx.length == 0) {
-			throw new InvalidSettingsException(
-					"No collection columns selected!");
-		}
-
+	@Override
+	protected DataColumnSpec[] createNewColumnSpecs(DataTableSpec spec,
+			int[] idx) {
 		// Now generate the output spec
-		String colNameSuffix =
-				replaceInputsMdl.getBooleanValue() ? "" : " (String)";
-		final DataColumnSpec[] newColSpecs = new DataColumnSpec[colIdx.length];
+		String colNameSuffix = isReplaceInputCols() ? "" : " (String)";
+		final DataColumnSpec[] newColSpecs = new DataColumnSpec[idx.length];
 		for (int i = 0; i < newColSpecs.length; i++) {
 			String newColName =
-					spec.getColumnSpec(colIdx[i]).getName() + colNameSuffix;
-			if (!replaceInputsMdl.getBooleanValue()) {
+					spec.getColumnSpec(idx[i]).getName() + colNameSuffix;
+			if (!isReplaceInputCols()) {
 				newColName =
 						DataTableSpec.getUniqueColumnName(spec, newColName);
 			}
@@ -104,56 +116,31 @@ public class ColToStringNodeModel
 					new DataColumnSpecCreator(newColName, StringCell.TYPE)
 							.createSpec();
 		}
+		return newColSpecs;
+	}
 
-		// Get the various connecting/wrapping strings - we use
-		// getJavaUnescapedString to allow e.g. newlines
-		String cellPrefix = cellPrefixMdl.getJavaUnescapedStringValue() == null
-				? "" : cellPrefixMdl.getJavaUnescapedStringValue();
-		String cellSuffix = cellSuffixMdl.getJavaUnescapedStringValue() == null
-				? "" : cellSuffixMdl.getJavaUnescapedStringValue();
-		String joiner = joinerMdl.getJavaUnescapedStringValue() == null ? ""
-				: joinerMdl.getJavaUnescapedStringValue();
-		String prefix = prefixMdl.getJavaUnescapedStringValue() == null ? ""
-				: prefixMdl.getJavaUnescapedStringValue();
-		String suffix = suffixMdl.getJavaUnescapedStringValue() == null ? ""
-				: suffixMdl.getJavaUnescapedStringValue();
+	@Override
+	protected DataCell[] getCells(int[] idx, DataRow row,
+			DataColumnSpec[] newColSpecs) throws RuntimeException {
 
-		// Create the cellfactory
-		CellFactory cellFact = new AbstractCellFactory(newColSpecs) {
-
-			@Override
-			public DataCell[] getCells(DataRow row) {
-
-				DataCell[] retVal =
-						ArrayUtils.fill(new DataCell[newColSpecs.length],
-								DataType.getMissingCell());
-				int cellIndex = 0;
-				for (int col : colIdx) {
-					DataCell colCell = row.getCell(col);
-					if (!colCell.isMissing()) {
-						retVal[cellIndex] = new StringCell(
-								((CollectionDataValue) colCell).stream().filter(
-										x -> !(skipMissingsMdl.getBooleanValue()
-												&& x.isMissing()))
-										.map(cell -> cellPrefix
-												+ cell.toString() + cellSuffix)
-										.collect(Collectors.joining(joiner,
-												prefix, suffix)));
-					}
-					cellIndex++;
-				}
-				return retVal;
+		DataCell[] retVal = ArrayUtils.fill(new DataCell[newColSpecs.length],
+				DataType.getMissingCell());
+		int cellIndex = 0;
+		for (int col : idx) {
+			DataCell colCell = row.getCell(col);
+			if (!colCell.isMissing()) {
+				retVal[cellIndex] =
+						new StringCell(((CollectionDataValue) colCell).stream()
+								.filter(x -> !(skipMissingsMdl.getBooleanValue()
+										&& x.isMissing()))
+								.map(cell -> String.format("%s%s%s", cellPrefix,
+										cell.toString(), cellSuffix))
+								.collect(Collectors.joining(joiner, prefix,
+										suffix)));
 			}
-		};
-
-		// Create the rearranger, and apply the cell factory appropriately
-		ColumnRearranger rearranger = new ColumnRearranger(spec);
-		if (replaceInputsMdl.getBooleanValue()) {
-			rearranger.replace(cellFact, colIdx);
-		} else {
-			rearranger.append(cellFact);
+			cellIndex++;
 		}
-		return rearranger;
+		return retVal;
 	}
 
 }
