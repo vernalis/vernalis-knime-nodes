@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2021 Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2023 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -139,6 +139,7 @@ import static com.vernalis.knime.mmp.nodes.fragutil.fragment.abstrct.AbstractMMP
  * </p>
  * 
  * @author s.roughley
+ * 
  * @param <T>
  *            The type of the molecule object
  * @param <U>
@@ -524,6 +525,7 @@ public class AbstractMMPFragmentNodeModel<T, U>
 	 * 
 	 * @param spec
 	 *            The incoming data table spec
+	 * 
 	 * @return The 1st output table spec
 	 */
 	protected DataTableSpec createSpec_0(DataTableSpec spec) {
@@ -614,6 +616,7 @@ public class AbstractMMPFragmentNodeModel<T, U>
 	 * 
 	 * @param dataTableSpec
 	 *            Incoming DTS
+	 * 
 	 * @return DTS with optional fail reason column
 	 */
 	protected DataTableSpec createSpec_1(DataTableSpec dataTableSpec) {
@@ -993,7 +996,9 @@ public class AbstractMMPFragmentNodeModel<T, U>
 	 * @param logger
 	 * @param verboseLogging
 	 * @param retVal
+	 * 
 	 * @return
+	 * 
 	 * @throws IllegalArgumentException
 	 * @throws CanceledExecutionException
 	 * @throws ClosedFactoryException
@@ -1050,9 +1055,11 @@ public class AbstractMMPFragmentNodeModel<T, U>
 						fragFactoryHAdded.getMatchingBonds().size();
 			}
 			final int matchingBondCount = fragFactory.getMatchingBonds().size();
-			numberOfFragmentations += matchingBondCount;
-			// Each 1-bond cut can be either way around...
-			numberOfFragmentations *= 2;
+			if (minNumCuts == 1) {
+				numberOfFragmentations += matchingBondCount;
+				// Each 1-bond cut can be either way around...
+				numberOfFragmentations *= 2;
+			}
 			if (minNumCuts <= 2 && maxNumCuts >= 2 && allowTwoCutsToBondValue) {
 				if (m_limitByComplexity.getBooleanValue()) {
 					numberOfFragmentations += matchingBondCount;

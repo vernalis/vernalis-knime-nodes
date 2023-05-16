@@ -6,9 +6,9 @@ The table shows the latest version of the nodes available in each update site fo
 
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
-| Nightly | [v1.36.1](#v1361---11-nov-2022) |
-| 4.7* | [v1.36.1](#v1361---11-nov-2022) |
-| 4.6* | [v1.36.1](#v1361---11-nov-2022) |
+| Nightly | [v1.36.3](#v1363---15-may-2023) |
+| 4.7* | [v1.36.3](#v1363---15-may-2023) |
+| 4.6* | [v1.36.3](#v1363---15-may-2023) |
 | 4.5 | [v1.36.1](#v1361---11-nov-2022) |
 | Nightly* | [v1.36.2](#v1362---13-jan-2023) |
 | 4.7* | [v1.36.2](#v1362---13-jan-2023) |
@@ -37,6 +37,13 @@ The table shows the latest version of the nodes available in each update site fo
 \* Currently supported versions
 
 Back to [ReadMe](README.md)
+
+## v1.36.3 - 15-May-2023
+
+_Bug Fixes_
+* Fixes error in complexity estimation when a single bond cut is not being made (See #20)
+
+Back to [top](#changelog)
 
 ## v1.36.2 - 13-Jan-2023
 
