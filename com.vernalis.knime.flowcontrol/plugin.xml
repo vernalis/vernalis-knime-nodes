@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?eclipse version="3.0"?>
 <plugin>
-   <!-- New in v 1.32.0 -->
+   <!-- New in v 1.36.4 -->
    <extension-point id="variablecondition" name="Flow Variable Condition" schema="schema/variablecondition.exsd"/>
    <extension-point id="porttypecombiner" name="Port Type Combiner" schema="schema/porttypecombiner.exsd"/>
 	
-	<!-- New in v1.32.0 -->
+	<!-- New in v1.36.4 -->
 	<extension point="com.vernalis.knime.flowcontrol.variablecondition">
 	    <condition
 	          class="com.vernalis.knime.flowcontrol.flowvarcond.impl.simple.EmptyStringFlowVarCondition" />
@@ -74,7 +74,7 @@
 			factory-class="com.vernalis.knime.flowcontrol.nodes.loops.abstrct.multiportloopend.ConfigurableMultiPortLoopEndNodeFactory" />
 		
 		
-		<!-- v1.32.0 -->
+		<!-- v1.36.4 -->
 		<node
 			category-path="/community/vernalis/flowcontrol/switches"
 			factory-class="com.vernalis.knime.flowcontrol.nodes.switches.emptytable.EmptyTableSwitchNodeFactory" />
@@ -137,7 +137,7 @@
         deprecated="true"
         factory-class="com.vernalis.knime.flowcontrol.nodes.loops.loopendupto6ports.UptoSixPortLoopEndNodeFactory"/>
 
-		<!-- Flow Control nodes deprecated in v1.32.0 -->
+		<!-- Flow Control nodes deprecated in v1.36.4 -->
 		<node
 			category-path="/community/vernalis/flowcontrol/fvflowcontrol"
 			factory-class="com.vernalis.knime.flowcontrol.nodes.fv.ifswitch.FVarFVIfSwitchNodeFactory" 

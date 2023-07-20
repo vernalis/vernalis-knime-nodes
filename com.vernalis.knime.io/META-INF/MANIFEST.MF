@@ -2,18 +2,18 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.io;singleton:=true
-Bundle-Version: 1.36.3.qualifier
+Bundle-Version: 1.36.4.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.vernalis.knime.io.MiscIOPlugin
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.13.0,4.0.0)",
- org.knime.workbench.core;bundle-version="[3.0.0,5.0.0)",
- org.knime.workbench.repository;bundle-version="[3.0.0,5.0.0)",
- org.knime.base;bundle-version="[3.0.0,5.0.0)",
- org.knime.bio.types;bundle-version="[3.0.0,5.0.0)",
- org.knime.chem.types;bundle-version="[3.0.0,5.0.0)",
+ org.knime.workbench.core;bundle-version="[3.0.0,6.0.0)",
+ org.knime.workbench.repository;bundle-version="[3.0.0,6.0.0)",
+ org.knime.base;bundle-version="[3.0.0,6.0.0)",
+ org.knime.bio.types;bundle-version="[3.0.0,6.0.0)",
+ org.knime.chem.types;bundle-version="[3.0.0,6.0.0)",
  com.vernalis.knime.core;bundle-version="[1.7.0,2.0.0)",
- org.knime.core.data.uritype;bundle-version="[4.1.0,5.0.0)"
+ org.knime.core.data.uritype;bundle-version="[4.1.0,6.0.0)"
 Bundle-ActivationPolicy: lazy
 Export-Package: com.vernalis.knime.io,
  com.vernalis.knime.io.nodes.abstrct,

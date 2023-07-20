@@ -6,13 +6,10 @@ The table shows the latest version of the nodes available in each update site fo
 
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
-| Nightly | [v1.36.3](#v1363---15-may-2023) |
-| 4.7* | [v1.36.3](#v1363---15-may-2023) |
-| 4.6* | [v1.36.3](#v1363---15-may-2023) |
-| 4.5 | [v1.36.1](#v1361---11-nov-2022) |
-| Nightly* | [v1.36.2](#v1362---13-jan-2023) |
-| 4.7* | [v1.36.2](#v1362---13-jan-2023) |
-| 4.6* | [v1.36.2](#v1362---13-jan-2023) |
+| Nightly | [v1.36.4](#v1364---20-july-2023) |
+| 5.1* | [v1.36.4](#v1364---20-july-2023) |
+| 4.7* | [v1.36.4](#v1364---20-july-2023) |
+| 4.6 | [v1.36.3](#v1363---15-may-2023) |
 | 4.5 | [v1.36.1](#v1361---11-nov-2022) |
 | 4.4 | [v1.34.1](#v1341---07-jun-2022) |
 | 4.3 | [v1.31.0](#v1310---05-apr-2022) |
@@ -37,6 +34,13 @@ The table shows the latest version of the nodes available in each update site fo
 \* Currently supported versions
 
 Back to [ReadMe](README.md)
+
+## v1.36.4 - 20-July-2023
+
+* KNIME 5.1 Compatibility added
+
+Back to [top](#changelog)
+
 
 ## v1.36.3 - 15-May-2023
 
