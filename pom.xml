@@ -73,7 +73,7 @@
         <repository>
             <id>3d-e-chem</id>
             <layout>p2</layout>
-            <url>https://3d-e-chem.github.io/updates</url>
+            <url>https://3d-e-chem.github.io/updates/4.7</url>
         </repository>
     </repositories>
 
