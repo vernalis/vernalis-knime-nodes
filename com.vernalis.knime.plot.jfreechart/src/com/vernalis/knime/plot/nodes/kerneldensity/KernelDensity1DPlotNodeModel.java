@@ -37,7 +37,7 @@ import org.knime.core.data.DoubleValue;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.property.ColorAttr;
-import org.knime.core.data.property.ColorHandler.ColorModel;
+import org.knime.core.data.property.ColorModel;
 import org.knime.core.data.property.ColorModelNominal;
 import org.knime.core.data.property.ShapeFactory;
 import org.knime.core.node.BufferedDataTable;
@@ -148,23 +148,23 @@ public class KernelDensity1DPlotNodeModel extends
 	}
 
 	@Override
-	protected AttributedString getXAxisLabel(
-			ChartData<? extends DrawableDataObject> chartData) {
+	protected AttributedString
+			getXAxisLabel(ChartData<? extends DrawableDataObject> chartData) {
 		return new AttributedString(columnNameMdls[0].getStringValue()
-				+ (showHonAxesMdl.getBooleanValue()
-						&& groupColNameMdl.getStringValue() == null
-								? String.format(" (H=%.2f)",
-										chartData.getData().stream()
-												.filter(x -> x instanceof KernelDensityDrawableDataObject)
-												.map(x -> (KernelDensityDrawableDataObject) x)
-												.findFirst().get().getKernel()
-												.getBandwidthMatrix()[0][0])
+				+ (showHonAxesMdl.getBooleanValue() && groupColNameMdl
+						.getStringValue() == null ? String.format(
+								" (H=%.2f)",
+								chartData.getData().stream().filter(
+										x -> x instanceof KernelDensityDrawableDataObject)
+										.map(x -> (KernelDensityDrawableDataObject) x)
+										.findFirst().get().getKernel()
+										.getBandwidthMatrix()[0][0])
 								: ""));
 	}
 
 	@Override
-	protected AttributedString getYAxisLabel(
-			ChartData<? extends DrawableDataObject> chartData) {
+	protected AttributedString
+			getYAxisLabel(ChartData<? extends DrawableDataObject> chartData) {
 		return new AttributedString("Kernel Intensity");
 	}
 
@@ -221,7 +221,8 @@ public class KernelDensity1DPlotNodeModel extends
 						? new KernelDensityFunction(gridSizeMdl.getIntValue(),
 								kernelEstimator, xBandWidthEstimator,
 								xBandWidthEstimator.needsManualValue()
-										? hXMdl.getDoubleValue() : null)
+										? hXMdl.getDoubleValue()
+										: null)
 						: null;
 
 		final long numRows = table.size();
@@ -257,7 +258,8 @@ public class KernelDensity1DPlotNodeModel extends
 					k -> new KernelDensityFunction(gridSizeMdl.getIntValue(),
 							kernelEstimator, xBandWidthEstimator,
 							xBandWidthEstimator.needsManualValue()
-									? hXMdl.getDoubleValue() : null))
+									? hXMdl.getDoubleValue()
+									: null))
 					.acceptPoint(((DoubleValue) valueCell).getDoubleValue());
 
 		}
@@ -347,12 +349,14 @@ public class KernelDensity1DPlotNodeModel extends
 	 *            possible values
 	 * @param useGreyScale
 	 *            Should the colour palette be a greyscale pallete?
+	 * 
 	 * @return a map of possible value to color
 	 */
 	final ColorModelNominal createColorMapping(
 			final Set<? extends DataCell> set, boolean useGreyScale) {
 		if (set == null || set.isEmpty()) {
-			return new ColorModelNominal(Collections.emptyMap());
+			return new ColorModelNominal(Collections.emptyMap(),
+					new ColorAttr[0]);
 		}
 
 		Map<DataCell, ColorAttr> map = new LinkedHashMap<>();
@@ -366,14 +370,14 @@ public class KernelDensity1DPlotNodeModel extends
 			for (DataCell cell : set) {
 				// use Color, half saturated, half bright for base color
 				float value = (float) idx++ / (float) set.size();
-				map.put(cell, ColorAttr.getInstance(
-						useGreyScale ? new Color(value, value, value)
-								: new Color(
-										Color.HSBtoRGB(value, 1.0f, 1.0f))));
+				map.put(cell, ColorAttr.getInstance(useGreyScale
+						? new Color(value, value, value)
+						: new Color(Color.HSBtoRGB(value, 1.0f, 1.0f))));
 			}
 		}
 
-		return new ColorModelNominal(map);
+		return new ColorModelNominal(map,
+				map.values().toArray(ColorAttr[]::new));
 	}
 
 }
