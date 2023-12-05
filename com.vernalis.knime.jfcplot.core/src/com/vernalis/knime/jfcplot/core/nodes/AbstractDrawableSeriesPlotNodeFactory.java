@@ -17,6 +17,7 @@ package com.vernalis.knime.jfcplot.core.nodes;
 import java.io.IOException;
 
 import org.apache.xmlbeans.XmlException;
+import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.util.ColumnFilter;
 import org.knime.ext.jfc.node.base.JfcBaseNodeView;
@@ -111,7 +112,7 @@ public abstract class AbstractDrawableSeriesPlotNodeFactory<T extends AbstractDr
 	 * @see org.knime.core.node.NodeFactory#createNodeDescription()
 	 */
 	@Override
-	protected abstract AbstractDrawableSeriesPlotNodeDescription createNodeDescription()
+	protected abstract NodeDescription createNodeDescription()
 			throws SAXException, IOException, XmlException;
 
 }

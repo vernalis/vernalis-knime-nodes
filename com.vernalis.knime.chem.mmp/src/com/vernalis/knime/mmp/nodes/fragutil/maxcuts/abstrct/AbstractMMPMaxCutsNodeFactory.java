@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -34,6 +34,7 @@ import com.vernalis.knime.mmp.fragmentors.MoleculeFragmentationFactory2;
 import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
 import com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractColumnRearrangerFragmentationFactoryNodeModel;
 import com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog;
+import com.vernalis.knime.nodes.VernalisDelegateNodeDescription;
 
 /**
  * Node Factory class for the Max Number of Cuts nodes
@@ -74,8 +75,10 @@ public class AbstractMMPMaxCutsNodeFactory<T, U> extends
 	protected NodeDescription createNodeDescription()
 			throws SAXException, IOException, XmlException {
 		try {
-			return new AbstractMMPMaxCutsNodeDescription<>(
-					fragUtilsFactory.getConstructor().newInstance());
+			return new VernalisDelegateNodeDescription(
+					new AbstractMMPMaxCutsNodeDescription<>(
+							fragUtilsFactory.getConstructor().newInstance()),
+					getClass());
 		} catch (InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {

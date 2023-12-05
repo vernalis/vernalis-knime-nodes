@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019,2020 Vernalis (R&D) Ltd
+ * Copyright (c) 2019, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License, Version 3, as
  *  published by the Free Software Foundation.
@@ -15,6 +15,7 @@
 package com.vernalis.knime.perfmon.nodes.timing.abstrct;
 
 import java.io.IOException;
+import java.math.BigInteger;
 
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlException;
@@ -24,17 +25,18 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.port.PortType;
-import org.knime.node2012.FullDescriptionDocument.FullDescription;
-import org.knime.node2012.InPortDocument.InPort;
-import org.knime.node2012.IntroDocument.Intro;
-import org.knime.node2012.KnimeNodeDocument;
-import org.knime.node2012.KnimeNodeDocument.KnimeNode;
-import org.knime.node2012.OutPortDocument.OutPort;
-import org.knime.node2012.PortsDocument.Ports;
+import org.knime.node.v41.FullDescription;
+import org.knime.node.v41.InPort;
+import org.knime.node.v41.Intro;
+import org.knime.node.v41.KnimeNode;
+import org.knime.node.v41.KnimeNodeDocument;
+import org.knime.node.v41.OutPort;
+import org.knime.node.v41.Ports;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.vernalis.knime.nodes.NodeDescriptionUtils;
+import com.vernalis.knime.nodes.VernalisDelegateNodeDescription;
 
 /**
  * Abstract base NodeFactory class for all Performance Monitoring Loop ends
@@ -252,10 +254,10 @@ public abstract class AbstractPerfMonTimingEndNodeFactory extends NodeFactory<Ab
 			public Element getXMLDescription() {
 				final KnimeNodeDocument doc = KnimeNodeDocument.Factory.newInstance();
 				final KnimeNode node = doc.addNewKnimeNode();
-				node.setDeprecated(KnimeNode.Deprecated.FALSE);
+				node.setDeprecated(false);
 				node.setIcon(getIconPath());
 				node.setName(getNodeName());
-				node.setType(KnimeNode.Type.LOOP_END);
+				node.setType(org.knime.node.v41.NodeType.LOOP_END);
 				node.setShortDescription(
 						"Loop end for execution timing" + (isMemMon() ? "with memory monitoring" : ""));
 				final FullDescription fullDesc = node.addNewFullDescription();
@@ -310,13 +312,13 @@ public abstract class AbstractPerfMonTimingEndNodeFactory extends NodeFactory<Ab
 				final Ports ports = node.addNewPorts();
 				for (int i = 0; i < getNumPorts(); i++) {
 					final InPort inPort = ports.addNewInPort();
-					inPort.setIndex(i);
+					inPort.setIndex(BigInteger.valueOf(i));
 					inPort.setName(getInportName(i));
 					inPort.newCursor().setTextValue(getInportDescription(i));
 				}
 				for (int i = 0; i < getNumPorts() + (isMemMon() ? 3 : 2); i++) {
 					final OutPort outport = ports.addNewOutPort();
-					outport.setIndex(i);
+					outport.setIndex(BigInteger.valueOf(i));
 					outport.setName(getOutportName(i));
 					outport.newCursor().setTextValue(getOutportDescription(i));
 				}
@@ -324,7 +326,7 @@ public abstract class AbstractPerfMonTimingEndNodeFactory extends NodeFactory<Ab
 				return (Element) node.getDomNode();
 			}
 		};
-		return retVal;
+		return new VernalisDelegateNodeDescription(retVal, getClass());
 	}
 
 	/**

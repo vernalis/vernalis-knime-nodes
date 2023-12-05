@@ -23,13 +23,16 @@ import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.xml.sax.SAXException;
 
+import com.vernalis.knime.nodes.VernalisDelegateNodeDescription;
+
 /**
  * Node Factory for the Cut type loop start node
  * 
  * @author s.roughley {@literal <knime@vernalis.com>}
  * 
  */
-public class CutTypeLoopStartNodeFactory extends NodeFactory<CutTypeLoopStartNodeModel> {
+public class CutTypeLoopStartNodeFactory
+		extends NodeFactory<CutTypeLoopStartNodeModel> {
 
 	/*
 	 * (non-Javadoc)
@@ -91,7 +94,8 @@ public class CutTypeLoopStartNodeFactory extends NodeFactory<CutTypeLoopStartNod
 	@Override
 	protected NodeDescription createNodeDescription()
 			throws SAXException, IOException, XmlException {
-		return new CutTypeLoopStartNodeDescription();
+		return new VernalisDelegateNodeDescription(
+				new CutTypeLoopStartNodeDescription(), getClass());
 	}
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 
 import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
 import com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractMMPFragmentationFactoryNodeDialog;
+import com.vernalis.knime.nodes.VernalisDelegateNodeDescription;
 
 /**
  * Abstract Node Factory for Matched-Molecular Pair Filter/Splitter nodes
@@ -64,8 +65,11 @@ public abstract class AbstractMMPFragmentationFilterSplitterNodeFactory<T, U>
 	protected NodeDescription createNodeDescription()
 			throws SAXException, IOException, XmlException {
 		try {
-			return new AbstractMMPFragmentationFilterSplitterNodeDescription<>(
-					fragUtilsFactory.getConstructor().newInstance(), isSplitter);
+			return new VernalisDelegateNodeDescription(
+					new AbstractMMPFragmentationFilterSplitterNodeDescription<>(
+							fragUtilsFactory.getConstructor().newInstance(),
+							isSplitter),
+					getClass());
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			throw new RuntimeException("Error instantiating Fragmentation Utilities factory", e);

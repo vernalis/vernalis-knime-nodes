@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,19 +14,20 @@
  ******************************************************************************/
 package com.vernalis.knime.plot.nodes.kerneldensity;
 
-import java.io.IOException;
-
-import org.apache.xmlbeans.XmlException;
-import org.xml.sax.SAXException;
-
-import com.vernalis.knime.jfcplot.core.nodes.AbstractDrawableSeriesPlotNodeDescription;
-import com.vernalis.knime.jfcplot.core.nodes.AbstractDrawableSeriesPlotNodeDialogPane;
-import com.vernalis.knime.jfcplot.core.nodes.AbstractDrawableSeriesPlotNodeFactory;
-import com.vernalis.knime.misc.ArrayUtils;
-
 import static com.vernalis.knime.jfcplot.core.nodes.AbstractDrawableSeriesPlotNodeDialogPane.DOUBLE_VALUE_COLUMN_FILTER;
 import static com.vernalis.knime.plot.nodes.kerneldensity.KernelConstants.KERNEL_OPTIONS;
 import static com.vernalis.knime.plot.nodes.kerneldensity.KernelConstants.VALUES_COLUMN;
+
+import java.io.IOException;
+
+import org.apache.xmlbeans.XmlException;
+import org.knime.core.node.NodeDescription;
+import org.xml.sax.SAXException;
+
+import com.vernalis.knime.jfcplot.core.nodes.AbstractDrawableSeriesPlotNodeDialogPane;
+import com.vernalis.knime.jfcplot.core.nodes.AbstractDrawableSeriesPlotNodeFactory;
+import com.vernalis.knime.misc.ArrayUtils;
+import com.vernalis.knime.nodes.VernalisDelegateNodeDescription;
 
 /**
  * Node Factory for the 1D Kernel Density Plot node
@@ -54,11 +55,13 @@ public class KernelDensity1DPlotNodeFactory extends
 	}
 
 	@Override
-	protected AbstractDrawableSeriesPlotNodeDescription createNodeDescription()
+	protected NodeDescription createNodeDescription()
 			throws SAXException, IOException, XmlException {
-		return new AbstractKernelDensityPlotNodeDescription(
+		return new VernalisDelegateNodeDescription(
+				new AbstractKernelDensityPlotNodeDescription(
 				"kernel_density1D.png", "1D Kernel Density Plot",
-				KERNEL_OPTIONS, getColNames(), this.getClass());
+						KERNEL_OPTIONS, getColNames(), this.getClass()),
+				getClass());
 	}
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,6 +14,12 @@
  ******************************************************************************/
 package com.vernalis.knime.nodes.propcalc;
 
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addBundleInformation;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionToTab;
+import static com.vernalis.knime.nodes.propcalc.AbstractPropertyCalcNodeDialog.MAX_VISIBLE_PROPERTIES;
+
+import java.math.BigInteger;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -23,22 +29,17 @@ import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeFactory.NodeType;
 import org.knime.core.util.Pair;
-import org.knime.node2012.FullDescriptionDocument.FullDescription;
-import org.knime.node2012.InPortDocument.InPort;
-import org.knime.node2012.IntroDocument.Intro;
-import org.knime.node2012.KnimeNodeDocument;
-import org.knime.node2012.KnimeNodeDocument.KnimeNode;
-import org.knime.node2012.OutPortDocument.OutPort;
-import org.knime.node2012.PortsDocument.Ports;
-import org.knime.node2012.TabDocument.Tab;
-import org.knime.node2012.ViewDocument.View;
-import org.knime.node2012.ViewsDocument.Views;
+import org.knime.node.v41.FullDescription;
+import org.knime.node.v41.InPort;
+import org.knime.node.v41.Intro;
+import org.knime.node.v41.KnimeNode;
+import org.knime.node.v41.KnimeNodeDocument;
+import org.knime.node.v41.OutPort;
+import org.knime.node.v41.Ports;
+import org.knime.node.v41.Tab;
+import org.knime.node.v41.View;
+import org.knime.node.v41.Views;
 import org.w3c.dom.Element;
-
-import static com.vernalis.knime.nodes.NodeDescriptionUtils.addBundleInformation;
-import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
-import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionToTab;
-import static com.vernalis.knime.nodes.propcalc.AbstractPropertyCalcNodeDialog.MAX_VISIBLE_PROPERTIES;
 
 /**
  * Node Description Implementation to automatically generate the node
@@ -198,7 +199,7 @@ public class AbstractPropertyCalcNodeDescription extends NodeDescription {
 		KnimeNode node = doc.addNewKnimeNode();
 		node.setIcon(getIconPath());
 		node.setName(getNodeName());
-		node.setType(KnimeNode.Type.MANIPULATOR);
+		node.setType(org.knime.node.v41.NodeType.MANIPULATOR);
 		node.setShortDescription("This node calculates " + propName);
 		FullDescription fullDesc = node.addNewFullDescription();
 		Intro intro = fullDesc.addNewIntro();
@@ -287,7 +288,7 @@ public class AbstractPropertyCalcNodeDescription extends NodeDescription {
 		InPort inport = ports.addNewInPort();
 		int portIdx = 0;
 		while (getInportName(portIdx) != null) {
-			inport.setIndex(portIdx);
+			inport.setIndex(BigInteger.valueOf(portIdx));
 			inport.setName(getInportName(portIdx));
 			inport.newCursor().setTextValue(getInportDescription(portIdx));
 			portIdx++;
@@ -296,7 +297,7 @@ public class AbstractPropertyCalcNodeDescription extends NodeDescription {
 		OutPort outport = ports.addNewOutPort();
 		portIdx = 0;
 		while (getOutportName(portIdx) != null) {
-			outport.setIndex(portIdx);
+			outport.setIndex(BigInteger.valueOf(portIdx));
 			outport.setName(getOutportName(portIdx));
 			outport.newCursor().setTextValue(getOutportDescription(portIdx));
 			portIdx++;
@@ -306,7 +307,7 @@ public class AbstractPropertyCalcNodeDescription extends NodeDescription {
 			Views views = node.addNewViews();
 			for (int i = 0; i < getViewCount(); i++) {
 				View view = views.addNewView();
-				view.setIndex(i);
+				view.setIndex(BigInteger.valueOf(i));
 				view.setName(getViewName(i));
 				view.newCursor().setTextValue(getViewDescription(i));
 			}

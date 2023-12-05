@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018,2022, Vernalis (R&D) Ltd
+ * Copyright (c) 2018, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,7 +14,11 @@
  ******************************************************************************/
 package com.vernalis.knime.flowcontrol.nodes.abstrct.crossover;
 
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionWithoutTab;
+
 import java.io.IOException;
+import java.math.BigInteger;
 
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlException;
@@ -23,23 +27,21 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.port.PortType;
-import org.knime.node2012.FullDescriptionDocument.FullDescription;
-import org.knime.node2012.InPortDocument.InPort;
-import org.knime.node2012.IntroDocument.Intro;
-import org.knime.node2012.KnimeNodeDocument;
-import org.knime.node2012.KnimeNodeDocument.KnimeNode;
-import org.knime.node2012.OutPortDocument.OutPort;
-import org.knime.node2012.PortsDocument.Ports;
-import org.knime.node2012.ViewDocument.View;
-import org.knime.node2012.ViewsDocument.Views;
+import org.knime.node.v41.FullDescription;
+import org.knime.node.v41.InPort;
+import org.knime.node.v41.Intro;
+import org.knime.node.v41.KnimeNode;
+import org.knime.node.v41.KnimeNodeDocument;
+import org.knime.node.v41.OutPort;
+import org.knime.node.v41.Ports;
+import org.knime.node.v41.View;
+import org.knime.node.v41.Views;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.vernalis.knime.flowcontrol.nodes.abstrct.varvalifswitch.AbstractFvvalIfSwitchNodeDialog;
 import com.vernalis.knime.nodes.NodeDescriptionUtils;
-
-import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
-import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionWithoutTab;
+import com.vernalis.knime.nodes.VernalisDelegateNodeDescription;
 
 public abstract class AbstractCrossoverNodeFactory
 		extends NodeFactory<AbstractCrossoverNodeModel> {
@@ -141,7 +143,7 @@ public abstract class AbstractCrossoverNodeFactory
 			KnimeNode node = doc.addNewKnimeNode();
 			node.setIcon(getIconPath());
 			node.setName(getNodeName());
-			node.setType(KnimeNode.Type.MANIPULATOR);
+			node.setType(org.knime.node.v41.NodeType.MANIPULATOR);
 			node.setShortDescription(
 					"This node optionally swaps the two input tables, "
 							+ "depending on the the result of a flow variable value comparison");
@@ -193,7 +195,7 @@ public abstract class AbstractCrossoverNodeFactory
 			String portName;
 			int portIdx = 0;
 			while ((portName = getInportName(portIdx)) != null) {
-				inport.setIndex(portIdx);
+				inport.setIndex(BigInteger.valueOf(portIdx));
 				inport.setName(portName);
 				inport.newCursor()
 						.setTextValue(getInportDescription(portIdx++));
@@ -201,7 +203,7 @@ public abstract class AbstractCrossoverNodeFactory
 			OutPort outport = ports.addNewOutPort();
 			portIdx = 0;
 			while ((portName = getOutportName(portIdx)) != null) {
-				outport.setIndex(portIdx);
+				outport.setIndex(BigInteger.valueOf(portIdx));
 				outport.setName(portName);
 				outport.newCursor()
 						.setTextValue(getOutportDescription(portIdx++));
@@ -211,7 +213,7 @@ public abstract class AbstractCrossoverNodeFactory
 				Views views = node.addNewViews();
 				for (int i = 0; i < getViewCount(); i++) {
 					View view = views.addNewView();
-					view.setIndex(i);
+					view.setIndex(BigInteger.valueOf(i));
 					view.setName(getViewName(i));
 					view.newCursor().setTextValue(getViewDescription(i));
 				}
@@ -252,7 +254,8 @@ public abstract class AbstractCrossoverNodeFactory
 	@Override
 	protected NodeDescription createNodeDescription()
 			throws SAXException, IOException, XmlException {
-		return new CrossoverNodeDescription();
+		return new VernalisDelegateNodeDescription(
+				new CrossoverNodeDescription(), getClass());
 	}
 
 	/*

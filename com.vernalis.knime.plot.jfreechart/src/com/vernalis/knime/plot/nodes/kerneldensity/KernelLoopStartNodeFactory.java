@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,26 +14,6 @@
  ******************************************************************************/
 package com.vernalis.knime.plot.nodes.kerneldensity;
 
-import java.io.IOException;
-
-import org.apache.xmlbeans.XmlCursor;
-import org.apache.xmlbeans.XmlException;
-import org.knime.core.node.NodeDescription;
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
-import org.knime.node2012.FullDescriptionDocument.FullDescription;
-import org.knime.node2012.InPortDocument.InPort;
-import org.knime.node2012.IntroDocument.Intro;
-import org.knime.node2012.KnimeNodeDocument;
-import org.knime.node2012.KnimeNodeDocument.KnimeNode;
-import org.knime.node2012.OutPortDocument.OutPort;
-import org.knime.node2012.PortsDocument.Ports;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
-import com.vernalis.knime.nodes.NodeDescriptionUtils.TableFactory;
-
 import static com.vernalis.knime.nodes.NodeDescriptionUtils.addBundleInformation;
 import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
 import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionWithoutTab;
@@ -42,6 +22,28 @@ import static com.vernalis.knime.plot.nodes.kerneldensity.KernelConstants.KERNEL
 import static com.vernalis.knime.plot.nodes.kerneldensity.KernelLoopStartNodeDialog.IS_MULTI_DIMENSIONAL;
 import static com.vernalis.knime.plot.nodes.kerneldensity.KernelLoopStartNodeDialog.KERNEL_ESTIMATORS;
 import static com.vernalis.knime.plot.nodes.kerneldensity.KernelLoopStartNodeDialog.KERNEL_SYMMETRIES;
+
+import java.io.IOException;
+import java.math.BigInteger;
+
+import org.apache.xmlbeans.XmlCursor;
+import org.apache.xmlbeans.XmlException;
+import org.knime.core.node.NodeDescription;
+import org.knime.core.node.NodeDialogPane;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeView;
+import org.knime.node.v41.FullDescription;
+import org.knime.node.v41.InPort;
+import org.knime.node.v41.Intro;
+import org.knime.node.v41.KnimeNode;
+import org.knime.node.v41.KnimeNodeDocument;
+import org.knime.node.v41.OutPort;
+import org.knime.node.v41.Ports;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
+import com.vernalis.knime.nodes.NodeDescriptionUtils.TableFactory;
+import com.vernalis.knime.nodes.VernalisDelegateNodeDescription;
 
 /**
  * Node Factory for the Kernel Loop Start Node
@@ -112,7 +114,7 @@ public class KernelLoopStartNodeFactory
 	@Override
 	protected NodeDescription createNodeDescription()
 			throws SAXException, IOException, XmlException {
-		return new NodeDescription() {
+		return new VernalisDelegateNodeDescription(new NodeDescription() {
 
 			@Override
 			public Element getXMLDescription() {
@@ -120,7 +122,7 @@ public class KernelLoopStartNodeFactory
 				KnimeNode node = doc.addNewKnimeNode();
 				node.setIcon(getIconPath());
 				node.setName(getNodeName());
-				node.setType(KnimeNode.Type.VISUALIZER);
+				node.setType(org.knime.node.v41.NodeType.VISUALIZER);
 				node.setShortDescription(
 						"This node allows simple looping through various Kernel Estimators and symmetries");
 				FullDescription fullDesc = node.addNewFullDescription();
@@ -169,12 +171,12 @@ public class KernelLoopStartNodeFactory
 				Ports ports = node.addNewPorts();
 
 				InPort inport = ports.addNewInPort();
-				inport.setIndex(0);
+				inport.setIndex(BigInteger.ZERO);
 				inport.setName(getInportName(0));
 				inport.newCursor().setTextValue(getInportDescription(0));
 
 				OutPort outport = ports.addNewOutPort();
-				outport.setIndex(0);
+				outport.setIndex(BigInteger.ZERO);
 				outport.setName(getOutportName(0));
 				outport.newCursor().setTextValue(getOutportDescription(0));
 				addBundleInformation(node,
@@ -237,7 +239,7 @@ public class KernelLoopStartNodeFactory
 			public String getIconPath() {
 				return "KernelLoopStart.png";
 			}
-		};
+		}, getClass());
 	}
 
 }

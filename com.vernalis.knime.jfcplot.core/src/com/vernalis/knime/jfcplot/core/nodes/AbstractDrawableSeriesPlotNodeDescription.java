@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,30 +14,31 @@
  ******************************************************************************/
 package com.vernalis.knime.jfcplot.core.nodes;
 
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addBundleInformation;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionToTab;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.createTab;
+
+import java.math.BigInteger;
 import java.util.Optional;
 
 import org.apache.xmlbeans.XmlCursor;
 import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeFactory.NodeType;
-import org.knime.node2012.FullDescriptionDocument.FullDescription;
-import org.knime.node2012.InPortDocument.InPort;
-import org.knime.node2012.IntroDocument.Intro;
-import org.knime.node2012.KnimeNodeDocument;
-import org.knime.node2012.KnimeNodeDocument.KnimeNode;
-import org.knime.node2012.OutPortDocument.OutPort;
-import org.knime.node2012.PortsDocument.Ports;
-import org.knime.node2012.TabDocument.Tab;
-import org.knime.node2012.ViewDocument.View;
-import org.knime.node2012.ViewsDocument.Views;
+import org.knime.node.v41.FullDescription;
+import org.knime.node.v41.InPort;
+import org.knime.node.v41.Intro;
+import org.knime.node.v41.KnimeNode;
+import org.knime.node.v41.KnimeNodeDocument;
+import org.knime.node.v41.OutPort;
+import org.knime.node.v41.Ports;
+import org.knime.node.v41.Tab;
+import org.knime.node.v41.View;
+import org.knime.node.v41.Views;
 import org.w3c.dom.Element;
 
 import com.vernalis.knime.nodes.NodeDescriptionUtils;
-
-import static com.vernalis.knime.nodes.NodeDescriptionUtils.addBundleInformation;
-import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
-import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionToTab;
-import static com.vernalis.knime.nodes.NodeDescriptionUtils.createTab;
 
 /**
  * The base {@link NodeDescription} class for the Plot nodes
@@ -137,7 +138,7 @@ public abstract class AbstractDrawableSeriesPlotNodeDescription
 		KnimeNode node = doc.addNewKnimeNode();
 		node.setIcon(getIconPath());
 		node.setName(getNodeName());
-		node.setType(KnimeNode.Type.VISUALIZER);
+		node.setType(org.knime.node.v41.NodeType.VISUALIZER);
 		node.setShortDescription(getShortDescriptionImpl());
 		FullDescription fullDesc = node.addNewFullDescription();
 		Intro intro = fullDesc.addNewIntro();
@@ -180,12 +181,12 @@ public abstract class AbstractDrawableSeriesPlotNodeDescription
 		Ports ports = node.addNewPorts();
 
 		InPort inport = ports.addNewInPort();
-		inport.setIndex(0);
+		inport.setIndex(BigInteger.ZERO);
 		inport.setName(getInportName(0));
 		inport.newCursor().setTextValue(getInportDescription(0));
 
 		OutPort outport = ports.addNewOutPort();
-		outport.setIndex(0);
+		outport.setIndex(BigInteger.ZERO);
 		outport.setName(getOutportName(0));
 		outport.newCursor().setTextValue(getOutportDescription(0));
 
@@ -193,7 +194,7 @@ public abstract class AbstractDrawableSeriesPlotNodeDescription
 			Views views = node.addNewViews();
 			for (int i = 0; i < getViewCount(); i++) {
 				View view = views.addNewView();
-				view.setIndex(i);
+				view.setIndex(BigInteger.valueOf(i));
 				view.setName(getViewName(i));
 				view.newCursor().setTextValue(getViewDescription(i));
 			}

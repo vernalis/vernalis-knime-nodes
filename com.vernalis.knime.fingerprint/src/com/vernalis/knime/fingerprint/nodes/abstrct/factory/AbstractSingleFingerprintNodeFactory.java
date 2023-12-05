@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -31,6 +31,7 @@ import com.vernalis.knime.fingerprint.nodes.abstrct.desc.AbstractSinglePortFinge
 import com.vernalis.knime.fingerprint.nodes.abstrct.dialog.AbstractSingleFingerprintNodeDialog;
 import com.vernalis.knime.fingerprint.nodes.abstrct.model.AbstractSingleFingerprintNodeModel;
 import com.vernalis.knime.misc.EitherOr;
+import com.vernalis.knime.nodes.VernalisDelegateNodeDescription;
 
 /**
  * Abstract Node Factory class implementation for Single Fingerprint nodes
@@ -64,9 +65,12 @@ public abstract class AbstractSingleFingerprintNodeFactory<T extends AbstractSin
 	protected static final EitherOr<Map<String, String>, Map<String, Map<String, String>>> DEFAULT_SINGLE_FP_OPTIONS;
 	static {
 		Map<String, String> tmp = new LinkedHashMap<>();
-		tmp.put("Select the fingerprint column", "Select the incoming fingerprint column");
-		tmp.put("Keep input columns", "Keep the input fingerprint column in the output table?");
-		DEFAULT_SINGLE_FP_OPTIONS = EitherOr.ofLeft(Collections.unmodifiableMap(tmp));
+		tmp.put("Select the fingerprint column",
+				"Select the incoming fingerprint column");
+		tmp.put("Keep input columns",
+				"Keep the input fingerprint column in the output table?");
+		DEFAULT_SINGLE_FP_OPTIONS =
+				EitherOr.ofLeft(Collections.unmodifiableMap(tmp));
 	}
 
 	/**
@@ -110,9 +114,10 @@ public abstract class AbstractSingleFingerprintNodeFactory<T extends AbstractSin
 	 */
 	public AbstractSingleFingerprintNodeFactory(boolean allowSparseBitVector,
 			boolean allowDenseBitVector, boolean allowSparseByteVector,
-			boolean allowDenseByteVector, String nodeName, String iconName, String shortDescription,
-			String[] longDescriptionParagraphs, String inPortName, String inPortDescripion,
-			String outPortName, String outPortDescription,
+			boolean allowDenseByteVector, String nodeName, String iconName,
+			String shortDescription, String[] longDescriptionParagraphs,
+			String inPortName, String inPortDescripion, String outPortName,
+			String outPortDescription,
 			EitherOr<Map<String, String>, Map<String, Map<String, String>>> options) {
 		super(true);
 		this.allowSparseBitVector = allowSparseBitVector;
@@ -167,12 +172,14 @@ public abstract class AbstractSingleFingerprintNodeFactory<T extends AbstractSin
 	 * @param outPortDescription
 	 *            The descriptions of the output port
 	 */
-	public AbstractSingleFingerprintNodeFactory(String nodeName, String iconName,
-			String shortDescription, String[] longDescriptionParagraphs, String inPortName,
-			String inPortDescripion, String outPortName, String outPortDescription) {
+	public AbstractSingleFingerprintNodeFactory(String nodeName,
+			String iconName, String shortDescription,
+			String[] longDescriptionParagraphs, String inPortName,
+			String inPortDescripion, String outPortName,
+			String outPortDescription) {
 		this(true, true, true, true, nodeName, iconName, shortDescription,
-				longDescriptionParagraphs, inPortName, inPortDescripion, outPortName,
-				outPortDescription, DEFAULT_SINGLE_FP_OPTIONS);
+				longDescriptionParagraphs, inPortName, inPortDescripion,
+				outPortName, outPortDescription, DEFAULT_SINGLE_FP_OPTIONS);
 	}
 
 	/**
@@ -207,13 +214,15 @@ public abstract class AbstractSingleFingerprintNodeFactory<T extends AbstractSin
 	 *            {@link EitherOr#ofRight(Object)} for a map of maps of options
 	 *            to be added tab-wise
 	 */
-	public AbstractSingleFingerprintNodeFactory(String nodeName, String iconName,
-			String shortDescription, String[] longDescriptionParagraphs, String inPortName,
-			String inPortDescripion, String outPortName, String outPortDescription,
+	public AbstractSingleFingerprintNodeFactory(String nodeName,
+			String iconName, String shortDescription,
+			String[] longDescriptionParagraphs, String inPortName,
+			String inPortDescripion, String outPortName,
+			String outPortDescription,
 			EitherOr<Map<String, String>, Map<String, Map<String, String>>> options) {
 		this(true, true, true, true, nodeName, iconName, shortDescription,
-				longDescriptionParagraphs, inPortName, inPortDescripion, outPortName,
-				outPortDescription, options);
+				longDescriptionParagraphs, inPortName, inPortDescripion,
+				outPortName, outPortDescription, options);
 	}
 
 	/**
@@ -253,12 +262,14 @@ public abstract class AbstractSingleFingerprintNodeFactory<T extends AbstractSin
 	 */
 	public AbstractSingleFingerprintNodeFactory(boolean allowSparseBitVector,
 			boolean allowDenseBitVector, boolean allowSparseByteVector,
-			boolean allowDenseByteVector, String nodeName, String iconName, String shortDescription,
-			String[] longDescriptionParagraphs, String inPortName, String inPortDescripion,
-			String outPortName, String outPortDescription) {
-		this(allowSparseBitVector, allowDenseBitVector, allowSparseByteVector, allowDenseByteVector,
-				nodeName, iconName, shortDescription, longDescriptionParagraphs, inPortName,
-				inPortDescripion, outPortName, outPortDescription, DEFAULT_SINGLE_FP_OPTIONS);
+			boolean allowDenseByteVector, String nodeName, String iconName,
+			String shortDescription, String[] longDescriptionParagraphs,
+			String inPortName, String inPortDescripion, String outPortName,
+			String outPortDescription) {
+		this(allowSparseBitVector, allowDenseBitVector, allowSparseByteVector,
+				allowDenseByteVector, nodeName, iconName, shortDescription,
+				longDescriptionParagraphs, inPortName, inPortDescripion,
+				outPortName, outPortDescription, DEFAULT_SINGLE_FP_OPTIONS);
 	}
 
 	/**
@@ -277,8 +288,9 @@ public abstract class AbstractSingleFingerprintNodeFactory<T extends AbstractSin
 	public AbstractSingleFingerprintNodeFactory(boolean allowSparseBitVector,
 			boolean allowDenseBitVector, boolean allowSparseByteVector,
 			boolean allowDenseByteVector) {
-		this(allowSparseBitVector, allowDenseBitVector, allowSparseByteVector, allowDenseByteVector,
-				null, null, null, null, null, null, null, null);
+		this(allowSparseBitVector, allowDenseBitVector, allowSparseByteVector,
+				allowDenseByteVector, null, null, null, null, null, null, null,
+				null);
 	}
 
 	/**
@@ -306,8 +318,9 @@ public abstract class AbstractSingleFingerprintNodeFactory<T extends AbstractSin
 
 	@Override
 	protected NodeDialogPane createNodeDialogPane() {
-		return new AbstractSingleFingerprintNodeDialog(allowSparseBitVector, allowDenseBitVector,
-				allowSparseByteVector, allowDenseByteVector);
+		return new AbstractSingleFingerprintNodeDialog(allowSparseBitVector,
+				allowDenseBitVector, allowSparseByteVector,
+				allowDenseByteVector);
 	}
 
 	/*
@@ -317,8 +330,8 @@ public abstract class AbstractSingleFingerprintNodeFactory<T extends AbstractSin
 	 */
 	@Override
 	public T createNodeModel() {
-		return createNodeModel(allowSparseBitVector, allowDenseBitVector, allowSparseByteVector,
-				allowDenseByteVector);
+		return createNodeModel(allowSparseBitVector, allowDenseBitVector,
+				allowSparseByteVector, allowDenseByteVector);
 	}
 
 	protected abstract T createNodeModel(boolean allowSparseBitVector2,
@@ -332,9 +345,13 @@ public abstract class AbstractSingleFingerprintNodeFactory<T extends AbstractSin
 			// Try to use the XML
 			return super.createNodeDescription();
 		}
-		return new AbstractSinglePortFingerprintNodeDescription(nodeName, allowSparseBitVector,
-				allowDenseBitVector, allowSparseByteVector, allowDenseByteVector, iconName,
-				shortDescription, longDescriptionParagraphs, inPortName, inPortDescripion,
-				outPortName, outPortDescription, options);
+		return new VernalisDelegateNodeDescription(
+				new AbstractSinglePortFingerprintNodeDescription(nodeName,
+						allowSparseBitVector, allowDenseBitVector,
+						allowSparseByteVector, allowDenseByteVector, iconName,
+						shortDescription, longDescriptionParagraphs, inPortName,
+						inPortDescripion, outPortName, outPortDescription,
+						options),
+				getClass());
 	}
 }

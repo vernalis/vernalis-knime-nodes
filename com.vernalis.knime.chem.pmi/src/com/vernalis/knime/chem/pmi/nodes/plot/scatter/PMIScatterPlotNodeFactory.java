@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -18,7 +18,8 @@ import java.io.IOException;
 
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlException;
-import org.knime.node2012.FullDescriptionDocument.FullDescription;
+import org.knime.core.node.NodeDescription;
+import org.knime.node.v41.FullDescription;
 import org.xml.sax.SAXException;
 
 import com.vernalis.knime.chem.pmi.nodes.plot.abstrct.AbstractPMIDrawableSeriesNodeDialogPane;
@@ -26,6 +27,7 @@ import com.vernalis.knime.chem.pmi.nodes.plot.abstrct.AbstractPMIDrawableSeriesP
 import com.vernalis.knime.chem.pmi.nodes.plot.abstrct.AbstractPMIDrawableSeriesPlotNodeFactory;
 import com.vernalis.knime.chem.pmi.nodes.plot.abstrct.AbstractPMIDrawableSeriesPlotNodeModel;
 import com.vernalis.knime.jfcplot.core.drawabledataobject.SimpleShapeDrawableDataObject;
+import com.vernalis.knime.nodes.VernalisDelegateNodeDescription;
 
 /**
  * NodeFactory class for the simple PMI Triangle Scatter plot node
@@ -47,10 +49,12 @@ public class PMIScatterPlotNodeFactory extends
 	}
 
 	@Override
-	protected AbstractPMIDrawableSeriesPlotNodeDescription createNodeDescription()
+	protected NodeDescription createNodeDescription()
 			throws SAXException, IOException, XmlException {
 
-		return new AbstractPMIDrawableSeriesPlotNodeDescription("PMI_icon2.png",
+		return new VernalisDelegateNodeDescription(
+				new AbstractPMIDrawableSeriesPlotNodeDescription(
+						"PMI_icon2.png",
 				"PMI Triangle Scatter Plot",
 				PMIScatterPlotNodeFactory.this.getClass()) {
 
@@ -84,7 +88,7 @@ public class PMIScatterPlotNodeFactory extends
 				}
 				return null;
 			}
-		};
+				}, getClass());
 	}
 
 }

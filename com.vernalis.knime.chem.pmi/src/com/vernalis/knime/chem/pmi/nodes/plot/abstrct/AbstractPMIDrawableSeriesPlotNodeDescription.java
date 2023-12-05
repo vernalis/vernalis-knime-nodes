@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -13,24 +13,6 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
 package com.vernalis.knime.chem.pmi.nodes.plot.abstrct;
-
-import org.apache.xmlbeans.XmlCursor;
-import org.knime.core.node.NodeDescription;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeFactory.NodeType;
-import org.knime.node2012.FullDescriptionDocument.FullDescription;
-import org.knime.node2012.InPortDocument.InPort;
-import org.knime.node2012.IntroDocument.Intro;
-import org.knime.node2012.KnimeNodeDocument;
-import org.knime.node2012.KnimeNodeDocument.KnimeNode;
-import org.knime.node2012.OutPortDocument.OutPort;
-import org.knime.node2012.PortsDocument.Ports;
-import org.knime.node2012.TabDocument.Tab;
-import org.knime.node2012.ViewDocument.View;
-import org.knime.node2012.ViewsDocument.Views;
-import org.w3c.dom.Element;
-
-import com.vernalis.knime.nodes.NodeDescriptionUtils;
 
 import static com.vernalis.knime.chem.pmi.nodes.plot.abstrct.AbstractPMIDrawableSeriesNodeDialogPane.DEFAULT_SHAPE;
 import static com.vernalis.knime.chem.pmi.nodes.plot.abstrct.AbstractPMIDrawableSeriesNodeDialogPane.ITEM_SIZE;
@@ -48,6 +30,26 @@ import static com.vernalis.knime.nodes.NodeDescriptionUtils.addBundleInformation
 import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
 import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionToTab;
 import static com.vernalis.knime.nodes.NodeDescriptionUtils.createTab;
+
+import java.math.BigInteger;
+
+import org.apache.xmlbeans.XmlCursor;
+import org.knime.core.node.NodeDescription;
+import org.knime.core.node.NodeFactory;
+import org.knime.core.node.NodeFactory.NodeType;
+import org.knime.node.v41.FullDescription;
+import org.knime.node.v41.InPort;
+import org.knime.node.v41.Intro;
+import org.knime.node.v41.KnimeNode;
+import org.knime.node.v41.KnimeNodeDocument;
+import org.knime.node.v41.OutPort;
+import org.knime.node.v41.Ports;
+import org.knime.node.v41.Tab;
+import org.knime.node.v41.View;
+import org.knime.node.v41.Views;
+import org.w3c.dom.Element;
+
+import com.vernalis.knime.nodes.NodeDescriptionUtils;
 
 /**
  * The base {@link NodeDescription} class for the PMI Plot nodes
@@ -165,7 +167,7 @@ public abstract class AbstractPMIDrawableSeriesPlotNodeDescription
 		KnimeNode node = doc.addNewKnimeNode();
 		node.setIcon(getIconPath());
 		node.setName(getNodeName());
-		node.setType(KnimeNode.Type.VISUALIZER);
+		node.setType(org.knime.node.v41.NodeType.VISUALIZER);
 		node.setShortDescription("This node produces a PMI plot");
 		FullDescription fullDesc = node.addNewFullDescription();
 		Intro intro = fullDesc.addNewIntro();
@@ -239,17 +241,17 @@ public abstract class AbstractPMIDrawableSeriesPlotNodeDescription
 
 		for (int i = 0; i < portNames.length; i++) {
 			InPort inport = ports.addNewInPort();
-			inport.setIndex(i);
+			inport.setIndex(BigInteger.valueOf(i));
 			inport.setName(getInportName(i));
 			inport.newCursor().setTextValue(getInportDescription(i));
 		}
 		InPort inport = ports.addNewInPort();
-		inport.setIndex(scatterPortId);
+		inport.setIndex(BigInteger.valueOf(scatterPortId));
 		inport.setName(getInportName(scatterPortId));
 		inport.newCursor().setTextValue(getInportDescription(scatterPortId));
 
 		OutPort outport = ports.addNewOutPort();
-		outport.setIndex(0);
+		outport.setIndex(BigInteger.ZERO);
 		outport.setName(getOutportName(0));
 		outport.newCursor().setTextValue(getOutportDescription(0));
 
@@ -257,7 +259,7 @@ public abstract class AbstractPMIDrawableSeriesPlotNodeDescription
 			Views views = node.addNewViews();
 			for (int i = 0; i < getViewCount(); i++) {
 				View view = views.addNewView();
-				view.setIndex(i);
+				view.setIndex(BigInteger.valueOf(i));
 				view.setName(getViewName(i));
 				view.newCursor().setTextValue(getViewDescription(i));
 			}

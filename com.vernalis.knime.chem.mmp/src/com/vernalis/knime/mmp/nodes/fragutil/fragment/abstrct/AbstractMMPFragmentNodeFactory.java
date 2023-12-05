@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, 2018 Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -25,6 +25,7 @@ import org.knime.core.node.NodeView;
 import org.xml.sax.SAXException;
 
 import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
+import com.vernalis.knime.nodes.VernalisDelegateNodeDescription;
 
 /**
  * Node factory for the MMP Fragment nodes
@@ -81,9 +82,11 @@ public abstract class AbstractMMPFragmentNodeFactory<T, U>
 	protected NodeDescription createNodeDescription()
 			throws SAXException, IOException, XmlException {
 		try {
-			return new AbstractMMPFragmentNodeDescription<>(
+			return new VernalisDelegateNodeDescription(
+					new AbstractMMPFragmentNodeDescription<>(
 					fragUtilsFactory.getConstructor().newInstance(), isMulticut,
-					version);
+							version),
+					getClass());
 		} catch (InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {

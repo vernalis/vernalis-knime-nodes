@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,25 +14,27 @@
  ******************************************************************************/
 package com.vernalis.knime.mmp.nodes.transform.abstrct;
 
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionToTab;
+
+import java.math.BigInteger;
+
 import org.apache.xmlbeans.XmlCursor;
 import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeFactory.NodeType;
-import org.knime.node2012.FullDescriptionDocument.FullDescription;
-import org.knime.node2012.InPortDocument.InPort;
-import org.knime.node2012.IntroDocument.Intro;
-import org.knime.node2012.KnimeNodeDocument;
-import org.knime.node2012.KnimeNodeDocument.KnimeNode;
-import org.knime.node2012.OutPortDocument.OutPort;
-import org.knime.node2012.PortsDocument.Ports;
-import org.knime.node2012.TabDocument.Tab;
-import org.knime.node2012.ViewDocument.View;
-import org.knime.node2012.ViewsDocument.Views;
+import org.knime.node.v41.FullDescription;
+import org.knime.node.v41.InPort;
+import org.knime.node.v41.Intro;
+import org.knime.node.v41.KnimeNode;
+import org.knime.node.v41.KnimeNodeDocument;
+import org.knime.node.v41.OutPort;
+import org.knime.node.v41.Ports;
+import org.knime.node.v41.Tab;
+import org.knime.node.v41.View;
+import org.knime.node.v41.Views;
 import org.w3c.dom.Element;
 
 import com.vernalis.knime.mmp.transform.TransformUtilityFactory;
-
-import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
-import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionToTab;
 
 /**
  * Node description class for the apply transform nodes
@@ -170,7 +172,7 @@ public class AbstractApplyTransformNodeDescription<T, U, V>
 		KnimeNode node = doc.addNewKnimeNode();
 		node.setIcon(getIconPath());
 		node.setName(getNodeName());
-		node.setType(KnimeNode.Type.MANIPULATOR);
+		node.setType(org.knime.node.v41.NodeType.MANIPULATOR);
 		node.setShortDescription(
 				"This node applies Matched Pair transforms to an input table of molecules");
 		FullDescription fullDesc = node.addNewFullDescription();
@@ -274,28 +276,28 @@ public class AbstractApplyTransformNodeDescription<T, U, V>
 		Ports ports = node.addNewPorts();
 
 		InPort inport = ports.addNewInPort();
-		inport.setIndex(0);
+		inport.setIndex(BigInteger.ZERO);
 		inport.setName(getInportName(0));
 		inport.newCursor().setTextValue(getInportDescription(0));
 
 		inport = ports.addNewInPort();
-		inport.setIndex(1);
+		inport.setIndex(BigInteger.ONE);
 		inport.setName(getInportName(1));
 		inport.newCursor().setTextValue(getInportDescription(1));
 
 		OutPort outport = ports.addNewOutPort();
-		outport.setIndex(0);
+		outport.setIndex(BigInteger.ZERO);
 		outport.setName(getOutportName(0));
 		outport.newCursor().setTextValue(getOutportDescription(0));
 
 		Views views = node.addNewViews();
 		View view = views.addNewView();
-		view.setIndex(0);
+		view.setIndex(BigInteger.ZERO);
 		view.setName(getViewName(0));
 		view.newCursor().setTextValue(getViewDescription(0));
 
 		view = views.addNewView();
-		view.setIndex(1);
+		view.setIndex(BigInteger.ONE);
 		view.setName(getViewName(1));
 		view.newCursor().setTextValue(getViewDescription(1));
 

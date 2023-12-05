@@ -142,9 +142,26 @@ public class NodeDescriptionUtils {
 	 * @param optionDescription
 	 *            The description of the option
 	 */
+	@Deprecated
 	public static void addOptionWithoutTab(FullDescription fullDesc,
 			String optionName, String optionDescription) {
 		Option opt = fullDesc.addNewOption();
+		configureOption(opt, optionName, optionDescription);
+	}
+
+	/**
+	 * @param fullDesc
+	 *            The {@link FullDescription} object to add the option too,
+	 *            without adding a tab
+	 * @param optionName
+	 *            The name of the option
+	 * @param optionDescription
+	 *            The description of the option
+	 */
+	public static void addOptionWithoutTab(
+			org.knime.node.v41.FullDescription fullDesc, String optionName,
+			String optionDescription) {
+		org.knime.node.v41.Option opt = fullDesc.addNewOption();
 		configureOption(opt, optionName, optionDescription);
 	}
 
@@ -156,9 +173,24 @@ public class NodeDescriptionUtils {
 	 * @param optionDescription
 	 *            The description of the option
 	 */
+	@Deprecated
 	public static void addOptionToTab(Tab tab, String optionName,
 			String optionDescription) {
 		Option opt = tab.addNewOption();
+		configureOption(opt, optionName, optionDescription);
+	}
+
+	/**
+	 * @param tab
+	 *            The tab to add the option to
+	 * @param optionName
+	 *            The name of the option
+	 * @param optionDescription
+	 *            The description of the option
+	 */
+	public static void addOptionToTab(org.knime.node.v41.Tab tab,
+			String optionName, String optionDescription) {
+		org.knime.node.v41.Option opt = tab.addNewOption();
 		configureOption(opt, optionName, optionDescription);
 	}
 
@@ -169,8 +201,25 @@ public class NodeDescriptionUtils {
 	 * @param optionName
 	 * @param optionDescription
 	 */
+	@Deprecated
 	private static void configureOption(Option opt, String optionName,
 			String optionDescription) {
+		opt.setName(optionName);
+		XmlCursor optCursor = opt.newCursor();
+		optCursor.toFirstContentToken();
+		optCursor.insertChars(optionDescription);
+		optCursor.dispose();
+	}
+	
+	/**
+	 * Convenience method to actually build the option from the parameters
+	 * 
+	 * @param opt
+	 * @param optionName
+	 * @param optionDescription
+	 */
+	private static void configureOption(org.knime.node.v41.Option opt,
+			String optionName, String optionDescription) {
 		opt.setName(optionName);
 		XmlCursor optCursor = opt.newCursor();
 		optCursor.toFirstContentToken();
@@ -263,6 +312,7 @@ public class NodeDescriptionUtils {
 	 *            for options to be added to tabs
 	 * @throws NoSuchElementException
 	 */
+	@Deprecated
 	public static void addOptionsToDescription(FullDescription fullDesc,
 			EitherOr<Map<String, String>, Map<String, Map<String, String>>> options)
 			throws NoSuchElementException {
@@ -277,6 +327,44 @@ public class NodeDescriptionUtils {
 				for (Entry<String, Map<String, String>> tabEntry : options
 						.getRight().entrySet()) {
 					Tab tab = fullDesc.addNewTab();
+					tab.setName(tabEntry.getKey());
+					for (Entry<String, String> option : tabEntry.getValue()
+							.entrySet()) {
+						addOptionToTab(tab, option.getKey(), option.getValue());
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Method to add all options to the node description. Options are either
+	 * added to the end of the description or in Tabs
+	 * 
+	 * @param fullDesc
+	 *            The full description object of the node description
+	 * @param options
+	 *            The options - either a {@code Map<String, String>} for all
+	 *            options to be added (K=option name, V= description), or a
+	 *            {@code Map<String, Map<String, String>>} keyed on tab names
+	 *            for options to be added to tabs
+	 * @throws NoSuchElementException
+	 */
+	public static void addOptionsToDescription(
+			org.knime.node.v41.FullDescription fullDesc,
+			EitherOr<Map<String, String>, Map<String, Map<String, String>>> options)
+			throws NoSuchElementException {
+		if (options != null && options.isPresent()) {
+			if (options.isLeft()) {
+				for (Entry<String, String> option : options.getLeft()
+						.entrySet()) {
+					addOptionWithoutTab(fullDesc, option.getKey(),
+							option.getValue());
+				}
+			} else {
+				for (Entry<String, Map<String, String>> tabEntry : options
+						.getRight().entrySet()) {
+					org.knime.node.v41.Tab tab = fullDesc.addNewTab();
 					tab.setName(tabEntry.getKey());
 					for (Entry<String, String> option : tabEntry.getValue()
 							.entrySet()) {
@@ -322,7 +410,47 @@ public class NodeDescriptionUtils {
 	 *            The {@link NodeFactory} instance
 	 * @throws DOMException
 	 */
+	@Deprecated
 	public static void addBundleInformation(KnimeNode node,
+			Class<? extends NodeFactory<?>> nodeFactoryClazz)
+			throws DOMException {
+		Element bundleElement = ((Element) node.getDomNode()).getOwnerDocument()
+				.createElement("osgi-info");
+		Bundle bundle = OSGIHelper.getBundle(nodeFactoryClazz);
+		if (bundle != null) {
+			Optional<IInstallableUnit> feature = OSGIHelper.getFeature(bundle);
+			bundleElement.setAttribute("bundle-symbolic-name", feature
+					.map(f -> f.getId()).orElse(bundle.getSymbolicName()));
+			bundleElement.setAttribute("bundle-name", feature
+					.map(f -> f.getProperty(IInstallableUnit.PROP_NAME, null))
+					.orElse(bundle.getHeaders().get("Bundle-Name")));
+			bundleElement.setAttribute("bundle-vendor", feature.map(
+					f -> f.getProperty(IInstallableUnit.PROP_PROVIDER, null))
+					.orElse(bundle.getHeaders().get("Bundle-Vendor")));
+		} else {
+			bundleElement.setAttribute("bundle-symbolic-name", "<Unknown>");
+			bundleElement.setAttribute("bundle-name", "<Unknown>");
+			bundleElement.setAttribute("bundle-vendor", "<Unknown>");
+		}
+		bundleElement.setAttribute("factory-package",
+				nodeFactoryClazz.getPackage().getName());
+		((Element) node.getDomNode()).appendChild(bundleElement);
+	}
+
+	/**
+	 * Method to add the vendor bundle information to the node description. For
+	 * nodes with an XML Node description, this is performed dynamically,
+	 * however when the node description is supplied dynamically this needs to
+	 * be added manually. This version does not require an instance of the
+	 * {@link NodeFactory} class
+	 * 
+	 * @param node
+	 *            The KnimeNode element
+	 * @param nodeFactoryClazz
+	 *            The {@link NodeFactory} instance
+	 * @throws DOMException
+	 */
+	public static void addBundleInformation(org.knime.node.v41.KnimeNode node,
 			Class<? extends NodeFactory<?>> nodeFactoryClazz)
 			throws DOMException {
 		Element bundleElement = ((Element) node.getDomNode()).getOwnerDocument()
@@ -357,8 +485,25 @@ public class NodeDescriptionUtils {
 	 *            The name of the new tab
 	 * @return The new tab
 	 */
+	@Deprecated
 	public static Tab createTab(FullDescription fullDesc, String tabName) {
 		Tab retVal = fullDesc.addNewTab();
+		retVal.setName(tabName);
+		return retVal;
+	}
+
+	/**
+	 * Method to add a new tab to a node description
+	 * 
+	 * @param fullDesc
+	 *            The full description object of the node description
+	 * @param tabName
+	 *            The name of the new tab
+	 * @return The new tab
+	 */
+	public static org.knime.node.v41.Tab createTab(
+			org.knime.node.v41.FullDescription fullDesc, String tabName) {
+		org.knime.node.v41.Tab retVal = fullDesc.addNewTab();
 		retVal.setName(tabName);
 		return retVal;
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,6 +14,10 @@
  ******************************************************************************/
 package com.vernalis.knime.fingerprint.nodes.abstrct.desc;
 
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
+import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionsToDescription;
+
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,23 +34,20 @@ import org.knime.core.data.vector.bytevector.DenseByteVectorCell;
 import org.knime.core.data.vector.bytevector.SparseByteVectorCell;
 import org.knime.core.node.NodeDescription;
 import org.knime.core.node.NodeFactory.NodeType;
-import org.knime.node2012.FullDescriptionDocument.FullDescription;
-import org.knime.node2012.InPortDocument.InPort;
-import org.knime.node2012.IntroDocument.Intro;
-import org.knime.node2012.KnimeNodeDocument;
-import org.knime.node2012.KnimeNodeDocument.KnimeNode;
-import org.knime.node2012.OutPortDocument.OutPort;
-import org.knime.node2012.PortsDocument.Ports;
-import org.knime.node2012.ViewDocument.View;
-import org.knime.node2012.ViewsDocument.Views;
+import org.knime.node.v41.FullDescription;
+import org.knime.node.v41.InPort;
+import org.knime.node.v41.Intro;
+import org.knime.node.v41.KnimeNode;
+import org.knime.node.v41.KnimeNodeDocument;
+import org.knime.node.v41.OutPort;
+import org.knime.node.v41.Ports;
+import org.knime.node.v41.View;
+import org.knime.node.v41.Views;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.w3c.dom.Element;
 
 import com.vernalis.knime.misc.EitherOr;
-
-import static com.vernalis.knime.nodes.NodeDescriptionUtils.addDevelopedByVernalis;
-import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionsToDescription;
 
 /**
  * The base abstract class for the fingerprint node descriptions
@@ -239,7 +240,7 @@ public class AbstractMultiPortFingerprintNodeDescription extends NodeDescription
 		KnimeNode node = doc.addNewKnimeNode();
 		node.setIcon(getIconPath());
 		node.setName(getNodeName());
-		node.setType(KnimeNode.Type.MANIPULATOR);
+		node.setType(org.knime.node.v41.NodeType.MANIPULATOR);
 		node.setShortDescription(shortDescription);
 		FullDescription fullDesc = node.addNewFullDescription();
 		Intro intro = fullDesc.addNewIntro();
@@ -256,13 +257,13 @@ public class AbstractMultiPortFingerprintNodeDescription extends NodeDescription
 		Ports ports = node.addNewPorts();
 		InPort inport = ports.addNewInPort();
 		for (int i = 0; i < inPortNames.length; i++) {
-			inport.setIndex(i);
+			inport.setIndex(BigInteger.valueOf(i));
 			inport.setName(getInportName(i));
 			inport.newCursor().setTextValue(getInportDescription(i));
 		}
 		OutPort outport = ports.addNewOutPort();
 		for (int i = 0; i < outPortNames.length; i++) {
-			outport.setIndex(i);
+			outport.setIndex(BigInteger.valueOf(i));
 			outport.setName(getOutportName(i));
 			outport.newCursor().setTextValue(getOutportDescription(i));
 		}
@@ -271,7 +272,7 @@ public class AbstractMultiPortFingerprintNodeDescription extends NodeDescription
 			Views views = node.addNewViews();
 			for (int i = 0; i < getViewCount(); i++) {
 				View view = views.addNewView();
-				view.setIndex(i);
+				view.setIndex(BigInteger.valueOf(i));
 				view.setName(getViewName(i));
 				view.newCursor().setTextValue(getViewDescription(i));
 			}

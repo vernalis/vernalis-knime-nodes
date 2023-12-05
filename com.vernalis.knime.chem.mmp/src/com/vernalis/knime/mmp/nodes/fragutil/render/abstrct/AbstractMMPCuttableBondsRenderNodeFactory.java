@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 
 import com.vernalis.knime.mmp.fragutils.FragmentationUtilsFactory;
 import com.vernalis.knime.mmp.nodes.fragutil.abstrct.AbstractColumnRearrangerFragmentationFactoryNodeModel;
+import com.vernalis.knime.nodes.VernalisDelegateNodeDescription;
 
 /**
  * Node Factory class Render cuttable bonds nodes
@@ -63,8 +64,10 @@ public class AbstractMMPCuttableBondsRenderNodeFactory<T, U>
 	protected NodeDescription createNodeDescription()
 			throws SAXException, IOException, XmlException {
 		try {
-			return new AbstractMMPCuttableBondsRenderNodeDescription<>(
-					fragUtilsFactory.getConstructor().newInstance());
+			return new VernalisDelegateNodeDescription(
+					new AbstractMMPCuttableBondsRenderNodeDescription<>(
+							fragUtilsFactory.getConstructor().newInstance()),
+					getClass());
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			throw new RuntimeException("Error instantiating Fragmentation Utilities factory", e);

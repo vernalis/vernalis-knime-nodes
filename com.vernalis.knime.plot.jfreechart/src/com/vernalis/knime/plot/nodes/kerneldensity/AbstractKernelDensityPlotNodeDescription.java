@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -13,15 +13,6 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
 package com.vernalis.knime.plot.nodes.kerneldensity;
-
-import org.apache.xmlbeans.XmlCursor;
-import org.knime.core.node.NodeFactory;
-import org.knime.node2012.FullDescriptionDocument.FullDescription;
-import org.knime.node2012.TabDocument.Tab;
-
-import com.vernalis.knime.jfcplot.core.nodes.AbstractDrawableSeriesPlotNodeDescription;
-import com.vernalis.knime.nodes.NodeDescriptionUtils;
-import com.vernalis.knime.nodes.NodeDescriptionUtils.TableFactory;
 
 import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionToTab;
 import static com.vernalis.knime.plot.nodes.kerneldensity.KernelConstants.CONTOUR_INTERVAL_SCHEMA;
@@ -49,6 +40,15 @@ import static com.vernalis.knime.plot.nodes.kerneldensity.KernelDensityPlotNodeD
 import static com.vernalis.knime.plot.nodes.kerneldensity.KernelDensityPlotNodeDialogPane.getDialogGridPointsName;
 import static com.vernalis.knime.plot.nodes.kerneldensity.KernelDensityPlotNodeDialogPane.getDialogManualBandwidthName;
 import static com.vernalis.knime.plot.nodes.kerneldensity.KernelDensityPlotNodeDialogPane.getDialogShowBandwidthName;
+
+import org.apache.xmlbeans.XmlCursor;
+import org.knime.core.node.NodeFactory;
+import org.knime.node.v41.FullDescription;
+import org.knime.node.v41.Tab;
+
+import com.vernalis.knime.jfcplot.core.nodes.AbstractDrawableSeriesPlotNodeDescription;
+import com.vernalis.knime.nodes.NodeDescriptionUtils;
+import com.vernalis.knime.nodes.NodeDescriptionUtils.TableFactory;
 
 /**
  * Node Description class for Kernel plots, handles 1D and 2D options and

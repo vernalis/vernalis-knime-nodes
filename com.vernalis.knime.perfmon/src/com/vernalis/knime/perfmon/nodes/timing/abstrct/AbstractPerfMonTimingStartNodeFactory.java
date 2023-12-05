@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016, 2019 Vernalis (R&D) Ltd
+ * Copyright (c) 2016, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -15,6 +15,7 @@
 package com.vernalis.knime.perfmon.nodes.timing.abstrct;
 
 import java.io.IOException;
+import java.math.BigInteger;
 
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlException;
@@ -24,18 +25,19 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
 import org.knime.core.node.port.PortType;
-import org.knime.node2012.FullDescriptionDocument.FullDescription;
-import org.knime.node2012.InPortDocument.InPort;
-import org.knime.node2012.IntroDocument.Intro;
-import org.knime.node2012.KnimeNodeDocument;
-import org.knime.node2012.KnimeNodeDocument.KnimeNode;
-import org.knime.node2012.OutPortDocument.OutPort;
-import org.knime.node2012.PortsDocument.Ports;
-import org.knime.node2012.TabDocument.Tab;
+import org.knime.node.v41.FullDescription;
+import org.knime.node.v41.InPort;
+import org.knime.node.v41.Intro;
+import org.knime.node.v41.KnimeNode;
+import org.knime.node.v41.KnimeNodeDocument;
+import org.knime.node.v41.OutPort;
+import org.knime.node.v41.Ports;
+import org.knime.node.v41.Tab;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.vernalis.knime.nodes.NodeDescriptionUtils;
+import com.vernalis.knime.nodes.VernalisDelegateNodeDescription;
 
 /**
  * <code>NodeFactory</code> for the "TimingStart" Node. Loop start for execution
@@ -92,8 +94,8 @@ public class AbstractPerfMonTimingStartNodeFactory
 	 * @param portType
 	 *            The port type
 	 */
-	public AbstractPerfMonTimingStartNodeFactory(int numPorts,
-			boolean isMemMon, PortType portType) {
+	public AbstractPerfMonTimingStartNodeFactory(int numPorts, boolean isMemMon,
+			PortType portType) {
 		this(numPorts, isMemMon, portType, portType.getName());
 	}
 
@@ -109,8 +111,8 @@ public class AbstractPerfMonTimingStartNodeFactory
 	 * @param portTypeDescription
 	 *            The port type as shown in the node description
 	 */
-	public AbstractPerfMonTimingStartNodeFactory(int numPorts,
-			boolean isMemMon, PortType portType, String portTypeDescription) {
+	public AbstractPerfMonTimingStartNodeFactory(int numPorts, boolean isMemMon,
+			PortType portType, String portTypeDescription) {
 		super(true);
 		this.numPorts = numPorts;
 		this.isMemMon = isMemMon;
@@ -254,10 +256,10 @@ public class AbstractPerfMonTimingStartNodeFactory
 			public Element getXMLDescription() {
 				KnimeNodeDocument doc = KnimeNodeDocument.Factory.newInstance();
 				KnimeNode node = doc.addNewKnimeNode();
-				node.setDeprecated(KnimeNode.Deprecated.FALSE);
+				node.setDeprecated(false);
 				node.setIcon(getIconPath());
 				node.setName(getNodeName());
-				node.setType(KnimeNode.Type.LOOP_START);
+				node.setType(org.knime.node.v41.NodeType.LOOP_START);
 				node.setShortDescription("Loop start for execution timing"
 						+ (isMemMon() ? "with memory monitoring" : ""));
 				FullDescription fullDesc = node.addNewFullDescription();
@@ -329,13 +331,13 @@ public class AbstractPerfMonTimingStartNodeFactory
 				Ports ports = node.addNewPorts();
 				for (int i = 0; i < getNumPorts(); i++) {
 					InPort inPort = ports.addNewInPort();
-					inPort.setIndex(i);
+					inPort.setIndex(BigInteger.valueOf(i));
 					inPort.setName(getInportName(i));
 					inPort.newCursor().setTextValue(getInportDescription(i));
 				}
 				for (int i = 0; i < getNumPorts() + (isMemMon() ? 3 : 2); i++) {
 					OutPort outport = ports.addNewOutPort();
-					outport.setIndex(i);
+					outport.setIndex(BigInteger.valueOf(i));
 					outport.setName(getOutportName(i));
 					outport.newCursor().setTextValue(getOutportDescription(i));
 				}
@@ -344,7 +346,7 @@ public class AbstractPerfMonTimingStartNodeFactory
 				return (Element) node.getDomNode();
 			}
 		};
-		return retVal;
+		return new VernalisDelegateNodeDescription(retVal, getClass());
 	}
 
 	/**

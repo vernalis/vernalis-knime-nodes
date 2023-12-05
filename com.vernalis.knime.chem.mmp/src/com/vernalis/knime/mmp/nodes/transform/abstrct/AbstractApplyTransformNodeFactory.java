@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017, Vernalis (R&D) Ltd
+ * Copyright (c) 2017, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -24,6 +24,7 @@ import org.knime.core.node.NodeView;
 import org.xml.sax.SAXException;
 
 import com.vernalis.knime.mmp.transform.TransformUtilityFactory;
+import com.vernalis.knime.nodes.VernalisDelegateNodeDescription;
 
 /**
  * The node factory for the Apply Transforms nodes
@@ -48,7 +49,8 @@ public class AbstractApplyTransformNodeFactory<T, U, V>
 	 * @param transUtilFact
 	 *            The {@link TransformUtilityFactory} instance for the node
 	 */
-	public AbstractApplyTransformNodeFactory(TransformUtilityFactory<T, U, V> transUtilFact) {
+	public AbstractApplyTransformNodeFactory(
+			TransformUtilityFactory<T, U, V> transUtilFact) {
 		super(true);
 		this.transUtilFact = transUtilFact;
 		init();
@@ -65,9 +67,10 @@ public class AbstractApplyTransformNodeFactory<T, U, V>
 	}
 
 	@Override
-	public NodeView<AbstractApplyTransformNodeModel<T, U, V>> createNodeView(int viewIndex,
-			AbstractApplyTransformNodeModel<T, U, V> nodeModel) {
-		return viewIndex == 0 ? new AbstractApplyTransformProgressNodeView<>(nodeModel)
+	public NodeView<AbstractApplyTransformNodeModel<T, U, V>> createNodeView(
+			int viewIndex, AbstractApplyTransformNodeModel<T, U, V> nodeModel) {
+		return viewIndex == 0
+				? new AbstractApplyTransformProgressNodeView<>(nodeModel)
 				: new AbstractApplyTransformProgressNodeView2<>(nodeModel);
 	}
 
@@ -89,7 +92,9 @@ public class AbstractApplyTransformNodeFactory<T, U, V>
 	@Override
 	protected NodeDescription createNodeDescription()
 			throws SAXException, IOException, XmlException {
-		return new AbstractApplyTransformNodeDescription<>(transUtilFact);
+		return new VernalisDelegateNodeDescription(
+				new AbstractApplyTransformNodeDescription<>(transUtilFact),
+				getClass());
 	}
 
 }

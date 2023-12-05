@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,19 +14,6 @@
  ******************************************************************************/
 package com.vernalis.knime.chem.pmi.nodes.plot.kerneldensity;
 
-import java.io.IOException;
-
-import org.apache.xmlbeans.XmlCursor;
-import org.apache.xmlbeans.XmlException;
-import org.knime.node2012.FullDescriptionDocument.FullDescription;
-import org.knime.node2012.TabDocument.Tab;
-import org.xml.sax.SAXException;
-
-import com.vernalis.knime.jfcplot.core.nodes.AbstractDrawableSeriesPlotNodeDescription;
-import com.vernalis.knime.jfcplot.core.nodes.AbstractDrawableSeriesPlotNodeFactory;
-import com.vernalis.knime.misc.ArrayUtils;
-import com.vernalis.knime.plot.nodes.kerneldensity.AbstractKernelDensityPlotNodeDescription;
-
 import static com.vernalis.knime.chem.pmi.nodes.plot.abstrct.AbstractPMIDrawableSeriesNodeDialogPane.DOUBLE_VALUE_COLUMN_FILTER;
 import static com.vernalis.knime.chem.pmi.nodes.plot.abstrct.AbstractPMIDrawableSeriesNodeDialogPane.N_PMI1_I1_I3_COLUMN;
 import static com.vernalis.knime.chem.pmi.nodes.plot.abstrct.AbstractPMIDrawableSeriesNodeDialogPane.N_PMI2_I2_I3_COLUMN;
@@ -38,6 +25,20 @@ import static com.vernalis.knime.chem.pmi.nodes.plot.abstrct.AbstractPMIDrawable
 import static com.vernalis.knime.chem.pmi.nodes.plot.abstrct.AbstractPMIDrawableSeriesPlotNodeDescription.VERTEX_LABEL_COLOUR_DESCRIPTION;
 import static com.vernalis.knime.nodes.NodeDescriptionUtils.addOptionToTab;
 import static com.vernalis.knime.plot.nodes.kerneldensity.KernelConstants.KERNEL_OPTIONS;
+
+import java.io.IOException;
+
+import org.apache.xmlbeans.XmlCursor;
+import org.apache.xmlbeans.XmlException;
+import org.knime.core.node.NodeDescription;
+import org.knime.node.v41.FullDescription;
+import org.knime.node.v41.Tab;
+import org.xml.sax.SAXException;
+
+import com.vernalis.knime.jfcplot.core.nodes.AbstractDrawableSeriesPlotNodeFactory;
+import com.vernalis.knime.misc.ArrayUtils;
+import com.vernalis.knime.nodes.VernalisDelegateNodeDescription;
+import com.vernalis.knime.plot.nodes.kerneldensity.AbstractKernelDensityPlotNodeDescription;
 
 public class PMIKernelDensityPlotNodeFactory extends
 		AbstractDrawableSeriesPlotNodeFactory<PMIKernelDensityPlotNodeModel> {
@@ -59,9 +60,10 @@ public class PMIKernelDensityPlotNodeFactory extends
 	}
 
 	@Override
-	protected AbstractDrawableSeriesPlotNodeDescription createNodeDescription()
+	protected NodeDescription createNodeDescription()
 			throws SAXException, IOException, XmlException {
-		return new AbstractKernelDensityPlotNodeDescription(
+		return new VernalisDelegateNodeDescription(
+				new AbstractKernelDensityPlotNodeDescription(
 				"kernel_density_pmi.png", "PMI Kernel Density Plot",
 				KERNEL_OPTIONS, getColNames(), this.getClass(), false) {
 
@@ -167,7 +169,7 @@ public class PMIKernelDensityPlotNodeFactory extends
 				return tab;
 			}
 
-		};
+				}, getClass());
 	}
 
 }
