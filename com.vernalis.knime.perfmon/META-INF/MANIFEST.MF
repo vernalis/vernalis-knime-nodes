@@ -7,12 +7,12 @@ Bundle-ClassPath: .
 Bundle-Activator: com.vernalis.knime.perfmon.TimingStartNodePlugin
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.11.0,5.0.0)",
- org.knime.core;bundle-version="[4.4.0,5.0.0)",
- org.knime.workbench.core;bundle-version="[3.0.0,5.0.0)",
- org.knime.workbench.repository;bundle-version="[3.0.0,5.0.0)",
- org.knime.base;bundle-version="[3.0.0,5.0.0)",
+ org.knime.core;bundle-version="[4.4.0,6.0.0)",
+ org.knime.workbench.core;bundle-version="[3.0.0,6.0.0)",
+ org.knime.workbench.repository;bundle-version="[3.0.0,6.0.0)",
+ org.knime.base;bundle-version="[3.0.0,6.0.0)",
  com.vernalis.knime.core;bundle-version="[1.5.0,2.0.0)",
- org.knime.time;bundle-version="[3.4.0,5.0.0)"
+ org.knime.time;bundle-version="[3.4.0,6.0.0)"
 Bundle-ActivationPolicy: lazy
 Export-Package: 
  com.vernalis.knime.perfmon,

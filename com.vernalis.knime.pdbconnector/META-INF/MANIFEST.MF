@@ -5,17 +5,17 @@ Bundle-SymbolicName: com.vernalis.knime.pdbconnector;singleton:=true
 Bundle-Version: 1.36.3.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: %Bundle-Vendor
-Require-Bundle: org.knime.workbench.core;bundle-version="[3.0.0,5.0.0)",
- org.knime.base;bundle-version="[3.0.0,5.0.0)",
- org.knime.bio.types;bundle-version="[3.0.0,5.0.0)",
- org.knime.chem.types;bundle-version="[3.0.0,5.0.0)",
- org.knime.json;bundle-version="[4.1.0,5.0.0)",
+Require-Bundle: org.knime.workbench.core;bundle-version="[3.0.0,6.0.0)",
+ org.knime.base;bundle-version="[3.0.0,6.0.0)",
+ org.knime.bio.types;bundle-version="[3.0.0,6.0.0)",
+ org.knime.chem.types;bundle-version="[3.0.0,6.0.0)",
+ org.knime.json;bundle-version="[4.1.0,6.0.0)",
  com.vernalis.knime.core;bundle-version="[1.6.5,2.0.0)",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="[2.13.2,3.0.0)",
  com.fasterxml.jackson.core.jackson-core;bundle-version="[2.13.2,3.0.0)",
  com.fasterxml.jackson.core.jackson-annotations;bundle-version="[2.13.2,3.0.0)",
- org.knime.time;bundle-version="[4.1.4,5.0.0)",
- org.knime.core;bundle-version="[4.0.0,5.0.0)",
+ org.knime.time;bundle-version="[4.1.4,6.0.0)",
+ org.knime.core;bundle-version="[4.0.0,6.0.0)",
  com.vernalis.knime.flowcontrol;bundle-version="[1.32.0,2.0.0)"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-17
