@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, Vernalis (R&D) Ltd
+ * Copyright (c) 2019, 2023, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -13,6 +13,12 @@
  *  along with this program; if not, see <http://www.gnu.org/licenses>
  ******************************************************************************/
 package com.vernalis.knime.plot.nodes.kerneldensity;
+
+import static com.vernalis.knime.plot.nodes.kerneldensity.KernelConstants.BANDWIDTH_H;
+import static com.vernalis.knime.plot.nodes.kerneldensity.KernelConstants.VALUES_COLUMN;
+import static com.vernalis.knime.plot.nodes.kerneldensity.KernelDensityPlotNodeDialogPane.createExpandKernelsModel;
+import static com.vernalis.knime.plot.nodes.kerneldensity.KernelDensityPlotNodeDialogPane.createGroupColNameModel;
+import static com.vernalis.knime.plot.nodes.kerneldensity.KernelDensityPlotNodeDialogPane.createShowTotalDataKernelModel;
 
 import java.awt.Color;
 import java.text.AttributedString;
@@ -37,7 +43,6 @@ import org.knime.core.data.DoubleValue;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.def.StringCell;
 import org.knime.core.data.property.ColorAttr;
-import org.knime.core.data.property.ColorHandler.ColorModel;
 import org.knime.core.data.property.ColorModelNominal;
 import org.knime.core.data.property.ShapeFactory;
 import org.knime.core.node.BufferedDataTable;
@@ -51,12 +56,6 @@ import com.vernalis.knime.jfcplot.core.drawabledataobject.DrawableDataObject;
 import com.vernalis.knime.jfcplot.core.drawabledataobject.DrawableDataObjectFastPlot;
 import com.vernalis.knime.jfcplot.core.legend.TitledLegend;
 import com.vernalis.knime.jfcplot.core.legenditemsources.ColourLegendItemSource;
-
-import static com.vernalis.knime.plot.nodes.kerneldensity.KernelConstants.BANDWIDTH_H;
-import static com.vernalis.knime.plot.nodes.kerneldensity.KernelConstants.VALUES_COLUMN;
-import static com.vernalis.knime.plot.nodes.kerneldensity.KernelDensityPlotNodeDialogPane.createExpandKernelsModel;
-import static com.vernalis.knime.plot.nodes.kerneldensity.KernelDensityPlotNodeDialogPane.createGroupColNameModel;
-import static com.vernalis.knime.plot.nodes.kerneldensity.KernelDensityPlotNodeDialogPane.createShowTotalDataKernelModel;
 
 /**
  * NodeModel implementation for the 1D Kernel Density Plot node
@@ -352,7 +351,8 @@ public class KernelDensity1DPlotNodeModel extends
 	final ColorModelNominal createColorMapping(
 			final Set<? extends DataCell> set, boolean useGreyScale) {
 		if (set == null || set.isEmpty()) {
-			return new ColorModelNominal(Collections.emptyMap());
+			return new ColorModelNominal(Collections.emptyMap(),
+					new ColorAttr[0]);
 		}
 
 		Map<DataCell, ColorAttr> map = new LinkedHashMap<>();
@@ -373,7 +373,8 @@ public class KernelDensity1DPlotNodeModel extends
 			}
 		}
 
-		return new ColorModelNominal(map);
+		return new ColorModelNominal(map,
+				map.values().toArray(ColorAttr[]::new));
 	}
 
 }
