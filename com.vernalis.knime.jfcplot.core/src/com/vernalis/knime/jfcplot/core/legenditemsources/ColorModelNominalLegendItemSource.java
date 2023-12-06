@@ -53,7 +53,7 @@ public class ColorModelNominalLegendItemSource implements LegendItemSource {
 	 */
 	public ColorModelNominalLegendItemSource(ColorModelNominal colModel,
 			Shape shape) {
-		for (DataCell dc : colModel) {
+		for (DataCell dc : colModel.getValues()) {
 			LegendItem legItem = shape == null
 					? new LegendItem(dc.isMissing() ? "Missing" : dc.toString(),
 							colModel.getColorAttr(dc).getColor())
