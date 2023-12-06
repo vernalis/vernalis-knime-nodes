@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>1.36.3</revision>
+        <revision>1.36.5</revision>
         <changelist>-SNAPSHOT</changelist>
         <knime.version>4.7</knime.version>
         <tycho.version>2.7.5</tycho.version>
