@@ -46,6 +46,7 @@ import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DoubleValue;
 import org.knime.core.data.StringValue;
 import org.knime.core.data.property.ColorAttr;
+import org.knime.core.data.property.ColorModel;
 import org.knime.core.data.property.ColorModelNominal;
 import org.knime.core.data.property.ShapeFactory;
 import org.knime.core.data.property.ShapeHandler;
@@ -135,7 +136,7 @@ public class PMIHullPlotNodeModel
 	final ColorModelNominal createColorMapping(final Set<DataCell> set) {
 		if (set == null) {
 			return new ColorModelNominal(Collections.emptyMap(),
-					new ColoAttr[0]);
+					new ColorAttr[0]);
 		}
 		Map<DataCell, ColorAttr> map = new LinkedHashMap<>();
 		int idx = 0;
