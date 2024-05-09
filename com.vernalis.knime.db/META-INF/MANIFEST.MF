@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.db;singleton:=true
-Bundle-Version: 1.36.5.qualifier
+Bundle-Version: 1.36.6.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.vernalis.knime.db.DBNodePlugin
 Bundle-Vendor: %Bundle-Vendor
