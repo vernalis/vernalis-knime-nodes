@@ -9,7 +9,7 @@ Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.knime.workbench.core;bundle-version="[4.4.0,6.0.0)",
  org.junit;bundle-version="[4.13.0,5.0.0)",
  org.knime.testing;bundle-version="[4.4.0,6.0.0)",
- plugin;bundle-version="[1.0.3,2.0.0)"
+ nl.esciencecenter.e3dchem.knime.testing.plugin;bundle-version="[1.0.3,2.0.0)"
 Bundle-ActivationPolicy: lazy
 Export-Package: com.vernalis.testing
 Bundle-RequiredExecutionEnvironment: JavaSE-17
