@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Copyright (c) 2019,2023, Vernalis (R&D) Ltd
-   This program is free software; you can redistribute it and/or modify it 
-   under the terms of the GNU General Public License, Version 3, as 
-   published by the Free Software Foundation.
-   
-   This program is distributed in the hope that it will be useful, but 
-   WITHOUT ANY WARRANTY; without even the implied warranty of 
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-   See the GNU General Public License for more details.
-    
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, see <http://www.gnu.org/licenses>
--->
-<knimeNode
-	icon="coll2size.png"
-	type="Manipulator"
+<!-- Copyright (c) 2021,2024, Vernalis (R&D) Ltd This program is free software; 
+	you can redistribute it and/or modify it under the terms of the GNU General 
+	Public License, Version 3, as published by the Free Software Foundation. 
+	This program is distributed in the hope that it will be useful, but WITHOUT 
+	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+	FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. 
+	You should have received a copy of the GNU General Public License along with 
+	this program; if not, see <http://www.gnu.org/licenses> -->
+<knimeNode icon="coll2size.png" type="Manipulator"
 	xmlns="http://knime.org/node/v3.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
@@ -45,7 +37,20 @@
 			lists
 		</option>
 		<option name="Fail if no matching columns">Should the node execution fail if there are no
-			matching collection columns?</option>
+			matching collection columns?
+		</option>
+		<option name="Counting Options">Whether to include all cells in the collection,
+			exclude missing value cells, or only include missing value cells
+		</option>
+		<option name="Unique values only">Whether all values are counted individually, or
+			whether only unique values are counted. For Set cells, the results
+			will be the same regardless of this option, as sets only contain
+			unique values. All missing cells are considered equal, and so if
+			missing cells are counted, then all missing cells will add only one
+			to the
+			total - in particular, if only missing cells are being counted,
+			then the result will be either 0 or 1
+		</option>
 	</fullDescription>
 
 	<ports>
