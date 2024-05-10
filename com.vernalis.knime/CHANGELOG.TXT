@@ -1,3 +1,7 @@
+v1.36.6 09-May-2024
+===================
+* Added Missing value and uniqueness options to Collection Size node
+
 v1.36.2 13-Jan-2023
 ===================
 * Abstracted Multi-Collection node base Node Model and Node Dialog classes
