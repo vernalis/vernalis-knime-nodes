@@ -6,11 +6,11 @@ The table shows the latest version of the nodes available in each update site fo
 
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
-| Nightly | [v1.36.6](#v1366---09-may-2024) |
-| 5.3* | [v1.36.6](#v1366---09-may-2024) |
-| 5.2* | [v1.36.6](#v1366---09-may-2024) |
-| 5.1* | [v1.36.6](#v1366---09-may-2024) |
-| 4.7* | [v1.36.6](#v1366---09-may-2024) |
+| Nightly | [v1.36.7](#v1367---28-may-2024) |
+| 5.3* | [v1.36.7](#v1367---28-may-2024) |
+| 5.2* | [v1.36.7](#v1367---28-may-2024) |
+| 5.1* | [v1.36.7](#v1367---28-may-2024) |
+| 4.7* | [v1.36.7](#v1367---28-may-2024) |
 | 4.6 | [v1.36.2](#v1362---13-jan-2023) |
 | 4.5 | [v1.36.1](#v1361---11-nov-2022) |
 | 4.4 | [v1.34.1](#v1341---07-jun-2022) |
@@ -37,10 +37,19 @@ The table shows the latest version of the nodes available in each update site fo
 
 Back to [ReadMe](README.md)
 
+## 1.36.7 28-May-2024
+
+_Bug Fixes_
+* Add missing classes to prevent start-up errors relating to original PDB Connector node
+
+Back to [top](#changelog)
+
 ## 1.36.6 09-May-2024
 
 _Enhancements_
 * Added Missing value and uniqueness options to Collection Size node
+
+Back to [top](#changelog)
 
 ## v1.36.5 - 05-Dec-2023
 
