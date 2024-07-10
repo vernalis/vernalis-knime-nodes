@@ -15,7 +15,7 @@
         <knime.version>5.3</knime.version>
         <echem.version>5.1</echem.version>
         <java.version>17</java.version>
-        <maven.version>3.9.5</maven.version>
+        <maven.version>3.8.5</maven.version>
         <maven.enforcer.version>3.4.1</maven.enforcer.version>
         <maven.compiler.version>3.11.0</maven.compiler.version>
         <maven.versions.version>2.15.0</maven.versions.version>
