@@ -267,7 +267,6 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <!-- Killall first to make sure we cleanup -->
                             <target>
                                 <echo message="Starting xvfb ..." />
                                 <exec executable="Xvfb" spawn="true">
@@ -278,7 +277,7 @@
                     </execution>
                     <execution>
                         <id>shutdown-xvfb</id>
-                        <phase>test</phase>
+                        <phase>post-integration-test</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
