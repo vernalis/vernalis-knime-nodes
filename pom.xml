@@ -272,6 +272,7 @@
                                 <exec executable="Xvfb" spawn="true">
                                     <arg value=":1" />
                                 </exec>
+                                <echo message="Display: ${env.DISPLAY}" />
                             </target>
                         </configuration>
                     </execution>
