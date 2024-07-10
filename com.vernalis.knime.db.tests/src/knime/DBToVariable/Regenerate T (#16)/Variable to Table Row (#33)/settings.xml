@@ -14,15 +14,14 @@
         <config key="variable-filter">
             <entry key="filter-type" type="xstring" value="STANDARD"/>
             <config key="included_names">
-                <entry key="array-size" type="xint" value="3"/>
-                <entry key="0" type="xstring" value="Database Username"/>
-                <entry key="1" type="xstring" value="Database Type"/>
-                <entry key="2" type="xstring" value="Database Driver"/>
+                <entry key="array-size" type="xint" value="1"/>
+                <entry key="0" type="xstring" value="Database Type"/>
             </config>
             <config key="excluded_names">
-                <entry key="array-size" type="xint" value="2"/>
+                <entry key="array-size" type="xint" value="3"/>
                 <entry key="0" type="xstring" value="Database URL"/>
-                <entry key="1" type="xstring" value="knime.workspace"/>
+                <entry key="1" type="xstring" value="Database Driver"/>
+                <entry key="2" type="xstring" value="knime.workspace"/>
             </config>
             <entry key="enforce_option" type="xstring" value="EnforceInclusion"/>
             <config key="name_pattern">
@@ -40,7 +39,7 @@
     <entry key="node-bundle-name" type="xstring" value="KNIME Base Nodes"/>
     <entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.base"/>
     <entry key="node-bundle-vendor" type="xstring" value="KNIME AG, Zurich, Switzerland"/>
-    <entry key="node-bundle-version" type="xstring" value="4.5.1.v202201171147"/>
+    <entry key="node-bundle-version" type="xstring" value="5.2.4.v202405041851"/>
     <entry key="node-feature-name" type="xstring" isnull="true" value=""/>
     <entry key="node-feature-symbolic-name" type="xstring" isnull="true" value=""/>
     <entry key="node-feature-vendor" type="xstring" isnull="true" value=""/>
@@ -54,12 +53,12 @@
             <entry key="index" type="xint" value="1"/>
             <entry key="port_spec_class" type="xstring" value="org.knime.core.data.DataTableSpec"/>
             <entry key="port_object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
-            <entry key="port_object_summary" type="xstring" value="Rows: 1, Cols: 2"/>
+            <entry key="port_object_summary" type="xstring" value="Rows: 1, Cols: 1"/>
             <entry key="port_dir_location" type="xstring" value="port_1"/>
         </config>
     </config>
     <config key="filestores">
         <entry key="file_store_location" type="xstring" isnull="true" value=""/>
-        <entry key="file_store_id" type="xstring" value="278ead7a-c377-468e-8a80-d5286291f9f0"/>
+        <entry key="file_store_id" type="xstring" value="01ec2989-3569-44fa-ae65-7d9d7428cc67"/>
     </config>
 </config>

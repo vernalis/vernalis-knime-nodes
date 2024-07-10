@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="workflow.knime">
-    <entry key="created_by" type="xstring" value="4.5.2.v202203091352"/>
+    <entry key="created_by" type="xstring" value="5.2.5.v202405310911"/>
     <entry key="created_by_nightly" type="xboolean" value="false"/>
-    <entry key="version" type="xstring" value="4.1.0"/>
+    <entry key="version" type="xstring" value="5.1.0"/>
     <entry key="name" type="xstring" value="Regenerate Test db and golden tables"/>
     <config key="authorInformation">
         <entry key="authored-by" type="xstring" value="&lt;unknown&gt;"/>
@@ -105,7 +105,7 @@
                     <entry key="array-size" type="xint" value="4"/>
                     <entry key="0" type="xint" value="684"/>
                     <entry key="1" type="xint" value="537"/>
-                    <entry key="2" type="xint" value="66"/>
+                    <entry key="2" type="xint" value="111"/>
                     <entry key="3" type="xint" value="93"/>
                 </config>
             </config>
@@ -121,7 +121,7 @@
                     <entry key="array-size" type="xint" value="4"/>
                     <entry key="0" type="xint" value="844"/>
                     <entry key="1" type="xint" value="117"/>
-                    <entry key="2" type="xint" value="66"/>
+                    <entry key="2" type="xint" value="111"/>
                     <entry key="3" type="xint" value="93"/>
                 </config>
             </config>
@@ -138,7 +138,7 @@
                     <entry key="0" type="xint" value="170"/>
                     <entry key="1" type="xint" value="260"/>
                     <entry key="2" type="xint" value="110"/>
-                    <entry key="3" type="xint" value="93"/>
+                    <entry key="3" type="xint" value="78"/>
                 </config>
             </config>
         </config>
@@ -153,8 +153,8 @@
                     <entry key="array-size" type="xint" value="4"/>
                     <entry key="0" type="xint" value="744"/>
                     <entry key="1" type="xint" value="117"/>
-                    <entry key="2" type="xint" value="77"/>
-                    <entry key="3" type="xint" value="93"/>
+                    <entry key="2" type="xint" value="89"/>
+                    <entry key="3" type="xint" value="78"/>
                 </config>
             </config>
         </config>
@@ -169,8 +169,8 @@
                     <entry key="array-size" type="xint" value="4"/>
                     <entry key="0" type="xint" value="604"/>
                     <entry key="1" type="xint" value="157"/>
-                    <entry key="2" type="xint" value="102"/>
-                    <entry key="3" type="xint" value="93"/>
+                    <entry key="2" type="xint" value="60"/>
+                    <entry key="3" type="xint" value="78"/>
                 </config>
             </config>
         </config>
@@ -185,7 +185,7 @@
                     <entry key="array-size" type="xint" value="4"/>
                     <entry key="0" type="xint" value="644"/>
                     <entry key="1" type="xint" value="317"/>
-                    <entry key="2" type="xint" value="111"/>
+                    <entry key="2" type="xint" value="96"/>
                     <entry key="3" type="xint" value="93"/>
                 </config>
             </config>
@@ -201,8 +201,8 @@
                     <entry key="array-size" type="xint" value="4"/>
                     <entry key="0" type="xint" value="584"/>
                     <entry key="1" type="xint" value="537"/>
-                    <entry key="2" type="xint" value="77"/>
-                    <entry key="3" type="xint" value="93"/>
+                    <entry key="2" type="xint" value="121"/>
+                    <entry key="3" type="xint" value="78"/>
                 </config>
             </config>
         </config>
