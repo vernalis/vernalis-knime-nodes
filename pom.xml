@@ -272,7 +272,8 @@
                                 <exec executable="Xvfb" spawn="true">
                                     <arg value=":1" />
                                 </exec>
-                                <echo message="Display: ${DISPLAY}" />
+                                <echo message="ArtifactID: ${maven.project.artifactId}" />
+                                <echo message="NAME: ${maven.project.name}" />
                             </target>
                         </configuration>
                     </execution>
