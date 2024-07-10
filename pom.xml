@@ -269,10 +269,6 @@
                         <configuration>
                             <!-- Killall first to make sure we cleanup -->
                             <target>
-                                <echo message="Ending xvfb ..." />
-                                <exec executable="killall">
-                                    <arg value="Xvfb" />
-                                </exec>
                                 <echo message="Starting xvfb ..." />
                                 <exec executable="Xvfb" spawn="true">
                                     <arg value=":1" />
