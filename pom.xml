@@ -256,7 +256,9 @@
             <!-- Make sure Xvfb is running -->
             <!-- See https://stackoverflow.com/a/14727552/6076839 -->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>start-xvfb</id>
@@ -266,7 +268,7 @@
                         </goals>
                         <configuration>
                             <!-- Killall first to make sure we cleanup -->
-                            <tasks>
+                            <target>
                                 <echo message="Ending xvfb ..." />
                                 <exec executable="killall">
                                     <arg value="Xvfb" />
@@ -275,7 +277,7 @@
                                 <exec executable="Xvfb" spawn="true">
                                     <arg value=":1" />
                                 </exec>
-                            </tasks>
+                            </target>
                         </configuration>
                     </execution>
                     <execution>
@@ -286,12 +288,12 @@
                         </goals>
                         <configuration>
                             <!-- Killall first to make sure we cleanup -->
-                            <tasks>
+                            <target>
                                 <echo message="Ending xvfb ..." />
                                 <exec executable="killall">
                                     <arg value="Xvfb" />
                                 </exec>
-                            </tasks>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
