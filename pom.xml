@@ -247,27 +247,6 @@
                 </configuration>
             </plugin>
 
-            <!-- plugin>
-                <!-- This plugin configuration block is only needed if the repository contains plug-ins that don't have any sources. If it is omitted
-                 Tycho will complain. -->
-                <groupId>org.eclipse.tycho.extras</groupId>
-                <artifactId>tycho-source-feature-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>source-feature</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>source-feature</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <excludes>
-                        <!-- List all plug-in that do NOT contain sources here. -->
-                        <!-- <plugin id="org.knime.community.template.no-source-files" /> -->
-                    </excludes>
-                </configuration>
-            </plugin -->
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-maven-plugin</artifactId>
