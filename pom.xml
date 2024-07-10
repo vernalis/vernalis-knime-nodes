@@ -14,7 +14,17 @@
         <changelist>-SNAPSHOT</changelist>
         <knime.version>5.3</knime.version>
         <echem.version>5.1</echem.version>
-        <tycho.version>2.7.5</tycho.version>
+        <java.version>17</java.version>
+        <maven.version>3.9.5</maven.version>
+        <maven.enforcer.version>3.4.1</maven.enforcer.version>
+        <maven.compiler.version>3.11.0</maven.compiler.version>
+        <maven.versions.version>2.15.0</maven.versions.version>
+        <maven.site.version>4.0.0-M7</maven.site.version>
+        <maven.javadoc.version>3.3.1</maven.javadoc.version>
+        <maven.plugin.version>3.8.2</maven.plugin.version>
+        <maven.project.info.reports.version>3.4.3</maven.project.info.reports.version>
+        
+        <tycho.version>4.0.8</tycho.version>
         <tycho.extras.version>${tycho.version}</tycho.extras.version>
         <tycho.test.jvmArgs>-Xmx512m</tycho.test.jvmArgs>
     </properties>
@@ -97,6 +107,11 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven.enforcer.version}</version>
+                </plugin>
+                <plugin>
                     <groupId>org.eclipse.tycho</groupId>
                     <artifactId>tycho-maven-plugin</artifactId>
                     <version>${tycho.version}</version>
@@ -150,9 +165,9 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>org.eclipse.tycho.extras</groupId>
+                    <groupId>org.eclipse.tycho</groupId>
                     <artifactId>tycho-buildtimestamp-jgit</artifactId>
-                    <version>${tycho.extras.version}</version>
+                    <version>${tycho.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.eclipse.tycho.extras</groupId>
@@ -162,11 +177,6 @@
                 <plugin>
                     <groupId>org.eclipse.tycho.extras</groupId>
                     <artifactId>tycho-p2-extras-plugin</artifactId>
-                    <version>${tycho.extras.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.eclipse.tycho.extras</groupId>
-                    <artifactId>tycho-source-feature-plugin</artifactId>
                     <version>${tycho.extras.version}</version>
                 </plugin>
                 <plugin>
@@ -198,6 +208,46 @@
 
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>${maven.version}</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Let us choose the java version to build against -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.version}</version>
+                <configuration>
+                    <release>${java.version}</release>
+                </configuration>
+            </plugin>
+
+            <!-- Allows to check whether new plugin versions are available-->
+            <!-- See https://winterbe.com/posts/2018/08/29/migrate-maven-projects-to-java-11-jigsaw/ -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>${maven.versions.version}</version>
+                <configuration>
+                    <generateBackupPoms>false</generateBackupPoms>
+                </configuration>
+            </plugin>
+
+            <!-- plugin>
                 <!-- This plugin configuration block is only needed if the repository contains plug-ins that don't have any sources. If it is omitted
                  Tycho will complain. -->
                 <groupId>org.eclipse.tycho.extras</groupId>
@@ -217,7 +267,7 @@
                         <!-- <plugin id="org.knime.community.template.no-source-files" /> -->
                     </excludes>
                 </configuration>
-            </plugin>
+            </plugin -->
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-maven-plugin</artifactId>
@@ -244,6 +294,7 @@
                     <jgit.dirtyWorkingTree>warning</jgit.dirtyWorkingTree>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-p2-repository-plugin</artifactId>
@@ -287,7 +338,20 @@
                             <goal>plugin-source</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>feature-source</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>feature-source</goal>
+                        </goals>
+                    </execution>
                 </executions>
+                <configuration>
+                    <excludes>
+                        <!-- List all plug-in that do NOT contain sources here. -->
+                        <!-- <plugin id="org.knime.community.template.no-source-files" /> -->
+                    </excludes>
+                </configuration>
             </plugin>
 
             <!-- The following is required if source bundles are to be included -->
