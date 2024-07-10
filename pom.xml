@@ -12,7 +12,8 @@
     <properties>
         <revision>1.36.7</revision>
         <changelist>-SNAPSHOT</changelist>
-        <knime.version>5.1</knime.version>
+        <knime.version>5.2</knime.version>
+        <echem.version>5.1</echem.version>
         <tycho.version>2.7.5</tycho.version>
         <tycho.extras.version>${tycho.version}</tycho.extras.version>
         <tycho.test.jvmArgs>-Xmx512m</tycho.test.jvmArgs>
@@ -73,7 +74,7 @@
         <repository>
             <id>3d-e-chem</id>
             <layout>p2</layout>
-            <url>https://3d-e-chem.github.io/updates/${knime.version}</url>
+            <url>https://3d-e-chem.github.io/updates/${echem.version}</url>
         </repository>
     </repositories>
 
