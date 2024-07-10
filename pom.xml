@@ -257,9 +257,9 @@
                 <artifactId>tycho-packaging-plugin</artifactId>
                 <dependencies>
                     <dependency>
-                        <groupId>org.eclipse.tycho.extras</groupId>
+                        <groupId>org.eclipse.tycho</groupId>
                         <artifactId>tycho-buildtimestamp-jgit</artifactId>
-                        <version>${tycho.extras.version}</version>
+                        <version>${tycho.extras}</version>
                     </dependency>
                 </dependencies>
                 <configuration>
