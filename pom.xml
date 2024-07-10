@@ -252,6 +252,7 @@
                 <artifactId>tycho-maven-plugin</artifactId>
                 <extensions>true</extensions>
             </plugin>
+
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-packaging-plugin</artifactId>
@@ -259,7 +260,7 @@
                     <dependency>
                         <groupId>org.eclipse.tycho</groupId>
                         <artifactId>tycho-buildtimestamp-jgit</artifactId>
-                        <version>${tycho.extras}</version>
+                        <version>${tycho.version}</version>
                     </dependency>
                 </dependencies>
                 <configuration>
