@@ -255,7 +255,7 @@
             
             <!-- Make sure Xvfb is running -->
             <!-- See https://stackoverflow.com/a/14727552/6076839 -->
-            <plugin>
+            <!-- plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>3.1.0</version>
@@ -284,7 +284,6 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <!-- Killall first to make sure we cleanup -->
                             <target>
                                 <echo message="Ending xvfb ..." />
                                 <exec executable="killall">
@@ -294,7 +293,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin -->
 
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
