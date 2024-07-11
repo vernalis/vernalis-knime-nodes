@@ -1,4 +1,4 @@
-# ![Image](https://www.vernalis.com/wp-content/uploads/2020/12/Vern_HitGen_V4-1-300x138.png)
+# ![Image](Vernalis_Logo.png)
 
 This repository is the source code for the Vernalis KNIME community contribution.  
 For more details see our [contribution home page](https://www.knime.com/book/vernalis-nodes-for-knime-trusted-extension) or our recent publication describing the historical development - '[Five years of the KNIME Vernalis Cheminformatics Community Contribution](https://dx.doi.org/10.2174/0929867325666180904113616)'
