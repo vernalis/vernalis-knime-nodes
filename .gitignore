@@ -4,3 +4,9 @@
 **/.m2/**
 .META-INF_MANIFEST.MF
 .polyglot.*
+
+# ignore all jpage entries
+*.jpage
+
+# Ignore all knimeLock files
+.knimeLock
