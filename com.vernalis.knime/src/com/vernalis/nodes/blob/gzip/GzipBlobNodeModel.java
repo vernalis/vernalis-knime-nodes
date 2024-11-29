@@ -14,6 +14,10 @@
  ******************************************************************************/
 package com.vernalis.nodes.blob.gzip;
 
+import static com.vernalis.nodes.blob.gzip.UnGzipBlobNodeDialog.BLOB_COLUMN_FILTER;
+import static com.vernalis.nodes.blob.gzip.UnGzipBlobNodeDialog.createBlobColNameModel;
+import static com.vernalis.nodes.blob.gzip.UnGzipBlobNodeDialog.createReplaceInputColModel;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -21,7 +25,6 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -42,11 +45,7 @@ import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 import com.vernalis.knime.misc.ArrayUtils;
-import com.vernalis.knime.nodes.AbstractSimpleStreamableFunctionNodeModel;
-
-import static com.vernalis.nodes.blob.gzip.UnGzipBlobNodeDialog.BLOB_COLUMN_FILTER;
-import static com.vernalis.nodes.blob.gzip.UnGzipBlobNodeDialog.createBlobColNameModel;
-import static com.vernalis.nodes.blob.gzip.UnGzipBlobNodeDialog.createReplaceInputColModel;;
+import com.vernalis.knime.nodes.AbstractSimpleStreamableFunctionNodeModel;;
 
 /**
  * NodeModel for the GZip Blob node
@@ -117,7 +116,7 @@ public class GzipBlobNodeModel
 							new Thread(() -> {
 								try (OutputStream deflater =
 										new GZIPOutputStream(pipe)) {
-									IOUtils.copy(is, deflater);
+                                    copy(is, deflater);
 								} catch (IOException e) {
 									throw new RuntimeException(e);
 								}
@@ -144,7 +143,17 @@ public class GzipBlobNodeModel
 		return rearranger;
 	}
 
-	@Override
+    private static final void copy(InputStream in, OutputStream out)
+            throws IOException {
+
+        byte[] buffer = new byte[8192];
+        int read;
+        while (-1 != (read = in.read(buffer))) {
+            out.write(buffer, 0, read);
+        }
+    }
+
+    @Override
 	protected void reset() {
 		exec = null;
 		super.reset();

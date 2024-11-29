@@ -14,10 +14,18 @@
  ******************************************************************************/
 package com.vernalis.nodes.blob.zip;
 
+import static com.vernalis.nodes.blob.zip.ZipBlobNodeDialog.BLOB_COLUMN_FILTER;
+import static com.vernalis.nodes.blob.zip.ZipBlobNodeDialog.createBlobColNameModel;
+import static com.vernalis.nodes.blob.zip.ZipBlobNodeDialog.createCompressionLevelModel;
+import static com.vernalis.nodes.blob.zip.ZipBlobNodeDialog.createKeepDirectoriesModel;
+import static com.vernalis.nodes.blob.zip.ZipBlobNodeDialog.createZipCommentModel;
+import static com.vernalis.nodes.blob.zip.ZipBlobNodeDialog.createZipPathColumnModel;
+
 import java.io.File;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.LinkedHashSet;
@@ -26,7 +34,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataRow;
@@ -54,13 +61,6 @@ import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 
 import com.vernalis.knime.nodes.SettingsModelRegistry;
-
-import static com.vernalis.nodes.blob.zip.ZipBlobNodeDialog.BLOB_COLUMN_FILTER;
-import static com.vernalis.nodes.blob.zip.ZipBlobNodeDialog.createBlobColNameModel;
-import static com.vernalis.nodes.blob.zip.ZipBlobNodeDialog.createCompressionLevelModel;
-import static com.vernalis.nodes.blob.zip.ZipBlobNodeDialog.createKeepDirectoriesModel;
-import static com.vernalis.nodes.blob.zip.ZipBlobNodeDialog.createZipCommentModel;
-import static com.vernalis.nodes.blob.zip.ZipBlobNodeDialog.createZipPathColumnModel;
 
 /**
  * {@link NodeModel} for the Zip Blobs node
@@ -233,7 +233,7 @@ public class ZipBlobNodeModel extends NodeModel
 						((BinaryObjectDataValue) blobCell).openInputStream()) {
 					ZipEntry entry = new ZipEntry(path);
 					deflater.putNextEntry(entry);
-					IOUtils.copy(is, deflater);
+                    copy(is, deflater);
 					deflater.flush();
 					deflater.closeEntry();
 				} catch (IOException e) {
@@ -260,6 +260,16 @@ public class ZipBlobNodeModel extends NodeModel
 		bdc.close();
 		return new BufferedDataTable[] { bdc.getTable() };
 	}
+
+    private static final void copy(InputStream in, OutputStream out)
+            throws IOException {
+
+        byte[] buffer = new byte[8192];
+        int read;
+        while (-1 != (read = in.read(buffer))) {
+            out.write(buffer, 0, read);
+        }
+    }
 
 	@Override
 	public Set<SettingsModel> getModels() {
