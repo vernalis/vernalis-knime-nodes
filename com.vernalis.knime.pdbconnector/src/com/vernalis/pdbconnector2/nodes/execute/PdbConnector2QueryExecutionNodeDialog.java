@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, 2021 Vernalis (R&D) Ltd
+ * Copyright (c) 2020, 2024 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -26,14 +27,17 @@ import org.knime.core.node.NotConfigurableException;
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
 import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
+import org.knime.core.node.defaultnodesettings.DialogComponentStringListSelection;
 import org.knime.core.node.defaultnodesettings.DialogComponentStringSelection;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObjectSpec;
 
 import com.vernalis.pdbconnector2.ports.MultiRCSBQueryModel;
 import com.vernalis.pdbconnector2.query.QueryResultType;
+import com.vernalis.pdbconnector2.query.ResultContentType;
 import com.vernalis.pdbconnector2.query.ScoringType;
 
 /**
@@ -47,7 +51,13 @@ import com.vernalis.pdbconnector2.query.ScoringType;
 public class PdbConnector2QueryExecutionNodeDialog
 		extends DefaultNodeSettingsPane {
 
-	/**
+    /**
+     * Key for the results content type model
+     * 
+     * @since 1.37.0
+     */
+    private static final String RESULTS_CONTENT_TYPE = "Results content type";
+    /**
 	 * Key for the Verbose output model
 	 *
 	 * @since 1.31.0
@@ -70,8 +80,7 @@ public class PdbConnector2QueryExecutionNodeDialog
 							.stream(query == null ? ScoringType.values()
 									: ScoringType
 											.getAvailableScoringTypes(query))
-							.map(x -> x.getText())
-							.collect(Collectors.toList()));
+							.map(x -> x.getText()).toList());
 
 	/**
 	 * Constructor
@@ -80,7 +89,15 @@ public class PdbConnector2QueryExecutionNodeDialog
 		addDialogComponent(new DialogComponentStringSelection(
 				createReturnTypeModel(), RETURN_TYPE,
 				Arrays.stream(QueryResultType.values()).map(x -> x.getText())
-						.collect(Collectors.toList())));
+						.toList()));
+
+// Since 1.37.0
+addDialogComponent(new DialogComponentStringListSelection(
+				createResultContentTypeModel(), RESULTS_CONTENT_TYPE,
+				Arrays.stream(ResultContentType.values())
+						.map(rct -> rct.getText()).toList(),
+				ListSelectionModel.MULTIPLE_INTERVAL_SELECTION, true,
+				ResultContentType.values().length));
 
 		addDialogComponent(scoringChooser);
 
@@ -143,10 +160,20 @@ public class PdbConnector2QueryExecutionNodeDialog
 		} else {
 			query = null;
 			scoringOptions = Arrays.stream(ScoringType.values())
-					.map(x -> x.getText()).collect(Collectors.toList());
+					.map(x -> x.getText()).toList();
 		}
 		scoringChooser.replaceListItems(scoringOptions, null);
 		super.loadAdditionalSettingsFrom(settings, specs);
+	}
+
+	/**
+	 * @return the model for the results content type setting
+	 * @since 1.37.0
+	 */
+	static final SettingsModelStringArray createResultContentTypeModel() {
+		return new SettingsModelStringArray(RESULTS_CONTENT_TYPE,
+				Arrays.stream(ResultContentType.getDefaults())
+						.map(rct -> rct.getText()).toArray(String[]::new));
 	}
 
 	/**

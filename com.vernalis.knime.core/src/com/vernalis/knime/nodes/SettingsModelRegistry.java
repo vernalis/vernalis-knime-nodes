@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2022, Vernalis (R&D) Ltd
+ * Copyright (c) 2018, 2024, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -32,6 +32,8 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.util.ColumnFilter;
+
+import com.vernalis.knime.data.datacolumn.RegexColumnNameColumnFilter;
 
 /**
  * This interface defines methods for streamlining {@link SettingsModel}
@@ -292,6 +294,50 @@ public interface SettingsModelRegistry {
 			throws InvalidSettingsException {
 		return getValidatedColumnSelectionModelColumnIndex(model, filter, spec,
 				Pattern.compile(".*"), true, logger, false, modelsToAvoid);
+	}
+
+	/**
+	 * Method to check that the table spec contains a column of the name
+	 * supplied in the settings model, and that the selected column is of the
+	 * required type. If no column is selected (the model contains either
+	 * {@code null} or an empty string), then an attempt is made to guess by
+	 * picking the last column of the required type
+	 * 
+	 * @param model
+	 *            The model to validate
+	 * @param filter
+	 *            The {@link ColumnFilter} which the column must pass
+	 * @param spec
+	 *            The {@link DataTableSpec} to check against
+	 * @param logger
+	 *            A {@link NodeLogger} instance to warn of guessed column(s)
+	 * @param dontAllowDuplicatesWithAvoid
+	 *            Should duplicates with the models to avoid be allowed if no
+	 *            other match is possible
+	 * @param modelsToAvoid
+	 *            The settings models to avoid
+	 * 
+	 * 
+	 * @return The column index of a validated, possibly guessed, column
+	 * 
+	 * @throws InvalidSettingsException
+	 *             if the selected column was not present or of the wrong type,
+	 *             or no column was selected and none could be guessed
+	 * 
+	 * @see #getValidatedColumnSelectionModelColumnIndex(SettingsModelString,
+	 *      ColumnFilter, DataTableSpec, Pattern, boolean, NodeLogger, boolean,
+	 *      SettingsModelString...)
+	 * @since 1.37.0
+	 */
+	default int getValidatedColumnSelectionModelColumnIndex(
+			SettingsModelString model, RegexColumnNameColumnFilter filter,
+			DataTableSpec spec, NodeLogger logger,
+			boolean dontAllowDuplicatesWithAvoid,
+			SettingsModelString... modelsToAvoid)
+			throws InvalidSettingsException {
+		return getValidatedColumnSelectionModelColumnIndex(model, filter, spec,
+				filter.getRegex(), true, logger, dontAllowDuplicatesWithAvoid,
+				modelsToAvoid);
 	}
 
 	/**

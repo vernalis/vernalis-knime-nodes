@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,7 +32,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.knime.chem.types.InchiCellFactory;
-import org.knime.chem.types.SmilesCell;
 import org.knime.chem.types.SmilesCellFactory;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -57,7 +55,6 @@ import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelDoubleBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObjectSpec;
-import org.knime.core.node.streamable.BufferedDataTableRowOutput;
 import org.knime.core.node.streamable.OutputPortRole;
 import org.knime.core.node.streamable.PartitionInfo;
 import org.knime.core.node.streamable.PortInput;
@@ -245,16 +242,18 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 		// // Now write the 3rd table
 		// cont2.close();
 		// BufferedDataTable out2 = cont2.getTable();
-		BufferedDataTableRowOutput out0 = new BufferedDataTableRowOutput(
-				exec.createDataContainer(getSpec0()));
-		BufferedDataTableRowOutput out1 = new BufferedDataTableRowOutput(
-				exec.createDataContainer(getSpec1()));
-		BufferedDataTableRowOutput out2 = new BufferedDataTableRowOutput(
-				exec.createDataContainer(getSpec2()));
-		createStreamableOperator(null, null).runFinal(new PortInput[0],
-				new PortOutput[] { out0, out1, out2 }, exec);
-		return new BufferedDataTable[] { out0.getDataTable(),
-				out1.getDataTable(), out2.getDataTable() };
+        throw new InvalidSettingsException(
+                "The PDB SMILES Query node no longer works as the remote webservice has been turned off");
+        // BufferedDataTableRowOutput out0 = new BufferedDataTableRowOutput(
+        // exec.createDataContainer(getSpec0()));
+        // BufferedDataTableRowOutput out1 = new BufferedDataTableRowOutput(
+        // exec.createDataContainer(getSpec1()));
+        // BufferedDataTableRowOutput out2 = new BufferedDataTableRowOutput(
+        // exec.createDataContainer(getSpec2()));
+        // createStreamableOperator(null, null).runFinal(new PortInput[0],
+        // new PortOutput[] { out0, out1, out2 }, exec);
+        // return new BufferedDataTable[] { out0.getDataTable(),
+        // out1.getDataTable(), out2.getDataTable() };
 	}
 
 	/*
@@ -592,41 +591,44 @@ public class PdbSmilesQueryNodeModel extends NodeModel {
 	protected DataTableSpec[] configure(final DataTableSpec[] inSpecs)
 			throws InvalidSettingsException {
 
-		// Check there is a SMILES String - no validation!
-		if (m_SmilesQuery.getStringValue() == null
-				|| "".equals(m_SmilesQuery.getStringValue())) {
-			logger.warn("No SMILES query string entered");
-			throw new InvalidSettingsException(
-					"No SMILES query string entered");
-		}
+        throw new InvalidSettingsException(
+                "The PDB SMILES Query node no longer works as the remote webservice has been turned off");
 
-		// Now we need to decide which columns are added
-		m_newCols = new LinkedHashMap<>();
-		m_newCols.put("Ligand ID", StringCell.TYPE);
-		m_newCols.put("Structure ID", StringCell.TYPE);
-		if (m_type.getBooleanValue()) {
-			m_newCols.put("Type", StringCell.TYPE);
-		}
-		if (m_MolWt.getBooleanValue()) {
-			m_newCols.put("M. Wt.", DoubleCell.TYPE);
-		}
-		if (m_ChemName.getBooleanValue()) {
-			m_newCols.put("Chemical Name", StringCell.TYPE);
-		}
-		if (m_Formula.getBooleanValue()) {
-			m_newCols.put("Chemical Formula", StringCell.TYPE);
-		}
-		if (m_InChiKey.getBooleanValue()) {
-			m_newCols.put("InChI Key", StringCell.TYPE);
-		}
-		if (m_InChi.getBooleanValue()) {
-			m_newCols.put("InChI", InchiCellFactory.TYPE);
-		}
-		if (m_Smiles.getBooleanValue()) {
-			m_newCols.put("Ligand SMILES", SmilesCell.TYPE);
-		}
-
-		return new DataTableSpec[] { getSpec0(), getSpec1(), getSpec2() };
+        // // Check there is a SMILES String - no validation!
+        // if (m_SmilesQuery.getStringValue() == null
+        // || "".equals(m_SmilesQuery.getStringValue())) {
+        // logger.warn("No SMILES query string entered");
+        // throw new InvalidSettingsException(
+        // "No SMILES query string entered");
+        // }
+        //
+        // // Now we need to decide which columns are added
+        // m_newCols = new LinkedHashMap<>();
+        // m_newCols.put("Ligand ID", StringCell.TYPE);
+        // m_newCols.put("Structure ID", StringCell.TYPE);
+        // if (m_type.getBooleanValue()) {
+        // m_newCols.put("Type", StringCell.TYPE);
+        // }
+        // if (m_MolWt.getBooleanValue()) {
+        // m_newCols.put("M. Wt.", DoubleCell.TYPE);
+        // }
+        // if (m_ChemName.getBooleanValue()) {
+        // m_newCols.put("Chemical Name", StringCell.TYPE);
+        // }
+        // if (m_Formula.getBooleanValue()) {
+        // m_newCols.put("Chemical Formula", StringCell.TYPE);
+        // }
+        // if (m_InChiKey.getBooleanValue()) {
+        // m_newCols.put("InChI Key", StringCell.TYPE);
+        // }
+        // if (m_InChi.getBooleanValue()) {
+        // m_newCols.put("InChI", InchiCellFactory.TYPE);
+        // }
+        // if (m_Smiles.getBooleanValue()) {
+        // m_newCols.put("Ligand SMILES", SmilesCell.TYPE);
+        // }
+        //
+        // return new DataTableSpec[] { getSpec0(), getSpec1(), getSpec2() };
 	}
 
 	/**

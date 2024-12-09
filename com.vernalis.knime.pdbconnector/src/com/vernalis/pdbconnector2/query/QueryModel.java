@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020, 2024, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -55,35 +55,17 @@ public interface QueryModel {
 	 *            Should the JSON returned include verbose details
 	 * 
 	 * @return The query JSON
+	 * @deprecated Use {@link #getQuery(boolean,QueryExecutionParameters)}
+	 *             instead
 	 */
+	@Deprecated(forRemoval = true)
 	public default ObjectNode getQuery(boolean isCount, ScoringType scoringType,
 			QueryResultType resultType, int pageSize, boolean verboseOutput) {
-
-		final ObjectNode retVal = new ObjectMapper().createObjectNode();
-
-		retVal.putObject("request_info").put("query_id", getUniqueQueryID())
-				.put("src", "ui");
-
-		final ObjectNode reqOpt = retVal.putObject("request_options")
-				.put("return_counts", isCount)
-				.put("results_verbosity",
-						verboseOutput ? "verbose" : "minimal");
-
-		if (!isCount) {
-			reqOpt.putArray("sort").addObject().put("sort_by", "score")
-					.put("direction", "desc");
-			reqOpt.putObject(RCSBQueryRunner.getPaginationKey())
-					.put("rows", pageSize).put("start", 0);
-			reqOpt.put("scoring_strategy", scoringType.getActionCommand());
+		return getQuery(isCount,
+				new QueryExecutionParameters().setScoringType(scoringType)
+						.setResultType(resultType).setPageSize(pageSize)
+						.setVerboseOutput(verboseOutput));
 		}
-
-		retVal.put("return_type", resultType.getActionCommand());
-
-		final AtomicInteger nodeId = new AtomicInteger();
-		retVal.set("query", getQueryNodes(nodeId));
-		return retVal;
-
-	}
 
 	/**
 	 * An overloaded method to build a query, with a default result page size of
@@ -98,11 +80,40 @@ public interface QueryModel {
 	 * 
 	 * @return The query JSON
 	 * 
-	 * @see #getQuery(boolean, ScoringType, QueryResultType, int, boolean)
+	 * @see #getQuery(boolean, QueryExecutionParameters)
+	 * @see #getQuery(boolean, QueryExecutionParameters)
+	 * @deprecated Use {@link #getQuery(boolean, QueryExecutionParameters)}
 	 */
+	@Deprecated(forRemoval = true)
 	public default ObjectNode getQuery(boolean isCount, ScoringType scoringType,
 			QueryResultType resultType) {
-		return getQuery(isCount, scoringType, resultType, 10, true);
+		return getQuery(isCount, new QueryExecutionParameters()
+				.setScoringType(scoringType).setResultType(resultType));
+
+	}
+
+	/**
+	 * Method to build a JSON query from the object
+	 * 
+	 * @param isCount
+	 *            whether the query should return counts or results
+	 * @param queryExecutionParameters
+	 *            the query execution parameters
+	 * @return The query JSON
+	 */
+	public default ObjectNode getQuery(boolean isCount,
+			QueryExecutionParameters queryExecutionParameters) {
+
+		final ObjectNode retVal = new ObjectMapper().createObjectNode();
+
+		retVal.putObject("request_info").put("query_id", getUniqueQueryID())
+				.put("src", "ui");
+
+		queryExecutionParameters.getQuery(retVal, isCount);
+
+		final AtomicInteger nodeId = new AtomicInteger();
+		retVal.set("query", getQueryNodes(nodeId));
+		return retVal;
 
 	}
 
@@ -118,10 +129,26 @@ public interface QueryModel {
 	 * @return The query JSON
 	 * 
 	 * @see #getQuery(boolean, ScoringType, QueryResultType)
+	 * @deprecated Use {@link #getCountQuery(QueryExecutionParameters)}
 	 */
+	@Deprecated(forRemoval = true)
 	public default ObjectNode getCountQuery(ScoringType scoringType,
 			QueryResultType resultType) {
 		return getQuery(true, scoringType, resultType);
+	}
+
+	/**
+	 * Overloaded method to retrieve the count query, which returns the number
+	 * of hits, rather than the actual hits
+	 * 
+	 * @param executionParameters
+	 *            the execution parameters for the query
+	 * @return the query JSON
+	 * @since 23-Jan-2024
+	 */
+	public default ObjectNode getCountQuery(
+			QueryExecutionParameters executionParameters) {
+		return getQuery(false, executionParameters);
 	}
 
 	/**

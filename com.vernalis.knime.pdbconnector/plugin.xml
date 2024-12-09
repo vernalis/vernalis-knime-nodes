@@ -19,9 +19,6 @@
 		<node 
 			category-path="/community/vernalis/rcsb" 
 			factory-class="com.vernalis.pdbconnector.nodes.describehet.PdbDescribeHetNodeFactory" />
-		<node 
-			category-path="/community/vernalis/rcsb" 
-			factory-class="com.vernalis.pdbconnector.nodes.smilesquery.PdbSmilesQueryNodeFactory" />
 		<node
 	         category-path="/community/vernalis/rcsb"
 	         factory-class="com.vernalis.rcsb.io.nodes.source.RCSBsDownload2NodeFactory" />
@@ -29,10 +26,6 @@
 	         after="RCSBsDownloadNodeFactory"
 	         category-path="/community/vernalis/rcsb"
 	         factory-class="com.vernalis.rcsb.io.nodes.manip.RCSBmultiDownload2NodeFactory" />
-	         
-	      
-	    
-	    <!-- Since 1.28.0 -->
 		<node
 			category-path="/community/vernalis/rcsb"
 			deprecated="false"
@@ -61,9 +54,11 @@
 			category-path="/community/vernalis/rcsb"
 			deprecated="false"
 			factory-class="com.vernalis.pdbconnector2.nodes.loopstart.QueryLoopStartNodeFactory"/>
-
-	    
-	    <!-- Deprecated nodes -->
+  <node
+        category-path="/community/vernalis/rcsb"
+        deprecated="false"
+        factory-class="com.vernalis.pdbconnector2.nodes.hitcount.PdbConnector2HitCountNodeFactory">
+  </node>
 	    <node
 			category-path="/community/vernalis/rcsb"
 			deprecated="true"
@@ -72,6 +67,17 @@
 			category-path="/community/vernalis/rcsb"
 			deprecated="true"
 			factory-class="com.vernalis.pdbconnector.PdbConnectorXmlQueryNodeFactory" />
+		<node
+        category-path="/community/vernalis/rcsb"
+        deprecated="true"
+        factory-class="com.vernalis.pdbconnector.nodes.smilesquery.PdbSmilesQueryNodeFactory"/>
+	         
+	      
+	    
+	    <!-- Since 1.28.0 -->
+
+	    
+	    <!-- Deprecated nodes -->
 		<node
 		     category-path="/community/vernalis/rcsb"
 		     deprecated="true"
