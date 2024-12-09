@@ -64,6 +64,11 @@
 
 	    
 	    <!-- Deprecated nodes -->
+  <node
+        category-path="/community/vernalis/rcsb"
+        deprecated="false"
+        factory-class="com.vernalis.pdbconnector2.nodes.hitcount.PdbConnector2HitCountNodeFactory">
+  </node>
 	    <node
 			category-path="/community/vernalis/rcsb"
 			deprecated="true"

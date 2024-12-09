@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, 2021 Vernalis (R&D) Ltd
+ * Copyright (c) 2020, 2024 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -14,8 +14,19 @@
  ******************************************************************************/
 package com.vernalis.pdbconnector2.nodes.execute;
 
+import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createIncludeHitCountModel;
+import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createIncludeJsonModel;
+import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createLimitHitsModel;
+import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createMaxHitsModel;
+import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createPageSizeModel;
+import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createResultContentTypeModel;
+import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createReturnTypeModel;
+import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createScoringTypeModel;
+import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createVerboseOutputModel;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -40,11 +51,13 @@ import org.knime.core.node.defaultnodesettings.SettingsModel;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
+import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.core.node.port.PortObject;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.util.ColumnFilter;
 
+import com.vernalis.knime.data.datacolumn.RegexColumnNameColumnFilter;
 import com.vernalis.knime.nodes.SettingsModelRegistry;
 import com.vernalis.knime.nodes.SettingsModelRegistryImpl;
 import com.vernalis.knime.nodes.SettingsModelWrapper;
@@ -53,22 +66,15 @@ import com.vernalis.pdbconnector2.ports.RCSBQueryPortObject;
 import com.vernalis.pdbconnector2.query.QueryResultType;
 import com.vernalis.pdbconnector2.query.RCSBQueryRunner;
 import com.vernalis.pdbconnector2.query.RCSBQueryRunner.QueryException;
+import com.vernalis.pdbconnector2.query.ResultContentType;
 import com.vernalis.pdbconnector2.query.ScoringType;
-
-import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createIncludeHitCountModel;
-import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createIncludeJsonModel;
-import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createLimitHitsModel;
-import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createMaxHitsModel;
-import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createPageSizeModel;
-import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createReturnTypeModel;
-import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createScoringTypeModel;
-import static com.vernalis.pdbconnector2.nodes.execute.PdbConnector2QueryExecutionNodeDialog.createVerboseOutputModel;
 
 /**
  * {@link NodeModel} implementation for the PDB Connector Query Executer node
  * 
- * Changes v.1.28.3 - Added support for limiting returned hits Changes 1.31.0 -
- * Added backwards compatibility to SMR implementation and verbose output option
+ * Changes v1.28.3 - Added support for limiting returned hits
+ * Changes v1.31.0 - Added backwards compatibility to SMR implementation and verbose output option
+ * Changes v1.37.0 - Added option to return computational structures 
  * 
  * @author S.Roughley knime@vernalis.com
  *
@@ -77,7 +83,7 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 		implements SettingsModelRegistry {
 
 	private final SettingsModelRegistry smr =
-			new SettingsModelRegistryImpl(3, getLogger()) {
+			new SettingsModelRegistryImpl(4, getLogger()) {
 
 				@Override
 				public void doSetWarningMessage(String message) {
@@ -107,6 +113,14 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 	// From v3
 	private final SettingsModelBoolean verboseOutputMdl = registerSettingsModel(
 			createVerboseOutputModel(), 3, mdl -> mdl.setBooleanValue(true));
+
+	// Since 1.37.0
+	// From v4
+	private final SettingsModelStringArray resultContentTypeMdl =
+			registerSettingsModel(createResultContentTypeModel(), 4,
+					mdl -> mdl.setStringArrayValue(Arrays
+							.stream(ResultContentType.getDefaults())
+							.map(rct -> rct.getText()).toArray(String[]::new)));
 
 	/**
 	 * Constructor
@@ -168,6 +182,21 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 							+ "' is not a valid Return Type");
 		}
 
+		// Since 23-Jan-2024
+		if (resultContentTypeMdl.getStringArrayValue() == null
+				|| resultContentTypeMdl.getStringArrayValue().length == 0) {
+			throw new IllegalArgumentException(
+					"A least one Result Content Type must be supplied");
+		}
+		try {
+			Arrays.stream(resultContentTypeMdl.getStringArrayValue())
+					.map(ResultContentType::fromText).toArray();
+		} catch (IllegalArgumentException | NullPointerException e) {
+			throw new InvalidSettingsException(
+					"'" + returnTypeMdl.getStringValue()
+							+ "' is not a valid Return Type");
+		}
+
 		try {
 			return new PortObjectSpec[] {
 					createQueryRunner(model).getOutputTableSpec() };
@@ -217,6 +246,10 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 		runner.setIncludeHitCount(includeHitCountMdl.getBooleanValue());
 		runner.setVerboseOutput(includeJsonMdl.getBooleanValue()
 				&& verboseOutputMdl.getBooleanValue());
+		runner.setResultContentType(
+				Arrays.stream(resultContentTypeMdl.getStringArrayValue())
+						.map(ResultContentType::fromText)
+						.toArray(ResultContentType[]::new));
 		if (limitHitsMdl.getBooleanValue()) {
 			runner.setReturnedHitsLimit(maxHitsMdl.getIntValue());
 		} else {
@@ -272,6 +305,17 @@ public class PdbConnector2QueryExecutionNodeModel extends NodeModel
 			throws InvalidSettingsException {
 		return smr.getValidatedColumnSelectionModelColumnIndex(model, filter,
 				spec, logger, modelsToAvoid);
+	}
+
+	@Override
+	public int getValidatedColumnSelectionModelColumnIndex(
+			SettingsModelString model, RegexColumnNameColumnFilter filter,
+			DataTableSpec spec, NodeLogger logger,
+			boolean dontAllowDuplicatesWithAvoid,
+			SettingsModelString... modelsToAvoid)
+			throws InvalidSettingsException {
+		return smr.getValidatedColumnSelectionModelColumnIndex(model, filter,
+				spec, logger, dontAllowDuplicatesWithAvoid, modelsToAvoid);
 	}
 
 	@Override

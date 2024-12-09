@@ -53,6 +53,7 @@
 
 		<option name="Return Type">The type of entity to return
 		</option>
+<option name="Result content type">Whether experimental or computational structures or both are returned</option>
 		<option name="Scoring Strategy">The scoring strategy to use. Not all strategies
 			make logical sense for all queries.
 		</option>

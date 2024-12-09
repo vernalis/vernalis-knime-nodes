@@ -1,3 +1,8 @@
+v1.37.0 09-Dec-2024
+-------------------
+* Added `RegexColumnNameColumnFilter` interface
+* Added new method using `RegexColumnNameColumnFilter` to `SettingsModelRegistry` with default implementation
+
 v1.34.0 23-May-2022
 -------------------
 * Added new 'streams' package
