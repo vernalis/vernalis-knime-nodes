@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, Vernalis (R&D) Ltd
+ * Copyright (c) 2020, 2024, Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -45,7 +45,12 @@ public enum QueryResultType implements ButtonGroupEnumInterface {
 	/**
 	 * Biological assemblies
 	 */
-	assembly("Assemblies");
+	assembly("Assemblies"),
+	/**
+	 * Molecular Definitions
+	 * @since 1.37.0
+	 */
+	mol_definition("Molecular Definitions");
 
 	private String text;
 

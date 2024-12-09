@@ -2,18 +2,18 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.chem.rdkit;singleton:=true
-Bundle-Version: 1.36.7.qualifier
+Bundle-Version: 1.37.0.qualifier
 Bundle-Vendor: %Bundle-Vendor
 Bundle-ClassPath: .
 Automatic-Module-Name: com.vernalis.knime.chem.rdkit
 Bundle-RequiredExecutionEnvironment: JavaSE-17
-Require-Bundle:  org.eclipse.core.runtime;bundle-version="[3.13.0,4.0.0)",
+Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.13.0,4.0.0)",
  org.knime.workbench.core;bundle-version="[3.0.0,6.0.0)",
  org.knime.workbench.repository;bundle-version="[3.0.0,6.0.0)",
  org.knime.base;bundle-version="[3.0.0,6.0.0)",
  org.knime.chem.types;bundle-version="[3.0.0,6.0.0)",
  org.knime.chem.base;bundle-version="[3.0.0,6.0.0)",
- org.rdkit.knime.types;bundle-version="[5.0.0,6.0.0)",
+ org.rdkit.knime.types;bundle-version="[4.0.0,6.0.0)",
  com.vernalis.knime.core;bundle-version="[1.6.0,2.0.0)",
  com.vernalis.knime.chem.core;bundle-version="[1.28.0,2.0.0)",
  com.carrotsearch.hppc;bundle-version="[0.7.2,1.0.0)",

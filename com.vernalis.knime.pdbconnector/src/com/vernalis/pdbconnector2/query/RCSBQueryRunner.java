@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020, 2021 Vernalis (R&D) Ltd
+ * Copyright (c) 2020, 2024 Vernalis (R&D) Ltd
  *  This program is free software; you can redistribute it and/or modify it 
  *  under the terms of the GNU General Public License, Version 3, as 
  *  published by the Free Software Foundation.
@@ -138,13 +138,11 @@ public class RCSBQueryRunner {
 	private static final int[] RETRY_DELAYS =
 			new int[] { 1, 2, 5, 10, 30, 60, 120, 300, 600 };
 	private final QueryModel model;
-	private ScoringType scoringType = ScoringType.getDefault();
-	private QueryResultType queryResultType = QueryResultType.getDefault();
-	private int pageSize = 10;
+	private QueryExecutionParameters executionParameters =
+			new QueryExecutionParameters();
 	private boolean includeJson = false;
 	private Integer maxRowsToReturn = null;
 	private boolean includeHitCount = false;
-	private boolean verboseOutput = true;
 
 	/**
 	 * Constructor
@@ -170,7 +168,7 @@ public class RCSBQueryRunner {
 	 *            the scoring type to use
 	 */
 	public final void setScoringType(ScoringType scoringType) {
-		this.scoringType = scoringType;
+		this.executionParameters.setScoringType(scoringType);
 	}
 
 	/**
@@ -178,7 +176,7 @@ public class RCSBQueryRunner {
 	 *            The result type to return
 	 */
 	public final void setQueryResultType(QueryResultType queryResultType) {
-		this.queryResultType = queryResultType;
+		this.executionParameters.setResultType(queryResultType);
 	}
 
 	/**
@@ -187,7 +185,7 @@ public class RCSBQueryRunner {
 	 *            fewer calls to the webservice
 	 */
 	public final void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
+		this.executionParameters.setPageSize(pageSize);
 	}
 
 	/**
@@ -211,8 +209,14 @@ public class RCSBQueryRunner {
 		this.maxRowsToReturn = hitLimit;
 	}
 
+	/**
+	 * Method to set the output verbosity
+	 * 
+	 * @param verboseOutput
+	 *            whether the output is verbose or not
+	 */
 	public final void setVerboseOutput(boolean verboseOutput) {
-		this.verboseOutput = verboseOutput;
+		this.executionParameters.setVerboseOutput(verboseOutput);
 	}
 
 	/**
@@ -237,6 +241,19 @@ public class RCSBQueryRunner {
 	}
 
 	/**
+	 * @param array
+	 *            the new value of result content type(s) to include in output
+	 * @throws NullPointerException
+	 *             if the array is {@code null} or contains any {@code null}
+	 *             values
+	 * @since 23-Jan-2024
+	 */
+	public void setResultContentType(ResultContentType[] array)
+			throws NullPointerException {
+		this.executionParameters.setResultContentTypes(array);
+	}
+
+	/**
 	 * Method to create the output table spec based on the current settings
 	 * 
 	 * @return The output table spec based on the current state of the runner
@@ -244,9 +261,8 @@ public class RCSBQueryRunner {
 	 * @since 1.30.2
 	 */
 	public final DataTableSpec getOutputTableSpec() {
-		if (model instanceof MultiRCSBQueryModel) {
-			DataTableSpec modelSpec =
-					((MultiRCSBQueryModel) model).getResultTableSpec();
+		if (model instanceof MultiRCSBQueryModel rcsbQueryModel) {
+			DataTableSpec modelSpec = rcsbQueryModel.getResultTableSpec();
 			DataTableSpecCreator specFact = null;
 			if (includeJson) {
 				specFact = new DataTableSpecCreator(modelSpec)
@@ -279,7 +295,8 @@ public class RCSBQueryRunner {
 	 */
 	public int getHitCount() throws QueryException, CanceledExecutionException {
 
-		final JsonNode q = model.getCountQuery(scoringType, queryResultType);
+		final JsonNode q =
+				model.getCountQuery(executionParameters);
 		final JsonNode r = runQuery(q);
 		return r == null ? 0 : r.get("total_count").asInt();
 	}
@@ -333,8 +350,7 @@ public class RCSBQueryRunner {
 			ExecutionContext exec)
 			throws QueryException, CanceledExecutionException {
 		// query_id appears to be retained for each page in web UI
-		final ObjectNode q = model.getQuery(false, scoringType, queryResultType,
-				pageSize, verboseOutput);
+		final ObjectNode q = model.getQuery(false, executionParameters);
 		int pageStart = 0;
 		long hits = -1;
 		double progPerRow = 0;
@@ -362,7 +378,7 @@ public class RCSBQueryRunner {
 				return writeHitCountToEmptyTable(bdc, r);
 			}
 
-			pageStart += pageSize;
+			pageStart += executionParameters.getPageSize();
 			final Iterator<JsonNode> iter = r.get("result_set").iterator();
 			while (iter.hasNext()) {
 				final JsonNode rCells = iter.next();
