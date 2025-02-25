@@ -6,10 +6,10 @@ The table shows the latest version of the nodes available in each update site fo
 
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
-| Nightly | [v1.38.0](#v1380---09-dec-2024) |
-| 5.4* | [v1.38.0](#v1380---09-dec-2024) |
-| 5.3* | [v1.38.0](#v1380---09-dec-2024) |
-| 5.2* | [v1.38.0](#v1380---09-dec-2024) |
+| Nightly | [v1.37.1](#v1371---04-feb-2025) |
+| 5.4* | [v1.37.1](#v1371---04-feb-2025) |
+| 5.3* | [v1.37.1](#v1371---04-feb-2025) |
+| 5.2* | [v1.37.1](#v1371---04-feb-2025) |
 | 5.1 | [v1.36.7](#v1367---28-may-2024) |
 | 4.7 | [v1.36.7](#v1367---28-may-2024) |
 | 4.6 | [v1.36.2](#v1362---13-jan-2023) |
@@ -38,7 +38,15 @@ The table shows the latest version of the nodes available in each update site fo
 
 Back to [ReadMe](README.md)
 
-## v1.38.0 09-Dec-2024
+## v1.37.1 04-Feb-2025
+
+_Bug Fixes_
+* Fixed error in implementation of 'contains' string flow variable condition (See [#25](https://github.com/vernalis/vernalis-knime-nodes/issues/25))
+
+Back to [top](#changelog)
+
+
+## v1.37.0 09-Dec-2024
 
 _New Nodes_
 * New 'PDB Connector Hit Count' node

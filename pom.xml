@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <revision>1.37.0</revision>
+        <revision>1.37.1</revision>
         <changelist>-SNAPSHOT</changelist>
         <knime.version>5.4</knime.version>
         <echem.version>5.1</echem.version>
