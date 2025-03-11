@@ -2,7 +2,7 @@
 <feature
       id="com.vernalis.knime.feature"
       label="Vernalis KNIME Nodes"
-      version="1.37.1.qualifier"
+      version="1.38.0.qualifier"
       provider-name="Vernalis Research Ltd, Cambridge, UK"
       plugin="com.vernalis.knime.core">
 
@@ -710,141 +710,94 @@ Public License instead of this License.  But first, please read
 
    <plugin
          id="com.vernalis.knime"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.flowcontrol"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.chem.mmp"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.perfmon"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.core"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.chem.pmi"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.pdbconnector"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.chem.speedysmiles"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.io"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.fingerprint"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.database"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.misc.gc"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.chem.core"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.jfcplot.core"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.plot.jfreechart"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.chem.rdkit"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.bio.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.bio.speedyseq"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.database.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.testing"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
 
    <plugin
          id="com.vernalis.knime.db"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
+
+   <plugin
+         id="com.vernalis.knime.misc.blobs"
+         version="0.0.0"/>
 
 </feature>

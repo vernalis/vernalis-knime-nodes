@@ -1,3 +1,7 @@
+v1.38.0 28-Feb-2024
+===================
+* Removed 4 nodes in `com.vernalis.nodes.blob` package - these are now mapped to new location in ...misc.blobs plugin
+
 v1.36.6 09-May-2024
 ===================
 * Added Missing value and uniqueness options to Collection Size node

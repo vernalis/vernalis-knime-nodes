@@ -1,16 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2022, Vernalis (R&D) Ltd
- *  This program is free software; you can redistribute it and/or modify it 
- *  under the terms of the GNU General Public License, Version 3, as 
- *  published by the Free Software Foundation.
- *  
- *  This program is distributed in the hope that it will be useful, but 
- *  WITHOUT ANY WARRANTY; without even the implied warranty of 
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- *  See the GNU General Public License for more details.
- *  
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, see <http://www.gnu.org/licenses>
+ * Copyright (c) 2022, 2025, Vernalis (R&D) Ltd
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License, Version 3, as
+ * published by the Free Software Foundation.
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see <http://www.gnu.org/licenses>
  *******************************************************************************/
 package com.vernalis.knime.wildcardfilter;
 
@@ -55,37 +53,37 @@ public class WildcardPattern {
 
 	// The flags - directly from Pattern
 	/**
-	 * Enables Unicode-aware case folding for {@link #CASE_INSENSITIVE}
-	 * matching.
-	 * 
-	 * @see Pattern#UNICODE_CASE
-	 * @see WildcardPattern#CASE_INSENSITIVE
-	 */
-	public static int UNICODE_CASE = Pattern.UNICODE_CASE;
+     * Enables Unicode-aware case folding for {@link #CASE_INSENSITIVE}
+     * matching.
+     * 
+     * @see java.util.regex.Pattern#UNICODE_CASE
+     * @see WildcardPattern#CASE_INSENSITIVE
+     */
+    public static final int UNICODE_CASE = Pattern.UNICODE_CASE;
 
 	/**
-	 * In DOTALL mode, the characters represented by '?' and '*' can include
-	 * line-terminator characters. By default, wildcard characters will not
-	 * match line-terminators
-	 * 
-	 * @see Pattern.DOTALL
-	 */
-	public static int DOTALL = Pattern.DOTALL;
+     * In DOTALL mode, the characters represented by '?' and '*' can include
+     * line-terminator characters. By default, wildcard characters will not
+     * match line-terminators
+     * 
+     * @see java.util.regex.Pattern#DOTALL
+     */
+    public static final int DOTALL = Pattern.DOTALL;
 
 	/**
-	 * Enable case-insensitive matching. By default, matching is
-	 * case-insensitive. If unicode-aware case-insensitive matching is require,
-	 * then {@link #UNICODE_CASE} also needs to be set
-	 * 
-	 * @see WildcardPattern#UNICODE_CASE
-	 * @see Pattern#CASE_INSENSITIVE
-	 */
-	public static int CASE_INSENSITIVE = Pattern.CASE_INSENSITIVE;
+     * Enable case-insensitive matching. By default, matching is
+     * case-insensitive. If unicode-aware case-insensitive matching is require,
+     * then {@link #UNICODE_CASE} also needs to be set
+     * 
+     * @see WildcardPattern#UNICODE_CASE
+     * @see java.util.regex.Pattern#CASE_INSENSITIVE
+     */
+    public static final int CASE_INSENSITIVE = Pattern.CASE_INSENSITIVE;
 
 	/**
-	 * @see Pattern#CANON_EQ
-	 */
-	public static int CANON_EQ = Pattern.CANON_EQ;
+     * @see java.util.regex.Pattern#CANON_EQ
+     */
+    public static final int CANON_EQ = Pattern.CANON_EQ;
 
 	private WildcardPattern(String pattern, int flags)
 			throws PatternSyntaxException {
@@ -184,6 +182,15 @@ public class WildcardPattern {
 	public Predicate<String> asPredicate() {
 		return regexPattern.asPredicate();
 	}
+
+    /**
+     * @return A Predicate which can be used to check for entire-string matches
+     * @since 1.38.0
+     */
+    public Predicate<String> asMatchPredicate() {
+
+        return regexPattern.asMatchPredicate();
+    }
 
 	/**
 	 * @return The specified flags

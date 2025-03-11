@@ -6,10 +6,10 @@ The table shows the latest version of the nodes available in each update site fo
 
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
-| Nightly | [v1.37.1](#v1371---04-feb-2025) |
-| 5.4* | [v1.37.1](#v1371---04-feb-2025) |
-| 5.3* | [v1.37.1](#v1371---04-feb-2025) |
-| 5.2* | [v1.37.1](#v1371---04-feb-2025) |
+| Nightly | [v1.38.0](#v1380---11-mar-2025) |
+| 5.4* | [v1.38.0](#v1380---11-mar-2025) |
+| 5.3* | [v1.38.0](#v1380---11-mar-2025) |
+| 5.2* | [v1.38.0](#v1380---11-mar-2025) |
 | 5.1 | [v1.36.7](#v1367---28-may-2024) |
 | 4.7 | [v1.36.7](#v1367---28-may-2024) |
 | 4.6 | [v1.36.2](#v1362---13-jan-2023) |
@@ -37,6 +37,41 @@ The table shows the latest version of the nodes available in each update site fo
 \* Currently supported versions
 
 Back to [ReadMe](README.md)
+
+## v1.38.0 11-Mar-2025
+
+This update adds a new plugin, `com.vernalis.knime.misc.blobs` and corresponding
+test fragment, `com.vernalis.knime.misc.blobs.tests` with a number of new nodes
+for working with Binary Objects columns
+
+_New Nodes_
+* `Binary Objects Properties` - determines simple binary object properties (size, and whether is in memory)
+* `Base64-Encoded String to Binary Objects` - Converts Base64-encoded strings to binary objects
+* `Binary Objects to Base64-Encoded String` - Converts binary objects to Base64-encoded strings
+* `Binary Objects Message Digest (Checksum)` - Calculates digests (hash, checksum - e.g. MD5, SHA-1 etc) of binary objects
+* `Archive Binary Objects` - Combines binary objects into an archive (e.g. Tar, Zip etc; some with compression) binary object within the KNIME table
+* `Compress Binary Objects` - Compresses binary objects within the table (e.g. gzip, bzip2 etc)
+* `Decompress Binary Objects` - Decompresses binary objects with the tabe (e.g. gzip, bzip2 etc)
+* `Detect Binary Objects Archive Formats` - Detects the archive format(s) of binary objects within the table
+* `Detect Binary Objects Compression Formats` - Detects the compression format(s) of binary objects within the table
+* `Expand Binary Objects Archives` - Expands (and decompresses if applicable) binary objects archive cells within the table, with each entry becoming a new row
+* `List Binary Objects Archive Contents` - Lists the entries in binary objects within the table
+* `List Binary Objects Archive Formats` - Lists the available archiving formats and capabilities on the current system
+* `List Binary Objects Compression Formats` - Lists the available compression formats and capabilities on the current system
+
+
+_Internal Changes_
+* The Gzip Compress/Decompress and Zip/UnZip nodes are moved from the `com.vernalis.knime` plugin to the new `com.vernalis.knime.misc.blobs` plugin, and a NodeFactoryClassMapper implementation provided
+
+_Enhancements_
+* Experimental flow variable handling API added to com.vernalis.knime.core plugin
+
+
+Back to [top](#changelog)
+
+
+
+
 
 ## v1.37.1 04-Feb-2025
 
