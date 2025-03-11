@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2024, 2025, Vernalis (R&D) Ltd This program is free software; 
+    you can redistribute it and/or modify it under the terms of the GNU General 
+    Public License, Version 3, as published by the Free Software Foundation. 
+    This program is distributed in the hope that it will be useful, but WITHOUT 
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+    FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. 
+    You should have received a copy of the GNU General Public License along with 
+    this program; if not, see <http://www.gnu.org/licenses> -->
+<knimeNode icon="./ungzip.png" type="Manipulator"
+    xmlns="http://knime.org/node/v4.1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://knime.org/node/v4.1 http://knime.org/node/v4.1.xsd">
+    <name>Decompress Binary Objects</name>
+
+    <shortDescription>
+        This node decompresses a binary object column
+        using
+        the
+        selected compression algorithm
+    </shortDescription>
+
+    <fullDescription>
+        <intro>
+            <p>
+                This node decompresses a binary object column using the
+                selected
+                compression algorithm. Where an algorithm
+                supports
+                concatenation,
+                concatenated files will be output
+                to separate rows in the output
+                table
+            </p>
+            <p>
+                This node was developed by
+                <a href="http://www.vernalis-research.com/">Vernalis Research (Cambridge, UK)</a>
+                .
+                For feedback and more information, please contact
+                <a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+            </p>
+
+        </intro>
+
+        <tab name="Column Options">
+            <option name="Binary Objects Column">Select the incoming binary object column
+            </option>
+            <option name="Remove input column">Should the input column be removed?
+            </option>
+        </tab>
+        <tab name="Decompression Options">
+            <option name="Compression Format">Select the compression format</option>
+            <option name="Compression Options">Additional format-specific options will
+                be shown
+                here depending on the selected format
+            </option>
+            <option name="Restore Defaults">Restore the default options for the
+                specified
+                archive format
+            </option>
+        </tab>
+        <tab name="Security Options">
+            <description>
+                Compressed files and archives can be exploited
+                by
+                attackers using carefully crafted files which can
+                cause
+                issues on expansion, either by generating
+                extremely large
+                files from a small compressed file, or
+                by generating
+                large numbers of files from an innocuously
+                small looking
+                file. The following settings. See the Wikipedia article
+                '
+                <a href="https://en.wikipedia.org/wiki/Zip_bomb">Zip Bomb</a>
+                ' for further details. The default settings here should
+                be suitable to extract most files whilst limiting attack
+                vectors
+            </description>
+            <option name="Maximum expanded size (bytes)">The maximum allowed size in bytes of the
+                decompressed file(s) from the input binary object. A
+                negative value indicates no limit
+            </option>
+            <option name="Maximum Compression ratio">The maximum allowed compression ratio. A
+                negative value indicates no limit
+            </option>
+            <option name="Maximum number of expanded files">The maximum allowed number of files a
+                multi-file concatenated compressed binary object will
+                expand to. A negative value indicates no limit. Option
+                only available to compression formats supporting
+                concatenation
+            </option>
+            <option name="Fail on explosive expansion">Should the node fail if explosive
+                decompression is detected by any of the settings
+                supplied? If not, then a warning will be set and at
+                least one row for each input row will be present in the
+                table. In the event that the first output row triggered
+                the warning, then missing values will be added to the
+                output row
+            </option>
+        </tab>
+    </fullDescription>
+
+    <ports>
+        <inPort index="0" name="Input Table">Incoming data table</inPort>
+        <outPort index="0" name="Output Table">The input table with the
+            decompressed
+            binary objects
+        </outPort>
+    </ports>
+
+</knimeNode>

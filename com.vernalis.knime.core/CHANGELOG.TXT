@@ -1,3 +1,9 @@
+v1.38.0 11-Mar-2025
+-------------------
+* Added `com.vernalis.knime.flowars` package containing multiple classes to allow flow variable handling in a 
+manner analogous to DataTables / Columns / Cells.  NB This API is potentially liable to change in future releases
+* `#asPredicate()` method to WildcardFilter class
+
 v1.37.0 09-Dec-2024
 -------------------
 * Added `RegexColumnNameColumnFilter` interface

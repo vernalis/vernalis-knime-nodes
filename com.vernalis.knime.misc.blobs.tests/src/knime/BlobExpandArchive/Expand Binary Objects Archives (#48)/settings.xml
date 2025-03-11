@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+    <entry key="node_file" type="xstring" value="settings.xml"/>
+    <config key="flow_stack"/>
+    <config key="internal_node_subsettings">
+        <entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+    </config>
+    <config key="model">
+        <config key="Binary Objects Column_Internals">
+            <entry key="SettingsModelID" type="xstring" value="SMID_string"/>
+            <entry key="EnabledStatus" type="xboolean" value="true"/>
+        </config>
+        <entry key="Binary Objects Column" type="xstring" value="BinaryObject"/>
+        <config key="Remove input column_Internals">
+            <entry key="SettingsModelID" type="xstring" value="SMID_boolean"/>
+            <entry key="EnabledStatus" type="xboolean" value="true"/>
+        </config>
+        <entry key="Remove input column" type="xboolean" value="true"/>
+        <config key="Keep Directories_Internals">
+            <entry key="SettingsModelID" type="xstring" value="SMID_boolean"/>
+            <entry key="EnabledStatus" type="xboolean" value="true"/>
+        </config>
+        <entry key="Keep Directories" type="xboolean" value="true"/>
+        <config key="Filter Paths_Internals">
+            <entry key="SettingsModelID" type="xstring" value="SMID_boolean"/>
+            <entry key="EnabledStatus" type="xboolean" value="true"/>
+        </config>
+        <entry key="Filter Paths" type="xboolean" value="false"/>
+        <config key="Path Pattern_Internals">
+            <entry key="SettingsModelID" type="xstring" value="SMID_string"/>
+            <entry key="EnabledStatus" type="xboolean" value="false"/>
+        </config>
+        <entry key="Path Pattern" type="xstring" value=""/>
+        <config key="Path Filter Type_Internals">
+            <entry key="SettingsModelID" type="xstring" value="SMID_string"/>
+            <entry key="EnabledStatus" type="xboolean" value="false"/>
+        </config>
+        <entry key="Path Filter Type" type="xstring" value="Wildcard"/>
+        <config key="Case Sensitive_Internals">
+            <entry key="SettingsModelID" type="xstring" value="SMID_boolean"/>
+            <entry key="EnabledStatus" type="xboolean" value="false"/>
+        </config>
+        <entry key="Case Sensitive" type="xboolean" value="false"/>
+        <config key="Maximum number of expanded entries_Internals">
+            <entry key="SettingsModelID" type="xstring" value="SMID_integer"/>
+            <entry key="EnabledStatus" type="xboolean" value="true"/>
+        </config>
+        <entry key="Maximum number of expanded entries" type="xint" value="-1"/>
+        <config key="Fail on explosive expansion_Internals">
+            <entry key="SettingsModelID" type="xstring" value="SMID_boolean"/>
+            <entry key="EnabledStatus" type="xboolean" value="true"/>
+        </config>
+        <entry key="Fail on explosive expansion" type="xboolean" value="false"/>
+        <config key="Maximum expanded size (bytes)_Internals">
+            <entry key="SettingsModelID" type="xstring" value="SMN_long"/>
+            <entry key="EnabledStatus" type="xboolean" value="true"/>
+        </config>
+        <entry key="Maximum expanded size (bytes)" type="xlong" value="-1"/>
+        <config key="Maximum Compression Ratio_Internals">
+            <entry key="SettingsModelID" type="xstring" value="SMID_double"/>
+            <entry key="EnabledStatus" type="xboolean" value="true"/>
+        </config>
+        <entry key="Maximum Compression Ratio" type="xdouble" value="10.0"/>
+        <entry key="SMR_VERSION" type="xint" value="2"/>
+        <config key="Archive format_Internals">
+            <entry key="SettingsModelID" type="xstring" value="SMID_string"/>
+            <entry key="EnabledStatus" type="xboolean" value="true"/>
+        </config>
+        <entry key="Archive format" type="xstring" value="zip"/>
+        <config key="ZIP_OPTIONS">
+            <config key="ENCODING_Internals">
+                <entry key="SettingsModelID" type="xstring" value="SMID_string"/>
+                <entry key="EnabledStatus" type="xboolean" value="true"/>
+            </config>
+            <entry key="ENCODING" type="xstring" value="UTF-8"/>
+            <config key="USE_UNICODE_FIELDS_Internals">
+                <entry key="SettingsModelID" type="xstring" value="SMID_boolean"/>
+                <entry key="EnabledStatus" type="xboolean" value="true"/>
+            </config>
+            <entry key="USE_UNICODE_FIELDS" type="xboolean" value="true"/>
+            <config key="ALLOW_STORED_ENTRIES_WITH_DATA_DESCRIPTION_Internals">
+                <entry key="SettingsModelID" type="xstring" value="SMID_boolean"/>
+                <entry key="EnabledStatus" type="xboolean" value="true"/>
+            </config>
+            <entry key="ALLOW_STORED_ENTRIES_WITH_DATA_DESCRIPTION" type="xboolean" value="false"/>
+        </config>
+    </config>
+    <entry key="customDescription" type="xstring" isnull="true" value=""/>
+    <entry key="state" type="xstring" value="CONFIGURED"/>
+    <entry key="factory" type="xstring" value="com.vernalis.knime.misc.blobs.nodes.archive.expand.BlobExpandArchiveNodeFactory"/>
+    <entry key="node-name" type="xstring" value="Expand Binary Objects Archives"/>
+    <entry key="node-bundle-name" type="xstring" value="Plugin for Vernalis Binary Object handling nodes"/>
+    <entry key="node-bundle-symbolic-name" type="xstring" value="com.vernalis.knime.misc.blobs"/>
+    <entry key="node-bundle-vendor" type="xstring" value="Vernalis Research, UK"/>
+    <entry key="node-bundle-version" type="xstring" value="1.38.0.qualifier"/>
+    <entry key="node-feature-name" type="xstring" isnull="true" value=""/>
+    <entry key="node-feature-symbolic-name" type="xstring" isnull="true" value=""/>
+    <entry key="node-feature-vendor" type="xstring" isnull="true" value=""/>
+    <entry key="node-feature-version" type="xstring" value="0.0.0"/>
+    <config key="factory_settings"/>
+    <entry key="name" type="xstring" value="Expand Binary Objects Archives"/>
+    <entry key="hasContent" type="xboolean" value="false"/>
+    <entry key="isInactive" type="xboolean" value="false"/>
+    <config key="ports">
+        <config key="port_1">
+            <entry key="index" type="xint" value="1"/>
+            <entry key="port_dir_location" type="xstring" isnull="true" value=""/>
+        </config>
+    </config>
+    <config key="filestores">
+        <entry key="file_store_location" type="xstring" isnull="true" value=""/>
+        <entry key="file_store_id" type="xstring" isnull="true" value=""/>
+    </config>
+</config>
