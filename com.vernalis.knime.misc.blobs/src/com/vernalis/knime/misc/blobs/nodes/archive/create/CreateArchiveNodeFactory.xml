@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2024, Vernalis (R&D) Ltd This program is free software; 
+	you can redistribute it and/or modify it under the terms of the GNU General 
+	Public License, Version 3, as published by the Free Software Foundation. 
+	This program is distributed in the hope that it will be useful, but WITHOUT 
+	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+	FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. 
+	You should have received a copy of the GNU General Public License along with 
+	this program; if not, see <http://www.gnu.org/licenses> -->
+<knimeNode icon="./gzip.png" type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Archive Binary Objects</name>
+
+	<shortDescription>
+		This node archives a binary object column using the
+		selective archiving algorithm
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				This node archives a binary object column using the selected
+				algorithm. Some algorithms (e.g. 'zip') include compression, others
+				(e.g. 'tar') do not
+				A second column provides paths within the
+				resulting
+				archive. The output
+				table will contain a single Binary
+				Object
+				column
+				containing only one
+				row.
+				Where the format supports it,
+				paths ending '/' or '\' will be treated as directories, otherwise
+				they will be skipped
+			</p>
+			<p>
+				<b>Warning</b>
+				- Duplicate entries in the Archive Path Column will result in node
+				failure
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+
+		</intro>
+
+
+		<option name="Binary Objects Column">Select the incoming binary object column
+		</option>
+		<option name="Archive Path Column">a column containing paths for individual files
+			within the archive
+		</option>
+		<option name="Archive Entry Last Modified Time Options">The timestamp for the 'last modified' time of each
+			archive entry. Can either be the local time when the node is
+			executing, an input legacy Date and time column, and new Local Date
+			and Time column, of a fixed time from the dialog
+		</option>
+		<option name="Archive Format">The selected archive format</option>
+		<option name="Archive Options">Other options specific to the selective archive
+			format</option>
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Input Table">Incoming data table</inPort>
+		<outPort index="0" name="Archive table">The input table with the resulting archive
+		</outPort>
+	</ports>
+
+</knimeNode>

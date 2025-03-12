@@ -190,31 +190,6 @@
             factory-class="com.vernalis.nodes.collection.singleton.SingletonCollectionNodeFactory"
             hidden="false">
       </node>
-      <node
-            category-path="/community/vernalis/blob"
-            deprecated="false"
-            factory-class="com.vernalis.nodes.blob.gzip.GzipBlobNodeFactory"
-            hidden="false">
-      </node>
-      <node
-            category-path="/community/vernalis/blob"
-            deprecated="false"
-            factory-class="com.vernalis.nodes.blob.gzip.UnGzipBlobNodeFactory"
-            hidden="false">
-      </node>
-      <node
-            category-path="/community/vernalis/blob"
-            deprecated="false"
-            factory-class="com.vernalis.nodes.blob.zip.ZipBlobNodeFactory"
-            hidden="false">
-      </node>
-      <node
-            after="com.vernalis.nodes.blob.zip.ZipBlobNodeFactory"
-            category-path="/community/vernalis/blob"
-            deprecated="false"
-            factory-class="com.vernalis.nodes.blob.zip.UnZipBlobNodeFactory"
-            hidden="false">
-      </node>
    </extension>
    <extension
          point="org.knime.workbench.repository.categories">

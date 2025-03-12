@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2024, Vernalis (R&D) Ltd This program is free software; 
+	you can redistribute it and/or modify it under the terms of the GNU General 
+	Public License, Version 3, as published by the Free Software Foundation. 
+	This program is distributed in the hope that it will be useful, but WITHOUT 
+	ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+	FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. 
+	You should have received a copy of the GNU General Public License along with 
+	this program; if not, see <http://www.gnu.org/licenses> -->
+<knimeNode icon="./gzip.png" type="Manipulator"
+	xmlns="http://knime.org/node/v3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://knime.org/node/v3.1 http://knime.org/node/v3.1.xsd">
+	<name>Compress Binary Objects</name>
+
+	<shortDescription>
+		This node compresses a binary object column using the
+		selective compression algorithm
+	</shortDescription>
+
+	<fullDescription>
+		<intro>
+			<p>
+				This node compresses a binary object column using the selected
+				algorithm.
+			</p>
+			<p>
+				This node was developed by
+				<a href="http://www.vernalis-research.com/">Vernalis Research (Cambridge, UK)</a>
+				.
+				For feedback and more information, please contact
+				<a href="mailto:knime@vernalis.com">knime@vernalis.com</a>
+			</p>
+
+		</intro>
+
+
+		<option name="Binary Objects Column">Select the incoming binary object column
+		</option>
+		<option name="Remove Input column">Should the incoming column be removed from the output table</option>
+		<option name="Compression Format">The selected compression format</option>
+		<option name="Compression Options">Other options specific to the selected compression
+			format</option>
+	</fullDescription>
+
+	<ports>
+		<inPort index="0" name="Input Table">Incoming data table</inPort>
+		<outPort index="0" name="Compressed table">The input table with the resulting compressed column
+		</outPort>
+	</ports>
+
+</knimeNode>

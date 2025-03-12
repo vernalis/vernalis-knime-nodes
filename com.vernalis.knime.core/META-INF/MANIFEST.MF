@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.vernalis.knime.core;singleton:=true
-Bundle-Version: 1.37.1.qualifier
+Bundle-Version: 1.38.0.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.vernalis.knime.core.VernalisCoreNodePlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -26,6 +26,7 @@ Export-Package: com.vernalis.exceptions,
  com.vernalis.knime.data.datatable,
  com.vernalis.knime.dialog.components,
  com.vernalis.knime.dist,
+ com.vernalis.knime.flowvars,
  com.vernalis.knime.iterators,
  com.vernalis.knime.misc,
  com.vernalis.knime.nodes,
