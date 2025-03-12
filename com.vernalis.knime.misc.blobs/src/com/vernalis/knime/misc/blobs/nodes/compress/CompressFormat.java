@@ -263,8 +263,8 @@ public enum CompressFormat implements ButtonGroupEnumInterface,
                     LocalDateTimeCellFactory.create(Instant
                             .ofEpochMilli(meta.getModificationTime())
                             .atOffset(ZoneOffset.UTC).toLocalDateTime()),
-                    meta.getFileName() == null ? DataType.getMissingCell()
-                            : new StringCell(meta.getFileName()),
+                    meta.getFilename() == null ? DataType.getMissingCell()
+                            : new StringCell(meta.getFilename()),
                     meta.getComment() == null ? DataType.getMissingCell()
                             : new StringCell(meta.getComment()),
                     meta.getOperatingSystem() >= OSNames.length

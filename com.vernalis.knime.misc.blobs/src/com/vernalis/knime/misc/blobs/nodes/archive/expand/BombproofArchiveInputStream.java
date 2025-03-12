@@ -44,14 +44,13 @@ import com.vernalis.knime.misc.blobs.nodes.ExpansionBombProof;
  *            The type of Entry returned by the archive stream
  * @since 1.38.0
  */
-public class BombproofArchiveInputStream<E extends ArchiveEntry>
-        extends ArchiveInputStream<E>
+public class BombproofArchiveInputStream extends ArchiveInputStream
         implements ExpansionBombProof, InputStreamStatistics {
 
     private static final Consumer<String> EMPTY_CONSUMER = s -> {
         // do nothing
     };
-    private ArchiveInputStream<? extends E> cis;
+    private ArchiveInputStream cis;
     private int entriesRead = 0;
     private long uncompressedBytesRead;
 
@@ -89,7 +88,7 @@ public class BombproofArchiveInputStream<E extends ArchiveEntry>
      * @throws NullPointerException
      *             if {@code cis} is {@code null}
      */
-    public BombproofArchiveInputStream(ArchiveInputStream<? extends E> cis,
+    public BombproofArchiveInputStream(ArchiveInputStream cis,
             long maxExpandedBytes, double maxCompressionRatio, int maxEntries,
             boolean keepDirectories)
             throws IllegalArgumentException, NullPointerException {
@@ -131,7 +130,7 @@ public class BombproofArchiveInputStream<E extends ArchiveEntry>
      * @throws NullPointerException
      *             if {@code cis} is {@code null}
      */
-    public BombproofArchiveInputStream(ArchiveInputStream<? extends E> cis,
+    public BombproofArchiveInputStream(ArchiveInputStream cis,
             long maxExpandedBytes, double maxCompressionRatio, int maxEntries,
             boolean keepDirectories, Predicate<String> pathPredicate,
             NodeLogger logger, Consumer<String> warningConsumer) {
@@ -392,7 +391,7 @@ public class BombproofArchiveInputStream<E extends ArchiveEntry>
      * org.apache.commons.compress.archivers.ArchiveInputStream#getNextEntry()
      */
     @Override
-    public E getNextEntry() throws IOException {
+    public ArchiveEntry getNextEntry() throws IOException {
 
         // ZipArchiveInputStream (and therefore Jar...) reset this value on each
         // call to next entry
@@ -400,7 +399,7 @@ public class BombproofArchiveInputStream<E extends ArchiveEntry>
         uncompressedBytesRead +=
                 ((InputStreamStatistics) cis).getUncompressedCount();
 
-        E retVal;
+        ArchiveEntry retVal;
         // Look for the next entry in the underlying stream which we can read
         // and
         // which matches the path predicate

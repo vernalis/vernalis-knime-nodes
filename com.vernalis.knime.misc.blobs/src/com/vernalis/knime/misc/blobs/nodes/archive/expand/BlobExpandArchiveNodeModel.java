@@ -91,7 +91,7 @@ public class BlobExpandArchiveNodeModel
 
     @Override
     protected NonClosableInputStream wrapArchiveInputStream(
-            ArchiveInputStream<?> ais) {
+            ArchiveInputStream ais) {
 
         return new NonClosableInputStream(ais);
     }

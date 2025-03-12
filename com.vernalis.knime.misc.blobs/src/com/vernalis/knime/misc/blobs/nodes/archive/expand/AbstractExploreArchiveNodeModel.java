@@ -460,7 +460,7 @@ abstract class AbstractExploreArchiveNodeModel extends NodeModel
             try (InputStream is = blob.openInputStream();
                     InputStream bis = is.markSupported() ? is
                             : new BufferedInputStream(is);
-                    ArchiveInputStream<?> ais = archiveFormat
+                    ArchiveInputStream ais = archiveFormat
                             .wrapInputStream(bis, archiveOptions);) {
                 long subRow = 0;
                 boolean addedToTable = false;
@@ -491,12 +491,12 @@ abstract class AbstractExploreArchiveNodeModel extends NodeModel
     private void expandArchiveWithBombproofStream(RowOutput rowOut,
             final boolean hasIsDirCol, final boolean isGuess,
             BinaryObjectCellFactory cellFact, DataRow inRow, DataRow baseOutRow,
-            ArchiveInputStream<?> ais, long subRow, boolean addedToTable,
+            ArchiveInputStream ais, long subRow, boolean addedToTable,
             String fmt, ExecutionContext exec)
             throws IOException, InterruptedException, UncheckedIOException,
             CanceledExecutionException {
 
-        BombproofArchiveInputStream<?> bais = new BombproofArchiveInputStream<>(
+        BombproofArchiveInputStream bais = new BombproofArchiveInputStream(
                 ais,
                 getMaxExpandedSizeModel() == null ? -1
                         : getMaxExpandedSizeModel().getLongValue(),
@@ -544,7 +544,7 @@ abstract class AbstractExploreArchiveNodeModel extends NodeModel
     private void expandArchiveWithManualEntryCounting(RowOutput rowOut,
             final boolean hasIsDirCol, final boolean isGuess,
             BinaryObjectCellFactory cellFact, DataRow inRow, DataRow baseOutRow,
-            ArchiveInputStream<?> ais, long subRow, String fmt,
+            ArchiveInputStream ais, long subRow, String fmt,
             ExecutionContext exec) throws IOException, InterruptedException,
             CanceledExecutionException {
 
@@ -688,7 +688,7 @@ abstract class AbstractExploreArchiveNodeModel extends NodeModel
      *             stream, or {@code null} if not required
      */
     protected abstract NonClosableInputStream wrapArchiveInputStream(
-            ArchiveInputStream<?> ais);
+            ArchiveInputStream ais);
 
     /**
      * @param exec

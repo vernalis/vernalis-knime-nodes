@@ -122,7 +122,7 @@ public enum ArchiveFormat implements ButtonGroupEnumInterface,
                             new ByteArrayInputStream(signature));
 
                     // COMPRESS-191 - verify the header checksum
-                    if (tais.getNextEntry().isCheckSumOK()) {
+                    if (tais.getNextTarEntry().isCheckSumOK()) {
                         return true;
                     }
                 } catch (final Exception e) { // NOPMD NOSONAR
@@ -264,7 +264,7 @@ public enum ArchiveFormat implements ButtonGroupEnumInterface,
     dump(true, false, true, "UNIX 'dump' Archive") {
 
         @Override
-        public ArchiveInputStream<?> wrapInputStream(InputStream is,
+        public ArchiveInputStream wrapInputStream(InputStream is,
                 InputStreamWrapperOptions opts)
                 throws InputStreamWrapException {
 
@@ -347,7 +347,7 @@ public enum ArchiveFormat implements ButtonGroupEnumInterface,
     jar(true, true, true, "Java 'jar' archive") {
 
         @Override
-        public ArchiveInputStream<?> wrapInputStream(InputStream is,
+        public ArchiveInputStream wrapInputStream(InputStream is,
                 InputStreamWrapperOptions opts) {
 
             JarInstreamOptions jarOpts =
@@ -357,7 +357,7 @@ public enum ArchiveFormat implements ButtonGroupEnumInterface,
         }
 
         @Override
-        public ArchiveOutputStream<?> wrapOutputStream(OutputStream os,
+        public ArchiveOutputStream wrapOutputStream(OutputStream os,
                 OutputStreamWrapperOptions opts)
                 throws UnsupportedOperationException {
 
@@ -389,7 +389,7 @@ public enum ArchiveFormat implements ButtonGroupEnumInterface,
     guess(true, false, true, "Attempt to guess the archive format") {
 
         @Override
-        public ArchiveInputStream<?> wrapInputStream(InputStream is,
+        public ArchiveInputStream wrapInputStream(InputStream is,
                 InputStreamWrapperOptions opts)
                 throws InputStreamWrapException {
 
@@ -452,13 +452,13 @@ public enum ArchiveFormat implements ButtonGroupEnumInterface,
     // Narrow the wrapped type
     @Override
     @NoTest
-    public abstract ArchiveInputStream<?> wrapInputStream(InputStream in,
+    public abstract ArchiveInputStream wrapInputStream(InputStream in,
             InputStreamWrapperOptions opts)
             throws IOException, InputStreamWrapException;
 
     @Override
     @NoTest
-    public ArchiveOutputStream<?> wrapOutputStream(OutputStream os,
+    public ArchiveOutputStream wrapOutputStream(OutputStream os,
             OutputStreamWrapperOptions opts)
             throws UnsupportedOperationException, OutputStreamWrapException {
 

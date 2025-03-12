@@ -67,7 +67,7 @@ public class BlobListArchiveNodeModel extends AbstractExploreArchiveNodeModel {
 
     @Override
     protected NonClosableInputStream wrapArchiveInputStream(
-            ArchiveInputStream<?> ais) {
+            ArchiveInputStream ais) {
 
         // Not needed
         return null;

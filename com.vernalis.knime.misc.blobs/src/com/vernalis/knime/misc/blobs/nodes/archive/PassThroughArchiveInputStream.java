@@ -21,8 +21,6 @@ import java.util.Date;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 
-import com.vernalis.knime.misc.blobs.nodes.archive.PassThroughArchiveInputStream.PassThroughArchiveEntry;
-
 /**
  * A simple {@link ArchiveInputStream} which will always pass the wrapped
  * {@link InputStream} bytes through in a single entry. The {@link ArchiveEntry}
@@ -33,7 +31,7 @@ import com.vernalis.knime.misc.blobs.nodes.archive.PassThroughArchiveInputStream
  */
 public final class PassThroughArchiveInputStream
         extends
-        ArchiveInputStream<PassThroughArchiveEntry> {
+        ArchiveInputStream {
 
     /**
      * A simple {@link ArchiveEntry} for passing straight through

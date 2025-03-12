@@ -213,7 +213,7 @@ public class CreateArchiveNodeModel extends NodeModel {
             double progPerRow = 1.0 / rows;
             long rowCnt = 0l;
             // We have to create the output stream in the writer thread
-            ArchiveOutputStream<?> deflater;
+            ArchiveOutputStream deflater;
 
             try {
                 deflater = archiveFormat.wrapOutputStream(pipe, archiveOptions);
@@ -264,13 +264,12 @@ public class CreateArchiveNodeModel extends NodeModel {
         return new BufferedDataTable[] { bdc.getTable() };
     }
 
-    private <E extends ArchiveEntry> void addEntryToArchive(
-            ArchiveOutputStream<E> deflater, String path,
+    private void addEntryToArchive(ArchiveOutputStream deflater, String path,
             DataCell blobCell, File f) throws IOException {
 
         if (f != null
                 && (!f.isDirectory() || archiveFormat.supportsDirectories())) {
-            E ent = deflater.createArchiveEntry(f, path);
+            ArchiveEntry ent = deflater.createArchiveEntry(f, path);
             deflater.putArchiveEntry(ent);
 
             if (!blobCell.isMissing()) {
