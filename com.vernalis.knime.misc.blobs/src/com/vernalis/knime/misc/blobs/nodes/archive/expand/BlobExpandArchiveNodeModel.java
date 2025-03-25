@@ -29,10 +29,6 @@ import org.knime.core.data.blob.BinaryObjectDataCell;
 import org.knime.core.data.blob.BinaryObjectDataValue;
 import org.knime.core.data.util.NonClosableInputStream;
 import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.defaultnodesettings.SettingsModelDoubleBounded;
-import org.knime.core.node.defaultnodesettings.SettingsModelLongBounded;
-
-import com.vernalis.knime.misc.blobs.nodes.ExpansionSecurityUtils;
 
 /**
  * Node Model implementation for Expand Archives node
@@ -42,23 +38,14 @@ import com.vernalis.knime.misc.blobs.nodes.ExpansionSecurityUtils;
 public class BlobExpandArchiveNodeModel
         extends AbstractExploreArchiveNodeModel {
 
-    private final SettingsModelLongBounded maxExpandedSizeMdl =
-            smr.registerSettingsModel(
-                    ExpansionSecurityUtils.createMaxExpandedSizeModel(), 2,
-                    mdl -> mdl.setLongValue(-1));
-    private final SettingsModelDoubleBounded maxCompressionRatioMdl =
-            smr.registerSettingsModel(
-                    ExpansionSecurityUtils.createMaxCompressionRatioModel(), 2,
-                    mdl -> mdl.setDoubleValue(-1.0));
+
 
     /**
      * Constructor
      */
     BlobExpandArchiveNodeModel() {
 
-        super();
-        maxExpandedSizeMdl.addChangeListener(this);
-        maxCompressionRatioMdl.addChangeListener(this);
+        super(true);
         updateCanTrapExplodingExpansion();
     }
 
@@ -103,30 +90,6 @@ public class BlobExpandArchiveNodeModel
         return new BinaryObjectCellFactory(exec);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.vernalis.knime.misc.blobs.nodes.SecurityOptionsContainer#
-     * getMaxExpandedSizeModel()
-     */
-    @Override
-    public SettingsModelLongBounded getMaxExpandedSizeModel() {
 
-        return maxExpandedSizeMdl;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.vernalis.knime.misc.blobs.nodes.SecurityOptionsContainer#
-     * getMaxCompressionRatioModel()
-     */
-    @Override
-    public SettingsModelDoubleBounded getMaxCompressionRatioModel() {
-
-        return maxCompressionRatioMdl;
-    }
 
 }

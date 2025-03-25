@@ -79,7 +79,6 @@ public class ExploreArchiveNodeDialog extends NodeDialogPane
     private static final String BINARY_OBJECTS_COLUMN = "Binary Objects Column";
 
 
-
     // Settings models for load/save
     // Model for the 'Remove input column' option
     private final SettingsModelBoolean removeInputColumnMdl;
@@ -114,7 +113,8 @@ public class ExploreArchiveNodeDialog extends NodeDialogPane
      * Constructor
      * 
      * @param includeExpansionSecurityOptions
-     *            TODO
+     *            Whether the expansion security options (maximum expanded size,
+     *            maximum compresion ratio) are included
      */
     ExploreArchiveNodeDialog(boolean includeExpansionSecurityOptions) {
 
@@ -164,10 +164,8 @@ public class ExploreArchiveNodeDialog extends NodeDialogPane
             maxCompressionRatioMdl = null;
         }
         maxExpandedEntriesMdl = createMaxExpandedEntriesModel();
-        if (maxExpandedEntriesMdl != null) {
             maxExpandedEntriesMdl.addChangeListener(this);
-        }
-        failOnExpansionExplosionMdl = createFailOnExpansionExplosionModel();
+            failOnExpansionExplosionMdl = createFailOnExpansionExplosionModel();
 
         // The base panel in which all components in the tab are placed
         Box basePanel = new Box(BoxLayout.Y_AXIS);

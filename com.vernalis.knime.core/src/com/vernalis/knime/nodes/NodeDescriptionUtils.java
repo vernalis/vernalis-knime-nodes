@@ -283,7 +283,7 @@ public class NodeDescriptionUtils {
 		introCursor.insertChars("This node was developed by ");
 		introCursor.beginElement("a");
 		introCursor.insertAttributeWithValue("href",
-				"http://www.vernalis-research.com");
+				"https://www.vernalis.com");
 		introCursor.insertChars("Vernalis Research");
 		introCursor.toEndToken();
 		introCursor.toNextToken();

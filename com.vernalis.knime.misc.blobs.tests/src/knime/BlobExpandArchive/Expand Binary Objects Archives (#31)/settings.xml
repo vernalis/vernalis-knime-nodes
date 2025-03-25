@@ -92,7 +92,7 @@
     <entry key="node-bundle-name" type="xstring" value="Plugin for Vernalis Binary Object handling nodes"/>
     <entry key="node-bundle-symbolic-name" type="xstring" value="com.vernalis.knime.misc.blobs"/>
     <entry key="node-bundle-vendor" type="xstring" value="Vernalis Research, UK"/>
-    <entry key="node-bundle-version" type="xstring" value="1.38.0.qualifier"/>
+    <entry key="node-bundle-version" type="xstring" value="1.38.1.qualifier"/>
     <entry key="node-feature-name" type="xstring" isnull="true" value=""/>
     <entry key="node-feature-symbolic-name" type="xstring" isnull="true" value=""/>
     <entry key="node-feature-vendor" type="xstring" isnull="true" value=""/>

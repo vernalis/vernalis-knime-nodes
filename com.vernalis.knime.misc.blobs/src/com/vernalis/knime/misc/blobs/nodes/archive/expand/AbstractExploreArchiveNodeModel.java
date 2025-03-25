@@ -72,7 +72,9 @@ import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
+import org.knime.core.node.defaultnodesettings.SettingsModelDoubleBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
+import org.knime.core.node.defaultnodesettings.SettingsModelLongBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.streamable.BufferedDataTableRowOutput;
@@ -149,9 +151,12 @@ abstract class AbstractExploreArchiveNodeModel extends NodeModel
                     ExpansionSecurityUtils.createMaxExpandedEntriesModel(), 2,
                     mdl -> mdl.setIntValue(-1));
     private final SettingsModelBoolean failOnExpansionExplosionMdl =
-            smr.registerSettingsModel(ExpansionSecurityUtils
-                    .createFailOnExpansionExplosionModel(), 2,
-                    mdl -> mdl.setBooleanValue(false));
+            smr.registerSettingsModel(
+                    ExpansionSecurityUtils
+                            .createFailOnExpansionExplosionModel(),
+                    2, mdl -> mdl.setBooleanValue(false));
+    private final SettingsModelLongBounded maxExpandedSizeMdl;
+    private final SettingsModelDoubleBounded maxCompressionRatioMdl;
 
     private ArchiveFormat archiveFormat = ArchiveFormat.getDefault();
     private InputStreamWrapperOptions archiveOptions =
@@ -166,11 +171,31 @@ abstract class AbstractExploreArchiveNodeModel extends NodeModel
      * <strong>NB</strong> Implementing subclasses need to call
      * {@link #updateCanTrapExplodingExpansion()} in constructor
      * </p>
+     * 
+     * @param includeExpansionSecurityOptions
+     *            Whether the expansion security options (maximum expanded size,
+     *            maximum compresion ratio) are included
      */
-    protected AbstractExploreArchiveNodeModel() {
+    protected AbstractExploreArchiveNodeModel(boolean includeExpansionSecurityOptions) {
 
         super(1, 1);
 
+        if (includeExpansionSecurityOptions) {
+            maxExpandedSizeMdl =
+                    smr.registerSettingsModel(
+                            ExpansionSecurityUtils.createMaxExpandedSizeModel(), 2,
+                            mdl -> mdl.setLongValue(-1));
+            maxExpandedSizeMdl.addChangeListener(this);
+            maxCompressionRatioMdl =
+                    smr.registerSettingsModel(
+                            ExpansionSecurityUtils.createMaxCompressionRatioModel(), 2,
+                            mdl -> mdl.setDoubleValue(-1.0));
+            maxCompressionRatioMdl.addChangeListener(this);
+        } else {
+            maxExpandedSizeMdl = null;
+            maxCompressionRatioMdl = null;
+        }
+        
         archiveFormatMdl.addChangeListener(new ChangeListener() {
 
             // Dont change the actual format as we handle it manually in the
@@ -193,14 +218,8 @@ abstract class AbstractExploreArchiveNodeModel extends NodeModel
             }
         });
         keepDirectoriesMdl.setEnabled(archiveFormat.supportsDirectories());
-        if (getMaxExpandedSizeModel() != null) {
-            getMaxExpandedSizeModel()
-                    .setEnabled(archiveFormat.includesCompression());
-        }
-        if (getMaxCompressionRatioModel() != null) {
-            getMaxCompressionRatioModel()
-                    .setEnabled(archiveFormat.includesCompression());
-        }
+
+
         filterPathsMdl.addChangeListener(new ChangeListener() {
 
             @Override
@@ -217,6 +236,16 @@ abstract class AbstractExploreArchiveNodeModel extends NodeModel
         caseSensitiveMdl.setEnabled(filterPathsMdl.getBooleanValue());
 
         maxExpandedEntriesMdl.addChangeListener(this);
+
+        if (getMaxExpandedSizeModel() != null) {
+            getMaxExpandedSizeModel()
+                    .setEnabled(archiveFormat.includesCompression());
+        }
+        if (getMaxCompressionRatioModel() != null) {
+            getMaxCompressionRatioModel()
+                    .setEnabled(archiveFormat.includesCompression());
+        }
+        updateCanTrapExplodingExpansion();
 
     }
 
@@ -801,6 +830,32 @@ abstract class AbstractExploreArchiveNodeModel extends NodeModel
     public final SettingsModelBoolean getFailOnExpansionExplosionModel() {
 
         return failOnExpansionExplosionMdl;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.vernalis.knime.internal.misc.blobs.nodes.SecurityOptionsContainer#
+     * getMaxExpandedSizeModel()
+     */
+    @Override
+    public SettingsModelLongBounded getMaxExpandedSizeModel() {
+
+        return maxExpandedSizeMdl;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.vernalis.knime.misc.blobs.nodes.SecurityOptionsContainer#
+     * getMaxCompressionRatioModel()
+     */
+    @Override
+    public SettingsModelDoubleBounded getMaxCompressionRatioModel() {
+
+        return maxCompressionRatioMdl;
     }
 
 }
