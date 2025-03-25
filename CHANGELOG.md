@@ -6,10 +6,10 @@ The table shows the latest version of the nodes available in each update site fo
 
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
-| Nightly | [v1.38.0](#v1380---11-mar-2025) |
-| 5.4* | [v1.38.0](#v1380---11-mar-2025) |
-| 5.3* | [v1.38.0](#v1380---11-mar-2025) |
-| 5.2* | [v1.38.0](#v1380---11-mar-2025) |
+| Nightly | [v1.38.1](#v1381---25-mar-2025) |
+| 5.4* | [v1.38.1](#v1381---25-mar-2025) |
+| 5.3* | [v1.38.1](#v1381---25-mar-2025) |
+| 5.2* | [v1.38.1](#v1381---25-mar-2025) |
 | 5.1 | [v1.36.7](#v1367---28-may-2024) |
 | 4.7 | [v1.36.7](#v1367---28-may-2024) |
 | 4.6 | [v1.36.2](#v1362---13-jan-2023) |
@@ -37,6 +37,14 @@ The table shows the latest version of the nodes available in each update site fo
 \* Currently supported versions
 
 Back to [ReadMe](README.md)
+
+## v1.38.1 25-Mar-2025
+
+_Bug Fixes_
+* Fixed dialog settings enablement in Expand Archive node = #26
+* Fixed byte counting in Expand Archive node (`BombproofArchiveInputStream`) - #27
+* Fixed error in Expand Binary Objects node 'explosion' warning message (`BombproofCompressorInputStream`)
+* Updated Vernalis URL in all Node Descriptions to point to https://www.vernalis.com
 
 ## v1.38.0 11-Mar-2025
 
@@ -68,8 +76,6 @@ _Enhancements_
 
 
 Back to [top](#changelog)
-
-
 
 
 
