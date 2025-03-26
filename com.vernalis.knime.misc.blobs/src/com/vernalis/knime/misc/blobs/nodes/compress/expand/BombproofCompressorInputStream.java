@@ -163,7 +163,7 @@ public class BombproofCompressorInputStream extends CompressorInputStream
         if (getMaxExpandedBytes() > 0
                 && getUncompressedCount() > getMaxExpandedBytes()) {
             throw new ExpansionDetonationException("Expanded size "
-                    + getUncompressedCount() + " has exceede the maximum "
+                    + getUncompressedCount() + " has exceeded the maximum "
                     + getMaxExpandedBytes());
         }
         if (getMaxCompressionRatio() > 0.0) {

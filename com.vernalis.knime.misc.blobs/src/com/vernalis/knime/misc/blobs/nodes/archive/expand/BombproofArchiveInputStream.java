@@ -39,6 +39,14 @@ import com.vernalis.knime.misc.blobs.nodes.ExpansionBombProof;
  * archives externally.
  * <p>
  * 
+ * @implNote {@link InputStreamStatistics} is undefined as to whether it's byte
+ *               count methods should refer to the current entry only, or to the
+ *               entire archive. Only ZIP and JAR Archive input streams
+ *               implement this interface, and they somewhat surprisingly reset
+ *               the counters for each call to {@link #getNextEntry()}. In this
+ *               implementation, we ensure that whatever the underlying stream
+ *               does in this regard, the values returned are the current totals
+ *               for the entire archive
  * @author S.Roughley knime@vernalis.com
  * @param <E>
  *            The type of Entry returned by the archive stream
@@ -53,6 +61,7 @@ public class BombproofArchiveInputStream extends ArchiveInputStream
     private ArchiveInputStream cis;
     private int entriesRead = 0;
     private long uncompressedBytesRead;
+    private long compressedBytesRead;
 
     private final long maxExpandedBytes;
     private final double maxCompressionRatio;
@@ -61,6 +70,7 @@ public class BombproofArchiveInputStream extends ArchiveInputStream
     private final boolean keepDirectories;
     private final NodeLogger logger;
     private final Consumer<String> warningConsumer;
+    private boolean isFirst = true;
 
     /**
      * Constructor when the total bytes from a multifile input stream do not
@@ -228,7 +238,8 @@ public class BombproofArchiveInputStream extends ArchiveInputStream
     @Override
     public long getCompressedCount() {
 
-        return ((InputStreamStatistics) cis).getCompressedCount();
+        return ((InputStreamStatistics) cis).getCompressedCount()
+                + compressedBytesRead;
     }
 
     /*
@@ -396,14 +407,26 @@ public class BombproofArchiveInputStream extends ArchiveInputStream
         // ZipArchiveInputStream (and therefore Jar...) reset this value on each
         // call to next entry
         // This is not documented
-        uncompressedBytesRead +=
-                ((InputStreamStatistics) cis).getUncompressedCount();
-
+        InputStreamStatistics iss = (InputStreamStatistics) cis;
+        long lastEntryUncompressedCount = 0L;
+        if (!isFirst) {
+            // Currently the only implementations are OK with this, but let's
+            // avoid the risk of future implementations breaking here
+            lastEntryUncompressedCount =
+                    Math.max(0, iss.getUncompressedCount());
+        }
+        long lastEntryCompressedCount = 0L;
+        if (!isFirst) {
+            // Will fail on some implementations of ArchiveInputStream at first
+            // call (see https://issues.apache.org/jira/browse/COMPRESS-696)
+            lastEntryCompressedCount = Math.max(0, iss.getCompressedCount());
+        }
         ArchiveEntry retVal;
         // Look for the next entry in the underlying stream which we can read
         // and
         // which matches the path predicate
         while ((retVal = cis.getNextEntry()) != null) {
+            isFirst = false;
             if (!cis.canReadEntryData(retVal)) {
                 logger.warnWithFormat("Unable to read entry '%s'",
                         retVal.getName());
@@ -416,7 +439,14 @@ public class BombproofArchiveInputStream extends ArchiveInputStream
                     && pathPredicate.test(retVal.getName())) {
                 // Use this entry
                 entriesRead++;
-                detonationCheck();
+                if (iss.getUncompressedCount() < lastEntryUncompressedCount) {
+                    // This counter was reset with the new entry...
+                    uncompressedBytesRead += lastEntryUncompressedCount;
+                }
+                if (iss.getCompressedCount() < lastEntryCompressedCount) {
+                    // This counter was reset with the new entry...
+                    compressedBytesRead += lastEntryCompressedCount;
+                }
                 return retVal;
             }
         }

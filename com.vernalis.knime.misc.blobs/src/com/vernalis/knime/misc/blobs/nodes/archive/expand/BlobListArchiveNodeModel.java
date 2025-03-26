@@ -27,8 +27,6 @@ import org.knime.core.data.blob.BinaryObjectCellFactory;
 import org.knime.core.data.def.LongCell;
 import org.knime.core.data.util.NonClosableInputStream;
 import org.knime.core.node.ExecutionContext;
-import org.knime.core.node.defaultnodesettings.SettingsModelDoubleBounded;
-import org.knime.core.node.defaultnodesettings.SettingsModelLongBounded;
 
 /**
  * Node Model implementation for the List Archive Contents node
@@ -42,7 +40,7 @@ public class BlobListArchiveNodeModel extends AbstractExploreArchiveNodeModel {
      */
     BlobListArchiveNodeModel() {
 
-        super();
+        super(false);
     }
 
     @Override
@@ -81,30 +79,6 @@ public class BlobListArchiveNodeModel extends AbstractExploreArchiveNodeModel {
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.vernalis.knime.misc.blobs.nodes.SecurityOptionsContainer#
-     * getMaxExpandedSizeModel()
-     */
-    @Override
-    public SettingsModelLongBounded getMaxExpandedSizeModel() {
 
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.vernalis.knime.misc.blobs.nodes.SecurityOptionsContainer#
-     * getMaxCompressionRatioModel()
-     */
-    @Override
-    public SettingsModelDoubleBounded getMaxCompressionRatioModel() {
-
-        return null;
-    }
 
 }
