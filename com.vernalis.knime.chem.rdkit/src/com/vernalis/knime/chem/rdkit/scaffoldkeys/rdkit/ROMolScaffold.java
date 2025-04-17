@@ -99,6 +99,8 @@ public class ROMolScaffold extends AbstractScaffold<ROMol>
         } else {
             tmp2 = new RWMol(mol);
         }
+        RDKFuncs.assignStereochemistry(tmp2, true, true);
+
         return new ROMolScaffold(tmp2);
     }
 
