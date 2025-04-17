@@ -6,10 +6,10 @@ The table shows the latest version of the nodes available in each update site fo
 
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
-| Nightly | [v1.38.1](#v1381---25-mar-2025) |
-| 5.4* | [v1.38.1](#v1381---25-mar-2025) |
-| 5.3* | [v1.38.1](#v1381---25-mar-2025) |
-| 5.2* | [v1.38.1](#v1381---25-mar-2025) |
+| Nightly | [v1.38.2](#v1382---17-apr-2025) |
+| 5.4* | [v1.38.2](#v1382---17-apr-2025) |
+| 5.3* | [v1.38.2](#v1382---17-apr-2025) |
+| 5.2* | [v1.38.2](#v1382---17-apr-2025) |
 | 5.1 | [v1.36.7](#v1367---28-may-2024) |
 | 4.7 | [v1.36.7](#v1367---28-may-2024) |
 | 4.6 | [v1.36.2](#v1362---13-jan-2023) |
@@ -38,6 +38,14 @@ The table shows the latest version of the nodes available in each update site fo
 
 Back to [ReadMe](README.md)
 
+## v1.38.2 17-Apr-2025
+
+_Bug Fixes_
+* Fix to avoid segfault in RDKit library in Ertl Scaffold node (see https://forum.knime.com/t/vernalis-ertl-scaffold-keys-node-crashes/87275?u=vernalis and https://github.com/rdkit/rdkit/pull/8415)
+
+Back to [top](#changelog)
+
+
 ## v1.38.1 25-Mar-2025
 
 _Bug Fixes_
@@ -45,6 +53,9 @@ _Bug Fixes_
 * Fixed byte counting in Expand Archive node (`BombproofArchiveInputStream`) - #27
 * Fixed error in Expand Binary Objects node 'explosion' warning message (`BombproofCompressorInputStream`)
 * Updated Vernalis URL in all Node Descriptions to point to https://www.vernalis.com
+
+Back to [top](#changelog)
+
 
 ## v1.38.0 11-Mar-2025
 
