@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
-Bundle-SymbolicName: com.vernalis.knime.chem.core; singleton:=true
-Bundle-Version: 1.38.1.qualifier
+Bundle-SymbolicName: com.vernalis.knime.chem.core;singleton:=true
+Bundle-Version: 1.38.2.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.vernalis.knime.chem.core.VernalisChemCoreNodePlugin
 Bundle-Vendor: %Bundle-Vendor
