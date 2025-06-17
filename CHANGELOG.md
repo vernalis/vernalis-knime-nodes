@@ -7,6 +7,7 @@ The table shows the latest version of the nodes available in each update site fo
 | KNIME AP Desktop Version | Vernalis Plugin Version |
 | :------------------------: | :-----------------------: |
 | Nightly | [v1.38.2](#v1382---17-apr-2025) |
+| 5.5* | [v1.38.2](#v1382---17-apr-2025) |
 | 5.4* | [v1.38.2](#v1382---17-apr-2025) |
 | 5.3* | [v1.38.2](#v1382---17-apr-2025) |
 | 5.2* | [v1.38.2](#v1382---17-apr-2025) |
