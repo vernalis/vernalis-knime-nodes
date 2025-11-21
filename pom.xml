@@ -13,7 +13,6 @@
         <revision>1.38.2</revision>
         <changelist>-SNAPSHOT</changelist>
         <knime.version>5.4</knime.version>
-        <echem.version>5.1</echem.version>
         <java.version>17</java.version>
         <maven.version>3.9.6</maven.version>
         <maven.enforcer.version>3.4.1</maven.enforcer.version>
@@ -101,9 +100,9 @@
             <url>https://update.knime.com/community-contributions/trusted/${knime.version}</url>
         </repository>
         <repository>
-            <id>3d-e-chem</id>
+            <id>p2-knime-experimental-community</id>
             <layout>p2</layout>
-            <url>https://3d-e-chem.github.io/updates/${echem.version}</url>
+            <url>https://update.knime.com/community-contributions/${knime.version}</url>
         </repository>
     </repositories>
 
